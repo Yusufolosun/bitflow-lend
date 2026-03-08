@@ -8,7 +8,7 @@ FRONTEND_DIR := frontend
 SCRIPTS_DIR := scripts
 
 help:
-	@echo "BitFlow Finance - Available Commands"
+	@echo "BitFlow Lend - Available Commands"
 	@echo "===================================="
 	@echo ""
 	@echo "Development:"
@@ -77,7 +77,7 @@ clean:
 
 docker-build:
 	@echo "🐳 Building Docker image..."
-	@docker build -t bitflow-finance .
+	@docker build -t bitflow-lend .
 
 docker-run:
 	@echo "🐳 Running Docker container..."
