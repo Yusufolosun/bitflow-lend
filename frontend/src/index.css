@@ -22,7 +22,7 @@
   }
 
   :focus-visible {
-    @apply outline-none ring-2 ring-primary-500/40 ring-offset-2 ring-offset-white;
+    @apply outline-none ring-2 ring-accent-500/40 ring-offset-2 ring-offset-white;
   }
 }
 
@@ -55,7 +55,7 @@
     @apply inline-flex items-center justify-center gap-2 active:scale-[0.98];
   }
   .btn-primary {
-    @apply bg-primary-600 text-white hover:bg-primary-700 shadow-sm hover:shadow-md;
+    @apply bg-accent-500 text-white hover:bg-accent-600 shadow-sm hover:shadow-md;
   }
   .btn-secondary {
     @apply bg-gray-100 text-gray-900 hover:bg-gray-200;
@@ -76,7 +76,7 @@
   /* --- Inputs --- */
   .input {
     @apply w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200;
-    @apply focus:bg-white focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400;
+    @apply focus:bg-white focus:ring-2 focus:ring-accent-500/20 focus:border-accent-400;
     @apply transition-all duration-200 placeholder:text-gray-400;
   }
   .input-error {
@@ -90,7 +90,7 @@
   .badge-success { @apply bg-emerald-50 text-emerald-700 border-emerald-200; }
   .badge-warning { @apply bg-amber-50 text-amber-700 border-amber-200; }
   .badge-danger  { @apply bg-red-50 text-red-700 border-red-200; }
-  .badge-info    { @apply bg-blue-50 text-blue-700 border-blue-200; }
+  .badge-info    { @apply bg-accent-50 text-accent-700 border-accent-200; }
 
   /* --- Stats --- */
   .stat-label    { @apply text-sm font-medium text-gray-500 mb-1; }
@@ -106,21 +106,22 @@
    Utilities
    ============================================ */
 @layer utilities {
-  .gradient-primary { background: linear-gradient(135deg, #2563eb, #7c3aed); }
+  .gradient-primary { background: linear-gradient(135deg, #0F172A, #FF5F00); }
+  .gradient-accent  { background: linear-gradient(135deg, #FF5F00, #FB923C); }
   .gradient-success { background: linear-gradient(135deg, #059669, #10b981); }
   .gradient-danger  { background: linear-gradient(135deg, #dc2626, #f43f5e); }
-  .gradient-dark    { background: linear-gradient(135deg, #1e293b 0%, #334155 50%, #1e293b 100%); }
+  .gradient-dark    { background: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #0F172A 100%); }
 
   .gradient-mesh {
     background:
-      radial-gradient(at 20% 20%, rgba(59,130,246,0.08) 0%, transparent 50%),
-      radial-gradient(at 80% 80%, rgba(124,58,237,0.06) 0%, transparent 50%),
+      radial-gradient(at 20% 20%, rgba(255,95,0,0.06) 0%, transparent 50%),
+      radial-gradient(at 80% 80%, rgba(15,23,42,0.05) 0%, transparent 50%),
       radial-gradient(at 50% 50%, rgba(16,185,129,0.04) 0%, transparent 70%);
   }
 
   .text-gradient-primary {
     @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, #2563eb, #7c3aed);
+    background-image: linear-gradient(135deg, #0F172A, #FF5F00);
   }
 
   .bg-grid-pattern {
@@ -134,7 +135,7 @@
   .shadow-soft     { box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06); }
   .shadow-medium   { box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03); }
   .shadow-elevated { box-shadow: 0 10px 25px -5px rgba(0,0,0,0.08), 0 4px 6px -1px rgba(0,0,0,0.04); }
-  .shadow-glow     { box-shadow: 0 0 20px rgba(59,130,246,0.25); }
+  .shadow-glow     { box-shadow: 0 0 20px rgba(255,95,0,0.25); }
   .shadow-glow-green { box-shadow: 0 0 20px rgba(16,185,129,0.25); }
   .shadow-glow-red   { box-shadow: 0 0 20px rgba(239,68,68,0.25); }
 
@@ -177,7 +178,7 @@
 .spinner {
   border: 3px solid rgba(0,0,0,0.08);
   border-radius: 50%;
-  border-top-color: #2563eb;
+  border-top-color: #FF5F00;
   animation: spin 0.8s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
@@ -193,7 +194,7 @@
 }
 .toast-success { @apply bg-emerald-600 text-white; }
 .toast-error   { @apply bg-red-600 text-white; }
-.toast-info    { @apply bg-blue-600 text-white; }
+.toast-info    { @apply bg-accent-500 text-white; }
 
 /* Tables */
 .table         { @apply w-full; }
@@ -210,10 +211,10 @@
 /* Range Slider */
 input[type="range"]       { @apply appearance-none h-2 bg-gray-200 rounded-full cursor-pointer; }
 input[type="range"]::-webkit-slider-thumb {
-  @apply appearance-none w-5 h-5 rounded-full bg-primary-600 shadow-md cursor-pointer border-2 border-white;
+  @apply appearance-none w-5 h-5 rounded-full bg-accent-500 shadow-md cursor-pointer border-2 border-white;
 }
 input[type="range"]::-moz-range-thumb {
-  @apply w-5 h-5 rounded-full bg-primary-600 shadow-md cursor-pointer border-2 border-white;
+  @apply w-5 h-5 rounded-full bg-accent-500 shadow-md cursor-pointer border-2 border-white;
 }
 
 /* Number input spinners hidden */
