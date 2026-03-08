@@ -138,7 +138,7 @@ export const Dashboard: React.FC = () => {
                 <Layers className="text-white" size={22} />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-gray-900 tracking-tight">BitFlow Finance</h1>
+                <h1 className="text-xl font-bold text-gray-900 tracking-tight">BitFlow Lend</h1>
                 <p className="text-xs text-gray-500 font-medium">Decentralized Lending Protocol</p>
               </div>
               <NetworkIndicator />
@@ -295,7 +295,7 @@ export const Dashboard: React.FC = () => {
                 <Layers className="text-white" size={32} />
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-3 tracking-tight">
-                Welcome to BitFlow Finance
+                Welcome to BitFlow Lend
               </h3>
               <p className="text-gray-600 mb-8 max-w-md mx-auto leading-relaxed">
                 Connect your wallet to start depositing, borrowing, and earning with your STX tokens on Stacks.
@@ -369,7 +369,7 @@ export const Dashboard: React.FC = () => {
               <div className="w-5 h-5 gradient-primary rounded-md flex items-center justify-center">
                 <Layers className="text-white" size={12} />
               </div>
-              © 2026 BitFlow Finance. Built on Stacks.
+              © 2026 BitFlow Lend. Built on Stacks.
             </div>
             <div className="flex gap-6">
               <a href="#" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Docs</a>

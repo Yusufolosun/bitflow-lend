@@ -115,7 +115,7 @@ export const useAuth = () => {
   const connectWallet = useCallback(() => {
     showConnect({
       appDetails: {
-        name: 'BitFlow Finance',
+        name: 'BitFlow Lend',
         icon: window.location.origin + '/logo.png',
       },
       redirectTo: '/',

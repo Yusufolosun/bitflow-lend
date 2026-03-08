@@ -4,7 +4,7 @@ import './index.css';
 
 /**
  * Main App Component
- * Entry point for the BitFlow Finance application
+ * Entry point for the BitFlow Lend application
  */
 function App() {
   return (

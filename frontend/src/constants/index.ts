@@ -1,5 +1,5 @@
 /**
- * Protocol Constants for BitFlow Finance
+ * Protocol Constants for BitFlow Lend
  * 
  * These constants define the core parameters and configuration
  * for the DeFi lending protocol on Stacks blockchain
