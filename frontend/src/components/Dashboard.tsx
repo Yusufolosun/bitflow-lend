@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TrendingUp, DollarSign, Activity, Users, Layers } from 'lucide-react';
+import { TrendingUp, DollarSign, Activity, Users } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useVault } from '../hooks/useVault';
 import { StatsCard } from './StatsCard';
@@ -134,13 +134,7 @@ export const Dashboard: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 gradient-primary rounded-xl flex items-center justify-center shadow-sm">
-                <Layers className="text-white" size={22} />
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-gray-900 tracking-tight">BitFlow Lend</h1>
-                <p className="text-xs text-gray-500 font-medium">Decentralized Lending Protocol</p>
-              </div>
+              <img src="/logo.svg" alt="BitFlow Lend" className="h-9" />
               <NetworkIndicator />
             </div>
             <WalletConnect />
@@ -291,11 +285,9 @@ export const Dashboard: React.FC = () => {
         {!address ? (
           <section className="mb-8">
             <div className="card-elevated p-12 text-center gradient-mesh rounded-2xl">
-              <div className="w-16 h-16 gradient-primary rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
-                <Layers className="text-white" size={32} />
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-3 tracking-tight">
-                Welcome to BitFlow Lend
+              <img src="/favicon.svg" alt="BitFlow" className="w-16 h-16 mx-auto mb-6" />
+              <h3 className="text-2xl font-bold text-primary-900 mb-3 tracking-tight">
+                Welcome to <span className="text-accent-500">BitFlow</span> Lend
               </h3>
               <p className="text-gray-600 mb-8 max-w-md mx-auto leading-relaxed">
                 Connect your wallet to start depositing, borrowing, and earning with your STX tokens on Stacks.
@@ -366,9 +358,7 @@ export const Dashboard: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="flex items-center gap-2 text-sm text-gray-500">
-              <div className="w-5 h-5 gradient-primary rounded-md flex items-center justify-center">
-                <Layers className="text-white" size={12} />
-              </div>
+              <img src="/favicon.svg" alt="BitFlow" className="w-5 h-5" />
               © 2026 BitFlow Lend. Built on Stacks.
             </div>
             <div className="flex gap-6">
