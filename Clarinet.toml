@@ -1,6 +1,6 @@
 [project]
 name = "bitflow-core"
-description = "BitFlow Finance - Decentralized Lending Protocol (v2 with STX transfer fix)"
+description = "BitFlow Lend - Decentralized Lending Protocol (v2 with STX transfer fix)"
 authors = []
 telemetry = false
 cache_dir = "./.cache"
