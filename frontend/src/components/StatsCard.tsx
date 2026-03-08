@@ -35,9 +35,9 @@ export const StatsCard: React.FC<StatsCardProps> = ({
 }) => {
   const colorClasses = {
     blue: {
-      bg: 'bg-blue-50',
-      text: 'text-blue-600',
-      accent: 'border-t-blue-500',
+      bg: 'bg-primary-100',
+      text: 'text-primary-800',
+      accent: 'border-t-primary-700',
     },
     green: {
       bg: 'bg-emerald-50',
@@ -50,9 +50,9 @@ export const StatsCard: React.FC<StatsCardProps> = ({
       accent: 'border-t-purple-500',
     },
     orange: {
-      bg: 'bg-orange-50',
-      text: 'text-orange-600',
-      accent: 'border-t-orange-500',
+      bg: 'bg-accent-50',
+      text: 'text-accent-600',
+      accent: 'border-t-accent-500',
     },
     red: {
       bg: 'bg-red-50',
