@@ -64,3 +64,5 @@ coverage/
 # Temporary files
 *.tmp
 *.temp.env
+
+.env.production
