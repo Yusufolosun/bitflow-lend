@@ -152,8 +152,8 @@ describe('App Integration', () => {
       const { Dashboard } = await import('../components/Dashboard');
       render(<Dashboard />);
 
-      expect(screen.getByText('BitFlow Finance')).toBeInTheDocument();
-      expect(screen.getByText('Welcome to BitFlow Finance')).toBeInTheDocument();
+      expect(screen.getByText('BitFlow Lend')).toBeInTheDocument();
+      expect(screen.getByText('Welcome to BitFlow Lend')).toBeInTheDocument();
       expect(screen.getByText(/Connect your wallet/)).toBeInTheDocument();
     });
 

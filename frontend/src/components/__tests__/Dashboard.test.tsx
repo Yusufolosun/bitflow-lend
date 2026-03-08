@@ -124,7 +124,7 @@ describe('Dashboard Component', () => {
   describe('Header', () => {
     it('renders the app title', () => {
       render(<Dashboard />);
-      expect(screen.getByText('BitFlow Finance')).toBeInTheDocument();
+      expect(screen.getByText('BitFlow Lend')).toBeInTheDocument();
     });
 
     it('renders the subtitle', () => {
@@ -204,7 +204,7 @@ describe('Dashboard Component', () => {
   describe('Disconnected State', () => {
     it('shows welcome section when wallet is not connected', () => {
       render(<Dashboard />);
-      expect(screen.getByText('Welcome to BitFlow Finance')).toBeInTheDocument();
+      expect(screen.getByText('Welcome to BitFlow Lend')).toBeInTheDocument();
     });
 
     it('does not show user portfolio when disconnected', () => {
@@ -265,7 +265,7 @@ describe('Dashboard Component', () => {
 
     it('does not show welcome section when connected', () => {
       render(<Dashboard />);
-      expect(screen.queryByText('Welcome to BitFlow Finance')).not.toBeInTheDocument();
+      expect(screen.queryByText('Welcome to BitFlow Lend')).not.toBeInTheDocument();
     });
 
     it('shows total deposited in portfolio', () => {
@@ -292,7 +292,7 @@ describe('Dashboard Component', () => {
   describe('Footer', () => {
     it('renders copyright text', () => {
       render(<Dashboard />);
-      expect(screen.getByText(/2026 BitFlow Finance/)).toBeInTheDocument();
+      expect(screen.getByText(/2026 BitFlow Lend/)).toBeInTheDocument();
     });
 
     it('renders navigation links', () => {
