@@ -131,7 +131,7 @@ export const RepayCard: React.FC = () => {
       {/* Header */}
       <div className="flex items-center gap-3">
         <div className={`p-3 rounded-xl ${isOverdue ? 'bg-red-50' : 'bg-blue-50'}`}>
-          <DollarSign className={isOverdue ? 'text-red-600' : 'text-blue-600'} size={22} />
+          <DollarSign className={isOverdue ? 'text-red-600' : 'text-accent-600'} size={22} />
         </div>
         <div>
           <h3 className="text-lg font-bold text-gray-900 tracking-tight">Repay Loan</h3>
@@ -150,7 +150,7 @@ export const RepayCard: React.FC = () => {
         <div className="w-full bg-gray-200 rounded-full h-2">
           <div
             className={`h-2 rounded-full transition-all ${
-              isOverdue ? 'bg-red-600' : 'bg-blue-600'
+              isOverdue ? 'bg-red-600' : 'bg-accent-500'
             }`}
             style={{ width: `${Math.min(progress, 100)}%` }}
           ></div>

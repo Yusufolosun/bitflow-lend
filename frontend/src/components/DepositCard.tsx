@@ -106,8 +106,8 @@ export const DepositCard: React.FC = () => {
     <div className="card-elevated space-y-6">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <div className="p-3 bg-primary-50 rounded-xl">
-          <ArrowDownCircle className="text-primary-600" size={22} />
+        <div className="p-3 bg-accent-50 rounded-xl">
+          <ArrowDownCircle className="text-accent-600" size={22} />
         </div>
         <div>
           <h3 className="text-lg font-bold text-gray-900 tracking-tight">Deposit STX</h3>
@@ -139,7 +139,7 @@ export const DepositCard: React.FC = () => {
           />
           <button
             onClick={handleMaxClick}
-            className="absolute right-3 top-1/2 -translate-y-1/2 px-3 py-1 bg-primary-50 text-primary-600 rounded-lg text-xs font-bold hover:bg-primary-100 transition-colors border border-primary-200"
+            className="absolute right-3 top-1/2 -translate-y-1/2 px-3 py-1 bg-accent-50 text-accent-600 rounded-lg text-xs font-bold hover:bg-accent-100 transition-colors border border-accent-200"
             disabled={txStatus === 'pending'}
           >
             MAX

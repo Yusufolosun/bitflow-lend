@@ -128,7 +128,7 @@ export const LiquidationList: React.FC = () => {
       {/* Info Banner */}
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
         <div className="flex items-start gap-3">
-          <Zap className="text-blue-600 flex-shrink-0 mt-0.5" size={20} />
+          <Zap className="text-accent-600 flex-shrink-0 mt-0.5" size={20} />
           <div className="flex-1">
             <h4 className="text-sm font-semibold text-blue-900 mb-1">
               How Liquidation Works
@@ -145,7 +145,7 @@ export const LiquidationList: React.FC = () => {
       {/* Loading State */}
       {isLoading && positions.length === 0 && (
         <div className="text-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent-500 mx-auto mb-4"></div>
           <p className="text-gray-500">Loading positions...</p>
         </div>
       )}

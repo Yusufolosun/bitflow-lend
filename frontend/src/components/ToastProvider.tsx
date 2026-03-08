@@ -72,7 +72,7 @@ import { Toast } from '../hooks/useToast';
 const toastStyles = {
   success: { icon: CheckCircle, bg: 'bg-green-600' },
   error: { icon: XCircle, bg: 'bg-red-600' },
-  info: { icon: Info, bg: 'bg-blue-600' },
+  info: { icon: Info, bg: 'bg-accent-500' },
   warning: { icon: AlertTriangle, bg: 'bg-yellow-500' },
 };
 

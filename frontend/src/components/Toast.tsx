@@ -29,7 +29,7 @@ const toastStyles = {
   },
   info: {
     icon: Info,
-    bg: 'bg-blue-600',
+    bg: 'bg-accent-500',
     border: 'border-blue-700',
     iconColor: 'text-blue-100',
   },

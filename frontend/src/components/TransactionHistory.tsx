@@ -163,7 +163,7 @@ export const TransactionHistory: React.FC = () => {
   const getTransactionIcon = (type: TransactionType) => {
     switch (type) {
       case 'deposit': return <ArrowDownCircle size={20} className="text-emerald-600" />;
-      case 'withdraw': return <ArrowUpCircle size={20} className="text-blue-600" />;
+      case 'withdraw': return <ArrowUpCircle size={20} className="text-accent-600" />;
       case 'borrow': return <TrendingUp size={20} className="text-purple-600" />;
       case 'repay': return <DollarSign size={20} className="text-orange-600" />;
       case 'liquidate': return <XCircle size={20} className="text-red-600" />;
@@ -235,7 +235,7 @@ export const TransactionHistory: React.FC = () => {
             onClick={() => setFilter(type)}
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors capitalize ${
               filter === type
-                ? 'bg-primary-600 text-white shadow-sm'
+                ? 'bg-accent-500 text-white shadow-sm'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >
@@ -247,7 +247,7 @@ export const TransactionHistory: React.FC = () => {
       {/* Loading State */}
       {isLoading && transactions.length === 0 && (
         <div className="text-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent-500 mx-auto mb-4"></div>
           <p className="text-gray-500">Loading transactions from blockchain...</p>
         </div>
       )}
@@ -324,7 +324,7 @@ export const TransactionHistory: React.FC = () => {
                         href={getExplorerUrl(tx.txId)}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 hover:underline"
+                        className="inline-flex items-center gap-1 text-accent-600 hover:text-accent-700 hover:underline"
                       >
                         <span className="font-mono">{tx.txId.slice(0, 10)}...{tx.txId.slice(-6)}</span>
                         <ExternalLink size={10} />
@@ -370,7 +370,7 @@ export const TransactionHistory: React.FC = () => {
             </div>
             <div className="text-center">
               <div className="text-xs font-medium text-gray-500 mb-1">Total Withdrawn</div>
-              <div className="text-sm font-bold text-blue-600 tabular-nums">
+              <div className="text-sm font-bold text-accent-600 tabular-nums">
                 {formatSTX(
                   transactions
                     .filter(tx => tx.type === 'withdraw' && tx.status === 'confirmed')
