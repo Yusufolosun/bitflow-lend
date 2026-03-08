@@ -1,8 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
-  <!-- Stacked geometric blocks -->
-  <rect x="4" y="18" width="10" height="10" rx="2" fill="#0F172A"/>
-  <rect x="8" y="12" width="10" height="10" rx="2" fill="#0F172A" opacity="0.75"/>
-  <rect x="12" y="6" width="10" height="10" rx="2" fill="#0F172A" opacity="0.5"/>
-  <!-- Flow curve -->
-  <path d="M6 26C10 20 16 10 26 6" stroke="#FF5F00" stroke-width="3" stroke-linecap="round" fill="none"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Dark circle background -->
+  <circle cx="32" cy="32" r="30" fill="#1E293B"/>
+  <!-- Upper isometric diamond layer (lighter, further back) -->
+  <path d="M32 14 L45 22 L32 30 L19 22 Z" fill="#7C8CA0" opacity="0.6"/>
+  <!-- Lower isometric diamond layer (more opaque, front) -->
+  <path d="M32 22 L45 30 L32 38 L19 30 Z" fill="#7C8CA0" opacity="0.9"/>
+  <!-- Orange flow swoosh: S-curve from bottom-left through layers -->
+  <path d="M15 50 C18 44, 21 39, 25 35 C29 31, 31 28, 33 25 C35 22, 39 17, 44 14" stroke="#FF5F00" stroke-width="6" stroke-linecap="round" fill="none"/>
 </svg>

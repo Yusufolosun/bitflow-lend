@@ -11,19 +11,22 @@
   <!-- Decorative circles -->
   <circle cx="1050" cy="120" r="200" fill="#FF5F00" opacity="0.06"/>
   <circle cx="150" cy="520" r="160" fill="#FF5F00" opacity="0.04"/>
-  <!-- Icon -->
-  <rect x="480" y="150" width="50" height="50" rx="8" fill="#F8FAFC"/>
-  <rect x="500" y="120" width="50" height="50" rx="8" fill="#F8FAFC" opacity="0.75"/>
-  <rect x="520" y="90" width="50" height="50" rx="8" fill="#F8FAFC" opacity="0.5"/>
-  <path d="M490 195C510 170 535 130 570 105" stroke="#FF5F00" stroke-width="6" stroke-linecap="round" fill="none"/>
+  <!-- Logo icon: dark circle with stacked diamonds + swoosh -->
+  <circle cx="600" cy="200" r="80" fill="#1E293B"/>
+  <!-- Upper isometric diamond layer -->
+  <path d="M600 155 L635 175 L600 195 L565 175 Z" fill="#7C8CA0" opacity="0.6"/>
+  <!-- Lower isometric diamond layer -->
+  <path d="M600 175 L635 195 L600 215 L565 195 Z" fill="#7C8CA0" opacity="0.9"/>
+  <!-- Orange flow swoosh S-curve -->
+  <path d="M557 248 C565 234, 572 224, 580 216 C588 208, 594 200, 600 193 C606 186, 616 175, 630 165" stroke="#FF5F00" stroke-width="10" stroke-linecap="round" fill="none"/>
   <!-- Wordmark -->
-  <text x="600" y="320" font-family="Inter, system-ui, sans-serif" font-weight="800" font-size="72" text-anchor="middle">
+  <text x="600" y="340" font-family="Inter, system-ui, sans-serif" font-weight="800" font-size="72" text-anchor="middle">
     <tspan fill="#F8FAFC">Bit</tspan><tspan fill="#FF5F00">Flow</tspan><tspan fill="#94A3B8" font-weight="600"> Lend</tspan>
   </text>
   <!-- Tagline -->
-  <text x="600" y="380" font-family="Inter, system-ui, sans-serif" font-weight="500" font-size="28" fill="#64748B" text-anchor="middle">Decentralized Lending Protocol on Stacks</text>
+  <text x="600" y="400" font-family="Inter, system-ui, sans-serif" font-weight="500" font-size="28" fill="#64748B" text-anchor="middle">Decentralized Lending Protocol on Stacks</text>
   <!-- Bottom accent line -->
-  <rect x="500" y="420" width="200" height="3" rx="1.5" fill="#FF5F00"/>
+  <rect x="500" y="440" width="200" height="3" rx="1.5" fill="#FF5F00"/>
   <!-- Tags -->
-  <text x="600" y="490" font-family="Inter, system-ui, sans-serif" font-weight="400" font-size="18" fill="#475569" text-anchor="middle">Fixed-Rate Lending · Bitcoin Security · Stacks Blockchain</text>
+  <text x="600" y="510" font-family="Inter, system-ui, sans-serif" font-weight="400" font-size="18" fill="#475569" text-anchor="middle">Fixed-Rate Lending · Bitcoin Security · Stacks Blockchain</text>
 </svg>
