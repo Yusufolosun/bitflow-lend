@@ -258,7 +258,7 @@ export const BorrowCard: React.FC = () => {
 
       {/* Loan Summary */}
       {borrowAmount && (
-        <div className="bg-blue-50 rounded-lg p-4 space-y-2">
+        <div className="bg-accent-50 rounded-lg p-4 space-y-2">
           <h4 className="font-semibold text-gray-900 text-sm mb-2">Loan Summary</h4>
           <div className="flex justify-between text-sm">
             <span className="text-gray-600">Borrow Amount:</span>
@@ -272,7 +272,7 @@ export const BorrowCard: React.FC = () => {
             <span className="text-gray-600">Estimated Interest:</span>
             <span className="font-semibold">{formatSTX(estimatedInterest)} STX</span>
           </div>
-          <div className="border-t border-blue-200 pt-2 mt-2"></div>
+          <div className="border-t border-accent-200 pt-2 mt-2"></div>
           <div className="flex justify-between text-sm">
             <span className="text-gray-600 font-semibold">Total Repayment:</span>
             <span className="font-bold text-gray-900">{formatSTX(totalRepayment)} STX</span>
@@ -280,7 +280,7 @@ export const BorrowCard: React.FC = () => {
 
           {/* Health Factor Preview */}
           {amount > 0 && userDeposit > 0 && (
-            <div className="border-t border-blue-200 pt-2 mt-2">
+            <div className="border-t border-accent-200 pt-2 mt-2">
               <div className="flex justify-between text-sm">
                 <span className="text-gray-600">Projected Health Factor:</span>
                 <span className={`font-bold ${

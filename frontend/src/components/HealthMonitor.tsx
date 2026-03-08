@@ -250,7 +250,7 @@ export const HealthMonitor: React.FC = () => {
       )}
 
       {/* Liquidation Info */}
-      <div className="bg-blue-50 rounded-lg p-4">
+      <div className="bg-accent-50 rounded-lg p-4">
         <h4 className="text-sm font-semibold text-gray-900 mb-2">Liquidation Protection</h4>
         <div className="text-xs text-gray-700 space-y-1">
           <p>• Maintain collateral ratio above {PROTOCOL_CONSTANTS.LIQUIDATION_THRESHOLD}%</p>

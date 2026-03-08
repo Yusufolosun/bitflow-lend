@@ -30,8 +30,8 @@ const toastStyles = {
   info: {
     icon: Info,
     bg: 'bg-accent-500',
-    border: 'border-blue-700',
-    iconColor: 'text-blue-100',
+    border: 'border-accent-700',
+    iconColor: 'text-accent-100',
   },
   warning: {
     icon: AlertTriangle,

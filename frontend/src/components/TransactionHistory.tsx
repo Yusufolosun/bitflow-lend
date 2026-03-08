@@ -182,7 +182,7 @@ export const TransactionHistory: React.FC = () => {
   const getBadgeColor = (type: TransactionType) => {
     switch (type) {
       case 'deposit': return 'bg-emerald-100 text-emerald-800 border-emerald-200';
-      case 'withdraw': return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'withdraw': return 'bg-accent-100 text-accent-800 border-accent-200';
       case 'borrow': return 'bg-purple-100 text-purple-800 border-purple-200';
       case 'repay': return 'bg-orange-100 text-orange-800 border-orange-200';
       case 'liquidate': return 'bg-red-100 text-red-800 border-red-200';
@@ -193,7 +193,7 @@ export const TransactionHistory: React.FC = () => {
   const getTransactionColor = (type: TransactionType) => {
     switch (type) {
       case 'deposit': return 'bg-emerald-50 border-emerald-200';
-      case 'withdraw': return 'bg-blue-50 border-blue-200';
+      case 'withdraw': return 'bg-accent-50 border-accent-200';
       case 'borrow': return 'bg-purple-50 border-purple-200';
       case 'repay': return 'bg-orange-50 border-orange-200';
       case 'liquidate': return 'bg-red-50 border-red-200';

@@ -130,7 +130,7 @@ export const RepayCard: React.FC = () => {
     <div className="card-elevated space-y-6">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <div className={`p-3 rounded-xl ${isOverdue ? 'bg-red-50' : 'bg-blue-50'}`}>
+        <div className={`p-3 rounded-xl ${isOverdue ? 'bg-red-50' : 'bg-accent-50'}`}>
           <DollarSign className={isOverdue ? 'text-red-600' : 'text-accent-600'} size={22} />
         </div>
         <div>
@@ -199,7 +199,7 @@ export const RepayCard: React.FC = () => {
       {/* Repayment Breakdown */}
       {repaymentAmount && (
         <div className={`rounded-lg p-4 space-y-3 ${
-          isOverdue ? 'bg-red-50' : 'bg-blue-50'
+          isOverdue ? 'bg-red-50' : 'bg-accent-50'
         }`}>
           <h4 className="font-semibold text-gray-900 text-sm mb-2">Repayment Breakdown</h4>
           

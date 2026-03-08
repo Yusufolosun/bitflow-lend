@@ -126,14 +126,14 @@ export const LiquidationList: React.FC = () => {
       </div>
 
       {/* Info Banner */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+      <div className="bg-accent-50 border border-accent-200 rounded-lg p-4 mb-6">
         <div className="flex items-start gap-3">
           <Zap className="text-accent-600 flex-shrink-0 mt-0.5" size={20} />
           <div className="flex-1">
             <h4 className="text-sm font-semibold text-blue-900 mb-1">
               How Liquidation Works
             </h4>
-            <p className="text-xs text-blue-800">
+            <p className="text-xs text-accent-800">
               When a position falls below {PROTOCOL_CONSTANTS.LIQUIDATION_THRESHOLD}% health factor,
               anyone can liquidate it by repaying the debt and receiving the collateral plus a{' '}
               {PROTOCOL_CONSTANTS.LIQUIDATION_BONUS}% bonus.
