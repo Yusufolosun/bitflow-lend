@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "🚀 Deploying BitFlow Finance to Testnet..."
+echo "🚀 Deploying BitFlow Lend to Testnet..."
 
 # Check if clarinet is installed
 if ! command -v clarinet &> /dev/null; then

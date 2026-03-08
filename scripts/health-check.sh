@@ -1,5 +1,5 @@
 #!/bin/bash
-# Protocol Health Check Script for BitFlow Finance
+# Protocol Health Check Script for BitFlow Lend
 # Checks contract deployment status, API availability, and protocol metrics
 #
 # Usage: ./scripts/health-check.sh [--network mainnet|testnet|devnet] [--verbose] [--json]
@@ -109,7 +109,7 @@ info() {
 if [ "$JSON_OUTPUT" = false ]; then
     echo ""
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    echo "🏥 BitFlow Finance Health Check"
+    echo "🏥 BitFlow Lend Health Check"
     echo "   Network: $NETWORK"
     echo "   API:     $API_URL"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"

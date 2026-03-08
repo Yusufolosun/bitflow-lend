@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "🔍 Running BitFlow Finance linters..."
+echo "🔍 Running BitFlow Lend linters..."
 echo ""
 
 # Function to check if command exists

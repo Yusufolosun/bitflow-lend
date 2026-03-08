@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "🧪 BitFlow Finance - Testnet Practice Deployment"
+echo "🧪 BitFlow Lend - Testnet Practice Deployment"
 echo "=============================================="
 echo ""
 echo "This will deploy to TESTNET (free, no real STX needed)"

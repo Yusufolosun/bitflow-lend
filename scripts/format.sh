@@ -1,5 +1,5 @@
 #!/bin/bash
-# Format all code in the BitFlow Finance project
+# Format all code in the BitFlow Lend project
 # Usage: ./scripts/format.sh [--check] [--frontend] [--contracts] [--tests]
 #
 # Options:

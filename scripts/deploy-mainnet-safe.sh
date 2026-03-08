@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "🚀 BitFlow Finance - Safe Mainnet Deployment"
+echo "🚀 BitFlow Lend - Safe Mainnet Deployment"
 echo "==========================================="
 echo ""
 

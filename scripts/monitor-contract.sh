@@ -1,5 +1,5 @@
 #!/bin/bash
-# Contract Monitoring Script for BitFlow Finance
+# Contract Monitoring Script for BitFlow Lend
 # Monitors on-chain contract state and alerts on anomalies
 #
 # Usage: ./scripts/monitor-contract.sh [--network mainnet|testnet] [--watch] [--interval 60]
@@ -249,7 +249,7 @@ check_local_repo() {
 run_checks() {
     echo ""
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    log "🔍 BitFlow Finance Contract Monitor"
+    log "🔍 BitFlow Lend Contract Monitor"
     log "   Network: $NETWORK | API: $API_URL"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo ""

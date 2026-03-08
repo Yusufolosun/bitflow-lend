@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "🧪 Running BitFlow Finance test suite..."
+echo "🧪 Running BitFlow Lend test suite..."
 echo ""
 
 # Check if clarinet is installed

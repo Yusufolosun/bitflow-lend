@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "🚀 Deploying BitFlow Finance to MAINNET..."
+echo "🚀 Deploying BitFlow Lend to MAINNET..."
 echo ""
 echo "⚠️  WARNING: This will deploy to MAINNET!"
 echo "⚠️  This action is IRREVERSIBLE!"

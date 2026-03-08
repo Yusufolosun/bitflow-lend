@@ -1,5 +1,5 @@
 #!/bin/bash
-# Data Backup Script for BitFlow Finance
+# Data Backup Script for BitFlow Lend
 # Creates timestamped backups of critical project files
 #
 # Usage: ./scripts/backup-data.sh [--output <dir>] [--contracts-only] [--full]
@@ -63,7 +63,7 @@ BACKUP_PATH="$BACKUP_DIR/$BACKUP_NAME"
 
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "💾 BitFlow Finance Backup"
+echo "💾 BitFlow Lend Backup"
 echo "   Timestamp: $TIMESTAMP"
 echo "   Output:    $BACKUP_PATH"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -178,7 +178,7 @@ echo ""
 echo "📌 Git State"
 GIT_INFO_FILE="$BACKUP_PATH/GIT_STATE.txt"
 {
-    echo "BitFlow Finance Backup - Git State"
+    echo "BitFlow Lend Backup - Git State"
     echo "==================================="
     echo "Timestamp:    $(timestamp 2>/dev/null || date)"
     echo "Branch:       $(git branch --show-current 2>/dev/null || echo 'unknown')"

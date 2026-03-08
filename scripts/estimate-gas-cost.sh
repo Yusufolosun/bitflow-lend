@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "💰 BitFlow Finance - Gas Cost Estimator"
+echo "💰 BitFlow Lend - Gas Cost Estimator"
 echo "======================================"
 echo ""
 

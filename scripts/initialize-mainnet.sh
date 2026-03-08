@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "🔧 Initializing BitFlow Finance Contract"
+echo "🔧 Initializing BitFlow Lend Contract"
 echo "========================================"
 echo ""
 echo "Contract: SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.vault-core"

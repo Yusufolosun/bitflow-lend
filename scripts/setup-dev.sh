@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "🔧 Setting up BitFlow Finance development environment..."
+echo "🔧 Setting up BitFlow Lend development environment..."
 echo ""
 
 # Function to check if command exists

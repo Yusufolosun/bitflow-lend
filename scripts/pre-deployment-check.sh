@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "🔍 BitFlow Finance - Pre-Deployment Checklist"
+echo "🔍 BitFlow Lend - Pre-Deployment Checklist"
 echo "=============================================="
 echo ""
 

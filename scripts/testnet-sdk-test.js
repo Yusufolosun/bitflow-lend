@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * BitFlow Finance - Testnet SDK Testing Script
+ * BitFlow Lend - Testnet SDK Testing Script
  * Tests deployed contract using @stacks/network API
  * 
  * Usage: npm run test:testnet
@@ -14,7 +14,7 @@ const CONTRACT_NAME = 'bitflow-vault-core';
 const API_URL = 'https://api.testnet.hiro.so';
 
 console.log('\n============================================================');
-console.log('BitFlow Finance - Testnet SDK Testing');
+console.log('BitFlow Lend - Testnet SDK Testing');
 console.log('============================================================\n');
 console.log(`Contract: ${CONTRACT_ADDRESS}.${CONTRACT_NAME}`);
 console.log(`Network:  ${API_URL}\n`);

@@ -7,7 +7,7 @@ CONTRACT_ADDRESS="ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0"
 CONTRACT_NAME="bitflow-vault-core"
 TESTNET_API="https://api.testnet.hiro.so"
 
-echo "🚀 BitFlow Finance - Testnet Comprehensive Testing"
+echo "🚀 BitFlow Lend - Testnet Comprehensive Testing"
 echo "=================================================="
 echo "Contract: $CONTRACT_ADDRESS.$CONTRACT_NAME"
 echo "Network: Testnet"
