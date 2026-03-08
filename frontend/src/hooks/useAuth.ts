@@ -116,7 +116,7 @@ export const useAuth = () => {
     showConnect({
       appDetails: {
         name: 'BitFlow Lend',
-        icon: window.location.origin + '/logo.png',
+        icon: window.location.origin + '/favicon.svg',
       },
       redirectTo: '/',
       onFinish: async () => {
