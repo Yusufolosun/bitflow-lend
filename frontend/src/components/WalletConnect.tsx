@@ -46,7 +46,7 @@ export const WalletConnect: React.FC = () => {
   if (isLoading) {
     return (
       <div className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-xl">
-        <div className="animate-spin rounded-full h-4 w-4 border-2 border-primary-600 border-t-transparent"></div>
+        <div className="animate-spin rounded-full h-4 w-4 border-2 border-accent-500 border-t-transparent"></div>
         <span className="text-sm text-gray-600">Loading...</span>
       </div>
     );
@@ -88,9 +88,9 @@ export const WalletConnect: React.FC = () => {
       </div>
 
       {/* Address Display */}
-      <div className="px-3 py-1.5 bg-primary-50/80 rounded-xl border border-primary-100">
-        <div className="text-[10px] text-primary-500 font-medium uppercase tracking-wider">Connected</div>
-        <div className="text-sm font-mono font-bold text-primary-900">
+      <div className="px-3 py-1.5 bg-accent-50/80 rounded-xl border border-accent-100">
+        <div className="text-[10px] text-accent-500 font-medium uppercase tracking-wider">Connected</div>
+        <div className="text-sm font-mono font-bold text-accent-900">
           {address && formatAddress(address)}
         </div>
       </div>
