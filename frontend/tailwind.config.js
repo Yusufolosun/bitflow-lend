@@ -7,32 +7,34 @@ export default {
   theme: {
     extend: {
       colors: {
-        // BitFlow Brand Colors
+        // BitFlow Lend Brand Colors
+        // Primary: Deep Charcoal / Dark Slate (anchoring, stability)
         primary: {
-          50: '#eff6ff',
-          100: '#dbeafe',
-          200: '#bfdbfe',
-          300: '#93c5fd',
-          400: '#60a5fa',
-          500: '#3b82f6',
-          600: '#2563eb',
-          700: '#1d4ed8',
-          800: '#1e40af',
-          900: '#1e3a8a',
-          950: '#172554',
+          50: '#F8FAFC',
+          100: '#F1F5F9',
+          200: '#E2E8F0',
+          300: '#CBD5E1',
+          400: '#94A3B8',
+          500: '#64748B',
+          600: '#475569',
+          700: '#334155',
+          800: '#1E293B',
+          900: '#0F172A',
+          950: '#020617',
         },
-        secondary: {
-          50: '#faf5ff',
-          100: '#f3e8ff',
-          200: '#e9d5ff',
-          300: '#d8b4fe',
-          400: '#c084fc',
-          500: '#a855f7',
-          600: '#9333ea',
-          700: '#7e22ce',
-          800: '#6b21a8',
-          900: '#581c87',
-          950: '#3b0764',
+        // Accent: Warm Orange (flow, energy, action)
+        accent: {
+          50: '#FFF7ED',
+          100: '#FFEDD5',
+          200: '#FED7AA',
+          300: '#FDBA74',
+          400: '#FB923C',
+          500: '#FF5F00',
+          600: '#EA580C',
+          700: '#C2410C',
+          800: '#9A3412',
+          900: '#7C2D12',
+          950: '#431407',
         },
         success: {
           50: '#f0fdf4',
@@ -73,9 +75,9 @@ export default {
           900: '#713f12',
           950: '#422006',
         },
-        background: '#f9fafb',
-        foreground: '#111827',
-        border: '#e5e7eb',
+        background: '#F8FAFC',
+        foreground: '#0F172A',
+        border: '#E2E8F0',
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
@@ -108,7 +110,7 @@ export default {
         'full': '9999px',
       },
       boxShadow: {
-        'glow': '0 0 20px rgba(59, 130, 246, 0.5)',
+        'glow': '0 0 20px rgba(255, 95, 0, 0.4)',
         'glow-green': '0 0 20px rgba(34, 197, 94, 0.5)',
         'glow-red': '0 0 20px rgba(239, 68, 68, 0.5)',
       },
