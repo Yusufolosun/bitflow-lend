@@ -8,7 +8,7 @@
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability in BitFlow Finance, please:
+If you discover a security vulnerability in BitFlow Lend, please:
 
 1. **DO NOT** open a public issue
 2. Email security@bitflow.finance (or your contact)
@@ -22,7 +22,7 @@ We will respond within 48 hours and provide updates every 72 hours.
 
 ## Security Best Practices
 
-When using BitFlow Finance:
+When using BitFlow Lend:
 
 - **Never share private keys** - Your keys are your responsibility
 - **Verify contract addresses** - Always double-check contract addresses before interacting
@@ -30,7 +30,7 @@ When using BitFlow Finance:
 - **Review all transactions** - Carefully review transaction details before signing
 - **Keep software updated** - Use the latest version of wallets and browsers
 - **Use hardware wallets** - For large amounts, consider using a hardware wallet
-- **Beware of phishing** - Only use official BitFlow Finance URLs
+- **Beware of phishing** - Only use official BitFlow Lend URLs
 
 ## Bug Bounty Program
 
@@ -67,7 +67,7 @@ To be eligible for a bounty:
 
 ## Security Measures
 
-BitFlow Finance implements multiple security layers:
+BitFlow Lend implements multiple security layers:
 
 1. **Smart Contract Audits** - Professional third-party audits
 2. **Test Coverage** - Comprehensive unit and integration tests
@@ -93,7 +93,7 @@ For security concerns, contact:
 
 ## Acknowledgments
 
-We thank the security researchers who help keep BitFlow Finance safe:
+We thank the security researchers who help keep BitFlow Lend safe:
 
 - [List of contributors will be maintained here]
 
