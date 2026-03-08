@@ -1,4 +1,4 @@
-# BitFlow Finance - Mainnet Deployment Preparation Checklist
+# BitFlow Lend - Mainnet Deployment Preparation Checklist
 
 **Date Prepared:** February 10, 2026  
 **Testnet Contract:** ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.bitflow-vault-core  
