@@ -1,4 +1,4 @@
-;; Title: BitFlow Finance - Vault Core
+;; Title: BitFlow Lend - Vault Core
 ;; Version: 1.0.0
 ;; Author: BitFlow Team
 ;; License: MIT
