@@ -1,4 +1,4 @@
-# BitFlow Finance
+# BitFlow Lend
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Tests](https://img.shields.io/badge/tests-63%2F63-brightgreen.svg)]()
@@ -27,7 +27,7 @@ Bitcoin-native fixed-rate lending protocol built on Stacks blockchain.
 
 ## Overview
 
-BitFlow Finance enables users to lend and borrow STX with predictable, fixed interest rates secured by Bitcoin finality.
+BitFlow Lend enables users to lend and borrow STX with predictable, fixed interest rates secured by Bitcoin finality.
 
 ## Features
 
@@ -57,8 +57,8 @@ BitFlow Finance enables users to lend and borrow STX with predictable, fixed int
 
 ### Deploy Locally
 ```bash
-git clone https://github.com/Yusufolosun/bitflow-finance
-cd bitflow-finance/bitflow-core
+git clone https://github.com/Yusufolosun/bitflow-lend
+cd bitflow-lend/bitflow-core
 clarinet test
 ```
 
