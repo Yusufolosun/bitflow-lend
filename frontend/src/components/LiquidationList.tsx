@@ -130,7 +130,7 @@ export const LiquidationList: React.FC = () => {
         <div className="flex items-start gap-3">
           <Zap className="text-accent-600 flex-shrink-0 mt-0.5" size={20} />
           <div className="flex-1">
-            <h4 className="text-sm font-semibold text-blue-900 mb-1">
+            <h4 className="text-sm font-semibold text-primary-900 mb-1">
               How Liquidation Works
             </h4>
             <p className="text-xs text-accent-800">
