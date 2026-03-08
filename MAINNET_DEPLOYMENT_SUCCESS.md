@@ -1,4 +1,4 @@
-# 🎉 BitFlow Finance - Mainnet Deployment SUCCESS
+# 🎉 BitFlow Lend - Mainnet Deployment SUCCESS
 
 **Deployment Date:** February 10, 2026  
 **Time:** 07:22:13 UTC  
@@ -278,7 +278,7 @@ This deposits 0.1 STX
 ## 📞 Support & Contact
 
 ### Issues & Bugs
-- **GitHub Issues:** https://github.com/Yusufolosun/bitflow-finance/issues
+- **GitHub Issues:** https://github.com/Yusufolosun/bitflow-lend/issues
 - **Email:** [Your support email]
 - **Discord:** [Your Discord channel]
 
@@ -306,7 +306,7 @@ This deposits 0.1 STX
 
 ## ✨ Achievement Unlocked
 
-🏆 **BitFlow Finance is now LIVE on Stacks Mainnet!**
+🏆 **BitFlow Lend is now LIVE on Stacks Mainnet!**
 
 - ✅ Zero-warning deployment
 - ✅ 100% test coverage maintained
