@@ -17,7 +17,15 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    sourcemap: true,
+    sourcemap: false,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom'],
+          'vendor-stacks': ['@stacks/connect', '@stacks/transactions', '@stacks/network'],
+        },
+      },
+    },
   },
   test: {
     globals: true,
