@@ -1,4 +1,4 @@
-# BitFlow Finance - Testnet Contract Testing Guide
+# BitFlow Lend - Testnet Contract Testing Guide
 ## 20 Ready-to-Use Explorer Examples
 
 **Contract Address:** `ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.bitflow-vault-core`  
