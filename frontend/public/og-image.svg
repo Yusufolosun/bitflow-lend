@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none">
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#0F172A"/>
+  <!-- Subtle grid pattern -->
+  <defs>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1E293B" stroke-width="0.5"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+  <!-- Decorative circles -->
+  <circle cx="1050" cy="120" r="200" fill="#FF5F00" opacity="0.06"/>
+  <circle cx="150" cy="520" r="160" fill="#FF5F00" opacity="0.04"/>
+  <!-- Icon -->
+  <rect x="480" y="150" width="50" height="50" rx="8" fill="#F8FAFC"/>
+  <rect x="500" y="120" width="50" height="50" rx="8" fill="#F8FAFC" opacity="0.75"/>
+  <rect x="520" y="90" width="50" height="50" rx="8" fill="#F8FAFC" opacity="0.5"/>
+  <path d="M490 195C510 170 535 130 570 105" stroke="#FF5F00" stroke-width="6" stroke-linecap="round" fill="none"/>
+  <!-- Wordmark -->
+  <text x="600" y="320" font-family="Inter, system-ui, sans-serif" font-weight="800" font-size="72" text-anchor="middle">
+    <tspan fill="#F8FAFC">Bit</tspan><tspan fill="#FF5F00">Flow</tspan><tspan fill="#94A3B8" font-weight="600"> Lend</tspan>
+  </text>
+  <!-- Tagline -->
+  <text x="600" y="380" font-family="Inter, system-ui, sans-serif" font-weight="500" font-size="28" fill="#64748B" text-anchor="middle">Decentralized Lending Protocol on Stacks</text>
+  <!-- Bottom accent line -->
+  <rect x="500" y="420" width="200" height="3" rx="1.5" fill="#FF5F00"/>
+  <!-- Tags -->
+  <text x="600" y="490" font-family="Inter, system-ui, sans-serif" font-weight="400" font-size="18" fill="#475569" text-anchor="middle">Fixed-Rate Lending · Bitcoin Security · Stacks Blockchain</text>
+</svg>
