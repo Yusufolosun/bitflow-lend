@@ -1,6 +1,6 @@
 # Version History
 
-> **Release history for the BitFlow Finance protocol.**
+> **Release history for the BitFlow Lend protocol.**
 
 ---
 

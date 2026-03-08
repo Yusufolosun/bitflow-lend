@@ -1,6 +1,6 @@
 # Deployment Checklist
 
-> **Step-by-step checklist for deploying the BitFlow Finance contract.**
+> **Step-by-step checklist for deploying the BitFlow Lend contract.**
 
 Use this checklist for every deployment to mainnet or testnet.
 

@@ -2,7 +2,7 @@
 
 **Last Updated**: February 14, 2026
 
-This document tracks technical and operational metrics for the BitFlow Finance protocol.
+This document tracks technical and operational metrics for the BitFlow Lend protocol.
 
 ---
 

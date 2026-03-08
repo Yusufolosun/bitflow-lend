@@ -1,6 +1,6 @@
 # SDK Documentation
 
-> **Using the Stacks SDK to interact with the BitFlow Finance protocol.**
+> **Using the Stacks SDK to interact with the BitFlow Lend protocol.**
 
 This guide covers installation, initialization, and usage patterns for the `@stacks/transactions` and `@stacks/connect` packages when working with the BitFlow vault contract.
 

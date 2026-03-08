@@ -1,6 +1,6 @@
 # Documentation Index
 
-> **Complete index of all BitFlow Finance documentation.**
+> **Complete index of all BitFlow Lend documentation.**
 
 ---
 

@@ -1,6 +1,6 @@
 # Known Issues
 
-> **Current limitations and known issues in BitFlow Finance v1.0.0.**
+> **Current limitations and known issues in BitFlow Lend v1.0.0.**
 
 ---
 
@@ -110,7 +110,7 @@ Some wallet extensions require re-authentication after a page refresh.
 If you discover a new issue:
 
 1. Check this document and [Troubleshooting](TROUBLESHOOTING.md) first
-2. Search existing [GitHub Issues](https://github.com/Yusufolosun/bitflow-finance/issues)
+2. Search existing [GitHub Issues](https://github.com/Yusufolosun/bitflow-lend/issues)
 3. If not found, open a new issue with:
    - Steps to reproduce
    - Expected vs. actual behavior

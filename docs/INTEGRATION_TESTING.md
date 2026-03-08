@@ -1,6 +1,6 @@
 # Integration Testing Guide
 
-> **How to test your integration with the BitFlow Finance protocol.**
+> **How to test your integration with the BitFlow Lend protocol.**
 
 This guide covers unit tests, integration tests, and end-to-end testing patterns for applications that interact with the BitFlow vault contract.
 

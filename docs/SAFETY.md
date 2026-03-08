@@ -1,6 +1,6 @@
 # Safety & Security Best Practices
 
-> **Protect your funds and stay safe while using BitFlow Finance.**
+> **Protect your funds and stay safe while using BitFlow Lend.**
 
 This guide covers security practices for users interacting with the BitFlow protocol. For protocol-level security analysis, see [SECURITY.md](SECURITY.md).
 

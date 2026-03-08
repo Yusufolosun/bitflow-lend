@@ -1,6 +1,6 @@
 # Migration Guide
 
-> **How to migrate between BitFlow Finance protocol versions.**
+> **How to migrate between BitFlow Lend protocol versions.**
 
 This guide helps developers update their integration when the contract is upgraded.
 

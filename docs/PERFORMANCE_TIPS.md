@@ -1,6 +1,6 @@
 # Performance Tips
 
-> **Optimize your interaction with the BitFlow Finance protocol.**
+> **Optimize your interaction with the BitFlow Lend protocol.**
 
 ---
 

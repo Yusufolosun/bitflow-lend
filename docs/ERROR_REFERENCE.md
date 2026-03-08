@@ -1,6 +1,6 @@
 # Error Code Reference
 
-> **Complete reference for all error codes in the BitFlow Finance protocol.**
+> **Complete reference for all error codes in the BitFlow Lend protocol.**
 
 Contract: `SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.bitflow-vault-core`
 

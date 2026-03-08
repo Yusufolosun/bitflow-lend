@@ -2,11 +2,11 @@
 
 ## Overview
 
-This document provides detailed performance metrics, benchmarks, and optimization strategies for BitFlow Finance.
+This document provides detailed performance metrics, benchmarks, and optimization strategies for BitFlow Lend.
 
 ## Gas Costs
 
-Estimated gas costs for BitFlow Finance operations on the Stacks blockchain:
+Estimated gas costs for BitFlow Lend operations on the Stacks blockchain:
 
 ### Write Operations
 
@@ -240,7 +240,7 @@ All read-only functions consume negligible gas (~1,000 gas):
 
 ## Conclusion
 
-BitFlow Finance is optimized for:
+BitFlow Lend is optimized for:
 - ✅ Constant-time operations (O(1))
 - ✅ Minimal gas costs
 - ✅ Linear scalability

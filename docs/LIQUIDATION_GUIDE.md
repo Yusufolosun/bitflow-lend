@@ -2,7 +2,7 @@
 
 > **Understand how liquidation works and how to prevent it.**
 
-Liquidation is the most important risk to understand when borrowing on BitFlow Finance. This guide explains the mechanics, shows you how to avoid it, and what to do if it happens.
+Liquidation is the most important risk to understand when borrowing on BitFlow Lend. This guide explains the mechanics, shows you how to avoid it, and what to do if it happens.
 
 ---
 

@@ -2,7 +2,7 @@
 
 > **Understand exactly how much interest you'll pay on your BitFlow loan.**
 
-BitFlow Finance uses simple interest calculated on a per-block basis. This guide explains the formula, provides examples for every loan term, and includes comparison tables so you can make informed borrowing decisions.
+BitFlow Lend uses simple interest calculated on a per-block basis. This guide explains the formula, provides examples for every loan term, and includes comparison tables so you can make informed borrowing decisions.
 
 ---
 

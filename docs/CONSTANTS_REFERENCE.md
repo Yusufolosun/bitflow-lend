@@ -1,6 +1,6 @@
 # Constants Reference
 
-> **All constants defined in the BitFlow Finance contract.**
+> **All constants defined in the BitFlow Lend contract.**
 
 Contract: `SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.bitflow-vault-core`
 

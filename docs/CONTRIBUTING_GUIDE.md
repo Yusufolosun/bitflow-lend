@@ -1,6 +1,6 @@
 # Contributing Guide
 
-Thank you for your interest in contributing to BitFlow Finance! 🚀
+Thank you for your interest in contributing to BitFlow Lend! 🚀
 
 We welcome contributions from everyone, whether you're fixing a typo, reporting a bug, or building a new feature.
 
@@ -37,13 +37,13 @@ Before you begin, ensure you have the following installed:
 
 2. **Clone your fork**
    ```bash
-   git clone https://github.com/yourusername/bitflow-finance.git
-   cd bitflow-finance/bitflow-core
+   git clone https://github.com/yourusername/bitflow-lend.git
+   cd bitflow-lend/bitflow-core
    ```
 
 3. **Add upstream remote**
    ```bash
-   git remote add upstream https://github.com/original/bitflow-finance.git
+   git remote add upstream https://github.com/original/bitflow-lend.git
    ```
 
 ### Set Up Development Environment

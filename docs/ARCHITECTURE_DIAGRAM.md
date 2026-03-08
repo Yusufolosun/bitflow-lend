@@ -1,6 +1,6 @@
 # Architecture Diagrams
 
-> **Visual representations of the BitFlow Finance protocol architecture.**
+> **Visual representations of the BitFlow Lend protocol architecture.**
 
 ---
 

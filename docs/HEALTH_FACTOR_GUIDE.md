@@ -2,7 +2,7 @@
 
 > **Your complete guide to understanding, calculating, and managing your health factor.**
 
-The health factor is the single most important number to monitor when you have an active loan on BitFlow Finance. It determines whether your position is safe or at risk of liquidation.
+The health factor is the single most important number to monitor when you have an active loan on BitFlow Lend. It determines whether your position is safe or at risk of liquidation.
 
 ---
 

@@ -1,6 +1,6 @@
 # Monitoring Guide
 
-> **How to monitor the BitFlow Finance protocol and user positions.**
+> **How to monitor the BitFlow Lend protocol and user positions.**
 
 ---
 

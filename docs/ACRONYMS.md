@@ -1,6 +1,6 @@
 # Acronyms
 
-> **Common acronyms and abbreviations used in BitFlow Finance documentation.**
+> **Common acronyms and abbreviations used in BitFlow Lend documentation.**
 
 ---
 

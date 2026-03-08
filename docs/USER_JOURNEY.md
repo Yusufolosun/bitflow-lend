@@ -2,7 +2,7 @@
 
 > **Follow each flow visually from start to finish with ASCII diagrams.**
 
-This guide maps every user interaction with the BitFlow Finance protocol. Each flow shows the exact sequence of steps, on-chain actions, and state changes.
+This guide maps every user interaction with the BitFlow Lend protocol. Each flow shows the exact sequence of steps, on-chain actions, and state changes.
 
 ---
 

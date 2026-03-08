@@ -40,7 +40,7 @@ const userSession = new UserSession({ appConfig });
 async function connectWallet() {
   showConnect({
     appDetails: {
-      name: 'BitFlow Finance',
+      name: 'BitFlow Lend',
       icon: 'https://bitflow.finance/logo.png',
     },
     redirectTo: '/',

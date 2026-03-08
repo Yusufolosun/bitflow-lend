@@ -588,7 +588,7 @@ Utilization = Total Borrowed ÷ Total Deposits
 
 - **Discord:** [discord.gg/bitflow](https://discord.gg/bitflow) - Get help from community
 - **Forum:** [forum.bitflow.finance](https://forum.bitflow.finance) - Discussions
-- **Twitter:** [@BitFlowFinance](https://twitter.com/BitFlowFinance) - Updates
+- **Twitter:** [@BitFlowLend](https://twitter.com/BitFlowLend) - Updates
 
 ### Documentation
 
@@ -615,7 +615,7 @@ New to DeFi? Start here. These questions assume no prior knowledge.
 
 **DeFi** stands for **Decentralized Finance**. It's a system of financial applications built on blockchains that operate without banks or intermediaries. Instead of a bank holding your money and deciding who gets loans, smart contracts (code on the blockchain) handle everything automatically and transparently.
 
-BitFlow Finance is a DeFi application — it lets you deposit, borrow, and repay using code instead of a bank.
+BitFlow Lend is a DeFi application — it lets you deposit, borrow, and repay using code instead of a bank.
 
 ### What is a blockchain?
 

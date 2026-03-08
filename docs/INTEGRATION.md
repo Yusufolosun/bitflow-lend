@@ -1259,7 +1259,7 @@ describe('BitFlow Integration Tests', () => {
 
 ## React Integration
 
-Complete guide to integrating BitFlow Finance into a React application.
+Complete guide to integrating BitFlow Lend into a React application.
 
 ### Prerequisites
 
@@ -1291,7 +1291,7 @@ export function useBitFlowAuth() {
 
   const connect = useCallback(() => {
     showConnect({
-      appDetails: { name: 'BitFlow Finance', icon: '/logo.png' },
+      appDetails: { name: 'BitFlow Lend', icon: '/logo.png' },
       onFinish: () => {
         const userData = userSession.loadUserData();
         setIsConnected(true);
@@ -1437,7 +1437,7 @@ export const BitFlowDashboard: React.FC = () => {
   if (!isConnected) {
     return (
       <div className="p-8 text-center">
-        <h1>BitFlow Finance</h1>
+        <h1>BitFlow Lend</h1>
         <p>Connect your wallet to get started</p>
         <button onClick={connect}>Connect Wallet</button>
       </div>
@@ -1447,7 +1447,7 @@ export const BitFlowDashboard: React.FC = () => {
   return (
     <div className="p-8">
       <div className="flex justify-between items-center mb-8">
-        <h1>BitFlow Finance</h1>
+        <h1>BitFlow Lend</h1>
         <div>
           <span>{address?.slice(0, 8)}...{address?.slice(-4)}</span>
           <button onClick={disconnect} className="ml-4">Disconnect</button>
@@ -1481,7 +1481,7 @@ export const BitFlowDashboard: React.FC = () => {
 
 ## Vue.js Integration
 
-Integrate BitFlow Finance using Vue 3 Composition API.
+Integrate BitFlow Lend using Vue 3 Composition API.
 
 ### Setup
 
@@ -1513,7 +1513,7 @@ export function useWallet() {
 
   function connect() {
     showConnect({
-      appDetails: { name: 'BitFlow Finance', icon: '/logo.png' },
+      appDetails: { name: 'BitFlow Lend', icon: '/logo.png' },
       onFinish: () => {
         const userData = userSession.loadUserData();
         isConnected.value = true;
@@ -1589,7 +1589,7 @@ export function useVault(userAddress: () => string | null) {
 <template>
   <div class="p-8">
     <div v-if="!wallet.isConnected.value" class="text-center">
-      <h1>BitFlow Finance</h1>
+      <h1>BitFlow Lend</h1>
       <button @click="wallet.connect">Connect Wallet</button>
     </div>
     <div v-else>
@@ -1631,13 +1631,13 @@ Integrate BitFlow without any framework — pure JavaScript.
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>BitFlow Finance</title>
+  <title>BitFlow Lend</title>
   <script src="https://unpkg.com/@stacks/connect@7.4.0/dist/umd/index.js"></script>
   <script src="https://unpkg.com/@stacks/transactions@6.13.0/dist/umd/index.js"></script>
 </head>
 <body>
   <div id="app">
-    <h1>BitFlow Finance</h1>
+    <h1>BitFlow Lend</h1>
     <div id="wallet-section">
       <button id="connect-btn">Connect Wallet</button>
     </div>
@@ -1672,7 +1672,7 @@ let currentAddress = null;
 // Connect wallet
 document.getElementById('connect-btn').addEventListener('click', () => {
   showConnect({
-    appDetails: { name: 'BitFlow Finance', icon: '/logo.png' },
+    appDetails: { name: 'BitFlow Lend', icon: '/logo.png' },
     onFinish: () => {
       const userData = userSession.loadUserData();
       currentAddress = userData.profile.stxAddress.mainnet;

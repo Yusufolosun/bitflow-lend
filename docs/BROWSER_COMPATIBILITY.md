@@ -1,6 +1,6 @@
 # Browser Compatibility
 
-> **Supported browsers and wallet extensions for BitFlow Finance.**
+> **Supported browsers and wallet extensions for BitFlow Lend.**
 
 ---
 

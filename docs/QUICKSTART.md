@@ -2,7 +2,7 @@
 
 > **Get from zero to your first deposit in 5 minutes.**
 
-BitFlow Finance is a decentralized lending protocol on the Stacks blockchain. You deposit STX as collateral, borrow against it, and repay with interest — all without intermediaries.
+BitFlow Lend is a decentralized lending protocol on the Stacks blockchain. You deposit STX as collateral, borrow against it, and repay with interest — all without intermediaries.
 
 **Mainnet Contract:** `SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.bitflow-vault-core`
 
@@ -22,7 +22,7 @@ Before you start, you need:
 
 ## Step 1: Connect Your Wallet (1 min)
 
-1. Open the BitFlow Finance app in your browser
+1. Open the BitFlow Lend app in your browser
 2. Click **"Connect Wallet"** in the top-right corner
 3. Select your wallet provider (Leather or Xverse)
 4. Approve the connection in the wallet popup

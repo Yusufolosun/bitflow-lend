@@ -1,6 +1,6 @@
 # TypeScript Types Reference
 
-> **Complete type definitions for integrating with the BitFlow Finance protocol.**
+> **Complete type definitions for integrating with the BitFlow Lend protocol.**
 
 All types match the on-chain Clarity contract data structures. Use these interfaces to ensure type safety in your application.
 

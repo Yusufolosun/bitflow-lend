@@ -1,6 +1,6 @@
 # Troubleshooting Guide
 
-> **Solutions for common issues when using BitFlow Finance.**
+> **Solutions for common issues when using BitFlow Lend.**
 
 If you're experiencing problems, find your issue below. Each section includes the symptom, cause, and step-by-step fix.
 
