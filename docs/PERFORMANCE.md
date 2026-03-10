@@ -252,3 +252,45 @@ Trade-offs:
 - ⚠️ Network congestion affects speed
 
 Overall, the protocol is well-suited for DeFi operations where security and reliability are paramount.
+
+---
+
+## Practical Tips
+
+### Batch Deposits
+
+```
+❌ Inefficient:
+  deposit(1_000_000)  → ~0.01 STX gas
+  deposit(1_000_000)  → ~0.01 STX gas
+  deposit(1_000_000)  → ~0.01 STX gas
+  Total gas: ~0.03 STX
+
+✅ Efficient:
+  deposit(3_000_000)  → ~0.01 STX gas
+  Total gas: ~0.01 STX
+```
+
+### Repay Early to Save Interest
+
+| Borrow | Rate | 30 Days Interest | 7 Days Interest | Savings |
+|--------|------|------------------|-----------------|--------|
+| 10 STX | 5% | 0.041 STX | 0.0096 STX | 0.031 STX |
+| 100 STX | 5% | 0.41 STX | 0.096 STX | 0.314 STX |
+
+### Transaction Fee Strategy
+
+| Network State | Recommended Fee | Strategy |
+|--------------|-----------------|----------|
+| Low congestion | Default | Submit normally |
+| Medium congestion | 1.5× default | Slightly higher fee |
+| High congestion | Wait | Non-urgent TXs can wait |
+
+### Health Factor Monitoring Frequency
+
+| Risk Level | Health Factor | Check Frequency |
+|-----------|--------------|----------------|
+| Very Safe | > 200% | Daily |
+| Safe | 150–200% | Every 12 hours |
+| Warning | 120–149% | Every 2 hours |
+| Critical | 110–119% | Every 30 minutes |

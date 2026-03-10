@@ -765,8 +765,67 @@ For more information:
 
 ---
 
+## STX Flow Through the Protocol
+
+```
+                    ┌─────────────────────┐
+                    │    User Wallet       │
+                    │    (STX balance)     │
+                    └──────┬──────────────┘
+                           │
+              ┌────────────┼────────────┐
+              │            │            │
+              ▼            │            ▼
+     ┌────────────┐        │   ┌────────────┐
+     │  deposit()  │        │   │  repay()    │
+     │  User→Vault │        │   │  User→Vault │
+     └──────┬─────┘        │   └──────┬─────┘
+            │              │          │
+            ▼              │          ▼
+     ┌─────────────────────────────────────┐
+     │          CONTRACT VAULT              │
+     │     (holds all deposited STX)        │
+     └──────┬──────────────┬───────────────┘
+            │              │
+            ▼              ▼
+     ┌────────────┐  ┌────────────┐
+     │ withdraw() │  │  borrow()  │
+     │ Vault→User │  │ Vault→User │
+     └────────────┘  └────────────┘
+
+     ┌─────────────────────────────────────┐
+     │          LIQUIDATION FLOW            │
+     │                                      │
+     │  Liquidator pays debt ──► Vault      │
+     │  Vault sends collateral ──► Liquidator│
+     │  (+5% bonus from collateral)         │
+     └─────────────────────────────────────┘
+```
+
+## Interest Accrual Model
+
+```
+     Block N                        Block N+4320 (30 days later)
+     ┌──────────────┐               ┌──────────────┐
+     │ Loan Created │               │ Loan Status  │
+     │              │               │              │
+     │ Principal:   │    TIME       │ Principal:   │
+     │  5,000,000   │  ─────────►   │  5,000,000   │
+     │              │  (4320 blocks)│              │
+     │ Interest:    │               │ Interest:    │
+     │  0           │               │  41,095      │
+     │              │               │              │
+     │ Total Owed:  │               │ Total Owed:  │
+     │  5,000,000   │               │  5,041,095   │
+     └──────────────┘               └──────────────┘
+
+     Formula: interest = principal × rate × blocks / (100 × 52,560)
+     Note: Interest is calculated at read-time. No tokens move until repay() is called.
+```
+
+---
+
 ## Related Documentation
 
-- [Architecture Diagrams](ARCHITECTURE_DIAGRAM.md) — Visual ASCII diagrams
 - [Data Model](DATA_MODEL.md) — On-chain data structures
 - [Contracts Guide](CONTRACTS.md) — Contract documentation

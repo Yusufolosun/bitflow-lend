@@ -706,8 +706,19 @@ For deployment support:
 
 ---
 
+## Quick Reference
+
+| Step | Command | Expected |
+|------|---------|----------|
+| Check contract | `clarinet check` | No errors |
+| Run tests | `npm test` | All pass |
+| Deploy testnet | `clarinet deployments apply -p deployments/default.testnet-plan.yaml` | TX confirmed |
+| Deploy mainnet | `clarinet deployments apply -p deployments/default.mainnet-plan.yaml` | TX confirmed |
+| Build frontend | `cd frontend && npm run build` | `dist/` created |
+
+---
+
 ## Related Documentation
 
-- [Deployment Checklist](DEPLOYMENT_CHECKLIST.md) — Step-by-step checklist
 - [Network Config](NETWORK_CONFIG.md) — Network configuration
-- [Migration Guide](MIGRATION_GUIDE.md) — Version migration
+- [Testing Guide](TESTING.md) — Test suite documentation

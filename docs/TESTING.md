@@ -757,6 +757,5 @@ For testing support:
 
 ## Related Documentation
 
-- [Integration Testing](INTEGRATION_TESTING.md) — Test your integration
-- [Deployment Checklist](DEPLOYMENT_CHECKLIST.md) — Pre-deployment tests
-- [Examples](EXAMPLES.md) — Code examples
+- [Deployment Guide](DEPLOYMENT.md) — Deployment procedures
+- [API Examples](API_EXAMPLES.md) — Code examples
