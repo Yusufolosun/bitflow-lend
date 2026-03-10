@@ -92,6 +92,52 @@ describe("vault-core contract", () => {
     expect(withdrawResponse.result).toBeErr(Cl.uint(101));
   });
 
+  it("blocks withdrawal of collateral backing an active loan", () => {
+    const accounts = simnet.getAccounts();
+    const wallet_1 = accounts.get("wallet_1")!;
+
+    // Deposit 1500 STX and borrow 1000 (locks 1500 as collateral)
+    simnet.callPublicFn("bitflow-vault-core", "deposit", [Cl.uint(1500)], wallet_1);
+    simnet.callPublicFn("bitflow-vault-core", "borrow", [Cl.uint(1000), Cl.uint(5), Cl.uint(30)], wallet_1);
+
+    // Attempting to withdraw any amount should fail since all 1500 is locked
+    const withdrawResponse = simnet.callPublicFn(
+      "bitflow-vault-core",
+      "withdraw",
+      [Cl.uint(1)],
+      wallet_1
+    );
+
+    expect(withdrawResponse.result).toBeErr(Cl.uint(101));
+  });
+
+  it("allows withdrawal of excess deposit above locked collateral", () => {
+    const accounts = simnet.getAccounts();
+    const wallet_1 = accounts.get("wallet_1")!;
+
+    // Deposit 2000 STX and borrow 1000 (locks 1500, leaves 500 available)
+    simnet.callPublicFn("bitflow-vault-core", "deposit", [Cl.uint(2000)], wallet_1);
+    simnet.callPublicFn("bitflow-vault-core", "borrow", [Cl.uint(1000), Cl.uint(5), Cl.uint(30)], wallet_1);
+
+    // Withdraw 500 (the unlocked portion) should succeed
+    const withdrawResponse = simnet.callPublicFn(
+      "bitflow-vault-core",
+      "withdraw",
+      [Cl.uint(500)],
+      wallet_1
+    );
+    expect(withdrawResponse.result).toBeOk(Cl.bool(true));
+
+    // Withdraw 1 more should fail — nothing left above the locked 1500
+    const overWithdraw = simnet.callPublicFn(
+      "bitflow-vault-core",
+      "withdraw",
+      [Cl.uint(1)],
+      wallet_1
+    );
+    expect(overWithdraw.result).toBeErr(Cl.uint(101));
+  });
+
   it("tracks total deposits correctly", () => {
     const accounts = simnet.getAccounts();
     const wallet_1 = accounts.get("wallet_1")!;
