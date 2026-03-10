@@ -176,6 +176,63 @@ describe("loan management", () => {
     );
   });
 
+  it("transfers STX to user on successful borrow", () => {
+    const accounts = simnet.getAccounts();
+    const wallet_1 = accounts.get("wallet_1")!;
+    const deployer = accounts.get("deployer")!;
+
+    const depositAmount = 1500;
+    const borrowAmount = 1000;
+
+    // Record balance before deposit
+    const balanceBefore = simnet.getAssetsMap().get("STX")?.get(wallet_1) ?? BigInt(0);
+
+    // Deposit collateral
+    simnet.callPublicFn(
+      "bitflow-vault-core",
+      "deposit",
+      [Cl.uint(depositAmount)],
+      wallet_1
+    );
+
+    const balanceAfterDeposit = simnet.getAssetsMap().get("STX")?.get(wallet_1) ?? BigInt(0);
+    expect(balanceAfterDeposit).toBe(balanceBefore - BigInt(depositAmount));
+
+    // Borrow against collateral
+    const borrowResponse = simnet.callPublicFn(
+      "bitflow-vault-core",
+      "borrow",
+      [Cl.uint(borrowAmount), Cl.uint(5), Cl.uint(30)],
+      wallet_1
+    );
+    expect(borrowResponse.result).toBeOk(Cl.bool(true));
+
+    // Verify borrowed STX was actually received by the user
+    const balanceAfterBorrow = simnet.getAssetsMap().get("STX")?.get(wallet_1) ?? BigInt(0);
+    expect(balanceAfterBorrow).toBe(balanceAfterDeposit + BigInt(borrowAmount));
+  });
+
+  it("rejects borrow with zero amount", () => {
+    const accounts = simnet.getAccounts();
+    const wallet_1 = accounts.get("wallet_1")!;
+
+    simnet.callPublicFn(
+      "bitflow-vault-core",
+      "deposit",
+      [Cl.uint(1500)],
+      wallet_1
+    );
+
+    const borrowResponse = simnet.callPublicFn(
+      "bitflow-vault-core",
+      "borrow",
+      [Cl.uint(0), Cl.uint(5), Cl.uint(30)],
+      wallet_1
+    );
+
+    expect(borrowResponse.result).toBeErr(Cl.uint(102));
+  });
+
   it("prevents borrowing without sufficient collateral", () => {
     const accounts = simnet.getAccounts();
     const wallet_1 = accounts.get("wallet_1")!;
