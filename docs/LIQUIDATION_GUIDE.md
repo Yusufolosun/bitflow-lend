@@ -470,6 +470,5 @@ After repayment:
 
 - [Health Factor Guide](HEALTH_FACTOR_GUIDE.md) — Deep dive into health factors
 - [Interest Calculator](INTEREST_CALCULATOR.md) — Calculate your interest costs
-- [Safety Best Practices](SAFETY.md) — Protect your funds
 - [Troubleshooting](TROUBLESHOOTING.md) — Fix common issues
 - [FAQ](FAQ.md) — Frequently asked questions

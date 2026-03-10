@@ -64,7 +64,7 @@ No, you only need STX (Stacks tokens). However, you'll need a small amount of ST
 3. Enter amount
 4. Confirm transaction in wallet
 
-See [EXAMPLES.md](./EXAMPLES.md#example-1-first-time-depositor) for detailed walkthrough.
+See [API_EXAMPLES.md](./API_EXAMPLES.md) for detailed walkthrough.
 
 ### Can I withdraw my deposit anytime?
 
@@ -193,7 +193,7 @@ Call the `repay` function. The contract automatically calculates:
 - Accrued interest
 - Total repayment
 
-See [EXAMPLES.md](./EXAMPLES.md#example-3-loan-repayment) for code example.
+See [API_EXAMPLES.md](./API_EXAMPLES.md) for code example.
 
 ### How is interest calculated?
 
@@ -570,7 +570,7 @@ Utilization = Total Borrowed ÷ Total Deposits
 
 **Resources:**
 1. Read [INTEGRATION.md](./INTEGRATION.md)
-2. Check [EXAMPLES.md](./EXAMPLES.md)
+2. Check [API_EXAMPLES.md](./API_EXAMPLES.md)
 3. Ask on [Discord](https://discord.gg/bitflow)
 4. Open [GitHub Issue](https://github.com/bitflow/vault-core/issues)
 
@@ -594,8 +594,7 @@ Utilization = Total Borrowed ÷ Total Deposits
 
 - **Contracts:** [CONTRACTS.md](./CONTRACTS.md)
 - **Integration:** [INTEGRATION.md](./INTEGRATION.md)
-- **Security:** [SECURITY.md](./SECURITY.md)
-- **Examples:** [EXAMPLES.md](./EXAMPLES.md)
+- **API Examples:** [API_EXAMPLES.md](./API_EXAMPLES.md)
 
 ### Contact
 
@@ -807,4 +806,4 @@ This is a deliberate Phase 1 design decision:
 **Document Version:** 1.2.0  
 **Last Updated:** February 14, 2026
 
-💡 **Tip:** If you can't find your question here, check the [GLOSSARY.md](./GLOSSARY.md) for term definitions, or ask in our Discord community!
+💡 **Tip:** If you can't find your question here, ask in our Discord community!

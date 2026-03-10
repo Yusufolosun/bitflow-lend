@@ -1253,7 +1253,7 @@ describe('BitFlow Integration Tests', () => {
 - [Contract Documentation](./CONTRACTS.md)
 - [API Reference](./API.md)
 - [Security Guide](./SECURITY.md)
-- [Error Codes](./ERRORS.md)
+- [Error Codes](./ERROR_REFERENCE.md)
 
 ---
 

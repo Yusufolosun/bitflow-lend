@@ -655,6 +655,6 @@ const deposit = await withRetry(() => getUserDeposit('SP...'));
 ## Related Documentation
 
 - [API Reference](API.md) — Detailed read-only function docs
-- [Error Codes](ERRORS.md) — All error codes explained
+- [Error Codes](ERROR_REFERENCE.md) — All error codes explained
 - [Contracts Reference](CONTRACTS.md) — Contract architecture
 - [Integration Guide](INTEGRATION.md) — Framework integration

@@ -351,4 +351,4 @@ interface FormattedPosition {
 - [API Examples](API_EXAMPLES.md) — Code examples using these types
 - [Integration Guide](INTEGRATION.md) — Framework integration
 - [SDK Documentation](SDK.md) — SDK methods and options
-- [Error Codes](ERRORS.md) — Detailed error explanations
+- [Error Codes](ERROR_REFERENCE.md) — Detailed error explanations

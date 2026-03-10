@@ -176,5 +176,4 @@ A: Zero protocol fees in Phase 1. You only pay standard Stacks network transacti
 
 - [User Journey](USER_JOURNEY.md) — Visual flow guide
 - [FAQ](FAQ.md) — Frequently asked questions
-- [Safety Guide](SAFETY.md) — Security best practices
 - [Troubleshooting](TROUBLESHOOTING.md) — Common issues

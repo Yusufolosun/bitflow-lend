@@ -368,5 +368,4 @@ X = 9 STX
 - [Liquidation Guide](LIQUIDATION_GUIDE.md) — What happens at liquidation
 - [Interest Calculator](INTEREST_CALCULATOR.md) — How interest affects your health
 - [Quick Start Guide](QUICKSTART.md) — Getting started with BitFlow
-- [Safety Best Practices](SAFETY.md) — Keep your funds safe
 - [FAQ](FAQ.md) — Frequently asked questions

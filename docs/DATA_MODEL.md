@@ -143,7 +143,7 @@ Block height of the most recent deposit, borrow, repay, or liquidation. Updated 
 (define-constant BLOCKS_PER_YEAR u52560)        ;; ~10 min blocks
 ```
 
-See [Constants Reference](CONSTANTS_REFERENCE.md) for detailed explanations.
+See [Contracts Guide](CONTRACTS.md) for detailed explanations.
 
 ---
 
@@ -250,7 +250,6 @@ Which variables change on each operation:
 
 ## Related Documentation
 
-- [Architecture Diagrams](ARCHITECTURE_DIAGRAM.md) — Visual architecture
-- [Constants Reference](CONSTANTS_REFERENCE.md) — All constants explained
+- [Architecture](ARCHITECTURE.md) — System architecture
 - [Error Reference](ERROR_REFERENCE.md) — Error codes
 - [Contracts Guide](CONTRACTS.md) — Full contract documentation

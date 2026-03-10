@@ -280,7 +280,7 @@ Detailed scenarios for when transactions fail on-chain.
 1. Go to the [Stacks Explorer](https://explorer.hiro.so)
 2. Search for the transaction ID
 3. Look at the "Result" field — it will show the error code (e.g., `(err u105)`)
-4. Cross-reference with the [Error Codes Reference](ERRORS.md)
+4. Cross-reference with the [Error Codes Reference](ERROR_REFERENCE.md)
 
 **Common error codes:**
 
@@ -460,8 +460,7 @@ Problems connecting or maintaining a wallet connection.
 
 ## Related Documentation
 
-- [Error Codes Reference](ERRORS.md) — All error codes explained
+- [Error Codes Reference](ERROR_REFERENCE.md) — All error codes explained
 - [Health Factor Guide](HEALTH_FACTOR_GUIDE.md) — Understanding health factors
 - [Liquidation Guide](LIQUIDATION_GUIDE.md) — How liquidation works
-- [Safety Best Practices](SAFETY.md) — Protect your funds
 - [FAQ](FAQ.md) — Frequently asked questions
