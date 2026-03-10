@@ -789,6 +789,43 @@ describe("liquidation system", () => {
     expect(finalLiquidations.result).toBeUint(1);
   });
 
+  it("sends seized collateral to liquidator not borrower", () => {
+    const accounts = simnet.getAccounts();
+    const wallet_1 = accounts.get("wallet_1")!;
+    const wallet_2 = accounts.get("wallet_2")!;
+
+    const initialBalances = simnet.getAssetsMap().get("STX")!;
+    const wallet2Before = initialBalances.get(wallet_2)!;
+
+    // wallet_1 deposits 1500, borrows 1000
+    simnet.callPublicFn(
+      "bitflow-vault-core",
+      "deposit",
+      [Cl.uint(1500)],
+      wallet_1
+    );
+    simnet.callPublicFn(
+      "bitflow-vault-core",
+      "borrow",
+      [Cl.uint(1000), Cl.uint(5), Cl.uint(30)],
+      wallet_1
+    );
+
+    // Price drops to u70, wallet_2 liquidates
+    simnet.callPublicFn(
+      "bitflow-vault-core",
+      "liquidate",
+      [Cl.principal(wallet_1), Cl.uint(70)],
+      wallet_2
+    );
+
+    // wallet_2 paid 1050 STX (loan + bonus) and received 1500 collateral
+    // net gain = 1500 - 1050 = 450 STX
+    const finalBalances = simnet.getAssetsMap().get("STX")!;
+    const wallet2After = finalBalances.get(wallet_2)!;
+    expect(wallet2After - wallet2Before).toBe(450n);
+  });
+
   it("prevents liquidating healthy positions", () => {
     const accounts = simnet.getAccounts();
     const wallet_1 = accounts.get("wallet_1")!;

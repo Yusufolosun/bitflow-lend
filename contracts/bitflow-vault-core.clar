@@ -306,6 +306,7 @@
 ;; Only works if health factor < 110%
 (define-public (liquidate (borrower principal) (stx-price uint))
   (let (
+    (liquidator tx-sender)
     (loan (unwrap! (map-get? user-loans borrower) ERR-NO-ACTIVE-LOAN))
     (borrower-deposit (default-to u0 (map-get? user-deposits borrower)))
     (loan-amount (get amount loan))
@@ -322,7 +323,7 @@
     (try! (stx-transfer? total-to-pay tx-sender (as-contract tx-sender)))
     
     ;; Transfer borrower's collateral to liquidator
-    (try! (as-contract (stx-transfer? borrower-deposit tx-sender borrower)))
+    (try! (as-contract (stx-transfer? borrower-deposit tx-sender liquidator)))
     
     ;; Delete borrower's loan
     (map-delete user-loans borrower)
