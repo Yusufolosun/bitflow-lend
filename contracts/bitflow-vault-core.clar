@@ -23,6 +23,7 @@
 (define-constant MIN-COLLATERAL-RATIO u150)
 (define-constant LIQUIDATION-THRESHOLD u110)
 (define-constant MAX-INTEREST-RATE u10000) ;; 100% APR in basis points
+(define-constant MIN-INTEREST-RATE u50) ;; 0.5% APR minimum in basis points
 (define-constant MIN-TERM-DAYS u1)
 (define-constant MAX-TERM-DAYS u365) ;; Maximum 1 year loan term
 
@@ -236,8 +237,8 @@
     ;; Validate borrow amount is greater than zero
     (asserts! (> amount u0) ERR-INVALID-AMOUNT)
 
-    ;; Validate interest rate (must be <= 100% APR)
-    (asserts! (<= interest-rate MAX-INTEREST-RATE) ERR-INVALID-INTEREST-RATE)
+    ;; Validate interest rate (must be between 0.5% and 100% APR)
+    (asserts! (and (>= interest-rate MIN-INTEREST-RATE) (<= interest-rate MAX-INTEREST-RATE)) ERR-INVALID-INTEREST-RATE)
     
     ;; Validate loan term (1 day to 1 year)
     (asserts! (and (>= term-days MIN-TERM-DAYS) (<= term-days MAX-TERM-DAYS)) ERR-INVALID-TERM)
