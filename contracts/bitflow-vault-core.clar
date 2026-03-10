@@ -190,14 +190,18 @@
 ;; Withdraw STX from the vault
 ;; @param amount: Amount of STX (in micro-STX) to withdraw
 ;; @returns (ok true) on success
-;; Note: Can only withdraw if not used as collateral for active loan
+;; Note: Can only withdraw excess balance not locked as loan collateral
 (define-public (withdraw (amount uint))
   (let (
     (user-balance (default-to u0 (map-get? user-deposits tx-sender)))
+    (locked-collateral (match (map-get? user-loans tx-sender)
+      loan (calculate-required-collateral (get amount loan))
+      u0))
+    (available-balance (- user-balance locked-collateral))
     (recipient tx-sender)
   )
-    ;; Verify user has sufficient balance
-    (asserts! (>= user-balance amount) ERR-INSUFFICIENT-BALANCE)
+    ;; Verify user has sufficient unlocked balance
+    (asserts! (>= available-balance amount) ERR-INSUFFICIENT-BALANCE)
     
     ;; Transfer STX from contract to user
     (try! (as-contract (stx-transfer? amount tx-sender recipient)))
