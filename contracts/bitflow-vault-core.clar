@@ -229,6 +229,9 @@
     (term-end (+ block-height (* term-days u144))) ;; ~144 blocks per day
     (recipient tx-sender)
   )
+    ;; Validate borrow amount is greater than zero
+    (asserts! (> amount u0) ERR-INVALID-AMOUNT)
+
     ;; Validate interest rate (must be <= 100% APR)
     (asserts! (<= interest-rate MAX-INTEREST-RATE) ERR-INVALID-INTEREST-RATE)
     
