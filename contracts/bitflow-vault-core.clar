@@ -184,6 +184,9 @@
     (var-set total-deposit-volume (+ (var-get total-deposit-volume) amount))
     (var-set last-activity-block block-height)
     
+    ;; Emit event
+    (print { event: "deposit", user: tx-sender, amount: amount })
+    
     (ok true)
   )
 )
@@ -216,6 +219,9 @@
     ;; Update analytics
     (var-set total-withdrawals-count (+ (var-get total-withdrawals-count) u1))
     (var-set last-activity-block block-height)
+    
+    ;; Emit event
+    (print { event: "withdraw", user: tx-sender, amount: amount })
     
     (ok true)
   )
@@ -265,6 +271,9 @@
     (var-set total-borrow-volume (+ (var-get total-borrow-volume) amount))
     (var-set last-activity-block block-height)
     
+    ;; Emit event
+    (print { event: "borrow", user: tx-sender, amount: amount, rate: interest-rate, term: term-days })
+    
     (ok true)
   )
 )
@@ -293,6 +302,9 @@
     (var-set total-repayments-count (+ (var-get total-repayments-count) u1))
     (var-set total-repay-volume (+ (var-get total-repay-volume) total-repayment))
     (var-set last-activity-block block-height)
+    
+    ;; Emit event
+    (print { event: "repay", user: tx-sender, principal: loan-amount, interest: interest, total: total-repayment })
     
     ;; Return repayment details
     (ok { principal: loan-amount, interest: interest, total: total-repayment })
@@ -342,6 +354,9 @@
     (var-set total-liquidations-count (+ (var-get total-liquidations-count) u1))
     (var-set total-liquidation-volume (+ (var-get total-liquidation-volume) borrower-deposit))
     (var-set last-activity-block block-height)
+    
+    ;; Emit event
+    (print { event: "liquidation", liquidator: tx-sender, borrower: borrower, seized: borrower-deposit, paid: total-to-pay })
     
     ;; Return liquidation details
     (ok { seized-collateral: borrower-deposit, paid: total-to-pay, bonus: liquidation-bonus })
