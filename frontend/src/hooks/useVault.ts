@@ -10,14 +10,13 @@ import {
   FungibleConditionCode,
   makeStandardSTXPostCondition,
 } from '@stacks/transactions';
-import { 
-  UserDeposit, 
-  UserLoan, 
+import {
+  UserDeposit,
+  UserLoan,
   RepaymentAmount,
   ContractCallResponse,
-  microStxToStx,
-  stxToMicroStx,
 } from '../types/vault';
+import { microStxToStx, stxToMicroStx } from '../utils/formatters';
 import { 
   getNetwork, 
   getContractAddress, 
