@@ -26,6 +26,7 @@
 (define-constant MIN-INTEREST-RATE u50) ;; 0.5% APR minimum in basis points
 (define-constant MIN-TERM-DAYS u1)
 (define-constant MAX-TERM-DAYS u365) ;; Maximum 1 year loan term
+(define-constant LATE-PENALTY-RATE u500) ;; 5% flat penalty on overdue loans
 
 ;; Data maps
 (define-map user-deposits principal uint)
@@ -135,10 +136,18 @@
 )
 
 ;; Check if a user's loan is liquidatable
+;; Returns true if health factor < 110% OR loan term has expired
 (define-read-only (is-liquidatable (user principal) (stx-price uint))
-  (match (calculate-health-factor user stx-price)
-    health-factor
-      (< health-factor LIQUIDATION-THRESHOLD)
+  (match (map-get? user-loans user)
+    loan
+      (if (> block-height (get term-end loan))
+        true
+        (match (calculate-health-factor user stx-price)
+          health-factor
+            (< health-factor LIQUIDATION-THRESHOLD)
+          false
+        )
+      )
     false
   )
 )
@@ -150,9 +159,12 @@
       (let (
         (blocks-elapsed (- block-height (get start-block loan)))
         (interest (calculate-interest (get amount loan) (get interest-rate loan) blocks-elapsed))
-        (total (+ (get amount loan) interest))
+        (penalty (if (> block-height (get term-end loan))
+          (/ (* (get amount loan) LATE-PENALTY-RATE) u10000)
+          u0))
+        (total (+ (get amount loan) interest penalty))
       )
-        (some { principal: (get amount loan), interest: interest, total: total })
+        (some { principal: (get amount loan), interest: interest, penalty: penalty, total: total })
       )
     none
   )
@@ -287,9 +299,12 @@
     (loan-amount (get amount loan))
     (blocks-elapsed (- block-height (get start-block loan)))
     (interest (calculate-interest loan-amount (get interest-rate loan) blocks-elapsed))
-    (total-repayment (+ loan-amount interest))
+    (penalty (if (> block-height (get term-end loan))
+      (/ (* loan-amount LATE-PENALTY-RATE) u10000)
+      u0))
+    (total-repayment (+ loan-amount interest penalty))
   )
-    ;; Transfer total repayment (principal + interest) from user to contract
+    ;; Transfer total repayment (principal + interest + penalty) from user to contract
     (try! (stx-transfer? total-repayment tx-sender (as-contract tx-sender)))
     
     ;; Remove the loan from user's record
