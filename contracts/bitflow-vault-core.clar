@@ -61,8 +61,17 @@
 ;; Private functions
 
 ;; Calculate interest based on principal, rate, and blocks elapsed
+;; Uses ceiling division to prevent rounding to zero on small amounts
 (define-private (calculate-interest (principal uint) (rate uint) (blocks-elapsed uint))
-  (/ (* (* principal rate) blocks-elapsed) (* u100 u52560))
+  (let (
+    (numerator (* (* principal rate) blocks-elapsed))
+    (denominator (* u100 u52560))
+  )
+    (if (is-eq numerator u0)
+      u0
+      (/ (- (+ numerator denominator) u1) denominator)
+    )
+  )
 )
 
 ;; Read-only functions
