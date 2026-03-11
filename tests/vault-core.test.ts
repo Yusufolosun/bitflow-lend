@@ -531,8 +531,8 @@ describe("loan repayment", () => {
     expect(repayResponse.result).toBeOk(
       Cl.tuple({
         principal: Cl.uint(borrowAmount),
-        interest: Cl.uint(95),  // (1000 * 500 * 1001) / (100 * 52560) = 95
-        total: Cl.uint(1095),  // principal + interest
+        interest: Cl.uint(96),  // ceil((1000 * 500 * 1001) / (100 * 52560)) = 96
+        total: Cl.uint(1096),  // principal + interest
       })
     );
 
@@ -613,13 +613,13 @@ describe("loan repayment", () => {
     );
 
     // Should return some with accumulated interest
-    // Expected interest: (1000 * 500 * 4320) / (100 * 52560) = 410
+    // Expected interest: ceil((1000 * 500 * 4320) / (100 * 52560)) = 411
     expect(laterRepayment.result).toBeSome(
       Cl.tuple({
         principal: Cl.uint(borrowAmount),
-        interest: Cl.uint(410),
+        interest: Cl.uint(411),
         penalty: Cl.uint(0),  // Still within 90-day term
-        total: Cl.uint(1410),
+        total: Cl.uint(1411),
       })
     );
   });
@@ -1083,14 +1083,14 @@ describe("liquidation system", () => {
     );
 
     // penalty = 1000 * 500 / 10000 = 50
-    // interest = (1000 * 500 * 201) / (100 * 52560) = 19
-    // total = 1000 + 19 + 50 = 1069
+    // interest = ceil((1000 * 500 * 201) / (100 * 52560)) = 20
+    // total = 1000 + 20 + 50 = 1070
     expect(repaymentInfo.result).toBeSome(
       Cl.tuple({
         principal: Cl.uint(1000),
-        interest: Cl.uint(19),
+        interest: Cl.uint(20),
         penalty: Cl.uint(50),
-        total: Cl.uint(1069),
+        total: Cl.uint(1070),
       })
     );
 
