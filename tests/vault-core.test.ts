@@ -172,6 +172,47 @@ describe("vault-core contract", () => {
     );
     expect(totalDepositsResponse.result).toBeUint(wallet1Amount + wallet2Amount);
   });
+
+  it("emits print events for protocol actions", () => {
+    const accounts = simnet.getAccounts();
+    const wallet_1 = accounts.get("wallet_1")!;
+
+    // Deposit should emit event
+    const depositResponse = simnet.callPublicFn(
+      "bitflow-vault-core",
+      "deposit",
+      [Cl.uint(1500)],
+      wallet_1
+    );
+    const depositEvents = depositResponse.events.filter(
+      (e: any) => e.event === "print_event"
+    );
+    expect(depositEvents.length).toBeGreaterThan(0);
+
+    // Borrow should emit event
+    const borrowResponse = simnet.callPublicFn(
+      "bitflow-vault-core",
+      "borrow",
+      [Cl.uint(1000), Cl.uint(500), Cl.uint(30)],
+      wallet_1
+    );
+    const borrowEvents = borrowResponse.events.filter(
+      (e: any) => e.event === "print_event"
+    );
+    expect(borrowEvents.length).toBeGreaterThan(0);
+
+    // Repay should emit event
+    const repayResponse = simnet.callPublicFn(
+      "bitflow-vault-core",
+      "repay",
+      [],
+      wallet_1
+    );
+    const repayEvents = repayResponse.events.filter(
+      (e: any) => e.event === "print_event"
+    );
+    expect(repayEvents.length).toBeGreaterThan(0);
+  });
 });
 
 describe("loan management", () => {
