@@ -596,6 +596,7 @@ describe("loan repayment", () => {
       Cl.tuple({
         principal: Cl.uint(borrowAmount),
         interest: Cl.uint(0),  // No blocks elapsed yet
+        penalty: Cl.uint(0),   // Not overdue yet
         total: Cl.uint(borrowAmount),
       })
     );
@@ -617,6 +618,7 @@ describe("loan repayment", () => {
       Cl.tuple({
         principal: Cl.uint(borrowAmount),
         interest: Cl.uint(410),
+        penalty: Cl.uint(0),  // Still within 90-day term
         total: Cl.uint(1410),
       })
     );
@@ -965,5 +967,106 @@ describe("liquidation system", () => {
 
     // Verify transaction fails with err-liquidate-own-loan (u108)
     expect(selfLiquidationAttempt.result).toBeErr(Cl.uint(108));
+  });
+
+  it("allows liquidation of expired loans regardless of health factor", () => {
+    const accounts = simnet.getAccounts();
+    const wallet_1 = accounts.get("wallet_1")!;
+    const wallet_2 = accounts.get("wallet_2")!;
+
+    // wallet_1 deposits 2000, borrows 1000 for 1 day (144 blocks)
+    simnet.callPublicFn(
+      "bitflow-vault-core",
+      "deposit",
+      [Cl.uint(2000)],
+      wallet_1
+    );
+    simnet.callPublicFn(
+      "bitflow-vault-core",
+      "borrow",
+      [Cl.uint(1000), Cl.uint(500), Cl.uint(1)],
+      wallet_1
+    );
+
+    // At u100 price, health factor = 200% — normally NOT liquidatable
+    const healthyCheck = simnet.callReadOnlyFn(
+      "bitflow-vault-core",
+      "is-liquidatable",
+      [Cl.principal(wallet_1), Cl.uint(100)],
+      wallet_1
+    );
+    expect(healthyCheck.result).toBeBool(false);
+
+    // Mine 145 blocks to go past the 1-day term (144 blocks)
+    simnet.mineEmptyBlocks(145);
+
+    // Now expired — should be liquidatable even at u100 price
+    const expiredCheck = simnet.callReadOnlyFn(
+      "bitflow-vault-core",
+      "is-liquidatable",
+      [Cl.principal(wallet_1), Cl.uint(100)],
+      wallet_1
+    );
+    expect(expiredCheck.result).toBeBool(true);
+
+    // Liquidation should succeed
+    const liquidationResponse = simnet.callPublicFn(
+      "bitflow-vault-core",
+      "liquidate",
+      [Cl.principal(wallet_1), Cl.uint(100)],
+      wallet_2
+    );
+    expect(liquidationResponse.result).toBeOk(expect.any(Object));
+  });
+
+  it("applies late penalty when repaying an overdue loan", () => {
+    const accounts = simnet.getAccounts();
+    const wallet_1 = accounts.get("wallet_1")!;
+
+    // wallet_1 deposits 2000, borrows 1000 for 1 day
+    simnet.callPublicFn(
+      "bitflow-vault-core",
+      "deposit",
+      [Cl.uint(2000)],
+      wallet_1
+    );
+    simnet.callPublicFn(
+      "bitflow-vault-core",
+      "borrow",
+      [Cl.uint(1000), Cl.uint(500), Cl.uint(1)],
+      wallet_1
+    );
+
+    // Mine 200 blocks to go past the 1-day term
+    simnet.mineEmptyBlocks(200);
+
+    // Check get-repayment-amount includes a penalty
+    const repaymentInfo = simnet.callReadOnlyFn(
+      "bitflow-vault-core",
+      "get-repayment-amount",
+      [Cl.principal(wallet_1)],
+      wallet_1
+    );
+
+    // penalty = 1000 * 500 / 10000 = 50
+    // interest = (1000 * 500 * 201) / (100 * 52560) = 19
+    // total = 1000 + 19 + 50 = 1069
+    expect(repaymentInfo.result).toBeSome(
+      Cl.tuple({
+        principal: Cl.uint(1000),
+        interest: Cl.uint(19),
+        penalty: Cl.uint(50),
+        total: Cl.uint(1069),
+      })
+    );
+
+    // Repay the overdue loan
+    const repayResponse = simnet.callPublicFn(
+      "bitflow-vault-core",
+      "repay",
+      [],
+      wallet_1
+    );
+    expect(repayResponse.result).toBeOk(expect.any(Object));
   });
 });
