@@ -821,14 +821,20 @@ describe("liquidation system", () => {
     );
     expect(initialLiquidations.result).toBeUint(0);
 
-    // STX price drops to u70 (makes position liquidatable)
-    const stxPrice = 70;
+    // Admin sets STX price to u70 (makes position liquidatable)
+    const deployer = accounts.get("deployer")!;
+    simnet.callPublicFn(
+      "bitflow-vault-core",
+      "set-stx-price",
+      [Cl.uint(70)],
+      deployer
+    );
     
     // wallet_2 liquidates wallet_1
     const liquidationResponse = simnet.callPublicFn(
       "bitflow-vault-core",
       "liquidate",
-      [Cl.principal(wallet_1), Cl.uint(stxPrice)],
+      [Cl.principal(wallet_1)],
       wallet_2
     );
 
@@ -893,11 +899,18 @@ describe("liquidation system", () => {
       wallet_1
     );
 
-    // Price drops to u70, wallet_2 liquidates
+    // Admin sets price to u70, wallet_2 liquidates
+    const deployer = accounts.get("deployer")!;
+    simnet.callPublicFn(
+      "bitflow-vault-core",
+      "set-stx-price",
+      [Cl.uint(70)],
+      deployer
+    );
     simnet.callPublicFn(
       "bitflow-vault-core",
       "liquidate",
-      [Cl.principal(wallet_1), Cl.uint(70)],
+      [Cl.principal(wallet_1)],
       wallet_2
     );
 
@@ -928,10 +941,17 @@ describe("liquidation system", () => {
     );
 
     // Price is u100 (healthy: 200% collateralized)
+    const deployer = accounts.get("deployer")!;
+    simnet.callPublicFn(
+      "bitflow-vault-core",
+      "set-stx-price",
+      [Cl.uint(100)],
+      deployer
+    );
     const liquidationAttempt = simnet.callPublicFn(
       "bitflow-vault-core",
       "liquidate",
-      [Cl.principal(wallet_1), Cl.uint(100)],
+      [Cl.principal(wallet_1)],
       wallet_2
     );
 
@@ -958,10 +978,17 @@ describe("liquidation system", () => {
     );
 
     // Price drops to u70 (liquidatable)
+    const deployer = accounts.get("deployer")!;
+    simnet.callPublicFn(
+      "bitflow-vault-core",
+      "set-stx-price",
+      [Cl.uint(70)],
+      deployer
+    );
     const selfLiquidationAttempt = simnet.callPublicFn(
       "bitflow-vault-core",
       "liquidate",
-      [Cl.principal(wallet_1), Cl.uint(70)],
+      [Cl.principal(wallet_1)],
       wallet_1
     );
 
@@ -989,6 +1016,13 @@ describe("liquidation system", () => {
     );
 
     // At u100 price, health factor = 200% — normally NOT liquidatable
+    const deployer = accounts.get("deployer")!;
+    simnet.callPublicFn(
+      "bitflow-vault-core",
+      "set-stx-price",
+      [Cl.uint(100)],
+      deployer
+    );
     const healthyCheck = simnet.callReadOnlyFn(
       "bitflow-vault-core",
       "is-liquidatable",
@@ -1013,7 +1047,7 @@ describe("liquidation system", () => {
     const liquidationResponse = simnet.callPublicFn(
       "bitflow-vault-core",
       "liquidate",
-      [Cl.principal(wallet_1), Cl.uint(100)],
+      [Cl.principal(wallet_1)],
       wallet_2
     );
     expect(liquidationResponse.result).toBeOk(expect.any(Object));
@@ -1068,5 +1102,67 @@ describe("liquidation system", () => {
       wallet_1
     );
     expect(repayResponse.result).toBeOk(expect.any(Object));
+  });
+
+  it("only allows contract owner to set STX price", () => {
+    const accounts = simnet.getAccounts();
+    const deployer = accounts.get("deployer")!;
+    const wallet_1 = accounts.get("wallet_1")!;
+
+    // Non-owner cannot set price
+    const unauthorized = simnet.callPublicFn(
+      "bitflow-vault-core",
+      "set-stx-price",
+      [Cl.uint(100)],
+      wallet_1
+    );
+    expect(unauthorized.result).toBeErr(Cl.uint(109));
+
+    // Owner can set price
+    const authorized = simnet.callPublicFn(
+      "bitflow-vault-core",
+      "set-stx-price",
+      [Cl.uint(100)],
+      deployer
+    );
+    expect(authorized.result).toBeOk(Cl.bool(true));
+
+    // Verify price was stored
+    const storedPrice = simnet.callReadOnlyFn(
+      "bitflow-vault-core",
+      "get-stx-price",
+      [],
+      deployer
+    );
+    expect(storedPrice.result).toBeUint(100);
+  });
+
+  it("rejects liquidation when no price is set", () => {
+    const accounts = simnet.getAccounts();
+    const wallet_1 = accounts.get("wallet_1")!;
+    const wallet_2 = accounts.get("wallet_2")!;
+
+    // wallet_1 deposits and borrows
+    simnet.callPublicFn(
+      "bitflow-vault-core",
+      "deposit",
+      [Cl.uint(1500)],
+      wallet_1
+    );
+    simnet.callPublicFn(
+      "bitflow-vault-core",
+      "borrow",
+      [Cl.uint(1000), Cl.uint(500), Cl.uint(30)],
+      wallet_1
+    );
+
+    // Liquidation fails because no price has been set
+    const liquidateResponse = simnet.callPublicFn(
+      "bitflow-vault-core",
+      "liquidate",
+      [Cl.principal(wallet_1)],
+      wallet_2
+    );
+    expect(liquidateResponse.result).toBeErr(Cl.uint(113));
   });
 });

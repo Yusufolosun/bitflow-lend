@@ -18,6 +18,7 @@
 (define-constant ERR-LIQUIDATE-OWN-LOAN (err u108))
 (define-constant ERR-INVALID-INTEREST-RATE (err u110))
 (define-constant ERR-INVALID-TERM (err u111))
+(define-constant ERR-PRICE-NOT-SET (err u113))
 
 ;; Constants
 (define-constant MIN-COLLATERAL-RATIO u150)
@@ -34,6 +35,7 @@
 (define-data-var total-deposits uint u0)
 (define-data-var total-repaid uint u0)
 (define-data-var total-liquidations uint u0)
+(define-data-var admin-stx-price uint u0)
 
 ;; Protocol-wide metrics
 (define-data-var total-deposits-count uint u0)
@@ -170,7 +172,23 @@
   )
 )
 
+;; Get the admin-set STX price
+(define-read-only (get-stx-price)
+  (var-get admin-stx-price)
+)
+
 ;; Public functions
+
+;; Set STX price (contract owner only)
+(define-public (set-stx-price (price uint))
+  (begin
+    (asserts! (is-eq tx-sender contract-owner) err-owner-only)
+    (asserts! (> price u0) ERR-INVALID-AMOUNT)
+    (var-set admin-stx-price price)
+    (print { event: "set-stx-price", price: price })
+    (ok true)
+  )
+)
 
 ;; Deposit STX into the vault
 ;; @param amount: Amount of STX (in micro-STX) to deposit
@@ -328,24 +346,27 @@
 
 ;; Liquidate an undercollateralized loan
 ;; @param borrower: Address of the borrower to liquidate
-;; @param stx-price: Current STX price (used for health factor calculation)
 ;; @returns (ok { loan-amount, bonus, total-paid }) on success
 ;; Liquidator pays loan + 5% bonus and receives borrower's collateral
-;; Only works if health factor < 110%
-(define-public (liquidate (borrower principal) (stx-price uint))
+;; Only works if health factor < 110% using admin-set STX price
+(define-public (liquidate (borrower principal))
   (let (
     (liquidator tx-sender)
+    (current-price (var-get admin-stx-price))
     (loan (unwrap! (map-get? user-loans borrower) ERR-NO-ACTIVE-LOAN))
     (borrower-deposit (default-to u0 (map-get? user-deposits borrower)))
     (loan-amount (get amount loan))
     (liquidation-bonus (/ (* loan-amount u5) u100)) ;; 5% bonus for liquidator
     (total-to-pay (+ loan-amount liquidation-bonus))
   )
+    ;; Ensure admin has set a price
+    (asserts! (> current-price u0) ERR-PRICE-NOT-SET)
+    
     ;; Prevent self-liquidation
     (asserts! (not (is-eq tx-sender borrower)) ERR-LIQUIDATE-OWN-LOAN)
     
-    ;; Verify health factor is below 110% threshold
-    (asserts! (is-liquidatable borrower stx-price) ERR-NOT-LIQUIDATABLE)
+    ;; Verify health factor is below 110% threshold using stored price
+    (asserts! (is-liquidatable borrower current-price) ERR-NOT-LIQUIDATABLE)
     
     ;; Transfer payment from liquidator to contract
     (try! (stx-transfer? total-to-pay tx-sender (as-contract tx-sender)))
