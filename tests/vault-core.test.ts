@@ -1166,3 +1166,143 @@ describe("liquidation system", () => {
     expect(liquidateResponse.result).toBeErr(Cl.uint(113));
   });
 });
+
+describe("emergency pause", () => {
+  it("only allows contract owner to pause and unpause", () => {
+    const accounts = simnet.getAccounts();
+    const deployer = accounts.get("deployer")!;
+    const wallet_1 = accounts.get("wallet_1")!;
+
+    // Non-owner cannot pause
+    const unauthorized = simnet.callPublicFn(
+      "bitflow-vault-core",
+      "pause",
+      [],
+      wallet_1
+    );
+    expect(unauthorized.result).toBeErr(Cl.uint(109));
+
+    // Owner can pause
+    const pauseResult = simnet.callPublicFn(
+      "bitflow-vault-core",
+      "pause",
+      [],
+      deployer
+    );
+    expect(pauseResult.result).toBeOk(Cl.bool(true));
+
+    // Verify paused state
+    const isPaused = simnet.callReadOnlyFn(
+      "bitflow-vault-core",
+      "get-is-paused",
+      [],
+      deployer
+    );
+    expect(isPaused.result).toBeBool(true);
+
+    // Owner can unpause
+    const unpauseResult = simnet.callPublicFn(
+      "bitflow-vault-core",
+      "unpause",
+      [],
+      deployer
+    );
+    expect(unpauseResult.result).toBeOk(Cl.bool(true));
+
+    // Verify unpaused state
+    const isUnpaused = simnet.callReadOnlyFn(
+      "bitflow-vault-core",
+      "get-is-paused",
+      [],
+      deployer
+    );
+    expect(isUnpaused.result).toBeBool(false);
+  });
+
+  it("blocks all operations when paused", () => {
+    const accounts = simnet.getAccounts();
+    const deployer = accounts.get("deployer")!;
+    const wallet_1 = accounts.get("wallet_1")!;
+
+    // Deposit before pausing so we have funds to test withdraw/borrow
+    simnet.callPublicFn(
+      "bitflow-vault-core",
+      "deposit",
+      [Cl.uint(2000)],
+      wallet_1
+    );
+
+    // Pause the protocol
+    simnet.callPublicFn(
+      "bitflow-vault-core",
+      "pause",
+      [],
+      deployer
+    );
+
+    // Deposit should fail
+    const depositResult = simnet.callPublicFn(
+      "bitflow-vault-core",
+      "deposit",
+      [Cl.uint(100)],
+      wallet_1
+    );
+    expect(depositResult.result).toBeErr(Cl.uint(112));
+
+    // Withdraw should fail
+    const withdrawResult = simnet.callPublicFn(
+      "bitflow-vault-core",
+      "withdraw",
+      [Cl.uint(100)],
+      wallet_1
+    );
+    expect(withdrawResult.result).toBeErr(Cl.uint(112));
+
+    // Borrow should fail
+    const borrowResult = simnet.callPublicFn(
+      "bitflow-vault-core",
+      "borrow",
+      [Cl.uint(1000), Cl.uint(500), Cl.uint(30)],
+      wallet_1
+    );
+    expect(borrowResult.result).toBeErr(Cl.uint(112));
+
+    // Repay should fail
+    const repayResult = simnet.callPublicFn(
+      "bitflow-vault-core",
+      "repay",
+      [],
+      wallet_1
+    );
+    expect(repayResult.result).toBeErr(Cl.uint(112));
+
+    // Liquidate should fail
+    const wallet_2 = accounts.get("wallet_2")!;
+    const liquidateResult = simnet.callPublicFn(
+      "bitflow-vault-core",
+      "liquidate",
+      [Cl.principal(wallet_1)],
+      wallet_2
+    );
+    expect(liquidateResult.result).toBeErr(Cl.uint(112));
+  });
+
+  it("resumes operations after unpausing", () => {
+    const accounts = simnet.getAccounts();
+    const deployer = accounts.get("deployer")!;
+    const wallet_1 = accounts.get("wallet_1")!;
+
+    // Pause then unpause
+    simnet.callPublicFn("bitflow-vault-core", "pause", [], deployer);
+    simnet.callPublicFn("bitflow-vault-core", "unpause", [], deployer);
+
+    // Deposit should work after unpausing
+    const depositResult = simnet.callPublicFn(
+      "bitflow-vault-core",
+      "deposit",
+      [Cl.uint(1000)],
+      wallet_1
+    );
+    expect(depositResult.result).toBeOk(Cl.bool(true));
+  });
+});

@@ -19,6 +19,7 @@
 (define-constant ERR-INVALID-INTEREST-RATE (err u110))
 (define-constant ERR-INVALID-TERM (err u111))
 (define-constant ERR-PRICE-NOT-SET (err u113))
+(define-constant ERR-PROTOCOL-PAUSED (err u112))
 
 ;; Constants
 (define-constant MIN-COLLATERAL-RATIO u150)
@@ -36,6 +37,7 @@
 (define-data-var total-repaid uint u0)
 (define-data-var total-liquidations uint u0)
 (define-data-var admin-stx-price uint u0)
+(define-data-var is-paused bool false)
 
 ;; Protocol-wide metrics
 (define-data-var total-deposits-count uint u0)
@@ -186,7 +188,32 @@
   (var-get admin-stx-price)
 )
 
+;; Check if protocol is paused
+(define-read-only (get-is-paused)
+  (var-get is-paused)
+)
+
 ;; Public functions
+
+;; Pause the protocol (contract owner only)
+(define-public (pause)
+  (begin
+    (asserts! (is-eq tx-sender contract-owner) err-owner-only)
+    (var-set is-paused true)
+    (print { event: "pause" })
+    (ok true)
+  )
+)
+
+;; Unpause the protocol (contract owner only)
+(define-public (unpause)
+  (begin
+    (asserts! (is-eq tx-sender contract-owner) err-owner-only)
+    (var-set is-paused false)
+    (print { event: "unpause" })
+    (ok true)
+  )
+)
 
 ;; Set STX price (contract owner only)
 (define-public (set-stx-price (price uint))
@@ -205,6 +232,9 @@
 ;; Transfers STX from caller to contract and updates user's deposit balance
 (define-public (deposit (amount uint))
   (begin
+    ;; Check protocol is not paused
+    (asserts! (not (var-get is-paused)) ERR-PROTOCOL-PAUSED)
+    
     ;; Validate amount is greater than zero
     (asserts! (> amount u0) ERR-INVALID-AMOUNT)
     
@@ -243,6 +273,9 @@
     (available-balance (- user-balance locked-collateral))
     (recipient tx-sender)
   )
+    ;; Check protocol is not paused
+    (asserts! (not (var-get is-paused)) ERR-PROTOCOL-PAUSED)
+    
     ;; Verify user has sufficient unlocked balance
     (asserts! (>= available-balance amount) ERR-INSUFFICIENT-BALANCE)
     
@@ -279,6 +312,9 @@
     (term-end (+ block-height (* term-days u144))) ;; ~144 blocks per day
     (recipient tx-sender)
   )
+    ;; Check protocol is not paused
+    (asserts! (not (var-get is-paused)) ERR-PROTOCOL-PAUSED)
+    
     ;; Validate borrow amount is greater than zero
     (asserts! (> amount u0) ERR-INVALID-AMOUNT)
 
@@ -321,18 +357,22 @@
 ;; @returns (ok { principal, interest, total }) with repayment details
 ;; Calculates accrued interest based on blocks elapsed and repays full amount
 (define-public (repay)
-  (let (
-    (loan (unwrap! (map-get? user-loans tx-sender) ERR-NO-ACTIVE-LOAN))
-    (loan-amount (get amount loan))
-    (blocks-elapsed (- block-height (get start-block loan)))
-    (interest (calculate-interest loan-amount (get interest-rate loan) blocks-elapsed))
-    (penalty (if (> block-height (get term-end loan))
-      (/ (* loan-amount LATE-PENALTY-RATE) u10000)
-      u0))
-    (total-repayment (+ loan-amount interest penalty))
-  )
-    ;; Transfer total repayment (principal + interest + penalty) from user to contract
-    (try! (stx-transfer? total-repayment tx-sender (as-contract tx-sender)))
+  (begin
+    ;; Check protocol is not paused
+    (asserts! (not (var-get is-paused)) ERR-PROTOCOL-PAUSED)
+    (let (
+      (loan (unwrap! (map-get? user-loans tx-sender) ERR-NO-ACTIVE-LOAN))
+      (loan-amount (get amount loan))
+      (blocks-elapsed (- block-height (get start-block loan)))
+      (interest (calculate-interest loan-amount (get interest-rate loan) blocks-elapsed))
+      (penalty (if (> block-height (get term-end loan))
+        (/ (* loan-amount LATE-PENALTY-RATE) u10000)
+        u0))
+      (total-repayment (+ loan-amount interest penalty))
+    )
+    
+      ;; Transfer total repayment (principal + interest + penalty) from user to contract
+      (try! (stx-transfer? total-repayment tx-sender (as-contract tx-sender)))
     
     ;; Remove the loan from user's record
     (map-delete user-loans tx-sender)
@@ -350,6 +390,7 @@
     
     ;; Return repayment details
     (ok { principal: loan-amount, interest: interest, total: total-repayment })
+    )
   )
 )
 
@@ -359,23 +400,27 @@
 ;; Liquidator pays loan + 5% bonus and receives borrower's collateral
 ;; Only works if health factor < 110% using admin-set STX price
 (define-public (liquidate (borrower principal))
-  (let (
-    (liquidator tx-sender)
-    (current-price (var-get admin-stx-price))
-    (loan (unwrap! (map-get? user-loans borrower) ERR-NO-ACTIVE-LOAN))
-    (borrower-deposit (default-to u0 (map-get? user-deposits borrower)))
-    (loan-amount (get amount loan))
-    (liquidation-bonus (/ (* loan-amount u5) u100)) ;; 5% bonus for liquidator
-    (total-to-pay (+ loan-amount liquidation-bonus))
-  )
-    ;; Ensure admin has set a price
-    (asserts! (> current-price u0) ERR-PRICE-NOT-SET)
+  (begin
+    ;; Check protocol is not paused
+    (asserts! (not (var-get is-paused)) ERR-PROTOCOL-PAUSED)
+    (let (
+      (liquidator tx-sender)
+      (current-price (var-get admin-stx-price))
+      (loan (unwrap! (map-get? user-loans borrower) ERR-NO-ACTIVE-LOAN))
+      (borrower-deposit (default-to u0 (map-get? user-deposits borrower)))
+      (loan-amount (get amount loan))
+      (liquidation-bonus (/ (* loan-amount u5) u100)) ;; 5% bonus for liquidator
+      (total-to-pay (+ loan-amount liquidation-bonus))
+    )
     
-    ;; Prevent self-liquidation
-    (asserts! (not (is-eq tx-sender borrower)) ERR-LIQUIDATE-OWN-LOAN)
+      ;; Ensure admin has set a price
+      (asserts! (> current-price u0) ERR-PRICE-NOT-SET)
     
-    ;; Verify health factor is below 110% threshold using stored price
-    (asserts! (is-liquidatable borrower current-price) ERR-NOT-LIQUIDATABLE)
+      ;; Prevent self-liquidation
+      (asserts! (not (is-eq tx-sender borrower)) ERR-LIQUIDATE-OWN-LOAN)
+    
+      ;; Verify health factor is below 110% threshold using stored price
+      (asserts! (is-liquidatable borrower current-price) ERR-NOT-LIQUIDATABLE)
     
     ;; Transfer payment from liquidator to contract
     (try! (stx-transfer? total-to-pay tx-sender (as-contract tx-sender)))
@@ -405,6 +450,7 @@
     
     ;; Return liquidation details
     (ok { seized-collateral: borrower-deposit, paid: total-to-pay, bonus: liquidation-bonus })
+    )
   )
 )
 
