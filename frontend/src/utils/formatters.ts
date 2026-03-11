@@ -33,6 +33,24 @@ export function formatMicroSTX(microStx: bigint | number, decimals: number = 2):
 }
 
 /**
+ * Convert microSTX to STX
+ * @param microStx - Amount in microSTX (bigint)
+ * @returns Amount in STX (number)
+ */
+export function microStxToStx(microStx: bigint): number {
+  return Number(microStx) / 1_000_000;
+}
+
+/**
+ * Convert STX to microSTX
+ * @param stx - Amount in STX (number)
+ * @returns Amount in microSTX (bigint)
+ */
+export function stxToMicroStx(stx: number): bigint {
+  return BigInt(Math.round(stx * 1_000_000));
+}
+
+/**
  * Format USD amount
  * @param amount - Amount in USD
  * @param decimals - Number of decimal places (default: 2)
