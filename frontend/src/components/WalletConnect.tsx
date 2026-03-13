@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Wallet, LogOut, RefreshCw } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
+import { useToastContext } from './ToastProvider';
 
 /**
  * WalletConnect Component
@@ -18,15 +19,19 @@ export const WalletConnect: React.FC = () => {
   } = useAuth();
 
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [refreshError, setRefreshError] = useState<string | null>(null);
+  const toast = useToastContext();
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
+    setRefreshError(null);
     try {
-      console.log('Manual balance refresh initiated');
       await refreshBalance();
       await new Promise(resolve => setTimeout(resolve, 1500));
-    } catch (error) {
-      console.error('Error during manual refresh:', error);
+    } catch (error: any) {
+      const message = error?.message || 'Could not refresh balance';
+      setRefreshError(message);
+      toast.error('Balance refresh failed', message);
     } finally {
       setIsRefreshing(false);
     }
@@ -73,6 +78,11 @@ export const WalletConnect: React.FC = () => {
           <div className="text-sm font-bold text-gray-900 tabular-nums">
             {formatBalance(balanceSTX)} STX
           </div>
+          {refreshError && (
+            <div className="text-[10px] text-red-500 font-medium mt-0.5">
+              Refresh failed — balance may be stale
+            </div>
+          )}
         </div>
         <button
           onClick={handleRefresh}
