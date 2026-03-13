@@ -36,6 +36,7 @@
 (define-data-var total-deposits uint u0)
 (define-data-var total-repaid uint u0)
 (define-data-var total-liquidations uint u0)
+(define-data-var total-outstanding-borrows uint u0)
 (define-data-var admin-stx-price uint u0)
 (define-data-var is-paused bool false)
 
@@ -118,8 +119,22 @@
   {
     total-deposits: (var-get total-deposits),
     total-repaid: (var-get total-repaid),
-    total-liquidations: (var-get total-liquidations)
+    total-liquidations: (var-get total-liquidations),
+    total-outstanding-borrows: (var-get total-outstanding-borrows)
   }
+)
+
+;; Get current utilization ratio in basis points (0-10000)
+;; Utilization = outstanding borrows / total deposits * 10000
+;; Returns 0 when there are no deposits to avoid division by zero
+(define-read-only (get-utilization-ratio)
+  (let (
+    (deposits (var-get total-deposits))
+    (borrowed (var-get total-outstanding-borrows))
+  )
+    (if (> deposits u0)
+      (/ (* borrowed u10000) deposits)
+      u0))
 )
 
 ;; Get maximum borrow amount for a user based on their deposit
@@ -344,6 +359,7 @@
     ;; Update analytics
     (var-set total-borrows-count (+ (var-get total-borrows-count) u1))
     (var-set total-borrow-volume (+ (var-get total-borrow-volume) amount))
+    (var-set total-outstanding-borrows (+ (var-get total-outstanding-borrows) amount))
     (var-set last-activity-block block-height)
     
     ;; Emit event
@@ -379,6 +395,9 @@
     
     ;; Update total repaid
     (var-set total-repaid (+ (var-get total-repaid) total-repayment))
+    (var-set total-outstanding-borrows (if (>= (var-get total-outstanding-borrows) loan-amount)
+      (- (var-get total-outstanding-borrows) loan-amount)
+      u0))
     
     ;; Update analytics
     (var-set total-repayments-count (+ (var-get total-repayments-count) u1))
@@ -439,6 +458,9 @@
     
     ;; Increment liquidation counter
     (var-set total-liquidations (+ (var-get total-liquidations) u1))
+    (var-set total-outstanding-borrows (if (>= (var-get total-outstanding-borrows) loan-amount)
+      (- (var-get total-outstanding-borrows) loan-amount)
+      u0))
     
     ;; Update analytics
     (var-set total-liquidations-count (+ (var-get total-liquidations-count) u1))
