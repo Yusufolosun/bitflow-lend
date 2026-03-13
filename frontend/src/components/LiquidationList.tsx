@@ -62,8 +62,7 @@ export const LiquidationList: React.FC = () => {
         setPositions(prev => prev.filter(p => p.address !== position.address));
         setSelectedPosition(null);
       }, 2000);
-    } catch (error) {
-      console.error('Liquidation failed:', error);
+    } catch {
       alert('Liquidation failed. Please try again.');
       setSelectedPosition(null);
     }
