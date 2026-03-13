@@ -227,11 +227,12 @@ export const TransactionHistory: React.FC = () => {
       </div>
 
       {/* Filter Buttons */}
-      <div className="flex gap-2 mb-6 flex-wrap">
+      <div className="flex gap-2 mb-6 flex-wrap" role="group" aria-label="Filter transactions by type">
         {(['all', 'deposit', 'withdraw', 'borrow', 'repay'] as const).map((type) => (
           <button
             key={type}
             onClick={() => setFilter(type)}
+            aria-pressed={filter === type}
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors capitalize ${
               filter === type
                 ? 'bg-accent-500 text-white shadow-sm'
