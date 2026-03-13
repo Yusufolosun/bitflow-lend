@@ -3,6 +3,7 @@ import { Activity, AlertTriangle, CheckCircle, XCircle, TrendingDown } from 'luc
 import { useAuth } from '../hooks/useAuth';
 import { useVault } from '../hooks/useVault';
 import { useSmartPolling } from '../hooks/useSmartPolling';
+import { useStxPrice } from '../hooks/useStxPrice';
 import { formatSTX, getHealthStatus } from '../types/vault';
 import { PROTOCOL_CONSTANTS } from '../config/contracts';
 
@@ -13,11 +14,11 @@ import { PROTOCOL_CONSTANTS } from '../config/contracts';
 export const HealthMonitor: React.FC = () => {
   const { address, userSession } = useAuth();
   const vault = useVault(userSession, address);
+  const { price: stxPrice, lastUpdated: priceUpdated, isStale: priceIsStale } = useStxPrice();
 
   const [healthFactor, setHealthFactor] = useState<any>(null);
   const [userDeposit, setUserDeposit] = useState<any>(null);
   const [activeLoan, setActiveLoan] = useState<any>(null);
-  const [stxPrice] = useState(1.5); // Default STX price in USD
 
   // Fetch user data on a 30s smart interval — health factor is time-sensitive
   const fetchData = useCallback(async () => {
@@ -284,8 +285,14 @@ export const HealthMonitor: React.FC = () => {
 
       {/* Info */}
       <div className="text-xs text-gray-500 space-y-1">
-        <p>• Health factor updates every 10 seconds</p>
-        <p>• Based on current STX price: ${stxPrice.toFixed(2)} USD</p>
+        <p>• Health factor updates with each price refresh</p>
+        <p>
+          • STX price: ${stxPrice.toFixed(2)} USD
+          {priceIsStale && <span className="text-amber-600 ml-1">(stale — using last known price)</span>}
+          {priceUpdated && !priceIsStale && (
+            <span className="ml-1">· updated {priceUpdated.toLocaleTimeString()}</span>
+          )}
+        </p>
         <p>• Liquidation occurs automatically below {PROTOCOL_CONSTANTS.LIQUIDATION_THRESHOLD}%</p>
       </div>
     </div>
