@@ -48,7 +48,6 @@ export const useAuth = () => {
       const data = await response.json();
       
       const balance = BigInt(data.balance || '0');
-      console.log('Balance fetched:', balance.toString());
       return balance;
     } catch (error) {
       console.error('Error fetching balance:', error);
@@ -147,18 +146,14 @@ export const useAuth = () => {
     const currentState = walletState;
     if (currentState.address) {
       try {
-        console.log('Refreshing balance for:', currentState.address);
         const balance = await fetchBalance(currentState.address);
         if (balance !== null) {
           const balanceSTX = Number(balance) / 1_000_000;
-          console.log('Balance refreshed:', balanceSTX, 'STX');
           setWalletState(prev => ({
             ...prev,
             balance,
             balanceSTX,
           }));
-        } else {
-          console.warn('Balance fetch returned null, keeping existing balance');
         }
       } catch (error) {
         console.error('Error refreshing balance:', error);
