@@ -409,9 +409,10 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
 
       if (result.type === ClarityType.OptionalSome) {
         const repaymentData = cvToValue(result.value);
-        
+
         const principal = BigInt(repaymentData.principal);
         const interest = BigInt(repaymentData.interest);
+        const penalty = BigInt(repaymentData.penalty ?? 0);
         const total = BigInt(repaymentData.total);
 
         return {
@@ -419,6 +420,8 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
           principalSTX: microStxToStx(principal),
           interest,
           interestSTX: microStxToStx(interest),
+          penalty,
+          penaltySTX: microStxToStx(penalty),
           total,
           totalSTX: microStxToStx(total),
         };
