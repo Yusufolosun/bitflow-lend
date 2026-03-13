@@ -186,18 +186,6 @@ export const useAuth = () => {
     initializeAuth();
   }, [userSession, fetchBalance, isSignedIn]);
 
-  // Auto-refresh disabled to prevent rate limiting
-  // Users can manually refresh using the refresh button
-  // useEffect(() => {
-  //   if (walletState.isConnected && walletState.address) {
-  //     const interval = setInterval(() => {
-  //       refreshBalance();
-  //     }, 120000); // 2 minutes
-  //
-  //     return () => clearInterval(interval);
-  //   }
-  // }, [walletState.isConnected, walletState.address, refreshBalance]);
-
   return {
     // State
     ...walletState,
