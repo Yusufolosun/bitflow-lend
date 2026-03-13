@@ -227,6 +227,39 @@
 
 ;; ===== USER FUNCTIONS =====
 
+;; Emergency unstake — only available when pool is paused.
+;; Bypasses cooldown so users can retrieve funds during emergencies.
+;; Forfeits any unclaimed rewards to keep the operation simple/safe.
+(define-public (emergency-unstake)
+  (begin
+    (asserts! (var-get is-paused) ERR-PROTOCOL-PAUSED)
+
+    (let (
+      (recipient tx-sender)
+      (balance (default-to u0 (map-get? staker-balances recipient)))
+    )
+      (asserts! (> balance u0) ERR-NO-STAKE)
+
+      ;; Return the full staked balance
+      (try! (as-contract (stx-transfer? balance tx-sender recipient)))
+
+      ;; Clear staker state
+      (map-set staker-balances recipient u0)
+      (map-set staker-rewards recipient u0)
+      (map-set staker-cooldown-end recipient u0)
+      (map-set staker-last-action recipient block-height)
+
+      ;; Update pool metrics
+      (var-set total-staked (- (var-get total-staked) balance))
+      (var-set total-unstake-volume (+ (var-get total-unstake-volume) balance))
+      (var-set total-stakers (- (var-get total-stakers) u1))
+
+      (print { event: "emergency-unstake", user: recipient, amount: balance })
+      (ok balance)
+    )
+  )
+)
+
 ;; Stake STX into the pool
 (define-public (stake (amount uint))
   (begin
