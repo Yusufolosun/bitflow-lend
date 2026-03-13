@@ -3,7 +3,7 @@ import { DollarSign, AlertCircle, CheckCircle, XCircle, Clock } from 'lucide-rea
 import { useAuth } from '../hooks/useAuth';
 import { useVault } from '../hooks/useVault';
 import { useSmartPolling } from '../hooks/useSmartPolling';
-import { formatSTX } from '../types/vault';
+import { formatSTX } from '../utils/formatters';
 
 /**
  * RepayCard Component

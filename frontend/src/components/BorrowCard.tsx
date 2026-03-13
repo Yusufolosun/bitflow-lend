@@ -3,7 +3,8 @@ import { TrendingUp, AlertCircle, CheckCircle, XCircle, ExternalLink } from 'luc
 import { useAuth } from '../hooks/useAuth';
 import { useVault } from '../hooks/useVault';
 import { useSmartPolling } from '../hooks/useSmartPolling';
-import { formatSTX, LOAN_TERMS } from '../types/vault';
+import { LOAN_TERMS } from '../types/vault';
+import { formatSTX } from '../utils/formatters';
 import { PROTOCOL_CONSTANTS, getExplorerUrl } from '../config/contracts';
 import { calculateHealthFactor, getHealthStatus } from '../utils/calculations';
 
