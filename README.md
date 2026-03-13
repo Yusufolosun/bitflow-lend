@@ -1,6 +1,8 @@
 # BitFlow Lend
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![CI](https://github.com/Yusufolosun/bitflow-lend/actions/workflows/ci.yml/badge.svg)](https://github.com/Yusufolosun/bitflow-lend/actions/workflows/ci.yml)
+[![Tests](https://github.com/Yusufolosun/bitflow-lend/actions/workflows/test.yml/badge.svg)](https://github.com/Yusufolosun/bitflow-lend/actions/workflows/test.yml)
 [![Clarity](https://img.shields.io/badge/language-Clarity-blue.svg)]()
 [![Stacks](https://img.shields.io/badge/blockchain-Stacks-purple.svg)]()
 [![Mainnet](https://img.shields.io/badge/mainnet-deployed-success.svg)](https://explorer.hiro.so/txid/SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.bitflow-vault-core?chain=mainnet)
