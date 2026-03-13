@@ -115,6 +115,11 @@
   (var-get total-liquidations)
 )
 
+;; Get total outstanding borrows
+(define-read-only (get-total-outstanding-borrows)
+  (var-get total-outstanding-borrows)
+)
+
 ;; Get protocol statistics
 (define-read-only (get-protocol-stats)
   {
