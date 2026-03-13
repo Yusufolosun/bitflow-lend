@@ -28,6 +28,15 @@ TESTNET_API="https://api.testnet.hiro.so"
 MAX_PENDING_TX=10
 BLOCK_STALENESS_MINUTES=30
 
+# Notification channels — set via environment variables or a local .env file.
+# At least one should be configured for production use.
+#   ALERT_WEBHOOK_URL   – generic webhook endpoint (POST JSON payload)
+#   ALERT_DISCORD_URL   – Discord webhook URL
+#   ALERT_SLACK_URL     – Slack incoming webhook URL
+ALERT_WEBHOOK_URL="${ALERT_WEBHOOK_URL:-}"
+ALERT_DISCORD_URL="${ALERT_DISCORD_URL:-}"
+ALERT_SLACK_URL="${ALERT_SLACK_URL:-}"
+
 # Parse arguments
 while [ $# -gt 0 ]; do
     case $1 in
