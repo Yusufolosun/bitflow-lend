@@ -14,6 +14,7 @@ import { formatSTX } from '../utils/formatters';
 import { ACTIVE_NETWORK } from '../config/contracts';
 import { useProtocolStats } from '../hooks/useProtocolStats';
 import { useSmartPolling } from '../hooks/useSmartPolling';
+import { useStxPrice } from '../hooks/useStxPrice';
 import { LoadingStats } from './LoadingCard';
 import { ErrorState } from './ErrorState';
 
@@ -25,6 +26,7 @@ export const Dashboard: React.FC = () => {
   const { address, balanceSTX, userSession } = useAuth();
   const vault = useVault(userSession, address);
   const { stats: protocolStats, isLoading: statsLoading, error: statsError, lastUpdated: statsLastUpdated, refresh: refreshStats } = useProtocolStats(30000);
+  const { price: stxPrice } = useStxPrice();
 
   // Protocol stats derived from hook
   const totalValueLocked = protocolStats?.totalDeposits ?? 0;
@@ -52,7 +54,7 @@ export const Dashboard: React.FC = () => {
       setUserLoan(loan);
 
       if (loan) {
-        const health = await vault.getHealthFactor(1.5);
+        const health = await vault.getHealthFactor(stxPrice);
         if (health) setUserHealthFactor(health.healthFactorPercent);
       } else {
         setUserHealthFactor(null);
@@ -60,7 +62,7 @@ export const Dashboard: React.FC = () => {
     } catch (err) {
       console.error('Auto-refresh failed:', err);
     }
-  }, [address, vault]);
+  }, [address, vault, stxPrice]);
 
   useSmartPolling(fetchUserData, 60_000, !!address);
 
@@ -90,7 +92,7 @@ export const Dashboard: React.FC = () => {
 
       if (loan) {
         console.log('Fetching health factor for loan:', loan);
-        const health = await vault.getHealthFactor(1.5);
+        const health = await vault.getHealthFactor(stxPrice);
         if (health) {
           console.log('Health factor:', health);
           setUserHealthFactor(health.healthFactorPercent);
@@ -233,7 +235,7 @@ export const Dashboard: React.FC = () => {
                   {formatSTX(userDeposit)} STX
                 </div>
                 <div className="text-sm text-gray-500">
-                  ≈ ${(userDeposit * 1.5).toLocaleString()} USD
+                  ≈ ${(userDeposit * stxPrice).toLocaleString()} USD
                 </div>
               </div>
 
