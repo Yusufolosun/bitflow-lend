@@ -4,8 +4,9 @@ import { useAuth } from '../hooks/useAuth';
 import { useVault } from '../hooks/useVault';
 import { useSmartPolling } from '../hooks/useSmartPolling';
 import { useStxPrice } from '../hooks/useStxPrice';
-import { formatSTX, getHealthStatus } from '../types/vault';
+import { formatSTX } from '../types/vault';
 import { PROTOCOL_CONSTANTS } from '../config/contracts';
+import { getHealthStatus } from '../utils/calculations';
 
 /**
  * HealthMonitor Component
@@ -159,8 +160,8 @@ export const HealthMonitor: React.FC = () => {
           <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
             <div
               className={`h-3 transition-all ${
-                collateralRatio >= 150 ? 'bg-emerald-600' :
-                collateralRatio >= 110 ? 'bg-amber-500' : 'bg-red-600'
+                collateralRatio >= PROTOCOL_CONSTANTS.MIN_COLLATERAL_RATIO ? 'bg-emerald-600' :
+                collateralRatio >= PROTOCOL_CONSTANTS.LIQUIDATION_THRESHOLD ? 'bg-amber-500' : 'bg-red-600'
               }`}
               style={{ width: `${Math.min((collateralRatio / 200) * 100, 100)}%` }}
             ></div>
