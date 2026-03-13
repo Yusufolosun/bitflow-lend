@@ -53,6 +53,14 @@ export const CONTRACT_VERSIONS: ContractVersion[] = [
     },
     contractName: 'bitflow-vault-core',
   },
+  {
+    version: '2.0.0',
+    address: {
+      testnet: VAULT_CONTRACT.testnet.address,
+      mainnet: VAULT_CONTRACT.mainnet.address,
+    },
+    contractName: 'bitflow-vault-core-v2',
+  },
 ];
 
 // Points to the latest non-deprecated version
