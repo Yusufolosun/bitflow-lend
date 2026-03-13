@@ -20,7 +20,8 @@ export const LoadingCard: React.FC<LoadingCardProps> = ({
   className = '',
 }) => {
   return (
-    <div className={`card-elevated animate-pulse ${className}`}>
+    <div className={`card-elevated animate-pulse ${className}`} role="status" aria-label="Loading content">
+      <span className="sr-only">Loading...</span>
       {/* Header Skeleton */}
       {showHeader && (
         <div className="flex items-center gap-3 mb-6">
@@ -61,7 +62,8 @@ export const LoadingStats: React.FC = () => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
       {Array.from({ length: 4 }).map((_, i) => (
-        <div key={i} className="card-elevated animate-pulse">
+        <div key={i} className="card-elevated animate-pulse" role="status" aria-label="Loading statistic">
+          <span className="sr-only">Loading...</span>
           <div className="flex items-start justify-between mb-4">
             <div className="w-12 h-12 bg-gray-200 rounded-xl" />
           </div>
