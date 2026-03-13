@@ -43,7 +43,6 @@ const pollTransactionStatus = async (txId: string, maxAttempts = 60): Promise<Po
       const response = await fetch(`${apiUrl}/extended/v1/tx/${txId}`);
 
       if (!response.ok) {
-        console.warn(`API returned status ${response.status}, retrying...`);
         await new Promise(resolve => setTimeout(resolve, 3000));
         continue;
       }
@@ -55,18 +54,15 @@ const pollTransactionStatus = async (txId: string, maxAttempts = 60): Promise<Po
       }
 
       if (data.tx_status === 'abort_by_response' || data.tx_status === 'abort_by_post_condition') {
-        console.error('Transaction failed:', data.tx_result);
         return 'failed';
       }
 
       await new Promise(resolve => setTimeout(resolve, 3000));
-    } catch (err) {
-      console.error('Error checking transaction status:', err);
+    } catch {
       await new Promise(resolve => setTimeout(resolve, 3000));
     }
   }
 
-  console.warn(`Transaction polling timed out after ${maxAttempts * 3} seconds`);
   return 'timeout';
 };
 
@@ -303,8 +299,7 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
       }
 
       return null;
-    } catch (err) {
-      console.error('Error fetching user deposit:', err);
+    } catch {
       return null;
     }
   }, [userAddress, network, contractAddress, contractName]);
@@ -364,8 +359,7 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
       }
 
       return null;
-    } catch (err) {
-      console.error('Error fetching user loan:', err);
+    } catch {
       return null;
     }
   }, [userAddress, network, contractAddress, contractName]);
@@ -407,8 +401,7 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
       }
 
       return null;
-    } catch (err) {
-      console.error('Error fetching repayment amount:', err);
+    } catch {
       return null;
     }
   }, [userAddress, network, contractAddress, contractName]);
@@ -468,8 +461,7 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
       }
 
       return null;
-    } catch (err) {
-      console.error('Error calculating health factor:', err);
+    } catch {
       return null;
     }
   }, [userAddress, network, contractAddress, contractName]);
