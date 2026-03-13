@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { ArrowDownCircle, CheckCircle, XCircle, ExternalLink, AlertTriangle } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useVault } from '../hooks/useVault';
+import { useSmartPolling } from '../hooks/useSmartPolling';
 import { formatSTX } from '../types/vault';
 import { PROTOCOL_CONSTANTS } from '../config/contracts';
 import { getExplorerUrl } from '../config/contracts';
@@ -20,20 +21,14 @@ export const DepositCard: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [lastTxId, setLastTxId] = useState<string | null>(null);
 
-  // Fetch user's current deposit once on mount
-  useEffect(() => {
-    const fetchDeposit = async () => {
-      if (address) {
-        const deposit = await vault.getUserDeposit();
-        if (deposit) {
-          setUserDeposit(deposit.amountSTX);
-        }
-      }
-    };
+  // Fetch user's current deposit on a 60s smart interval
+  const fetchDeposit = useCallback(async () => {
+    if (!address) return;
+    const deposit = await vault.getUserDeposit();
+    if (deposit) setUserDeposit(deposit.amountSTX);
+  }, [address, vault]);
 
-    fetchDeposit();
-    // Auto-refresh disabled to prevent rate limiting
-  }, [address]); // Only re-fetch when address changes
+  useSmartPolling(fetchDeposit, 60_000, !!address);
 
   const handleDeposit = async () => {
     const amount = parseFloat(depositAmount);
