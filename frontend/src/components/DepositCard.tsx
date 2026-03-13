@@ -40,8 +40,6 @@ export const DepositCard: React.FC = () => {
       return;
     }
 
-    console.log('Deposit attempt:', { amount, balanceSTX, hasEnough: amount <= balanceSTX });
-
     if (amount > balanceSTX) {
       setErrorMessage(`Insufficient balance. You have ${balanceSTX.toFixed(2)} STX, trying to deposit ${amount.toFixed(2)} STX`);
       setTxStatus('error');
@@ -55,7 +53,6 @@ export const DepositCard: React.FC = () => {
       const result = await vault.deposit(amount);
 
       if (result.success && result.txId) {
-        console.log('Transaction submitted, waiting for confirmation...');
         setLastTxId(result.txId);
         setErrorMessage(`Transaction submitted: ${result.txId}`);
         
