@@ -112,7 +112,6 @@ export const useProtocolStats = (refreshInterval = 30000) => {
       }
     } catch (err: any) {
       if (!mountedRef.current) return;
-      console.error('Error fetching protocol stats:', err);
       setError(err.message || 'Failed to fetch protocol stats');
     } finally {
       if (mountedRef.current) {
