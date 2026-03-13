@@ -218,6 +218,7 @@
 (define-public (stake (amount uint))
   (begin
     (asserts! (not (var-get is-paused)) ERR-PROTOCOL-PAUSED)
+    (asserts! (> (var-get protocol-start-block) u0) ERR-PROTOCOL-PAUSED)
     (asserts! (> amount u0) ERR-ZERO-AMOUNT)
     (asserts! (>= amount MIN-STAKE-AMOUNT) ERR-INVALID-AMOUNT)
 
