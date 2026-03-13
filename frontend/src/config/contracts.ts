@@ -10,9 +10,8 @@ export const NETWORK_CONFIG = {
   mainnet: new StacksMainnet(),
 };
 
-// Toggle between 'testnet' and 'mainnet'
-// Using type assertion to preserve union type for runtime comparisons
-export const ACTIVE_NETWORK = 'mainnet' as 'testnet' | 'mainnet';
+// Determine active network from environment variable, defaulting to testnet for safety
+export const ACTIVE_NETWORK = (import.meta.env.VITE_NETWORK || 'testnet') as 'testnet' | 'mainnet';
 
 // Get the active network instance
 export const getNetwork = () => NETWORK_CONFIG[ACTIVE_NETWORK];
