@@ -40,33 +40,14 @@ export const API_URLS = {
 
 export const STACKS_API_URL = import.meta.env.VITE_STACKS_API_URL || API_URLS[CURRENT_NETWORK as keyof typeof API_URLS];
 
-// Protocol Parameters
+// Protocol parameters are defined once in config/contracts.ts (PROTOCOL_CONSTANTS)
+// to match the on-chain Clarity constants. Import from there directly.
+//
+// Additional protocol-level settings that don't exist on-chain:
 export const PROTOCOL_PARAMS = {
-  // Collateralization ratio (150%)
-  COLLATERAL_RATIO: 150,
-  
-  // Minimum collateralization ratio for health (110%)
-  MIN_COLLATERAL_RATIO: 110,
-  
-  // Liquidation bonus (5%)
-  LIQUIDATION_BONUS: 5,
-  
-  // Interest rate per block (basis points)
   INTEREST_RATE_BP: 10, // 0.1% per 52,560 blocks (~1 year)
-  
-  // Blocks per year (approximately)
-  BLOCKS_PER_YEAR: 52560,
-  
-  // Minimum borrow amount (in STX)
-  MIN_BORROW_AMOUNT: 100,
-  
-  // Maximum LTV (Loan-to-Value) ratio
+  MIN_BORROW_AMOUNT: 100, // minimum borrow in STX
   MAX_LTV: 66.67, // 1/1.5 = ~66.67%
-  
-  // Liquidation threshold
-  LIQUIDATION_THRESHOLD: 110,
-  
-  // Protocol fee (basis points)
   PROTOCOL_FEE_BP: 25, // 0.25%
 } as const;
 

@@ -77,11 +77,14 @@ export const getContractId = () => {
   return `${config.address}.${config.contractName}`;
 };
 
-// Protocol Constants (should match contract)
+// Protocol Constants — canonical source, matches the Clarity contract definitions:
+//   MIN-COLLATERAL-RATIO  u150  (contracts/bitflow-vault-core.clar:25)
+//   LIQUIDATION-THRESHOLD u110  (contracts/bitflow-vault-core.clar:26)
+//   LATE-PENALTY-RATE     u500  (contracts/bitflow-vault-core.clar:31) = 5% penalty
 export const PROTOCOL_CONSTANTS = {
-  MIN_COLLATERAL_RATIO: 150, // 150%
-  LIQUIDATION_THRESHOLD: 110, // 110%
-  LIQUIDATION_BONUS: 5, // 5%
+  MIN_COLLATERAL_RATIO: 150, // 150% — minimum collateral-to-loan ratio
+  LIQUIDATION_THRESHOLD: 110, // 110% — positions below this are liquidatable
+  LIQUIDATION_BONUS: 5, // 5% — bonus awarded to liquidators
   BLOCKS_PER_YEAR: 52560, // Stacks blocks per year (approx)
   BLOCK_TIME_MINUTES: 10, // Average block time
 };
