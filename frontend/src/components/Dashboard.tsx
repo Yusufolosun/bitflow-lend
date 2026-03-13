@@ -76,34 +76,26 @@ export const Dashboard: React.FC = () => {
 
     setIsRefreshing(true);
     setRefreshError(null);
-    console.log('Manually refreshing user data for address:', address);
-    
+
     try {
       const deposit = await vault.getUserDeposit();
       if (deposit) {
-        console.log('User deposit:', deposit);
         setUserDeposit(deposit.amountSTX);
       } else {
         setUserDeposit(0);
       }
 
       const loan = await vault.getUserLoan();
-      console.log('User loan result:', loan);
       setUserLoan(loan);
 
       if (loan) {
-        console.log('Fetching health factor for loan:', loan);
         const health = await vault.getHealthFactor(stxPrice);
         if (health) {
-          console.log('Health factor:', health);
           setUserHealthFactor(health.healthFactorPercent);
         }
       } else {
-        console.log('No active loan found');
         setUserHealthFactor(null);
       }
-      
-      console.log('Refresh completed successfully');
     } catch (error: any) {
       console.error('Error refreshing data:', error);
       setRefreshError(error.message || 'Failed to refresh data');
