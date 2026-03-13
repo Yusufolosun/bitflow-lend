@@ -458,7 +458,7 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
 
       if (result.type === ClarityType.OptionalSome && result.value.type === ClarityType.UInt) {
         const healthFactorPercent = Number(result.value.value);
-        
+
         // Get loan data for USD values - call the function directly
         const loanResult = await callReadOnlyFunction({
           network,
@@ -468,19 +468,19 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
           functionArgs: [principalCV(userAddress)],
           senderAddress: userAddress,
         });
-        
+
         let collateralValueUSD = 0;
         let debtValueUSD = 0;
-        
+
         if (loanResult.type === ClarityType.OptionalSome) {
           const loanData = cvToValue(loanResult.value);
           const amountSTX = microStxToStx(BigInt(loanData.amount));
           const collateralAmountSTX = microStxToStx((BigInt(loanData.amount) * BigInt(PROTOCOL_CONSTANTS.MIN_COLLATERAL_RATIO)) / BigInt(100));
-          
+
           collateralValueUSD = collateralAmountSTX * stxPriceUSD;
           debtValueUSD = amountSTX * stxPriceUSD;
         }
-        
+
         return {
           healthFactorPercent,
           collateralValueUSD,
@@ -495,6 +495,46 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
     }
   }, [userAddress, network, contractAddress, contractName]);
 
+  /**
+   * Liquidate an undercollateralized borrower position
+   */
+  const liquidate = useCallback(async (borrowerAddress: string): Promise<ContractCallResponse> => {
+    if (!userAddress) {
+      return { success: false, error: 'Wallet not connected' };
+    }
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      return new Promise((resolve) => {
+        openContractCall({
+          network,
+          contractAddress,
+          contractName,
+          functionName: 'liquidate',
+          functionArgs: [principalCV(borrowerAddress)],
+          postConditionMode: PostConditionMode.Allow,
+          onFinish: (data: any) => {
+            console.log('Liquidation transaction submitted:', data.txId);
+            setIsLoading(false);
+            resolve({ success: true, txId: data.txId });
+          },
+          onCancel: () => {
+            console.log('Liquidation cancelled');
+            setIsLoading(false);
+            resolve({ success: false, error: 'Transaction cancelled by user' });
+          },
+        });
+      });
+    } catch (err: any) {
+      const errorMsg = err.message || 'Failed to liquidate';
+      setError(errorMsg);
+      setIsLoading(false);
+      return { success: false, error: errorMsg };
+    }
+  }, [userAddress, network, contractAddress, contractName]);
+
   return {
     // State
     isLoading,
@@ -505,13 +545,14 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
     withdraw,
     borrow,
     repay,
+    liquidate,
 
     // Read operations
     getUserDeposit,
     getUserLoan,
     getRepaymentAmount,
     getHealthFactor,
-    
+
     // Utilities
     pollTransactionStatus: (txId: string) => pollTransactionStatus(txId),
   };
