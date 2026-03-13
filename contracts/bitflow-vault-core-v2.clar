@@ -665,6 +665,16 @@
 
 ;; ===== MIGRATION SUPPORT =====
 
+;; Get protocol age in blocks
+(define-read-only (get-protocol-age)
+  (- block-height (var-get protocol-start-block))
+)
+
+;; Get blocks since last activity
+(define-read-only (get-time-since-last-activity)
+  (- block-height (var-get last-activity-block))
+)
+
 ;; Export a single user's full position for migration
 (define-read-only (export-user-position (user principal))
   (let (
