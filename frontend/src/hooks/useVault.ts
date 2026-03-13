@@ -43,21 +43,17 @@ const pollTransactionStatus = async (txId: string, maxAttempts = 60): Promise<Po
       const response = await fetch(`${apiUrl}/extended/v1/tx/${txId}`);
 
       if (!response.ok) {
-        console.warn(`API returned status ${response.status}, retrying...`);
         await new Promise(resolve => setTimeout(resolve, 3000));
         continue;
       }
 
       const data = await response.json();
 
-      console.log(`Transaction status (attempt ${i + 1}/${maxAttempts}):`, data.tx_status);
-
       if (data.tx_status === 'success') {
         return 'confirmed';
       }
 
       if (data.tx_status === 'abort_by_response' || data.tx_status === 'abort_by_post_condition') {
-        console.error('Transaction failed:', data.tx_result);
         return 'failed';
       }
 
@@ -68,7 +64,6 @@ const pollTransactionStatus = async (txId: string, maxAttempts = 60): Promise<Po
     }
   }
 
-  console.warn(`Transaction polling timed out after ${maxAttempts * 3} seconds`);
   return 'timeout';
 };
 
@@ -117,12 +112,10 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
           postConditions,
           postConditionMode: PostConditionMode.Deny,
           onFinish: (data: any) => {
-            console.log('Deposit transaction submitted:', data.txId);
             setIsLoading(false);
             resolve({ success: true, txId: data.txId });
           },
           onCancel: () => {
-            console.log('Deposit cancelled');
             setIsLoading(false);
             resolve({ success: false, error: 'Transaction cancelled by user' });
           },
@@ -160,12 +153,10 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
           postConditions: [],
           postConditionMode: PostConditionMode.Deny,
           onFinish: (data: any) => {
-            console.log('Withdrawal transaction submitted:', data.txId);
             setIsLoading(false);
             resolve({ success: true, txId: data.txId });
           },
           onCancel: () => {
-            console.log('Withdrawal cancelled');
             setIsLoading(false);
             resolve({ success: false, error: 'Transaction cancelled by user' });
           },
@@ -211,12 +202,10 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
           ],
           postConditionMode: PostConditionMode.Allow,
           onFinish: (data: any) => {
-            console.log('Borrow transaction submitted:', data.txId);
             setIsLoading(false);
             resolve({ success: true, txId: data.txId });
           },
           onCancel: () => {
-            console.log('Borrow cancelled');
             setIsLoading(false);
             resolve({ success: false, error: 'Transaction cancelled by user' });
           },
@@ -252,12 +241,10 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
           postConditions: [],
           postConditionMode: PostConditionMode.Deny,
           onFinish: (data: any) => {
-            console.log('Repayment transaction submitted:', data.txId);
             setIsLoading(false);
             resolve({ success: true, txId: data.txId });
           },
           onCancel: () => {
-            console.log('Repayment cancelled');
             setIsLoading(false);
             resolve({ success: false, error: 'Transaction cancelled by user' });
           },
@@ -327,20 +314,9 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
         senderAddress: userAddress,
       });
 
-      console.log('getUserLoan raw result:', JSON.stringify(result, (_key, value) => 
-        typeof value === 'bigint' ? value.toString() : value, 2
-      ));
-      console.log('Result type:', result.type);
-      console.log('ClarityType enum:', { 
-        OptionalSome: ClarityType.OptionalSome, 
-        OptionalNone: ClarityType.OptionalNone 
-      });
-
       // Handle optional some (loan exists)
       if (result.type === ClarityType.OptionalSome && result.value) {
-        console.log('Processing OptionalSome - loan exists');
         const loanData = cvToValue(result.value);
-        console.log('Loan data:', loanData);
         
         const amount = BigInt(loanData.amount);
         const interestRate = Number(loanData['interest-rate']);
@@ -360,7 +336,7 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
         const blocksElapsed = 0; // For now, assume loan just started
         const startTimestamp = Date.now() / 1000 - (blocksElapsed * 600);
 
-        const loanResult = {
+        return {
           amount,
           amountSTX,
           interestRate,
@@ -372,18 +348,9 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
           collateralAmount,
           collateralAmountSTX,
         };
-        
-        console.log('Returning loan:', loanResult);
-        return loanResult;
       }
 
       // Handle optional none (no loan)
-      if (result.type === ClarityType.OptionalNone) {
-        console.log('No active loan found (OptionalNone)');
-      } else {
-        console.log('Unexpected result type:', result.type);
-      }
-      
       return null;
     } catch (err) {
       console.error('Error fetching user loan:', err);
