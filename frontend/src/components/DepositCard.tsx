@@ -53,9 +53,8 @@ export const DepositCard: React.FC = () => {
       const result = await vault.deposit(amount);
 
       if (result.success && result.txId) {
-        console.log('Transaction submitted, waiting for confirmation...');
         setLastTxId(result.txId);
-        setErrorMessage(`Transaction submitted: ${result.txId}`);
+        setErrorMessage(`Transaction submitted. Waiting for confirmation...`);
         
         // Wait for transaction confirmation
         const result2 = await vault.pollTransactionStatus(result.txId);
