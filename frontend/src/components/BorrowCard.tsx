@@ -5,6 +5,7 @@ import { useVault } from '../hooks/useVault';
 import { useSmartPolling } from '../hooks/useSmartPolling';
 import { formatSTX, LOAN_TERMS } from '../types/vault';
 import { PROTOCOL_CONSTANTS, getExplorerUrl } from '../config/contracts';
+import { calculateHealthFactor, getHealthStatus } from '../utils/calculations';
 
 /**
  * BorrowCard Component
@@ -273,24 +274,28 @@ export const BorrowCard: React.FC = () => {
           </div>
 
           {/* Health Factor Preview */}
-          {amount > 0 && userDeposit > 0 && (
-            <div className="border-t border-accent-200 pt-2 mt-2">
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Projected Health Factor:</span>
-                <span className={`font-bold ${
-                  (userDeposit / amount) * 100 >= 150 ? 'text-green-600' :
-                  (userDeposit / amount) * 100 >= 110 ? 'text-yellow-600' : 'text-red-600'
-                }`}>
-                  {((userDeposit / amount) * 100).toFixed(0)}%
-                </span>
+          {amount > 0 && userDeposit > 0 && (() => {
+            const projectedHealth = calculateHealthFactor(userDeposit, amount);
+            const status = getHealthStatus(projectedHealth);
+            return (
+              <div className="border-t border-accent-200 pt-2 mt-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Projected Health Factor:</span>
+                  <span className={`font-bold ${
+                    status === 'healthy' ? 'text-green-600' :
+                    status === 'warning' ? 'text-yellow-600' : 'text-red-600'
+                  }`}>
+                    {projectedHealth.toFixed(0)}%
+                  </span>
+                </div>
+                {status === 'warning' && (
+                  <p className="text-xs text-yellow-700 mt-1">
+                    ⚠️ This borrow would put you near the liquidation zone
+                  </p>
+                )}
               </div>
-              {(userDeposit / amount) * 100 < 150 && (userDeposit / amount) * 100 >= 110 && (
-                <p className="text-xs text-yellow-700 mt-1">
-                  ⚠️ This borrow would put you near the liquidation zone
-                </p>
-              )}
-            </div>
-          )}
+            );
+          })()}
         </div>
       )}
 
