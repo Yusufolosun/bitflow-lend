@@ -236,7 +236,9 @@
   (begin
     (asserts! (is-eq tx-sender contract-owner) err-owner-only)
     (asserts! (> price u0) ERR-INVALID-AMOUNT)
+    (asserts! (< price u10000000) ERR-INVALID-PARAM) ;; sanity cap ~$100 USD
     (var-set admin-stx-price price)
+    (var-set last-activity-block block-height)
     (print { event: "set-stx-price", price: price })
     (ok true)
   )
