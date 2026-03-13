@@ -297,15 +297,20 @@ export function validateInterestRate(
 /**
  * Validate loan term
  * @param termDays - Loan term in days
- * @param allowedTerms - Array of allowed term lengths (default: [7, 30, 90, 365])
+ * @param minDays - Minimum term in days (default: 1, matching contract min-term-days)
+ * @param maxDays - Maximum term in days (default: 365, matching contract max-term-days)
  * @returns Validation result
  */
 export function validateLoanTerm(
   termDays: number,
-  allowedTerms: number[] = [7, 30, 90, 365]
+  minDays: number = 1,
+  maxDays: number = 365
 ): { valid: boolean; error?: string } {
-  if (!allowedTerms.includes(termDays)) {
-    return { valid: false, error: `Loan term must be one of: ${allowedTerms.join(', ')} days` };
+  if (termDays < minDays) {
+    return { valid: false, error: `Minimum loan term is ${minDays} day${minDays === 1 ? '' : 's'}` };
+  }
+  if (termDays > maxDays) {
+    return { valid: false, error: `Maximum loan term is ${maxDays} days` };
   }
   return { valid: true };
 }
