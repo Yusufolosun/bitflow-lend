@@ -662,3 +662,46 @@
     (ok true)
   )
 )
+
+;; ===== MIGRATION SUPPORT =====
+
+;; Export a single user's full position for migration
+(define-read-only (export-user-position (user principal))
+  (let (
+    (deposit-amount (default-to u0 (map-get? user-deposits user)))
+    (loan-data (map-get? user-loans user))
+  )
+    {
+      user: user,
+      deposit: deposit-amount,
+      has-loan: (is-some loan-data),
+      loan: (match loan-data
+        loan-info {
+          amount: (get amount loan-info),
+          interest-rate: (get interest-rate loan-info),
+          start-block: (get start-block loan-info),
+          term-end: (get term-end loan-info),
+          created-at-price: (get created-at-price loan-info)
+        }
+        { amount: u0, interest-rate: u0, start-block: u0, term-end: u0, created-at-price: u0 }
+      ),
+      repayment: (get-repayment-amount user),
+      exported-at-block: block-height
+    }
+  )
+)
+
+;; Export protocol-level state for migration verification
+(define-read-only (export-protocol-state)
+  {
+    total-deposits: (var-get total-deposits),
+    total-repaid: (var-get total-repaid),
+    total-liquidations: (var-get total-liquidations),
+    total-outstanding-borrows: (var-get total-outstanding-borrows),
+    stx-price: (var-get admin-stx-price),
+    is-paused: (var-get is-paused),
+    protocol-start-block: (var-get protocol-start-block),
+    last-activity-block: (var-get last-activity-block),
+    exported-at-block: block-height
+  }
+)
