@@ -515,15 +515,16 @@
     (asserts! (not (var-get is-paused)) ERR-PROTOCOL-PAUSED)
     (asserts! (var-get borrows-enabled) ERR-PROTOCOL-PAUSED)
     (asserts! (is-price-valid) ERR-STALE-PRICE)
-    
+
     ;; Input validation
     (asserts! (> amount u0) ERR-ZERO-AMOUNT)
     (asserts! (>= amount MIN-BORROW-AMOUNT) ERR-MIN-BORROW-AMOUNT)
     (asserts! (<= amount MAX-BORROW-AMOUNT) ERR-MAX-BORROW-EXCEEDED)
     (asserts! (and (>= interest-rate (var-get min-interest-rate)) (<= interest-rate (var-get max-interest-rate))) ERR-INVALID-INTEREST-RATE)
     (asserts! (and (>= term-days (var-get min-term-days)) (<= term-days (var-get max-term-days))) ERR-INVALID-TERM)
-    
+
     (let (
+      (recipient tx-sender)
       (user-balance (default-to u0 (map-get? user-deposits tx-sender)))
       (required-collateral (calculate-required-collateral amount))
       (term-end (safe-add block-height (* term-days u144)))
@@ -532,28 +533,28 @@
       ;; Collateral check
       (asserts! (> user-balance u0) ERR-INSUFFICIENT-COLLATERAL)
       (asserts! (>= user-balance required-collateral) ERR-INSUFFICIENT-COLLATERAL)
-      
-      ;; Health factor check before borrow
-      (asserts! (is-none (map-get? user-loans tx-sender)) ERR-ALREADY-HAS-LOAN)
-      
+
+      ;; One loan per user
+      (asserts! (is-none (map-get? user-loans recipient)) ERR-ALREADY-HAS-LOAN)
+
       ;; Transfer borrowed STX from contract to user
-      (try! (as-contract (stx-transfer? amount tx-sender tx-sender)))
-      
+      (try! (as-contract (stx-transfer? amount tx-sender recipient)))
+
       ;; Store loan with oracle price snapshot
-      (map-set user-loans tx-sender {
+      (map-set user-loans recipient {
         amount: amount,
         interest-rate: interest-rate,
         start-block: block-height,
         term-end: term-end,
         created-at-price: current-price
       })
-      
+
       ;; Update metrics
       (var-set total-borrows-count (+ (var-get total-borrows-count) u1))
       (var-set total-borrow-volume (safe-add (var-get total-borrow-volume) amount))
       (var-set last-activity-block block-height)
-      
-      (print { event: "borrow", user: tx-sender, amount: amount, rate: interest-rate, term-days: term-days, price-snapshot: current-price })
+
+      (print { event: "borrow", user: recipient, amount: amount, rate: interest-rate, term-days: term-days, price-snapshot: current-price })
       (ok true)
     )
   )
