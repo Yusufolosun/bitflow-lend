@@ -27,47 +27,49 @@ import {
 import { UserSession } from '@stacks/connect';
 
 /**
- * Poll transaction status until confirmed or failed
+ * Possible results from polling a transaction's on-chain status
  */
-const pollTransactionStatus = async (txId: string, maxAttempts = 60): Promise<boolean> => {
+export type PollResult = 'confirmed' | 'failed' | 'timeout';
+
+/**
+ * Poll transaction status until confirmed, explicitly failed, or timed out.
+ * Returns a three-state result so callers can show the right message.
+ */
+const pollTransactionStatus = async (txId: string, maxAttempts = 60): Promise<PollResult> => {
   const apiUrl = getApiEndpoint();
-  
+
   for (let i = 0; i < maxAttempts; i++) {
     try {
       const response = await fetch(`${apiUrl}/extended/v1/tx/${txId}`);
-      
+
       if (!response.ok) {
         console.warn(`API returned status ${response.status}, retrying...`);
         await new Promise(resolve => setTimeout(resolve, 3000));
         continue;
       }
-      
+
       const data = await response.json();
-      
+
       console.log(`Transaction status (attempt ${i + 1}/${maxAttempts}):`, data.tx_status);
-      
+
       if (data.tx_status === 'success') {
-        console.log('Transaction confirmed successfully!');
-        return true;
+        return 'confirmed';
       }
-      
+
       if (data.tx_status === 'abort_by_response' || data.tx_status === 'abort_by_post_condition') {
         console.error('Transaction failed:', data.tx_result);
-        console.error('Full transaction data:', data);
-        return false;
+        return 'failed';
       }
-      
-      // Wait 3 seconds before next check
+
       await new Promise(resolve => setTimeout(resolve, 3000));
     } catch (err) {
       console.error('Error checking transaction status:', err);
       await new Promise(resolve => setTimeout(resolve, 3000));
     }
   }
-  
-  // Timeout - transaction might still be pending
+
   console.warn(`Transaction polling timed out after ${maxAttempts * 3} seconds`);
-  return false;
+  return 'timeout';
 };
 
 /**
