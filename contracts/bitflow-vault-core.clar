@@ -532,6 +532,51 @@
   )
 )
 
+;; ===== MIGRATION SUPPORT =====
+;; Read-only export functions for migrating user state to a new contract version.
+;; A migration script can call these per-user to snapshot positions, then replay
+;; them into the replacement contract via import functions.
+
+;; Export a single user's full position for migration
+;; Returns deposit, loan details, and repayment breakdown in one call
+(define-read-only (export-user-position (user principal))
+  (let (
+    (deposit-amount (default-to u0 (map-get? user-deposits user)))
+    (loan-data (map-get? user-loans user))
+  )
+    {
+      user: user,
+      deposit: deposit-amount,
+      has-loan: (is-some loan-data),
+      loan: (match loan-data
+        loan-info {
+          amount: (get amount loan-info),
+          interest-rate: (get interest-rate loan-info),
+          start-block: (get start-block loan-info),
+          term-end: (get term-end loan-info)
+        }
+        { amount: u0, interest-rate: u0, start-block: u0, term-end: u0 }
+      ),
+      repayment: (get-repayment-amount user),
+      exported-at-block: block-height
+    }
+  )
+)
+
+;; Export protocol-level state for migration verification
+(define-read-only (export-protocol-state)
+  {
+    total-deposits: (var-get total-deposits),
+    total-repaid: (var-get total-repaid),
+    total-liquidations: (var-get total-liquidations),
+    stx-price: (var-get admin-stx-price),
+    is-paused: (var-get is-paused),
+    protocol-start-block: (var-get protocol-start-block),
+    last-activity-block: (var-get last-activity-block),
+    exported-at-block: block-height
+  }
+)
+
 ;; Initialization function (can only be called once by contract owner)
 (define-public (initialize)
   (begin
