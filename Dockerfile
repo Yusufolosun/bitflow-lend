@@ -1,5 +1,8 @@
 FROM ubuntu:22.04
 
+# Clarinet version — bump this arg when upgrading
+ARG CLARINET_VERSION=2.10.0
+
 # Avoid prompts from apt
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -18,7 +21,7 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Clarinet
-RUN wget -nv https://github.com/hirosystems/clarinet/releases/download/v2.10.0/clarinet-linux-x64.tar.gz \
+RUN wget -nv https://github.com/hirosystems/clarinet/releases/download/v${CLARINET_VERSION}/clarinet-linux-x64.tar.gz \
     && tar -xzf clarinet-linux-x64.tar.gz \
     && mv clarinet /usr/local/bin/ \
     && rm clarinet-linux-x64.tar.gz \
