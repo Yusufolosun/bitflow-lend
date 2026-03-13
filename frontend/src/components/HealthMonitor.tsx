@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Activity, AlertTriangle, CheckCircle, XCircle, TrendingDown } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useVault } from '../hooks/useVault';
+import { useSmartPolling } from '../hooks/useSmartPolling';
 import { formatSTX, getHealthStatus } from '../types/vault';
 import { PROTOCOL_CONSTANTS } from '../config/contracts';
 
@@ -18,26 +19,22 @@ export const HealthMonitor: React.FC = () => {
   const [activeLoan, setActiveLoan] = useState<any>(null);
   const [stxPrice] = useState(1.5); // Default STX price in USD
 
-  // Fetch user data once on mount
-  useEffect(() => {
-    const fetchData = async () => {
-      if (address) {
-        const deposit = await vault.getUserDeposit();
-        setUserDeposit(deposit);
+  // Fetch user data on a 30s smart interval — health factor is time-sensitive
+  const fetchData = useCallback(async () => {
+    if (!address) return;
+    const deposit = await vault.getUserDeposit();
+    setUserDeposit(deposit);
 
-        const loan = await vault.getUserLoan();
-        setActiveLoan(loan);
+    const loan = await vault.getUserLoan();
+    setActiveLoan(loan);
 
-        if (loan) {
-          const health = await vault.getHealthFactor(stxPrice);
-          setHealthFactor(health);
-        }
-      }
-    };
+    if (loan) {
+      const health = await vault.getHealthFactor(stxPrice);
+      setHealthFactor(health);
+    }
+  }, [address, vault, stxPrice]);
 
-    fetchData();
-    // Auto-refresh disabled to prevent rate limiting
-  }, [address]); // Only re-fetch when address changes
+  useSmartPolling(fetchData, 30_000, !!address);
 
   // Calculate collateralization ratio
   const getCollateralRatio = () => {

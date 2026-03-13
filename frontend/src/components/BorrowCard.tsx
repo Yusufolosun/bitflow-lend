@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { TrendingUp, AlertCircle, CheckCircle, XCircle, ExternalLink } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useVault } from '../hooks/useVault';
+import { useSmartPolling } from '../hooks/useSmartPolling';
 import { formatSTX, LOAN_TERMS } from '../types/vault';
 import { PROTOCOL_CONSTANTS, getExplorerUrl } from '../config/contracts';
 
@@ -22,23 +23,16 @@ export const BorrowCard: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [lastTxId, setLastTxId] = useState<string | null>(null);
 
-  // Fetch user deposit and active loan once on mount
-  useEffect(() => {
-    const fetchData = async () => {
-      if (address) {
-        const deposit = await vault.getUserDeposit();
-        if (deposit) {
-          setUserDeposit(deposit.amountSTX);
-        }
+  // Fetch user deposit and active loan on a 60s smart interval
+  const fetchData = useCallback(async () => {
+    if (!address) return;
+    const deposit = await vault.getUserDeposit();
+    if (deposit) setUserDeposit(deposit.amountSTX);
+    const loan = await vault.getUserLoan();
+    setActiveLoan(loan);
+  }, [address, vault]);
 
-        const loan = await vault.getUserLoan();
-        setActiveLoan(loan);
-      }
-    };
-
-    fetchData();
-    // Auto-refresh disabled to prevent rate limiting
-  }, [address]); // Only re-fetch when address changes
+  useSmartPolling(fetchData, 60_000, !!address);
 
   // Calculate maximum borrowable amount
   const maxBorrowSTX = userDeposit / (PROTOCOL_CONSTANTS.MIN_COLLATERAL_RATIO / 100);

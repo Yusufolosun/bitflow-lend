@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { TrendingUp, DollarSign, Activity, Users } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useVault } from '../hooks/useVault';
@@ -13,6 +13,7 @@ import { NetworkIndicator } from './NetworkIndicator';
 import { formatSTX } from '../utils/formatters';
 import { ACTIVE_NETWORK } from '../config/contracts';
 import { useProtocolStats } from '../hooks/useProtocolStats';
+import { useSmartPolling } from '../hooks/useSmartPolling';
 import { LoadingStats } from './LoadingCard';
 import { ErrorState } from './ErrorState';
 
@@ -40,42 +41,28 @@ export const Dashboard: React.FC = () => {
 
   // Protocol stats now fetched via useProtocolStats hook (auto-refreshes every 30s)
 
-  // Fetch user portfolio data - DISABLED to prevent rate limiting
-  // Data will be fetched after user actions (deposits, borrows, etc.)
-  // useEffect(() => {
-  //   const fetchUserData = async () => {
-  //     if (address) {
-  //       console.log('Fetching user data for address:', address);
-  //       
-  //       const deposit = await vault.getUserDeposit();
-  //       if (deposit) {
-  //         console.log('User deposit:', deposit);
-  //         setUserDeposit(deposit.amountSTX);
-  //       }
-  //
-  //       const loan = await vault.getUserLoan();
-  //       console.log('User loan result:', loan);
-  //       setUserLoan(loan);
-  //
-  //       if (loan) {
-  //         console.log('Fetching health factor for loan:', loan);
-  //         const health = await vault.getHealthFactor(1.5);
-  //         if (health) {
-  //           console.log('Health factor:', health);
-  //           setUserHealthFactor(health.healthFactorPercent);
-  //         }
-  //       } else {
-  //         console.log('No active loan found');
-  //         setUserHealthFactor(null);
-  //       }
-  //     }
-  //   };
-  //
-  //   fetchUserData();
-  //   // Auto-refresh disabled to prevent rate limiting
-    // const interval = setInterval(fetchUserData, 60000);
-    // return () => clearInterval(interval);
-  // }, [address, vault]);
+  // Fetch user portfolio data on a 60s smart interval (pauses when tab hidden)
+  const fetchUserData = useCallback(async () => {
+    if (!address) return;
+    try {
+      const deposit = await vault.getUserDeposit();
+      setUserDeposit(deposit ? deposit.amountSTX : 0);
+
+      const loan = await vault.getUserLoan();
+      setUserLoan(loan);
+
+      if (loan) {
+        const health = await vault.getHealthFactor(1.5);
+        if (health) setUserHealthFactor(health.healthFactorPercent);
+      } else {
+        setUserHealthFactor(null);
+      }
+    } catch (err) {
+      console.error('Auto-refresh failed:', err);
+    }
+  }, [address, vault]);
+
+  useSmartPolling(fetchUserData, 60_000, !!address);
 
   // Manual refresh function for user portfolio
   const refreshUserData = async () => {

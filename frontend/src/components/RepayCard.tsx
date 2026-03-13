@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { DollarSign, AlertCircle, CheckCircle, XCircle, Clock } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useVault } from '../hooks/useVault';
+import { useSmartPolling } from '../hooks/useSmartPolling';
 import { formatSTX } from '../types/vault';
 
 /**
@@ -18,38 +19,33 @@ export const RepayCard: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [timeElapsed, setTimeElapsed] = useState('');
 
-  // Fetch active loan and repayment amount once on mount
-  useEffect(() => {
-    const fetchData = async () => {
-      if (address) {
-        const loan = await vault.getUserLoan();
-        setActiveLoan(loan);
+  // Fetch active loan and repayment amount on a 60s smart interval
+  const fetchData = useCallback(async () => {
+    if (!address) return;
+    const loan = await vault.getUserLoan();
+    setActiveLoan(loan);
 
-        if (loan) {
-          const repayment = await vault.getRepaymentAmount();
-          setRepaymentAmount(repayment);
+    if (loan) {
+      const repayment = await vault.getRepaymentAmount();
+      setRepaymentAmount(repayment);
 
-          // Calculate time elapsed
-          const now = Date.now() / 1000;
-          const elapsed = now - loan.startTimestamp;
-          const days = Math.floor(elapsed / 86400);
-          const hours = Math.floor((elapsed % 86400) / 3600);
-          const minutes = Math.floor((elapsed % 3600) / 60);
+      const now = Date.now() / 1000;
+      const elapsed = now - loan.startTimestamp;
+      const days = Math.floor(elapsed / 86400);
+      const hours = Math.floor((elapsed % 86400) / 3600);
+      const minutes = Math.floor((elapsed % 3600) / 60);
 
-          if (days > 0) {
-            setTimeElapsed(`${days}d ${hours}h`);
-          } else if (hours > 0) {
-            setTimeElapsed(`${hours}h ${minutes}m`);
-          } else {
-            setTimeElapsed(`${minutes}m`);
-          }
-        }
+      if (days > 0) {
+        setTimeElapsed(`${days}d ${hours}h`);
+      } else if (hours > 0) {
+        setTimeElapsed(`${hours}h ${minutes}m`);
+      } else {
+        setTimeElapsed(`${minutes}m`);
       }
-    };
+    }
+  }, [address, vault]);
 
-    fetchData();
-    // Auto-refresh disabled to prevent rate limiting
-  }, [address]); // Only re-fetch when address changes
+  useSmartPolling(fetchData, 60_000, !!address);
 
   const handleRepay = async () => {
     if (!repaymentAmount) {
