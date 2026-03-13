@@ -74,6 +74,7 @@ mkdir -p "$BACKUP_PATH"
 
 FILE_COUNT=0
 TOTAL_SIZE=0
+ERRORS=0
 
 # ──────────────────────────────────────────────
 # Helper
@@ -85,11 +86,18 @@ backup_dir() {
 
     if [ -d "$src" ]; then
         mkdir -p "$dest"
-        cp -r "$src"/* "$dest"/ 2>/dev/null || true
-        local count
-        count=$(find "$dest" -type f 2>/dev/null | wc -l | tr -d ' ')
-        FILE_COUNT=$((FILE_COUNT + count))
-        echo "  ✅ $label: $count files"
+        local src_count
+        src_count=$(find "$src" -type f | wc -l | tr -d ' ')
+        cp -r "$src"/* "$dest"/
+        local dest_count
+        dest_count=$(find "$dest" -type f 2>/dev/null | wc -l | tr -d ' ')
+        if [ "$dest_count" -ne "$src_count" ]; then
+            echo "  ❌ $label: copied $dest_count of $src_count files — backup incomplete"
+            ERRORS=$((ERRORS + 1))
+        else
+            FILE_COUNT=$((FILE_COUNT + dest_count))
+            echo "  ✅ $label: $dest_count files"
+        fi
     else
         echo "  ⚠️  $label: directory not found ($src)"
     fi
@@ -180,7 +188,7 @@ GIT_INFO_FILE="$BACKUP_PATH/GIT_STATE.txt"
 {
     echo "BitFlow Lend Backup - Git State"
     echo "==================================="
-    echo "Timestamp:    $(timestamp 2>/dev/null || date)"
+    echo "Timestamp:    $(date)"
     echo "Branch:       $(git branch --show-current 2>/dev/null || echo 'unknown')"
     echo "Commit:       $(git rev-parse HEAD 2>/dev/null || echo 'unknown')"
     echo "Short commit: $(git rev-parse --short HEAD 2>/dev/null || echo 'unknown')"
@@ -203,7 +211,7 @@ ARCHIVE_NAME="$BACKUP_NAME.tar.gz"
 ARCHIVE_PATH="$BACKUP_DIR/$ARCHIVE_NAME"
 
 if command -v tar &>/dev/null; then
-    (cd "$BACKUP_DIR" && tar -czf "$ARCHIVE_NAME" "$BACKUP_NAME" 2>/dev/null)
+    (cd "$BACKUP_DIR" && tar -czf "$ARCHIVE_NAME" "$BACKUP_NAME")
     ARCHIVE_SIZE=$(wc -c < "$ARCHIVE_PATH" 2>/dev/null | tr -d ' ' || echo "0")
     ARCHIVE_SIZE_KB=$((ARCHIVE_SIZE / 1024))
     echo "  ✅ Archive created: $ARCHIVE_PATH ($ARCHIVE_SIZE_KB KB)"
@@ -237,10 +245,18 @@ fi
 # ──────────────────────────────────────────────
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "✅ Backup complete!"
+if [ "$ERRORS" -gt 0 ]; then
+    echo "⚠️  Backup finished with $ERRORS error(s)"
+else
+    echo "✅ Backup complete!"
+fi
 echo "   Files backed up: $FILE_COUNT"
 echo "   Location: $ARCHIVE_PATH"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 echo "💡 Restore tip: Extract with 'tar -xzf $ARCHIVE_NAME'"
 echo ""
+
+if [ "$ERRORS" -gt 0 ]; then
+    exit 1
+fi
