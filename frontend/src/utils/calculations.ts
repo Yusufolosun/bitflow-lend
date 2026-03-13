@@ -245,13 +245,13 @@ export function validateWithdrawalAmount(
  * Validate borrow amount
  * @param amount - Amount to borrow
  * @param collateralSTX - Available collateral
- * @param minBorrow - Minimum borrow amount (default: 1)
+ * @param minBorrow - Minimum borrow amount (default: 0.1 STX, matching MIN-BORROW-AMOUNT u100000)
  * @returns Validation result
  */
 export function validateBorrowAmount(
   amount: number,
   collateralSTX: number,
-  minBorrow: number = 1
+  minBorrow: number = 0.1
 ): { valid: boolean; error?: string } {
   if (amount <= 0) {
     return { valid: false, error: 'Amount must be greater than 0' };
