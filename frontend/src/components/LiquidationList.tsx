@@ -130,7 +130,7 @@ export const LiquidationList: React.FC = () => {
       {/* Positions Table */}
       {positions.length > 0 && (
         <div className="overflow-x-auto">
-          <table className="w-full">
+          <table className="w-full" aria-label="Liquidatable positions">
             <thead>
               <tr className="border-b border-gray-200">
                 <th className="text-left py-3 px-4 text-xs font-semibold text-gray-600 uppercase">
