@@ -1,0 +1,18 @@
+---
+id: 0
+name: Mainnet deployment
+network: mainnet
+stacks-node: "https://api.hiro.so"
+bitcoin-node: "http://<user>:<password>@bitcoin.blockstack.com:8332"
+plan:
+  batches:
+    - id: 0
+      transactions:
+        - contract-publish:
+            contract-name: bitflow-vault-core
+            expected-sender: SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193
+            cost: 146270
+            path: "contracts/bitflow-vault-core.clar"
+            anchor-block-only: true
+            clarity-version: 2
+      epoch: "2.5"
