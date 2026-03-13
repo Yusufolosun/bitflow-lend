@@ -31,50 +31,16 @@ export const LiquidationList: React.FC = () => {
   useEffect(() => {
     const fetchPositions = async () => {
       setIsLoading(true);
-      
-      // In a real implementation, this would query the contract for all positions
-      // and filter those below the liquidation threshold
-      // For demo purposes, using mock data
-      const mockPositions: LiquidatablePosition[] = [
-        {
-          address: 'SP2J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKNRV9EJ7',
-          collateralSTX: 1500,
-          debtSTX: 1350,
-          healthFactor: 111.1,
-          liquidationBonus: PROTOCOL_CONSTANTS.LIQUIDATION_BONUS,
-          potentialProfit: 75,
-        },
-        {
-          address: 'SP3FGQ8Z7JY9BWYZ5WM53E0M9NK7WHJF0691NZ159',
-          collateralSTX: 800,
-          debtSTX: 750,
-          healthFactor: 106.7,
-          liquidationBonus: PROTOCOL_CONSTANTS.LIQUIDATION_BONUS,
-          potentialProfit: 40,
-        },
-        {
-          address: 'SP1KBVBP3AZP7YA968Y3G14A17P9XXFPBPEVF5EG9',
-          collateralSTX: 2200,
-          debtSTX: 2100,
-          healthFactor: 104.8,
-          liquidationBonus: PROTOCOL_CONSTANTS.LIQUIDATION_BONUS,
-          potentialProfit: 110,
-        },
-      ];
 
-      // Filter only positions below liquidation threshold
-      const liquidatable = mockPositions.filter(
-        p => p.healthFactor < PROTOCOL_CONSTANTS.LIQUIDATION_THRESHOLD
-      );
-
-      setPositions(liquidatable);
+      // The current contract does not expose an enumeration function
+      // for all borrowers, so we cannot query liquidatable positions
+      // on-chain yet. Once an off-chain indexer that watches borrow
+      // events is available, this will query real data.
+      setPositions([]);
       setIsLoading(false);
     };
 
     fetchPositions();
-    // Auto-refresh disabled to prevent rate limiting
-    // const interval = setInterval(fetchPositions, 120000);
-    // return () => clearInterval(interval);
   }, []);
 
   const handleLiquidate = async (position: LiquidatablePosition) => {
@@ -154,9 +120,11 @@ export const LiquidationList: React.FC = () => {
       {!isLoading && positions.length === 0 && (
         <div className="text-center py-12">
           <TrendingDown className="mx-auto text-gray-400 mb-4" size={48} />
-          <p className="text-gray-600 mb-1 font-medium">No Liquidation Opportunities</p>
-          <p className="text-sm text-gray-500">
-            All positions are currently healthy. Check back later.
+          <p className="text-gray-600 mb-1 font-medium">No Liquidatable Positions Found</p>
+          <p className="text-sm text-gray-500 max-w-sm mx-auto">
+            Liquidatable positions will appear here once an on-chain indexer is
+            integrated. The contract currently does not support enumerating all
+            borrower positions directly.
           </p>
         </div>
       )}
