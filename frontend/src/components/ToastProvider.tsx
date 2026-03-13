@@ -54,7 +54,7 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
       {children}
       {/* ToastContainer is rendered inside the provider to access toasts */}
       {toast.toasts.length > 0 && (
-        <div className="fixed bottom-4 right-4 z-[9999] flex flex-col gap-3">
+        <div className="fixed bottom-4 right-4 z-[9999] flex flex-col gap-3" aria-live="polite" aria-atomic="false">
           {toast.toasts.map(t => (
             <ToastItem key={t.id} toast={t} onDismiss={toast.removeToast} />
           ))}

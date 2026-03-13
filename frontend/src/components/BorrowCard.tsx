@@ -187,11 +187,12 @@ export const BorrowCard: React.FC = () => {
 
       {/* Borrow Amount Input */}
       <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">
+        <label htmlFor="borrow-amount" className="block text-sm font-medium text-gray-700">
           Borrow Amount
         </label>
         <div className="relative">
           <input
+            id="borrow-amount"
             type="number"
             value={borrowAmount}
             onChange={(e) => setBorrowAmount(e.target.value)}
@@ -203,6 +204,7 @@ export const BorrowCard: React.FC = () => {
             onClick={handleMaxClick}
             className="absolute right-3 top-1/2 -translate-y-1/2 px-3 py-1 bg-emerald-50 text-emerald-600 rounded-lg text-xs font-bold hover:bg-emerald-100 transition-colors border border-emerald-200"
             disabled={txStatus === 'pending'}
+            aria-label="Set maximum borrow amount"
           >
             MAX
           </button>
@@ -211,11 +213,12 @@ export const BorrowCard: React.FC = () => {
 
       {/* Interest Rate */}
       <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">
+        <label htmlFor="interest-rate" className="block text-sm font-medium text-gray-700">
           Interest Rate (APR)
         </label>
         <div className="flex items-center gap-4">
           <input
+            id="interest-rate"
             type="range"
             min="5"
             max="30"
@@ -224,6 +227,10 @@ export const BorrowCard: React.FC = () => {
             onChange={(e) => setInterestRate(parseInt(e.target.value))}
             className="flex-1"
             disabled={txStatus === 'pending'}
+            aria-valuemin={5}
+            aria-valuemax={30}
+            aria-valuenow={interestRate}
+            aria-valuetext={`${interestRate}% APR`}
           />
           <div className="w-16 px-3 py-2 bg-gray-100 rounded-lg text-center font-semibold">
             {interestRate}%
@@ -233,14 +240,15 @@ export const BorrowCard: React.FC = () => {
 
       {/* Loan Term */}
       <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">
+        <label id="loan-term-label" className="block text-sm font-medium text-gray-700">
           Loan Term
         </label>
-        <div className="grid grid-cols-4 gap-2">
+        <div className="grid grid-cols-4 gap-2" role="group" aria-labelledby="loan-term-label">
           {LOAN_TERMS.map((term) => (
             <button
               key={term.days}
               onClick={() => setLoanTerm(term.days)}
+              aria-pressed={loanTerm === term.days}
               className={`px-3 py-2 rounded-xl text-sm font-medium transition-colors ${
                 loanTerm === term.days
                   ? 'bg-emerald-600 text-white shadow-sm'
@@ -326,7 +334,7 @@ export const BorrowCard: React.FC = () => {
 
       {/* Status Messages */}
       {txStatus === 'success' && (
-        <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-100 space-y-2">
+        <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-100 space-y-2" role="alert">
           <div className="flex items-center gap-2">
             <CheckCircle className="text-emerald-600" size={20} />
             <span className="text-sm text-emerald-700 font-medium">
@@ -340,7 +348,7 @@ export const BorrowCard: React.FC = () => {
       )}
 
       {txStatus === 'error' && errorMessage && (
-        <div className="p-3 bg-red-50 rounded-xl border border-red-100 space-y-2">
+        <div className="p-3 bg-red-50 rounded-xl border border-red-100 space-y-2" role="alert">
           <div className="flex items-center gap-2">
             <XCircle className="text-red-600" size={20} />
             <span className="text-sm text-red-700 font-medium">{errorMessage}</span>
@@ -360,7 +368,7 @@ export const BorrowCard: React.FC = () => {
       )}
 
       {txStatus === 'timeout' && lastTxId && (
-        <div className="p-3 bg-amber-50 rounded-xl border border-amber-200 space-y-2">
+        <div className="p-3 bg-amber-50 rounded-xl border border-amber-200 space-y-2" role="alert">
           <div className="flex items-center gap-2">
             <AlertCircle className="text-amber-600" size={20} />
             <span className="text-sm text-amber-700 font-medium">
