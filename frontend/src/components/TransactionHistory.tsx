@@ -143,7 +143,6 @@ export const TransactionHistory: React.FC = () => {
 
       setTransactions(vaultTxs);
     } catch (err: any) {
-      console.error('Error fetching transactions:', err);
       setError(err.message || 'Failed to fetch transactions');
     } finally {
       setIsLoading(false);
