@@ -158,6 +158,19 @@
   }
 )
 
+;; Estimated annual reward rate in basis points (bps) for current pool state
+;; Uses ~52560 blocks/year (10-min blocks). Returns 0 if no stake.
+(define-read-only (get-estimated-apy-bps)
+  (let (
+    (staked (var-get total-staked))
+    (rate (var-get reward-rate))
+  )
+    (if (is-eq staked u0)
+      u0
+      (/ (* (* rate u52560) u10000) staked))
+  )
+)
+
 ;; ===== ADMIN FUNCTIONS =====
 
 (define-public (set-reward-rate (new-rate uint))
