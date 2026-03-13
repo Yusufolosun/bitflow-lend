@@ -74,38 +74,43 @@ jobs:
 
       - name: Check for dangerous patterns
         run: |
-          CONTRACT="contracts/bitflow-vault-core.clar"
+          CONTRACTS="contracts/bitflow-vault-core.clar contracts/bitflow-vault-core-v2.clar contracts/bitflow-staking-pool.clar contracts/bitflow-oracle-registry.clar"
           echo "## Contract Security Analysis" > contract-security.txt
           echo "" >> contract-security.txt
           ISSUES=0
 
-          # Check for unwrap-panic usage
-          COUNT=$(grep -c "unwrap-panic" "$CONTRACT" 2>/dev/null || echo "0")
-          if [ "$COUNT" -gt 0 ]; then
-            echo "⚠️ WARN: $COUNT uses of unwrap-panic (may cause runtime panics)" >> contract-security.txt
-            ISSUES=$((ISSUES + 1))
-          else
-            echo "✅ No unwrap-panic usage" >> contract-security.txt
-          fi
+          for CONTRACT in $CONTRACTS; do
+            BASENAME=$(basename "$CONTRACT")
+            echo "### $BASENAME" >> contract-security.txt
 
-          # Check for tx-sender authorization in public functions
-          PUBLIC_FNS=$(grep -n "define-public" "$CONTRACT" | wc -l)
-          AUTH_CHECKS=$(grep -c "tx-sender\|contract-caller" "$CONTRACT" 2>/dev/null || echo "0")
-          echo "📊 $PUBLIC_FNS public functions, $AUTH_CHECKS authorization references" >> contract-security.txt
+            # Check for unwrap-panic usage
+            COUNT=$(grep -c "unwrap-panic" "$CONTRACT" 2>/dev/null || echo "0")
+            if [ "$COUNT" -gt 0 ]; then
+              echo "⚠️ WARN: $COUNT uses of unwrap-panic (may cause runtime panics)" >> contract-security.txt
+              ISSUES=$((ISSUES + 1))
+            else
+              echo "✅ No unwrap-panic usage" >> contract-security.txt
+            fi
 
-          # Check for integer overflow protection
-          OVERFLOW=$(grep -c "asserts!\|try!\|unwrap!" "$CONTRACT" 2>/dev/null || echo "0")
-          echo "🛡️ $OVERFLOW safety assertions found" >> contract-security.txt
+            # Check for tx-sender authorization in public functions
+            PUBLIC_FNS=$(grep -n "define-public" "$CONTRACT" | wc -l)
+            AUTH_CHECKS=$(grep -c "tx-sender\|contract-caller" "$CONTRACT" 2>/dev/null || echo "0")
+            echo "📊 $PUBLIC_FNS public functions, $AUTH_CHECKS authorization references" >> contract-security.txt
 
-          # Check error handling completeness
-          ERRORS=$(grep -c "define-constant.*ERR" "$CONTRACT" 2>/dev/null || echo "0")
-          echo "📋 $ERRORS error constants defined" >> contract-security.txt
+            # Check for integer overflow protection
+            OVERFLOW=$(grep -c "asserts!\|try!\|unwrap!" "$CONTRACT" 2>/dev/null || echo "0")
+            echo "🛡️ $OVERFLOW safety assertions found" >> contract-security.txt
 
-          # Check for STX transfer safety
-          STX_TRANSFERS=$(grep -c "stx-transfer?" "$CONTRACT" 2>/dev/null || echo "0")
-          echo "💰 $STX_TRANSFERS STX transfer operations" >> contract-security.txt
+            # Check error handling completeness
+            ERRORS=$(grep -c "define-constant.*ERR" "$CONTRACT" 2>/dev/null || echo "0")
+            echo "📋 $ERRORS error constants defined" >> contract-security.txt
 
-          echo "" >> contract-security.txt
+            # Check for STX transfer safety
+            STX_TRANSFERS=$(grep -c "stx-transfer?" "$CONTRACT" 2>/dev/null || echo "0")
+            echo "💰 $STX_TRANSFERS STX transfer operations" >> contract-security.txt
+            echo "" >> contract-security.txt
+          done
+
           echo "Total issues: $ISSUES" >> contract-security.txt
           cat contract-security.txt
 
