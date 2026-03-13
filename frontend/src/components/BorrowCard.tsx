@@ -81,7 +81,6 @@ export const BorrowCard: React.FC = () => {
       const result = await vault.borrow(amount, interestRate, loanTerm);
 
       if (result.success && result.txId) {
-        console.log('Borrow transaction submitted:', result.txId);
         setLastTxId(result.txId);
         setErrorMessage(`Transaction submitted. Waiting for confirmation...`);
         
