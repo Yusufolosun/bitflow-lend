@@ -40,8 +40,6 @@ export const DepositCard: React.FC = () => {
       return;
     }
 
-    console.log('Deposit attempt:', { amount, balanceSTX, hasEnough: amount <= balanceSTX });
-
     if (amount > balanceSTX) {
       setErrorMessage(`Insufficient balance. You have ${balanceSTX.toFixed(2)} STX, trying to deposit ${amount.toFixed(2)} STX`);
       setTxStatus('error');
