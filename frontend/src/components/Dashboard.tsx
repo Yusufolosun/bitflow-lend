@@ -60,8 +60,8 @@ export const Dashboard: React.FC = () => {
       } else {
         setUserHealthFactor(null);
       }
-    } catch (err) {
-      console.error('Auto-refresh failed:', err);
+    } catch {
+      // Silently swallow — next poll will retry
     }
   }, [address, vault, stxPrice]);
 
@@ -97,7 +97,6 @@ export const Dashboard: React.FC = () => {
         setUserHealthFactor(null);
       }
     } catch (error: any) {
-      console.error('Error refreshing data:', error);
       setRefreshError(error.message || 'Failed to refresh data');
     } finally {
       setIsRefreshing(false);
