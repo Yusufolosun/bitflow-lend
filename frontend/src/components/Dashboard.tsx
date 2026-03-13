@@ -185,7 +185,8 @@ export const Dashboard: React.FC = () => {
               icon={<Activity size={22} />}
               label="Utilization Rate"
               value={utilizationRate.toFixed(1) + '%'}
-              color="purple"
+              color={utilizationRate >= 90 ? 'red' : utilizationRate >= 70 ? 'yellow' : 'green'}
+              subtitle={utilizationRate >= 90 ? 'High — withdrawal risk' : utilizationRate >= 70 ? 'Elevated' : 'Healthy'}
             />
             <StatsCard
               icon={<Users size={22} />}
