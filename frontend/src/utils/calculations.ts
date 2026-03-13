@@ -275,15 +275,15 @@ export function validateBorrowAmount(
 
 /**
  * Validate interest rate
- * @param ratePercent - Interest rate as percentage
- * @param minRate - Minimum allowed rate (default: 5)
- * @param maxRate - Maximum allowed rate (default: 30)
+ * @param ratePercent - Interest rate as percentage (e.g., 5 for 5%)
+ * @param minRate - Minimum allowed rate (default: 0.5%, matching contract min-interest-rate u50)
+ * @param maxRate - Maximum allowed rate (default: 100%, matching contract max-interest-rate u10000)
  * @returns Validation result
  */
 export function validateInterestRate(
   ratePercent: number,
-  minRate: number = 5,
-  maxRate: number = 30
+  minRate: number = 0.5,
+  maxRate: number = 100
 ): { valid: boolean; error?: string } {
   if (ratePercent < minRate) {
     return { valid: false, error: `Minimum interest rate is ${minRate}%` };
