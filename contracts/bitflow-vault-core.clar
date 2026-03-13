@@ -20,15 +20,16 @@
 (define-constant ERR-INVALID-TERM (err u111))
 (define-constant ERR-PRICE-NOT-SET (err u113))
 (define-constant ERR-PROTOCOL-PAUSED (err u112))
+(define-constant ERR-INVALID-PARAM (err u120))
 
-;; Constants
-(define-constant MIN-COLLATERAL-RATIO u150)
-(define-constant LIQUIDATION-THRESHOLD u110)
-(define-constant MAX-INTEREST-RATE u10000) ;; 100% APR in basis points
-(define-constant MIN-INTEREST-RATE u50) ;; 0.5% APR minimum in basis points
-(define-constant MIN-TERM-DAYS u1)
-(define-constant MAX-TERM-DAYS u365) ;; Maximum 1 year loan term
-(define-constant LATE-PENALTY-RATE u500) ;; 5% flat penalty on overdue loans
+;; Tunable protocol parameters (admin-updatable)
+(define-data-var min-collateral-ratio uint u150)
+(define-data-var liquidation-threshold uint u110)
+(define-data-var max-interest-rate uint u10000) ;; 100% APR in basis points
+(define-data-var min-interest-rate uint u50)    ;; 0.5% APR minimum in basis points
+(define-data-var min-term-days uint u1)
+(define-data-var max-term-days uint u365)       ;; Maximum 1 year loan term
+(define-data-var late-penalty-rate uint u500)   ;; 5% flat penalty on overdue loans
 
 ;; Data maps
 (define-map user-deposits principal uint)
@@ -100,7 +101,7 @@
 
 ;; Calculate required collateral for a borrow amount
 (define-read-only (calculate-required-collateral (borrow-amount uint))
-  (/ (* borrow-amount MIN-COLLATERAL-RATIO) u100)
+  (/ (* borrow-amount (var-get min-collateral-ratio)) u100)
 )
 
 ;; Get total amount repaid across all loans
@@ -126,7 +127,7 @@
 (define-read-only (get-max-borrow-amount (user principal))
   (let (
     (user-deposit (default-to u0 (map-get? user-deposits user)))
-    (max-borrow (/ (* user-deposit u100) MIN-COLLATERAL-RATIO))
+    (max-borrow (/ (* user-deposit u100) (var-get min-collateral-ratio)))
   )
     max-borrow
   )
@@ -157,7 +158,7 @@
         true
         (match (calculate-health-factor user stx-price)
           health-factor
-            (< health-factor LIQUIDATION-THRESHOLD)
+            (< health-factor (var-get liquidation-threshold))
           false
         )
       )
@@ -173,7 +174,7 @@
         (blocks-elapsed (- block-height (get start-block loan)))
         (interest (calculate-interest (get amount loan) (get interest-rate loan) blocks-elapsed))
         (penalty (if (> block-height (get term-end loan))
-          (/ (* (get amount loan) LATE-PENALTY-RATE) u10000)
+          (/ (* (get amount loan) (var-get late-penalty-rate)) u10000)
           u0))
         (total (+ (get amount loan) interest penalty))
       )
@@ -225,6 +226,69 @@
     (ok true)
   )
 )
+
+;; Update protocol parameters (contract owner only)
+;; Each setter enforces safety bounds to prevent destructive values
+
+(define-public (set-min-collateral-ratio (new-ratio uint))
+  (begin
+    (asserts! (is-eq tx-sender contract-owner) err-owner-only)
+    (asserts! (>= new-ratio u100) ERR-INVALID-PARAM)
+    (asserts! (<= new-ratio u500) ERR-INVALID-PARAM)
+    (var-set min-collateral-ratio new-ratio)
+    (print { event: "set-min-collateral-ratio", value: new-ratio })
+    (ok true)))
+
+(define-public (set-liquidation-threshold (new-threshold uint))
+  (begin
+    (asserts! (is-eq tx-sender contract-owner) err-owner-only)
+    (asserts! (>= new-threshold u100) ERR-INVALID-PARAM)
+    (asserts! (< new-threshold (var-get min-collateral-ratio)) ERR-INVALID-PARAM)
+    (var-set liquidation-threshold new-threshold)
+    (print { event: "set-liquidation-threshold", value: new-threshold })
+    (ok true)))
+
+(define-public (set-interest-rate-bounds (new-min uint) (new-max uint))
+  (begin
+    (asserts! (is-eq tx-sender contract-owner) err-owner-only)
+    (asserts! (> new-min u0) ERR-INVALID-PARAM)
+    (asserts! (> new-max new-min) ERR-INVALID-PARAM)
+    (asserts! (<= new-max u50000) ERR-INVALID-PARAM) ;; cap at 500% APR
+    (var-set min-interest-rate new-min)
+    (var-set max-interest-rate new-max)
+    (print { event: "set-interest-rate-bounds", min: new-min, max: new-max })
+    (ok true)))
+
+(define-public (set-term-limits (new-min uint) (new-max uint))
+  (begin
+    (asserts! (is-eq tx-sender contract-owner) err-owner-only)
+    (asserts! (>= new-min u1) ERR-INVALID-PARAM)
+    (asserts! (> new-max new-min) ERR-INVALID-PARAM)
+    (asserts! (<= new-max u730) ERR-INVALID-PARAM) ;; cap at 2 years
+    (var-set min-term-days new-min)
+    (var-set max-term-days new-max)
+    (print { event: "set-term-limits", min: new-min, max: new-max })
+    (ok true)))
+
+(define-public (set-late-penalty-rate (new-rate uint))
+  (begin
+    (asserts! (is-eq tx-sender contract-owner) err-owner-only)
+    (asserts! (<= new-rate u2000) ERR-INVALID-PARAM) ;; cap at 20%
+    (var-set late-penalty-rate new-rate)
+    (print { event: "set-late-penalty-rate", value: new-rate })
+    (ok true)))
+
+;; Read-only: current protocol parameters
+(define-read-only (get-protocol-parameters)
+  (ok {
+    min-collateral-ratio: (var-get min-collateral-ratio),
+    liquidation-threshold: (var-get liquidation-threshold),
+    min-interest-rate: (var-get min-interest-rate),
+    max-interest-rate: (var-get max-interest-rate),
+    min-term-days: (var-get min-term-days),
+    max-term-days: (var-get max-term-days),
+    late-penalty-rate: (var-get late-penalty-rate)
+  }))
 
 ;; Deposit STX into the vault
 ;; @param amount: Amount of STX (in micro-STX) to deposit
@@ -319,10 +383,10 @@
     (asserts! (> amount u0) ERR-INVALID-AMOUNT)
 
     ;; Validate interest rate (must be between 0.5% and 100% APR)
-    (asserts! (and (>= interest-rate MIN-INTEREST-RATE) (<= interest-rate MAX-INTEREST-RATE)) ERR-INVALID-INTEREST-RATE)
+    (asserts! (and (>= interest-rate (var-get min-interest-rate)) (<= interest-rate (var-get max-interest-rate))) ERR-INVALID-INTEREST-RATE)
     
     ;; Validate loan term (1 day to 1 year)
-    (asserts! (and (>= term-days MIN-TERM-DAYS) (<= term-days MAX-TERM-DAYS)) ERR-INVALID-TERM)
+    (asserts! (and (>= term-days (var-get min-term-days)) (<= term-days (var-get max-term-days))) ERR-INVALID-TERM)
     
     ;; Verify user doesn't already have an active loan (one loan per user)
     (asserts! (is-none (map-get? user-loans tx-sender)) ERR-ALREADY-HAS-LOAN)
@@ -366,7 +430,7 @@
       (blocks-elapsed (- block-height (get start-block loan)))
       (interest (calculate-interest loan-amount (get interest-rate loan) blocks-elapsed))
       (penalty (if (> block-height (get term-end loan))
-        (/ (* loan-amount LATE-PENALTY-RATE) u10000)
+        (/ (* loan-amount (var-get late-penalty-rate)) u10000)
         u0))
       (total-repayment (+ loan-amount interest penalty))
     )
