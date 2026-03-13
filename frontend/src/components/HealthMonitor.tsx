@@ -157,7 +157,7 @@ export const HealthMonitor: React.FC = () => {
             <span className="text-gray-600">Collateralization Ratio</span>
             <span className="font-semibold">{collateralRatio.toFixed(1)}%</span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+          <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden" role="progressbar" aria-valuenow={Math.round(collateralRatio)} aria-valuemin={0} aria-valuemax={200} aria-label="Collateralization ratio">
             <div
               className={`h-3 transition-all ${
                 collateralRatio >= PROTOCOL_CONSTANTS.MIN_COLLATERAL_RATIO ? 'bg-emerald-600' :
