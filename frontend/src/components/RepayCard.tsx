@@ -143,7 +143,7 @@ export const RepayCard: React.FC = () => {
             {progress.toFixed(1)}%
           </span>
         </div>
-        <div className="w-full bg-gray-200 rounded-full h-2">
+        <div className="w-full bg-gray-200 rounded-full h-2" role="progressbar" aria-valuenow={Math.round(progress)} aria-valuemin={0} aria-valuemax={100} aria-label="Loan term progress">
           <div
             className={`h-2 rounded-full transition-all ${
               isOverdue ? 'bg-red-600' : 'bg-accent-500'
@@ -270,7 +270,7 @@ export const RepayCard: React.FC = () => {
 
       {/* Status Messages */}
       {txStatus === 'success' && (
-        <div className="flex items-center gap-2 p-3 bg-emerald-50 rounded-xl border border-emerald-100">
+        <div className="flex items-center gap-2 p-3 bg-emerald-50 rounded-xl border border-emerald-100" role="alert">
           <CheckCircle className="text-emerald-600" size={20} />
           <span className="text-sm text-emerald-700 font-medium">
             Loan repaid successfully! Collateral released.
@@ -279,7 +279,7 @@ export const RepayCard: React.FC = () => {
       )}
 
       {txStatus === 'error' && errorMessage && (
-        <div className="flex items-center gap-2 p-3 bg-red-50 rounded-xl border border-red-100">
+        <div className="flex items-center gap-2 p-3 bg-red-50 rounded-xl border border-red-100" role="alert">
           <XCircle className="text-red-600" size={20} />
           <span className="text-sm text-red-700 font-medium">{errorMessage}</span>
         </div>
