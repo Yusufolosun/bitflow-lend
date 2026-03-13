@@ -23,8 +23,9 @@ BitFlow is a decentralized lending protocol built on the Stacks blockchain that 
 - **Blockchain:** Stacks (Layer 2 on Bitcoin)
 - **Language:** Clarity (smart contract)
 - **Collateral:** STX tokens
-- **Governance:** None (fully permissionless)
-- **Upgradability:** Immutable (no admin controls)
+- **Contracts:** 4 (vault-core v1, vault-core v2, staking pool, oracle registry)
+- **Governance:** Admin-gated (owner-controlled parameters, no DAO yet)
+- **Upgradability:** Versioned contracts with migration support (v1 → v2)
 
 ---
 
