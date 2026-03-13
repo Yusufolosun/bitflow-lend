@@ -1,6 +1,6 @@
 # Known Issues
 
-> **Current limitations and known issues in BitFlow Lend v1.0.0.**
+> **Current limitations and known issues in BitFlow Lend v1.0.0 / v2.0.0.**
 
 ---
 
@@ -63,12 +63,32 @@ Users cannot withdraw deposited collateral while a loan is active, even if the w
 
 ### No Oracle Price Feed
 
-**Status**: v1.0.0 limitation  
+**Status**: Resolved in v2.0.0
 **Impact**: Low (single-asset protocol)
 
-The protocol does not use an external price oracle. Collateral and loans are both denominated in STX, so price fluctuations between assets are not a concern.
+The v1 protocol does not use an external price oracle. The new `bitflow-oracle-registry` contract provides multi-source price feeds for v2 and beyond.
 
-**Future**: Multi-asset support would require oracle integration.
+---
+
+### Oracle Aggregation Uses Latest Submission
+
+**Status**: Known limitation
+**Impact**: Medium
+
+The oracle registry updates the aggregated price to the latest valid reporter submission rather than computing a median across all fresh reporter prices. Clarity lacks sorting primitives, so a true median is non-trivial.
+
+**Mitigation**: The deviation guard rejects outlier submissions, keeping the aggregate close to the true value.
+
+---
+
+### Staking Pool Cooldown Cannot Be Cancelled
+
+**Status**: By design
+**Impact**: Low
+
+Once `request-unstake` is called, the cooldown timer runs for ~1 day (144 blocks). There is no cancel function.
+
+**Workaround**: Simply wait for the cooldown to expire. If you change your mind, after the cooldown expires you can choose not to unstake and the staked balance remains earning rewards.
 
 ---
 
@@ -102,6 +122,9 @@ Some wallet extensions require re-authentication after a page refresh.
 |-------|--------------|-------------|
 | NaN display in UI | v1.0.0 | Fixed NaN values when no loan is active |
 | TypeScript errors | v1.0.0 | Resolved 9 type errors in frontend |
+| v2 withdraw/borrow scope | v2.0.0 | Fixed as-contract scope sending STX to wrong address |
+| v2 interest on zero blocks | v2.0.0 | Fixed ceiling division returning ≥1 for zero elapsed blocks |
+| Console log pollution | v2.0.0 | Removed all console.log/error from production frontend |
 
 ---
 
