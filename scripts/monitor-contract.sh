@@ -101,13 +101,49 @@ log() {
 }
 
 alert() {
-    local msg="[$(timestamp)] 🚨 ALERT: $1"
+    local msg="[$(timestamp)] ALERT: $1"
     echo "$msg"
     echo "$msg" >> "$LOG_FILE"
-    # Add additional alert mechanisms here:
-    # - Send webhook notification
-    # - Email alert
-    # - Slack/Discord message
+
+    local json_payload
+    json_payload=$(printf '{"text":"%s","network":"%s","timestamp":"%s"}' \
+        "$(echo "$1" | sed 's/"/\\"/g')" "$NETWORK" "$(timestamp)")
+
+    # Generic webhook (PagerDuty, Opsgenie, custom endpoint, etc.)
+    if [ -n "$ALERT_WEBHOOK_URL" ]; then
+        curl -s -o /dev/null --max-time 10 \
+            -X POST "$ALERT_WEBHOOK_URL" \
+            -H "Content-Type: application/json" \
+            -d "$json_payload" || log "  warning: webhook delivery failed"
+    fi
+
+    # Discord webhook
+    if [ -n "$ALERT_DISCORD_URL" ]; then
+        local discord_body
+        discord_body=$(printf '{"content":"**[BitFlow %s]** %s"}' \
+            "$NETWORK" "$(echo "$1" | sed 's/"/\\"/g')")
+        curl -s -o /dev/null --max-time 10 \
+            -X POST "$ALERT_DISCORD_URL" \
+            -H "Content-Type: application/json" \
+            -d "$discord_body" || log "  warning: discord delivery failed"
+    fi
+
+    # Slack incoming webhook
+    if [ -n "$ALERT_SLACK_URL" ]; then
+        local slack_body
+        slack_body=$(printf '{"text":"*[BitFlow %s]* %s"}' \
+            "$NETWORK" "$(echo "$1" | sed 's/"/\\"/g')")
+        curl -s -o /dev/null --max-time 10 \
+            -X POST "$ALERT_SLACK_URL" \
+            -H "Content-Type: application/json" \
+            -d "$slack_body" || log "  warning: slack delivery failed"
+    fi
+
+    # Warn once if no channels are configured
+    if [ -z "$ALERT_WEBHOOK_URL" ] && [ -z "$ALERT_DISCORD_URL" ] && [ -z "$ALERT_SLACK_URL" ]; then
+        echo "  [!] No notification channels configured — alert logged only."
+        echo "      Set ALERT_WEBHOOK_URL, ALERT_DISCORD_URL, or ALERT_SLACK_URL."
+    fi
 }
 
 api_get() {
