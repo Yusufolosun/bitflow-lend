@@ -209,6 +209,14 @@
   (var-get is-paused)
 )
 
+;; Get the number of blocks since the price was last updated
+(define-read-only (get-price-staleness-blocks)
+  (if (> (var-get last-activity-block) u0)
+    (- block-height (var-get last-activity-block))
+    u0
+  )
+)
+
 ;; Public functions
 
 ;; Pause the protocol (contract owner only)
