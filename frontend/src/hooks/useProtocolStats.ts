@@ -46,8 +46,8 @@ const safeNumber = (val: unknown): number => {
  * Uses the get-protocol-stats read-only function on the vault contract
  *
  * Note: The contract's get-protocol-stats returns:
- *   { total-deposits, total-repaid, total-liquidations }
- * It does NOT return total-borrowed or active-loans directly.
+ *   { total-deposits, total-repaid, total-liquidations, total-outstanding-borrows }
+ * active-loans count is not tracked on-chain (requires map enumeration).
  *
  * @param refreshInterval - Auto-refresh interval in ms (default: 30000 = 30s, 0 = disabled)
  */
@@ -70,10 +70,10 @@ export const useProtocolStats = (refreshInterval = 30000) => {
     const totalRepaid = safeNumber(data['total-repaid']) / 1_000_000;
     const totalLiquidations = safeNumber(data['total-liquidations']);
 
-    // total-borrowed and active-loans are not in get-protocol-stats
-    // Derive total-borrowed from deposit volume minus current deposits if available,
-    // otherwise default to 0 (accurate when no active loans exist)
-    const totalBorrowed = safeNumber(data['total-borrowed']) / 1_000_000;
+    // total-outstanding-borrows tracks live debt (increments on borrow,
+    // decrements on repay/liquidation). active-loans count is not tracked
+    // on-chain so it defaults to 0 until enumeration support is added.
+    const totalBorrowed = safeNumber(data['total-outstanding-borrows']) / 1_000_000;
     const activeLoans = safeNumber(data['active-loans']);
 
     return {
