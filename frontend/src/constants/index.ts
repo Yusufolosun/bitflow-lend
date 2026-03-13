@@ -171,16 +171,16 @@ export const FEATURES = {
   ENABLE_GOVERNANCE: false, // Future feature
 } as const;
 
-// Contract Function Names
+// Contract Function Names — must match the Clarity contract exactly
 export const CONTRACT_FUNCTIONS = {
-  DEPOSIT: 'deposit-collateral',
-  WITHDRAW: 'withdraw-collateral',
-  BORROW: 'borrow-stx',
-  REPAY: 'repay-loan',
+  DEPOSIT: 'deposit',
+  WITHDRAW: 'withdraw',
+  BORROW: 'borrow',
+  REPAY: 'repay',
   LIQUIDATE: 'liquidate',
-  GET_VAULT: 'get-vault',
+  GET_DEPOSIT: 'get-user-deposit',
   GET_LOAN: 'get-user-loan',
-  GET_BALANCE: 'get-pool-balance',
+  GET_TOTAL_DEPOSITS: 'get-total-deposits',
 } as const;
 
 // Decimal Precision
