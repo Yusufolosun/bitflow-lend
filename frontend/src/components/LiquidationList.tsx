@@ -54,8 +54,7 @@ export const LiquidationList: React.FC = () => {
     try {
       // In a real implementation, this would call the liquidate function
       // const result = await vault.liquidate(position.address);
-      
-      console.log('Liquidating position:', position.address);
+
       alert(`Liquidation initiated for ${formatAddress(position.address)}`);
       
       // Refresh positions after liquidation
