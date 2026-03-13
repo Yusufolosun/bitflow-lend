@@ -178,7 +178,7 @@ export const DepositCard: React.FC = () => {
       {/* Deposit Button */}
       <button
         onClick={handleDeposit}
-        disabled={!address || txStatus === 'pending' || !depositAmount}
+        disabled={!address || txStatus === 'pending' || !depositAmount || parseFloat(depositAmount) < 0.01}
         className="w-full btn btn-primary py-3 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {txStatus === 'pending' && (
