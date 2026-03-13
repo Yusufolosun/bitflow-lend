@@ -598,8 +598,9 @@
     (asserts! (var-get liquidations-enabled) ERR-PROTOCOL-PAUSED)
     (asserts! (is-price-valid) ERR-STALE-PRICE)
     (asserts! (not (is-eq tx-sender borrower)) ERR-LIQUIDATE-OWN-LOAN)
-    
+
     (let (
+      (liquidator tx-sender)
       (current-price (var-get admin-stx-price))
       (loan (unwrap! (map-get? user-loans borrower) ERR-NO-ACTIVE-LOAN))
       (borrower-deposit (default-to u0 (map-get? user-deposits borrower)))
@@ -609,25 +610,25 @@
     )
       ;; Verify health factor is liquidatable
       (asserts! (is-liquidatable borrower current-price) ERR-NOT-LIQUIDATABLE)
-      
-      ;; Transfer payment from liquidator
-      (try! (stx-transfer? total-to-pay tx-sender (as-contract tx-sender)))
-      
+
+      ;; Transfer payment from liquidator to contract
+      (try! (stx-transfer? total-to-pay liquidator (as-contract tx-sender)))
+
       ;; Transfer collateral to liquidator
-      (try! (as-contract (stx-transfer? borrower-deposit tx-sender tx-sender)))
-      
+      (try! (as-contract (stx-transfer? borrower-deposit tx-sender liquidator)))
+
       ;; Clear borrower's loan and deposit
       (map-delete user-loans borrower)
       (map-set user-deposits borrower u0)
-      
+
       ;; Update metrics
       (var-set total-deposits (safe-sub (var-get total-deposits) borrower-deposit))
       (var-set total-liquidations (+ (var-get total-liquidations) u1))
       (var-set total-liquidations-count (+ (var-get total-liquidations-count) u1))
       (var-set total-liquidation-volume (safe-add (var-get total-liquidation-volume) borrower-deposit))
       (var-set last-activity-block block-height)
-      
-      (print { event: "liquidation", liquidator: tx-sender, borrower: borrower, seized: borrower-deposit, paid: total-to-pay, bonus: liquidation-bonus })
+
+      (print { event: "liquidation", liquidator: liquidator, borrower: borrower, seized: borrower-deposit, paid: total-to-pay, bonus: liquidation-bonus })
       (ok { seized-collateral: borrower-deposit, paid: total-to-pay, bonus: liquidation-bonus })
     )
   )
