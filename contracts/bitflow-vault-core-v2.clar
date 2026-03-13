@@ -127,17 +127,18 @@
   )
 )
 
-;; Calculate interest with improved precision
+;; Calculate interest with ceiling division to prevent rounding to zero
 ;; Principal (in microSTX) * RatePercentage (basis points) * BlocksElapsed / (100 * 52560 blocks/year)
+;; Uses ceiling division: (a + b - 1) / b for non-zero amounts
 (define-private (calculate-interest-precise (principal uint) (rate uint) (blocks-elapsed uint))
   (let (
-    (numerator (safe-add (safe-add 
-      (* (* principal rate) blocks-elapsed)
-      (* u100 u52560))
-      u1))
+    (raw-numerator (* (* principal rate) blocks-elapsed))
     (denominator (* u100 u52560))
   )
-    (/ numerator denominator)
+    (if (is-eq raw-numerator u0)
+      u0
+      (/ (- (+ raw-numerator denominator) u1) denominator)
+    )
   )
 )
 
