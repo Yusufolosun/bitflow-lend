@@ -151,8 +151,8 @@ export const DepositCard: React.FC = () => {
 
         {/* Inline Validation Warnings */}
         {depositAmount && parseFloat(depositAmount) > 0 && parseFloat(depositAmount) < 0.01 && (
-          <div className="flex items-center gap-2 text-xs text-yellow-700 bg-yellow-50 rounded-lg p-2">
-            <AlertTriangle size={14} className="flex-shrink-0" />
+          <div className="flex items-center gap-2 text-xs text-red-700 bg-red-50 rounded-lg p-2">
+            <XCircle size={14} className="flex-shrink-0" />
             <span>Minimum deposit is 0.01 STX</span>
           </div>
         )}
@@ -178,7 +178,7 @@ export const DepositCard: React.FC = () => {
       {/* Deposit Button */}
       <button
         onClick={handleDeposit}
-        disabled={!address || txStatus === 'pending' || !depositAmount}
+        disabled={!address || txStatus === 'pending' || !depositAmount || parseFloat(depositAmount) < 0.01}
         className="w-full btn btn-primary py-3 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {txStatus === 'pending' && (
