@@ -209,6 +209,13 @@ export const RepayCard: React.FC = () => {
             <span className="font-semibold">{formatSTX(repaymentAmount.interestSTX)} STX</span>
           </div>
 
+          {repaymentAmount.penaltySTX > 0 && (
+            <div className="flex justify-between text-sm">
+              <span className="text-red-600">Late Penalty:</span>
+              <span className="font-semibold text-red-600">{formatSTX(repaymentAmount.penaltySTX)} STX</span>
+            </div>
+          )}
+
           <div className="border-t border-gray-300 pt-2 mt-2"></div>
 
           <div className="flex justify-between">
