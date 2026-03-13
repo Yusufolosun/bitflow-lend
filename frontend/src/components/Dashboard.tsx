@@ -12,6 +12,7 @@ import { TransactionHistory } from './TransactionHistory';
 import { NetworkIndicator } from './NetworkIndicator';
 import { formatSTX } from '../utils/formatters';
 import { ACTIVE_NETWORK } from '../config/contracts';
+import { getHealthStatus } from '../utils/calculations';
 import { useProtocolStats } from '../hooks/useProtocolStats';
 import { useSmartPolling } from '../hooks/useSmartPolling';
 import { useStxPrice } from '../hooks/useStxPrice';
@@ -255,15 +256,15 @@ export const Dashboard: React.FC = () => {
                 <div className="text-sm font-medium text-gray-500 mb-2">Health Factor</div>
                 <div className={`text-3xl font-bold tracking-tight mb-1 ${
                   !userLoan ? 'text-gray-400' :
-                  userHealthFactor && userHealthFactor >= 150 ? 'text-emerald-600' :
-                  userHealthFactor && userHealthFactor >= 110 ? 'text-amber-600' : 'text-red-600'
+                  userHealthFactor && getHealthStatus(userHealthFactor) === 'healthy' ? 'text-emerald-600' :
+                  userHealthFactor && getHealthStatus(userHealthFactor) === 'warning' ? 'text-amber-600' : 'text-red-600'
                 }`}>
                   {userHealthFactor ? userHealthFactor.toFixed(0) + '%' : 'N/A'}
                 </div>
                 <div className="text-sm text-gray-500">
                   {!userLoan ? 'No active loan' :
-                   userHealthFactor && userHealthFactor >= 150 ? 'Healthy' :
-                   userHealthFactor && userHealthFactor >= 110 ? 'At Risk' : 'Critical'}
+                   userHealthFactor && getHealthStatus(userHealthFactor) === 'healthy' ? 'Healthy' :
+                   userHealthFactor && getHealthStatus(userHealthFactor) === 'warning' ? 'At Risk' : 'Critical'}
                 </div>
               </div>
             </div>
