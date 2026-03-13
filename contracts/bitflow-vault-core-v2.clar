@@ -477,32 +477,34 @@
 )
 
 (define-public (withdraw (amount uint))
-  (begin
+  (let (
+    (recipient tx-sender)
+  )
     (asserts! (not (var-get is-paused)) ERR-PROTOCOL-PAUSED)
     (asserts! (var-get withdrawals-enabled) ERR-PROTOCOL-PAUSED)
     (asserts! (> amount u0) ERR-ZERO-AMOUNT)
-    
+
     (let (
-      (user-balance (default-to u0 (map-get? user-deposits tx-sender)))
-      (locked-collateral (match (map-get? user-loans tx-sender)
+      (user-balance (default-to u0 (map-get? user-deposits recipient)))
+      (locked-collateral (match (map-get? user-loans recipient)
         loan (calculate-required-collateral (get amount loan))
         u0))
       (available-balance (safe-sub user-balance locked-collateral))
     )
       (asserts! (>= available-balance amount) ERR-INSUFFICIENT-BALANCE)
-      
+
       ;; Transfer STX from contract to user
-      (try! (as-contract (stx-transfer? amount tx-sender tx-sender)))
-      
+      (try! (as-contract (stx-transfer? amount tx-sender recipient)))
+
       ;; Update user deposit
-      (map-set user-deposits tx-sender (safe-sub user-balance amount))
-      
+      (map-set user-deposits recipient (safe-sub user-balance amount))
+
       ;; Update metrics
       (var-set total-deposits (safe-sub (var-get total-deposits) amount))
       (var-set total-withdrawals-count (+ (var-get total-withdrawals-count) u1))
       (var-set last-activity-block block-height)
-      
-      (print { event: "withdraw", user: tx-sender, amount: amount, remaining-balance: (safe-sub user-balance amount) })
+
+      (print { event: "withdraw", user: recipient, amount: amount, remaining-balance: (safe-sub user-balance amount) })
       (ok true)
     )
   )
