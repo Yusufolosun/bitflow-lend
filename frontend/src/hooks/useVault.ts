@@ -50,8 +50,6 @@ const pollTransactionStatus = async (txId: string, maxAttempts = 60): Promise<Po
 
       const data = await response.json();
 
-      console.log(`Transaction status (attempt ${i + 1}/${maxAttempts}):`, data.tx_status);
-
       if (data.tx_status === 'success') {
         return 'confirmed';
       }
@@ -117,12 +115,12 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
           postConditions,
           postConditionMode: PostConditionMode.Deny,
           onFinish: (data: any) => {
-            console.log('Deposit transaction submitted:', data.txId);
+            // Transaction submitted
             setIsLoading(false);
             resolve({ success: true, txId: data.txId });
           },
           onCancel: () => {
-            console.log('Deposit cancelled');
+            // Transaction cancelled
             setIsLoading(false);
             resolve({ success: false, error: 'Transaction cancelled by user' });
           },
@@ -160,12 +158,12 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
           postConditions: [],
           postConditionMode: PostConditionMode.Deny,
           onFinish: (data: any) => {
-            console.log('Withdrawal transaction submitted:', data.txId);
+            // Transaction submitted
             setIsLoading(false);
             resolve({ success: true, txId: data.txId });
           },
           onCancel: () => {
-            console.log('Withdrawal cancelled');
+            // Transaction cancelled
             setIsLoading(false);
             resolve({ success: false, error: 'Transaction cancelled by user' });
           },
@@ -211,12 +209,12 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
           ],
           postConditionMode: PostConditionMode.Allow,
           onFinish: (data: any) => {
-            console.log('Borrow transaction submitted:', data.txId);
+            // Transaction submitted
             setIsLoading(false);
             resolve({ success: true, txId: data.txId });
           },
           onCancel: () => {
-            console.log('Borrow cancelled');
+            // Transaction cancelled
             setIsLoading(false);
             resolve({ success: false, error: 'Transaction cancelled by user' });
           },
@@ -252,12 +250,12 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
           postConditions: [],
           postConditionMode: PostConditionMode.Deny,
           onFinish: (data: any) => {
-            console.log('Repayment transaction submitted:', data.txId);
+            // Transaction submitted
             setIsLoading(false);
             resolve({ success: true, txId: data.txId });
           },
           onCancel: () => {
-            console.log('Repayment cancelled');
+            // Transaction cancelled
             setIsLoading(false);
             resolve({ success: false, error: 'Transaction cancelled by user' });
           },
@@ -497,12 +495,12 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
           functionArgs: [principalCV(borrowerAddress)],
           postConditionMode: PostConditionMode.Allow,
           onFinish: (data: any) => {
-            console.log('Liquidation transaction submitted:', data.txId);
+            // Transaction submitted
             setIsLoading(false);
             resolve({ success: true, txId: data.txId });
           },
           onCancel: () => {
-            console.log('Liquidation cancelled');
+            // Transaction cancelled
             setIsLoading(false);
             resolve({ success: false, error: 'Transaction cancelled by user' });
           },
