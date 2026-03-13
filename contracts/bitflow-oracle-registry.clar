@@ -124,6 +124,10 @@
   (var-get reporter-count)
 )
 
+(define-read-only (get-is-price-fresh)
+  (is-price-fresh)
+)
+
 (define-read-only (get-oracle-params)
   {
     min-reporters-required: (var-get min-reporters-required),
