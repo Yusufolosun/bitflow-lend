@@ -327,21 +327,10 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
         senderAddress: userAddress,
       });
 
-      console.log('getUserLoan raw result:', JSON.stringify(result, (_key, value) => 
-        typeof value === 'bigint' ? value.toString() : value, 2
-      ));
-      console.log('Result type:', result.type);
-      console.log('ClarityType enum:', { 
-        OptionalSome: ClarityType.OptionalSome, 
-        OptionalNone: ClarityType.OptionalNone 
-      });
-
       // Handle optional some (loan exists)
       if (result.type === ClarityType.OptionalSome && result.value) {
-        console.log('Processing OptionalSome - loan exists');
         const loanData = cvToValue(result.value);
-        console.log('Loan data:', loanData);
-        
+
         const amount = BigInt(loanData.amount);
         const interestRate = Number(loanData['interest-rate']);
         const startBlock = Number(loanData['start-block']);
@@ -372,18 +361,10 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
           collateralAmount,
           collateralAmountSTX,
         };
-        
-        console.log('Returning loan:', loanResult);
+
         return loanResult;
       }
 
-      // Handle optional none (no loan)
-      if (result.type === ClarityType.OptionalNone) {
-        console.log('No active loan found (OptionalNone)');
-      } else {
-        console.log('Unexpected result type:', result.type);
-      }
-      
       return null;
     } catch (err) {
       console.error('Error fetching user loan:', err);
