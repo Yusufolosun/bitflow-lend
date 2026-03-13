@@ -20,7 +20,7 @@ export const BorrowCard: React.FC = () => {
   const [loanTerm, setLoanTerm] = useState(30);
   const [userDeposit, setUserDeposit] = useState(0);
   const [activeLoan, setActiveLoan] = useState<any>(null);
-  const [txStatus, setTxStatus] = useState<'idle' | 'pending' | 'success' | 'error'>('idle');
+  const [txStatus, setTxStatus] = useState<'idle' | 'pending' | 'success' | 'error' | 'timeout'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
   const [lastTxId, setLastTxId] = useState<string | null>(null);
 
@@ -85,28 +85,30 @@ export const BorrowCard: React.FC = () => {
         setErrorMessage(`Transaction submitted. Waiting for confirmation...`);
         
         // Wait for transaction confirmation (up to 3 minutes)
-        const confirmed = await vault.pollTransactionStatus(result.txId);
-        
-        if (confirmed) {
+        const pollResult = await vault.pollTransactionStatus(result.txId);
+
+        if (pollResult === 'confirmed') {
           setTxStatus('success');
           setBorrowAmount('');
           setErrorMessage('');
-          
+
           // Refresh wallet balance to show received STX
-          console.log('Refreshing balance after successful borrow...');
           await refreshBalance();
-          
+
           // Refresh loan data
           const loan = await vault.getUserLoan();
           setActiveLoan(loan);
-          
+
           // Reset status after showing success message
           setTimeout(() => {
             setTxStatus('idle');
           }, 5000);
-        } else {
+        } else if (pollResult === 'failed') {
           setTxStatus('error');
-          setErrorMessage('Transaction may have failed or is still pending. Click below to check the explorer.');
+          setErrorMessage('Transaction was rejected on-chain. Check the explorer for details.');
+        } else {
+          setTxStatus('timeout');
+          setErrorMessage('');
         }
       } else {
         setTxStatus('error');
@@ -353,6 +355,29 @@ export const BorrowCard: React.FC = () => {
               <ExternalLink size={12} />
             </a>
           )}
+        </div>
+      )}
+
+      {txStatus === 'timeout' && lastTxId && (
+        <div className="p-3 bg-amber-50 rounded-xl border border-amber-200 space-y-2">
+          <div className="flex items-center gap-2">
+            <AlertCircle className="text-amber-600" size={20} />
+            <span className="text-sm text-amber-700 font-medium">
+              Transaction still processing
+            </span>
+          </div>
+          <p className="text-xs text-amber-700">
+            Your borrow request may still go through. Do not submit again — check the explorer for the latest status.
+          </p>
+          <a
+            href={getExplorerUrl(lastTxId)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1 text-xs text-amber-700 hover:text-amber-800 hover:underline font-medium"
+          >
+            Check transaction status
+            <ExternalLink size={12} />
+          </a>
         </div>
       )}
 

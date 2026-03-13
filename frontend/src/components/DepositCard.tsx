@@ -17,7 +17,7 @@ export const DepositCard: React.FC = () => {
 
   const [depositAmount, setDepositAmount] = useState('');
   const [userDeposit, setUserDeposit] = useState(0);
-  const [txStatus, setTxStatus] = useState<'idle' | 'pending' | 'success' | 'error'>('idle');
+  const [txStatus, setTxStatus] = useState<'idle' | 'pending' | 'success' | 'error' | 'timeout'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
   const [lastTxId, setLastTxId] = useState<string | null>(null);
 
@@ -60,26 +60,29 @@ export const DepositCard: React.FC = () => {
         setErrorMessage(`Transaction submitted: ${result.txId}`);
         
         // Wait for transaction confirmation
-        const confirmed = await vault.pollTransactionStatus(result.txId);
-        
-        if (confirmed) {
+        const result2 = await vault.pollTransactionStatus(result.txId);
+
+        if (result2 === 'confirmed') {
           setTxStatus('success');
           setDepositAmount('');
-          
+
           // Refresh deposit immediately after confirmation
           const deposit = await vault.getUserDeposit();
           if (deposit) {
             setUserDeposit(deposit.amountSTX);
           }
-          
+
           // Reset status after showing success message
           setTimeout(() => {
             setTxStatus('idle');
             setErrorMessage('');
           }, 5000);
-        } else {
+        } else if (result2 === 'failed') {
           setTxStatus('error');
-          setErrorMessage('Transaction failed or timed out. Check explorer for details.');
+          setErrorMessage('Transaction was rejected on-chain. Check the explorer for details.');
+        } else {
+          setTxStatus('timeout');
+          setErrorMessage('');
         }
       } else {
         setTxStatus('error');
@@ -230,6 +233,29 @@ export const DepositCard: React.FC = () => {
               <ExternalLink size={12} />
             </a>
           )}
+        </div>
+      )}
+
+      {txStatus === 'timeout' && lastTxId && (
+        <div className="p-3 bg-amber-50 rounded-xl border border-amber-200 space-y-2">
+          <div className="flex items-center gap-2">
+            <AlertTriangle className="text-amber-600" size={20} />
+            <span className="text-sm text-amber-700 font-medium">
+              Transaction still processing
+            </span>
+          </div>
+          <p className="text-xs text-amber-700">
+            Your deposit may still go through. Do not retry — check the explorer for the latest status.
+          </p>
+          <a
+            href={getExplorerUrl(lastTxId)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1 text-xs text-amber-700 hover:text-amber-800 hover:underline font-medium"
+          >
+            Check transaction status
+            <ExternalLink size={12} />
+          </a>
         </div>
       )}
 
