@@ -79,6 +79,7 @@
 (define-data-var total-deposits uint u0)
 (define-data-var total-repaid uint u0)
 (define-data-var total-liquidations uint u0)
+(define-data-var total-outstanding-borrows uint u0)
 
 ;; Protocol Metrics
 (define-data-var total-deposits-count uint u0)
@@ -175,6 +176,7 @@
     total-deposits: (var-get total-deposits),
     total-repaid: (var-get total-repaid),
     total-liquidations: (var-get total-liquidations),
+    total-outstanding-borrows: (var-get total-outstanding-borrows),
     price-valid: (is-price-valid)
   }
 )
@@ -552,6 +554,7 @@
       ;; Update metrics
       (var-set total-borrows-count (+ (var-get total-borrows-count) u1))
       (var-set total-borrow-volume (safe-add (var-get total-borrow-volume) amount))
+      (var-set total-outstanding-borrows (safe-add (var-get total-outstanding-borrows) amount))
       (var-set last-activity-block block-height)
 
       (print { event: "borrow", user: recipient, amount: amount, rate: interest-rate, term-days: term-days, price-snapshot: current-price })
@@ -582,6 +585,7 @@
       
       ;; Update metrics
       (var-set total-repaid (safe-add (var-get total-repaid) total-repayment))
+      (var-set total-outstanding-borrows (safe-sub (var-get total-outstanding-borrows) loan-amount))
       (var-set total-repayments-count (+ (var-get total-repayments-count) u1))
       (var-set total-repay-volume (safe-add (var-get total-repay-volume) total-repayment))
       (var-set last-activity-block block-height)
@@ -623,6 +627,7 @@
 
       ;; Update metrics
       (var-set total-deposits (safe-sub (var-get total-deposits) borrower-deposit))
+      (var-set total-outstanding-borrows (safe-sub (var-get total-outstanding-borrows) loan-amount))
       (var-set total-liquidations (+ (var-get total-liquidations) u1))
       (var-set total-liquidations-count (+ (var-get total-liquidations-count) u1))
       (var-set total-liquidation-volume (safe-add (var-get total-liquidation-volume) borrower-deposit))
