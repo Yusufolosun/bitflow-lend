@@ -123,22 +123,25 @@ export const DepositCard: React.FC = () => {
 
       {/* Deposit Input */}
       <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">
+        <label htmlFor="deposit-amount" className="block text-sm font-medium text-gray-700">
           Deposit Amount
         </label>
         <div className="relative">
           <input
+            id="deposit-amount"
             type="number"
             value={depositAmount}
             onChange={(e) => setDepositAmount(e.target.value)}
             placeholder="0.00"
             className="input"
             disabled={txStatus === 'pending'}
+            aria-describedby="deposit-validation"
           />
           <button
             onClick={handleMaxClick}
             className="absolute right-3 top-1/2 -translate-y-1/2 px-3 py-1 bg-accent-50 text-accent-600 rounded-lg text-xs font-bold hover:bg-accent-100 transition-colors border border-accent-200"
             disabled={txStatus === 'pending'}
+            aria-label="Set maximum deposit amount"
           >
             MAX
           </button>
@@ -153,8 +156,9 @@ export const DepositCard: React.FC = () => {
         </div>
 
         {/* Inline Validation Warnings */}
+        <div id="deposit-validation">
         {depositAmount && parseFloat(depositAmount) > 0 && parseFloat(depositAmount) < 0.01 && (
-          <div className="flex items-center gap-2 text-xs text-red-700 bg-red-50 rounded-lg p-2">
+          <div className="flex items-center gap-2 text-xs text-red-700 bg-red-50 rounded-lg p-2" role="alert">
             <XCircle size={14} className="flex-shrink-0" />
             <span>Minimum deposit is 0.01 STX</span>
           </div>
@@ -176,6 +180,7 @@ export const DepositCard: React.FC = () => {
             Max borrow after deposit: {formatSTX((userDeposit + parseFloat(depositAmount)) / (PROTOCOL_CONSTANTS.MIN_COLLATERAL_RATIO / 100))} STX
           </div>
         )}
+        </div>
       </div>
 
       {/* Deposit Button */}
@@ -192,7 +197,7 @@ export const DepositCard: React.FC = () => {
 
       {/* Status Messages */}
       {txStatus === 'success' && (
-        <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-100 space-y-2">
+        <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-100 space-y-2" role="alert">
           <div className="flex items-center gap-2">
             <CheckCircle className="text-emerald-600" size={20} />
             <span className="text-sm text-emerald-700 font-medium">
@@ -217,7 +222,7 @@ export const DepositCard: React.FC = () => {
       )}
 
       {txStatus === 'error' && errorMessage && (
-        <div className="p-3 bg-red-50 rounded-xl border border-red-100 space-y-2">
+        <div className="p-3 bg-red-50 rounded-xl border border-red-100 space-y-2" role="alert">
           <div className="flex items-center gap-2">
             <XCircle className="text-red-600" size={20} />
             <span className="text-sm text-red-700 font-medium">{errorMessage}</span>
@@ -237,7 +242,7 @@ export const DepositCard: React.FC = () => {
       )}
 
       {txStatus === 'timeout' && lastTxId && (
-        <div className="p-3 bg-amber-50 rounded-xl border border-amber-200 space-y-2">
+        <div className="p-3 bg-amber-50 rounded-xl border border-amber-200 space-y-2" role="alert">
           <div className="flex items-center gap-2">
             <AlertTriangle className="text-amber-600" size={20} />
             <span className="text-sm text-amber-700 font-medium">
