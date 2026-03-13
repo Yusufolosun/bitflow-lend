@@ -18,6 +18,19 @@ export const CURRENT_NETWORK = import.meta.env.VITE_NETWORK || NETWORK.TESTNET;
 export const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS || '';
 export const CONTRACT_NAME = 'vault-core';
 
+// Validate required env vars on startup so misconfiguration fails fast
+// instead of producing cryptic contract call errors at runtime
+const REQUIRED_ENV_VARS = ['VITE_CONTRACT_ADDRESS'] as const;
+
+for (const key of REQUIRED_ENV_VARS) {
+  if (!import.meta.env[key]) {
+    throw new Error(
+      `Missing required environment variable: ${key}. ` +
+      'Copy .env.example to .env and fill in the values before starting the app.'
+    );
+  }
+}
+
 // API Endpoints
 export const API_URLS = {
   testnet: 'https://api.testnet.hiro.so',
