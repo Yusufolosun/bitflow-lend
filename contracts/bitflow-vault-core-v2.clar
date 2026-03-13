@@ -273,6 +273,18 @@
   }
 )
 
+;; Utilization ratio in basis points (0-10000)
+;; Returns 0 when there are no deposits to avoid division by zero
+(define-read-only (get-utilization-ratio)
+  (let (
+    (deposits (var-get total-deposits))
+    (borrowed (var-get total-outstanding-borrows))
+  )
+    (if (> deposits u0)
+      (/ (* borrowed u10000) deposits)
+      u0))
+)
+
 (define-read-only (get-user-position-summary (user principal) (stx-price uint))
   (let (
     (deposit-amount (default-to u0 (map-get? user-deposits user)))
