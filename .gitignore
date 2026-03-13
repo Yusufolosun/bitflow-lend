@@ -18,10 +18,12 @@ frontend/.env
 settings/
 settings/*.toml
 
-# Deployment receipts and logs (may contain transaction details)
+# Deployment plans (may contain node credentials)
+# Allow simnet plan and .example templates; ignore everything else
 deployments/*.yaml
+!deployments/default.simnet-plan.yaml
+!deployments/*.example.yaml
 deployments/mainnet_*.yaml
-*.deployment-plan.yaml
 
 # Build outputs
 dist/
@@ -39,8 +41,6 @@ build/
 
 # Clarinet
 .cache/
-deployments/
-*.deployment-plan.yaml
 contracts/vault-core-deploy.clar
 
 # Mainnet credentials (even encrypted, keep private)
