@@ -250,9 +250,13 @@
       (map-set staker-last-action recipient block-height)
 
       ;; Update pool metrics
-      (var-set total-staked (- (var-get total-staked) balance))
+      (var-set total-staked (if (>= (var-get total-staked) balance)
+        (- (var-get total-staked) balance)
+        u0))
       (var-set total-unstake-volume (+ (var-get total-unstake-volume) balance))
-      (var-set total-stakers (- (var-get total-stakers) u1))
+      (var-set total-stakers (if (> (var-get total-stakers) u0)
+        (- (var-get total-stakers) u1)
+        u0))
 
       (print { event: "emergency-unstake", user: recipient, amount: balance })
       (ok balance)
