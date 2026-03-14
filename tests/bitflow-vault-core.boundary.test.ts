@@ -61,14 +61,14 @@ describe("Boundary Value Tests", () => {
       expect(result).toBeErr(Cl.uint(105)); // ERR-INSUFFICIENT-COLLATERAL
     });
 
-    it("allows borrow with minimum interest rate (1 BPS)", () => {
+    it("allows borrow with minimum interest rate (50 BPS)", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
       simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(15000)], wallet);
       const { result } = simnet.callPublicFn(
         CONTRACT, "borrow",
-        [Cl.uint(10000), Cl.uint(1), Cl.uint(30)],
+        [Cl.uint(10000), Cl.uint(50), Cl.uint(30)],
         wallet
       );
       expect(result).toBeOk(Cl.bool(true));
@@ -113,21 +113,22 @@ describe("Boundary Value Tests", () => {
       expect(result).toBeOk(Cl.bool(true));
     });
 
-    it("repay immediately after borrow (same block, zero interest)", () => {
+    it("repay immediately after borrow (same block, ceiling interest)", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
       simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(15000)], wallet);
       simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], wallet);
 
-      // Repay in the next block (1 block elapsed, interest rounds to 0)
-      // Interest = 1000 * 500 * 1 / (100 * 52560) = 0 (integer division)
+      // Repay in the next block (1 block elapsed)
+      // ceiling(1000 * 500 * 1 / 5256000) = ceiling(0.095) = 1
       const { result } = simnet.callPublicFn(CONTRACT, "repay", [], wallet);
       expect(result).toBeOk(
         Cl.tuple({
-          interest: Cl.uint(0),
+          interest: Cl.uint(1),
+          penalty: Cl.uint(0),
           principal: Cl.uint(1000),
-          total: Cl.uint(1000),
+          total: Cl.uint(1001),
         })
       );
     });
@@ -153,20 +154,17 @@ describe("Boundary Value Tests", () => {
       expect(result).toBeErr(Cl.uint(101)); // ERR-INSUFFICIENT-BALANCE
     });
 
-    it("rejects borrow of 0 amount (stx-transfer of 0 fails)", () => {
+    it("rejects borrow of 0 amount", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
       simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(15000)], wallet);
-      // Contract has no explicit (> amount u0) check for borrow,
-      // but stx-transfer? of u0 in Clarity returns (err u3).
-      // This effectively prevents zero-amount borrows at the runtime level.
       const { result } = simnet.callPublicFn(
         CONTRACT, "borrow",
         [Cl.uint(0), Cl.uint(500), Cl.uint(30)],
         wallet
       );
-      expect(result).toBeErr(Cl.uint(3));
+      expect(result).toBeErr(Cl.uint(102)); // ERR-INVALID-AMOUNT
     });
   });
 
@@ -239,6 +237,7 @@ describe("Boundary Value Tests", () => {
         Cl.tuple({
           principal: Cl.uint(100_000),
           interest: Cl.uint(10_000_000),
+          penalty: Cl.uint(0),
           total: Cl.uint(10_100_000),
         })
       );
