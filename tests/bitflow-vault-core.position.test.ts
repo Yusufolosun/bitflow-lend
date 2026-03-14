@@ -84,7 +84,7 @@ describe("bitflow-vault-core user-position-summary tests", () => {
       const { result } = getPositionSummary(wallet1(), 100);
       // health = (deposit * price / 100) * 100 / loan
       // = (10M * 100 / 100) * 100 / 3M = 10M * 100 / 3M = 333
-      const healthFactor = (result as any).value?.["health-factor"]?.value;
+      const healthFactor = (result as any).value?.["health-factor"]?.value?.value;
       expect(Number(healthFactor)).toBe(333);
     });
 
