@@ -15,3 +15,4 @@ export { ToastProvider, useToastContext } from './ToastProvider';
 export { ToastContainer } from './Toast';
 export { LoadingCard, LoadingStats } from './LoadingCard';
 export { ErrorState } from './ErrorState';
+export { ErrorBoundary } from './ErrorBoundary';
