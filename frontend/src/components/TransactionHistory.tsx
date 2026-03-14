@@ -206,7 +206,7 @@ export const TransactionHistory: React.FC = () => {
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <div className="p-3 bg-gray-100 rounded-xl">
-            <Clock className="text-gray-600" size={24} />
+            <Clock className="text-gray-600" size={24} aria-hidden="true" />
           </div>
           <div>
             <h3 className="text-lg font-bold text-gray-900 tracking-tight">Transaction History</h3>
