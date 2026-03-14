@@ -191,7 +191,7 @@ describe("bitflow-vault-core-v2 per-function toggle tests", () => {
   describe("global pause overrides individual toggles", () => {
     it("deposits blocked when globally paused even if toggle is on", () => {
       setup();
-      simnet.callPublicFn(CONTRACT, "pause", [], deployer());
+      simnet.callPublicFn(CONTRACT, "pause-protocol", [], deployer());
       const { result } = deposit(1_000_000, wallet1());
       expect(result).toBeErr(Cl.uint(112));
     });
@@ -199,7 +199,7 @@ describe("bitflow-vault-core-v2 per-function toggle tests", () => {
     it("borrows blocked when globally paused even if toggle is on", () => {
       setup();
       deposit(10_000_000, wallet1());
-      simnet.callPublicFn(CONTRACT, "pause", [], deployer());
+      simnet.callPublicFn(CONTRACT, "pause-protocol", [], deployer());
       const { result } = borrow(1_000_000, 500, 30, wallet1());
       expect(result).toBeErr(Cl.uint(112));
     });
