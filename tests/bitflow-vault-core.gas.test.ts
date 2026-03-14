@@ -86,6 +86,7 @@ describe("Gas Consumption and Limit Tests", () => {
         "total-deposits": expect.any(Object),
         "total-repaid": expect.any(Object),
         "total-liquidations": expect.any(Object),
+        "total-outstanding-borrows": expect.any(Object),
       });
     });
 
