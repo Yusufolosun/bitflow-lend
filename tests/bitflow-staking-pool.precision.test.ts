@@ -13,7 +13,7 @@ describe("bitflow-staking-pool reward precision", () => {
   const staker2 = () => simnet.getAccounts().get("wallet_2")!;
 
   const init = (rewardRate: number) => {
-    simnet.callPublicFn(CONTRACT, "initialize", [], deployer());
+    simnet.callPublicFn(CONTRACT, "initialize-pool", [], deployer());
     simnet.callPublicFn(
       CONTRACT, "set-reward-rate",
       [Cl.uint(rewardRate)], deployer()
