@@ -104,10 +104,13 @@
 ;; ===== PRIVATE UTILITY FUNCTIONS =====
 
 ;; Safe addition with overflow protection
+;; Clarity uint is 128-bit; (+ a b) panics on overflow, so check first.
 (define-private (safe-add (a uint) (b uint))
-  (if (> (+ a b) u115792089237316195423570985008687907853269984665640564039457584007913129639935)
-    u115792089237316195423570985008687907853269984665640564039457584007913129639935
-    (+ a b)
+  (let ((max-uint u340282366920938463463374607431768211455))
+    (if (> a (- max-uint b))
+      max-uint
+      (+ a b)
+    )
   )
 )
 
