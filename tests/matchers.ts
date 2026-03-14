@@ -34,14 +34,14 @@ expect.extend({
     }
 
     const tuple = inner as TupleCV;
-    const actualValue = tuple.data[key];
+    const actualValue = tuple.value[key];
 
     if (actualValue === undefined) {
       return {
         pass: false,
         message: () =>
           `expected tuple to have key "${key}" but it only has keys: ${Object.keys(
-            tuple.data
+            tuple.value
           ).join(", ")}`,
       };
     }
