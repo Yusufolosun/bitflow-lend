@@ -1,4 +1,5 @@
 import { Dashboard } from './components/Dashboard';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { ToastProvider } from './components/ToastProvider';
 import './index.css';
 
@@ -8,11 +9,13 @@ import './index.css';
  */
 function App() {
   return (
-    <ToastProvider>
-      <div className="App">
-        <Dashboard />
-      </div>
-    </ToastProvider>
+    <ErrorBoundary>
+      <ToastProvider>
+        <div className="App">
+          <Dashboard />
+        </div>
+      </ToastProvider>
+    </ErrorBoundary>
   );
 }
 
