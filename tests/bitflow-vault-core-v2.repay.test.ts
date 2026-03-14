@@ -44,7 +44,7 @@ describe("bitflow-vault-core-v2 repay lifecycle tests", () => {
       const { result } = repay(wallet1());
       expect(result).toHaveTupleProperty("principal", Cl.uint(1_000_000));
       // Interest should be >= 1 (ceiling division)
-      const interest = (result as any).value?.interest?.value;
+      const interest = (result as any).value?.value?.interest?.value;
       expect(Number(interest)).toBeGreaterThanOrEqual(1);
       expect(result).toHaveTupleProperty("penalty", Cl.uint(0));
     });
@@ -56,10 +56,10 @@ describe("bitflow-vault-core-v2 repay lifecycle tests", () => {
       simnet.mineEmptyBlocks(100);
 
       const { result } = repay(wallet1());
-      const principal = Number((result as any).value?.principal?.value);
+      const principal = Number((result as any).value?.value?.principal?.value);
       const interest = Number((result as any).value?.interest?.value);
-      const penalty = Number((result as any).value?.penalty?.value);
-      const total = Number((result as any).value?.total?.value);
+      const penalty = Number((result as any).value?.value?.penalty?.value);
+      const total = Number((result as any).value?.value?.total?.value);
 
       expect(total).toBe(principal + interest + penalty);
     });
@@ -159,7 +159,7 @@ describe("bitflow-vault-core-v2 repay lifecycle tests", () => {
       simnet.mineEmptyBlocks(5000);
 
       const { result } = repay(wallet1());
-      const penalty = Number((result as any).value?.penalty?.value);
+      const penalty = Number((result as any).value?.value?.penalty?.value);
       // 5% of 2M = 100_000
       expect(penalty).toBe(100_000);
     });
