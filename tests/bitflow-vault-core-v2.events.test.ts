@@ -50,9 +50,9 @@ describe("bitflow-vault-core-v2 event emission", () => {
   describe("borrow event", () => {
     it("emits borrow event with amount, rate, term, price snapshot", () => {
       init();
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(5000)], wallet1());
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(500_000)], wallet1());
       const { events } = simnet.callPublicFn(
-        CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], wallet1()
+        CONTRACT, "borrow", [Cl.uint(100_000), Cl.uint(500), Cl.uint(30)], wallet1()
       );
       const prints = events.filter((e: any) => e.event === "print_event");
       expect(prints.length).toBeGreaterThanOrEqual(1);
@@ -65,9 +65,9 @@ describe("bitflow-vault-core-v2 event emission", () => {
   describe("repay event", () => {
     it("emits repay event with principal, interest, penalty, total", () => {
       init();
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(5000)], wallet1());
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(500_000)], wallet1());
       simnet.callPublicFn(
-        CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], wallet1()
+        CONTRACT, "borrow", [Cl.uint(100_000), Cl.uint(500), Cl.uint(30)], wallet1()
       );
       const { events } = simnet.callPublicFn(CONTRACT, "repay", [], wallet1());
       const prints = events.filter((e: any) => e.event === "print_event");
@@ -81,9 +81,9 @@ describe("bitflow-vault-core-v2 event emission", () => {
   describe("liquidation event", () => {
     it("emits liquidation event with liquidator, borrower, seized, paid", () => {
       init();
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(3000)], wallet1());
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(300_000)], wallet1());
       simnet.callPublicFn(
-        CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], wallet1()
+        CONTRACT, "borrow", [Cl.uint(100_000), Cl.uint(500), Cl.uint(30)], wallet1()
       );
       // Drop price to make liquidatable
       simnet.callPublicFn(CONTRACT, "set-stx-price", [Cl.uint(30)], deployer());
