@@ -33,6 +33,32 @@ export const VAULT_CONTRACT = {
   },
 };
 
+// Staking Pool Contract Details
+export const STAKING_CONTRACT = {
+  name: 'bitflow-staking-pool',
+  testnet: {
+    address: VAULT_CONTRACT.testnet.address,
+    contractName: 'bitflow-staking-pool',
+  },
+  mainnet: {
+    address: VAULT_CONTRACT.mainnet.address,
+    contractName: 'bitflow-staking-pool',
+  },
+};
+
+// Oracle Registry Contract Details
+export const ORACLE_CONTRACT = {
+  name: 'bitflow-oracle-registry',
+  testnet: {
+    address: VAULT_CONTRACT.testnet.address,
+    contractName: 'bitflow-oracle-registry',
+  },
+  mainnet: {
+    address: VAULT_CONTRACT.mainnet.address,
+    contractName: 'bitflow-oracle-registry',
+  },
+};
+
 // Contract version registry — supports viewing/managing positions across
 // contract upgrades. The "active" entry is the current deployment; older
 // entries are kept so users can still interact with legacy positions during
@@ -52,6 +78,14 @@ export const CONTRACT_VERSIONS: ContractVersion[] = [
       mainnet: VAULT_CONTRACT.mainnet.address,
     },
     contractName: 'bitflow-vault-core',
+  },
+  {
+    version: '2.0.0',
+    address: {
+      testnet: VAULT_CONTRACT.testnet.address,
+      mainnet: VAULT_CONTRACT.mainnet.address,
+    },
+    contractName: 'bitflow-vault-core-v2',
   },
 ];
 

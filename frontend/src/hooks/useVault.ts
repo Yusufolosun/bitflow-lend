@@ -58,8 +58,7 @@ const pollTransactionStatus = async (txId: string, maxAttempts = 60): Promise<Po
       }
 
       await new Promise(resolve => setTimeout(resolve, 3000));
-    } catch (err) {
-      console.error('Error checking transaction status:', err);
+    } catch {
       await new Promise(resolve => setTimeout(resolve, 3000));
     }
   }
@@ -292,8 +291,7 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
       }
 
       return null;
-    } catch (err) {
-      console.error('Error fetching user deposit:', err);
+    } catch {
       return null;
     }
   }, [userAddress, network, contractAddress, contractName]);
@@ -317,7 +315,7 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
       // Handle optional some (loan exists)
       if (result.type === ClarityType.OptionalSome && result.value) {
         const loanData = cvToValue(result.value);
-        
+
         const amount = BigInt(loanData.amount);
         const interestRate = Number(loanData['interest-rate']);
         const startBlock = Number(loanData['start-block']);
@@ -352,8 +350,7 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
 
       // Handle optional none (no loan)
       return null;
-    } catch (err) {
-      console.error('Error fetching user loan:', err);
+    } catch {
       return null;
     }
   }, [userAddress, network, contractAddress, contractName]);
@@ -376,9 +373,10 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
 
       if (result.type === ClarityType.OptionalSome) {
         const repaymentData = cvToValue(result.value);
-        
+
         const principal = BigInt(repaymentData.principal);
         const interest = BigInt(repaymentData.interest);
+        const penalty = BigInt(repaymentData.penalty ?? 0);
         const total = BigInt(repaymentData.total);
 
         return {
@@ -386,14 +384,15 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
           principalSTX: microStxToStx(principal),
           interest,
           interestSTX: microStxToStx(interest),
+          penalty,
+          penaltySTX: microStxToStx(penalty),
           total,
           totalSTX: microStxToStx(total),
         };
       }
 
       return null;
-    } catch (err) {
-      console.error('Error fetching repayment amount:', err);
+    } catch {
       return null;
     }
   }, [userAddress, network, contractAddress, contractName]);
@@ -422,7 +421,7 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
 
       if (result.type === ClarityType.OptionalSome && result.value.type === ClarityType.UInt) {
         const healthFactorPercent = Number(result.value.value);
-        
+
         // Get loan data for USD values - call the function directly
         const loanResult = await callReadOnlyFunction({
           network,
@@ -432,19 +431,19 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
           functionArgs: [principalCV(userAddress)],
           senderAddress: userAddress,
         });
-        
+
         let collateralValueUSD = 0;
         let debtValueUSD = 0;
-        
+
         if (loanResult.type === ClarityType.OptionalSome) {
           const loanData = cvToValue(loanResult.value);
           const amountSTX = microStxToStx(BigInt(loanData.amount));
           const collateralAmountSTX = microStxToStx((BigInt(loanData.amount) * BigInt(PROTOCOL_CONSTANTS.MIN_COLLATERAL_RATIO)) / BigInt(100));
-          
+
           collateralValueUSD = collateralAmountSTX * stxPriceUSD;
           debtValueUSD = amountSTX * stxPriceUSD;
         }
-        
+
         return {
           healthFactorPercent,
           collateralValueUSD,
@@ -453,9 +452,48 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
       }
 
       return null;
-    } catch (err) {
-      console.error('Error calculating health factor:', err);
+    } catch {
       return null;
+    }
+  }, [userAddress, network, contractAddress, contractName]);
+
+  /**
+   * Liquidate an undercollateralized borrower position
+   */
+  const liquidate = useCallback(async (borrowerAddress: string): Promise<ContractCallResponse> => {
+    if (!userAddress) {
+      return { success: false, error: 'Wallet not connected' };
+    }
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      return new Promise((resolve) => {
+        openContractCall({
+          network,
+          contractAddress,
+          contractName,
+          functionName: 'liquidate',
+          functionArgs: [principalCV(borrowerAddress)],
+          postConditionMode: PostConditionMode.Allow,
+          onFinish: (data: any) => {
+            // Transaction submitted
+            setIsLoading(false);
+            resolve({ success: true, txId: data.txId });
+          },
+          onCancel: () => {
+            // Transaction cancelled
+            setIsLoading(false);
+            resolve({ success: false, error: 'Transaction cancelled by user' });
+          },
+        });
+      });
+    } catch (err: any) {
+      const errorMsg = err.message || 'Failed to liquidate';
+      setError(errorMsg);
+      setIsLoading(false);
+      return { success: false, error: errorMsg };
     }
   }, [userAddress, network, contractAddress, contractName]);
 
@@ -469,13 +507,14 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
     withdraw,
     borrow,
     repay,
+    liquidate,
 
     // Read operations
     getUserDeposit,
     getUserLoan,
     getRepaymentAmount,
     getHealthFactor,
-    
+
     // Utilities
     pollTransactionStatus: (txId: string) => pollTransactionStatus(txId),
   };

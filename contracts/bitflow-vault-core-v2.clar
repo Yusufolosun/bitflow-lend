@@ -79,6 +79,7 @@
 (define-data-var total-deposits uint u0)
 (define-data-var total-repaid uint u0)
 (define-data-var total-liquidations uint u0)
+(define-data-var total-outstanding-borrows uint u0)
 
 ;; Protocol Metrics
 (define-data-var total-deposits-count uint u0)
@@ -126,17 +127,18 @@
   )
 )
 
-;; Calculate interest with improved precision
+;; Calculate interest with ceiling division to prevent rounding to zero
 ;; Principal (in microSTX) * RatePercentage (basis points) * BlocksElapsed / (100 * 52560 blocks/year)
+;; Uses ceiling division: (a + b - 1) / b for non-zero amounts
 (define-private (calculate-interest-precise (principal uint) (rate uint) (blocks-elapsed uint))
   (let (
-    (numerator (safe-add (safe-add 
-      (* (* principal rate) blocks-elapsed)
-      (* u100 u52560))
-      u1))
+    (raw-numerator (* (* principal rate) blocks-elapsed))
     (denominator (* u100 u52560))
   )
-    (/ numerator denominator)
+    (if (is-eq raw-numerator u0)
+      u0
+      (/ (- (+ raw-numerator denominator) u1) denominator)
+    )
   )
 )
 
@@ -175,6 +177,7 @@
     total-deposits: (var-get total-deposits),
     total-repaid: (var-get total-repaid),
     total-liquidations: (var-get total-liquidations),
+    total-outstanding-borrows: (var-get total-outstanding-borrows),
     price-valid: (is-price-valid)
   }
 )
@@ -269,6 +272,18 @@
     repay-volume: (var-get total-repay-volume),
     liquidation-volume: (var-get total-liquidation-volume)
   }
+)
+
+;; Utilization ratio in basis points (0-10000)
+;; Returns 0 when there are no deposits to avoid division by zero
+(define-read-only (get-utilization-ratio)
+  (let (
+    (deposits (var-get total-deposits))
+    (borrowed (var-get total-outstanding-borrows))
+  )
+    (if (> deposits u0)
+      (/ (* borrowed u10000) deposits)
+      u0))
 )
 
 (define-read-only (get-user-position-summary (user principal) (stx-price uint))
@@ -477,32 +492,34 @@
 )
 
 (define-public (withdraw (amount uint))
-  (begin
+  (let (
+    (recipient tx-sender)
+  )
     (asserts! (not (var-get is-paused)) ERR-PROTOCOL-PAUSED)
     (asserts! (var-get withdrawals-enabled) ERR-PROTOCOL-PAUSED)
     (asserts! (> amount u0) ERR-ZERO-AMOUNT)
-    
+
     (let (
-      (user-balance (default-to u0 (map-get? user-deposits tx-sender)))
-      (locked-collateral (match (map-get? user-loans tx-sender)
+      (user-balance (default-to u0 (map-get? user-deposits recipient)))
+      (locked-collateral (match (map-get? user-loans recipient)
         loan (calculate-required-collateral (get amount loan))
         u0))
       (available-balance (safe-sub user-balance locked-collateral))
     )
       (asserts! (>= available-balance amount) ERR-INSUFFICIENT-BALANCE)
-      
+
       ;; Transfer STX from contract to user
-      (try! (as-contract (stx-transfer? amount tx-sender tx-sender)))
-      
+      (try! (as-contract (stx-transfer? amount tx-sender recipient)))
+
       ;; Update user deposit
-      (map-set user-deposits tx-sender (safe-sub user-balance amount))
-      
+      (map-set user-deposits recipient (safe-sub user-balance amount))
+
       ;; Update metrics
       (var-set total-deposits (safe-sub (var-get total-deposits) amount))
       (var-set total-withdrawals-count (+ (var-get total-withdrawals-count) u1))
       (var-set last-activity-block block-height)
-      
-      (print { event: "withdraw", user: tx-sender, amount: amount, remaining-balance: (safe-sub user-balance amount) })
+
+      (print { event: "withdraw", user: recipient, amount: amount, remaining-balance: (safe-sub user-balance amount) })
       (ok true)
     )
   )
@@ -513,15 +530,16 @@
     (asserts! (not (var-get is-paused)) ERR-PROTOCOL-PAUSED)
     (asserts! (var-get borrows-enabled) ERR-PROTOCOL-PAUSED)
     (asserts! (is-price-valid) ERR-STALE-PRICE)
-    
+
     ;; Input validation
     (asserts! (> amount u0) ERR-ZERO-AMOUNT)
     (asserts! (>= amount MIN-BORROW-AMOUNT) ERR-MIN-BORROW-AMOUNT)
     (asserts! (<= amount MAX-BORROW-AMOUNT) ERR-MAX-BORROW-EXCEEDED)
     (asserts! (and (>= interest-rate (var-get min-interest-rate)) (<= interest-rate (var-get max-interest-rate))) ERR-INVALID-INTEREST-RATE)
     (asserts! (and (>= term-days (var-get min-term-days)) (<= term-days (var-get max-term-days))) ERR-INVALID-TERM)
-    
+
     (let (
+      (recipient tx-sender)
       (user-balance (default-to u0 (map-get? user-deposits tx-sender)))
       (required-collateral (calculate-required-collateral amount))
       (term-end (safe-add block-height (* term-days u144)))
@@ -530,28 +548,29 @@
       ;; Collateral check
       (asserts! (> user-balance u0) ERR-INSUFFICIENT-COLLATERAL)
       (asserts! (>= user-balance required-collateral) ERR-INSUFFICIENT-COLLATERAL)
-      
-      ;; Health factor check before borrow
-      (asserts! (is-none (map-get? user-loans tx-sender)) ERR-ALREADY-HAS-LOAN)
-      
+
+      ;; One loan per user
+      (asserts! (is-none (map-get? user-loans recipient)) ERR-ALREADY-HAS-LOAN)
+
       ;; Transfer borrowed STX from contract to user
-      (try! (as-contract (stx-transfer? amount tx-sender tx-sender)))
-      
+      (try! (as-contract (stx-transfer? amount tx-sender recipient)))
+
       ;; Store loan with oracle price snapshot
-      (map-set user-loans tx-sender {
+      (map-set user-loans recipient {
         amount: amount,
         interest-rate: interest-rate,
         start-block: block-height,
         term-end: term-end,
         created-at-price: current-price
       })
-      
+
       ;; Update metrics
       (var-set total-borrows-count (+ (var-get total-borrows-count) u1))
       (var-set total-borrow-volume (safe-add (var-get total-borrow-volume) amount))
+      (var-set total-outstanding-borrows (safe-add (var-get total-outstanding-borrows) amount))
       (var-set last-activity-block block-height)
-      
-      (print { event: "borrow", user: tx-sender, amount: amount, rate: interest-rate, term-days: term-days, price-snapshot: current-price })
+
+      (print { event: "borrow", user: recipient, amount: amount, rate: interest-rate, term-days: term-days, price-snapshot: current-price })
       (ok true)
     )
   )
@@ -579,6 +598,7 @@
       
       ;; Update metrics
       (var-set total-repaid (safe-add (var-get total-repaid) total-repayment))
+      (var-set total-outstanding-borrows (safe-sub (var-get total-outstanding-borrows) loan-amount))
       (var-set total-repayments-count (+ (var-get total-repayments-count) u1))
       (var-set total-repay-volume (safe-add (var-get total-repay-volume) total-repayment))
       (var-set last-activity-block block-height)
@@ -595,8 +615,9 @@
     (asserts! (var-get liquidations-enabled) ERR-PROTOCOL-PAUSED)
     (asserts! (is-price-valid) ERR-STALE-PRICE)
     (asserts! (not (is-eq tx-sender borrower)) ERR-LIQUIDATE-OWN-LOAN)
-    
+
     (let (
+      (liquidator tx-sender)
       (current-price (var-get admin-stx-price))
       (loan (unwrap! (map-get? user-loans borrower) ERR-NO-ACTIVE-LOAN))
       (borrower-deposit (default-to u0 (map-get? user-deposits borrower)))
@@ -606,25 +627,26 @@
     )
       ;; Verify health factor is liquidatable
       (asserts! (is-liquidatable borrower current-price) ERR-NOT-LIQUIDATABLE)
-      
-      ;; Transfer payment from liquidator
-      (try! (stx-transfer? total-to-pay tx-sender (as-contract tx-sender)))
-      
+
+      ;; Transfer payment from liquidator to contract
+      (try! (stx-transfer? total-to-pay liquidator (as-contract tx-sender)))
+
       ;; Transfer collateral to liquidator
-      (try! (as-contract (stx-transfer? borrower-deposit tx-sender tx-sender)))
-      
+      (try! (as-contract (stx-transfer? borrower-deposit tx-sender liquidator)))
+
       ;; Clear borrower's loan and deposit
       (map-delete user-loans borrower)
       (map-set user-deposits borrower u0)
-      
+
       ;; Update metrics
       (var-set total-deposits (safe-sub (var-get total-deposits) borrower-deposit))
+      (var-set total-outstanding-borrows (safe-sub (var-get total-outstanding-borrows) loan-amount))
       (var-set total-liquidations (+ (var-get total-liquidations) u1))
       (var-set total-liquidations-count (+ (var-get total-liquidations-count) u1))
       (var-set total-liquidation-volume (safe-add (var-get total-liquidation-volume) borrower-deposit))
       (var-set last-activity-block block-height)
-      
-      (print { event: "liquidation", liquidator: tx-sender, borrower: borrower, seized: borrower-deposit, paid: total-to-pay, bonus: liquidation-bonus })
+
+      (print { event: "liquidation", liquidator: liquidator, borrower: borrower, seized: borrower-deposit, paid: total-to-pay, bonus: liquidation-bonus })
       (ok { seized-collateral: borrower-deposit, paid: total-to-pay, bonus: liquidation-bonus })
     )
   )
@@ -640,4 +662,81 @@
     (print { event: "protocol-initialized", block: block-height })
     (ok true)
   )
+)
+
+;; ===== MIGRATION SUPPORT =====
+
+;; Get protocol age in blocks
+(define-read-only (get-protocol-age)
+  (- block-height (var-get protocol-start-block))
+)
+
+;; Get blocks since last activity
+(define-read-only (get-time-since-last-activity)
+  (- block-height (var-get last-activity-block))
+)
+
+;; Single-call dashboard snapshot for frontend/indexer consumption
+;; Combines protocol stats, volume, utilization, and status into one response
+(define-read-only (get-dashboard-snapshot)
+  (let (
+    (deposits (var-get total-deposits))
+    (borrowed (var-get total-outstanding-borrows))
+  )
+    {
+      total-deposits: deposits,
+      total-repaid: (var-get total-repaid),
+      total-liquidations: (var-get total-liquidations),
+      total-outstanding-borrows: borrowed,
+      utilization-bps: (if (> deposits u0) (/ (* borrowed u10000) deposits) u0),
+      deposit-volume: (var-get total-deposit-volume),
+      borrow-volume: (var-get total-borrow-volume),
+      repay-volume: (var-get total-repay-volume),
+      liquidation-volume: (var-get total-liquidation-volume),
+      stx-price: (var-get admin-stx-price),
+      is-paused: (var-get is-paused),
+      protocol-age-blocks: (- block-height (var-get protocol-start-block))
+    }
+  )
+)
+
+;; Export a single user's full position for migration
+(define-read-only (export-user-position (user principal))
+  (let (
+    (deposit-amount (default-to u0 (map-get? user-deposits user)))
+    (loan-data (map-get? user-loans user))
+  )
+    {
+      user: user,
+      deposit: deposit-amount,
+      has-loan: (is-some loan-data),
+      loan: (match loan-data
+        loan-info {
+          amount: (get amount loan-info),
+          interest-rate: (get interest-rate loan-info),
+          start-block: (get start-block loan-info),
+          term-end: (get term-end loan-info),
+          created-at-price: (get created-at-price loan-info)
+        }
+        { amount: u0, interest-rate: u0, start-block: u0, term-end: u0, created-at-price: u0 }
+      ),
+      repayment: (get-repayment-amount user),
+      exported-at-block: block-height
+    }
+  )
+)
+
+;; Export protocol-level state for migration verification
+(define-read-only (export-protocol-state)
+  {
+    total-deposits: (var-get total-deposits),
+    total-repaid: (var-get total-repaid),
+    total-liquidations: (var-get total-liquidations),
+    total-outstanding-borrows: (var-get total-outstanding-borrows),
+    stx-price: (var-get admin-stx-price),
+    is-paused: (var-get is-paused),
+    protocol-start-block: (var-get protocol-start-block),
+    last-activity-block: (var-get last-activity-block),
+    exported-at-block: block-height
+  }
 )

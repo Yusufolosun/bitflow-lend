@@ -180,7 +180,6 @@ export const TransactionHistory: React.FC = () => {
 
       setTransactions(vaultTxs);
     } catch (err: any) {
-      console.error('Error fetching transactions:', err);
       setError(err.message || 'Failed to fetch transactions');
     } finally {
       setIsLoading(false);
@@ -251,7 +250,7 @@ export const TransactionHistory: React.FC = () => {
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <div className="p-3 bg-gray-100 rounded-xl">
-            <Clock className="text-gray-600" size={24} />
+            <Clock className="text-gray-600" size={24} aria-hidden="true" />
           </div>
           <div>
             <h3 className="text-lg font-bold text-gray-900 tracking-tight">Transaction History</h3>
@@ -272,11 +271,12 @@ export const TransactionHistory: React.FC = () => {
       </div>
 
       {/* Filter Buttons */}
-      <div className="flex gap-2 mb-6 flex-wrap">
+      <div className="flex gap-2 mb-6 flex-wrap" role="group" aria-label="Filter transactions by type">
         {(['all', 'deposit', 'withdraw', 'borrow', 'repay'] as const).map((type) => (
           <button
             key={type}
             onClick={() => { setFilter(type); setPage(0); }}
+            aria-pressed={filter === type}
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors capitalize ${
               filter === type
                 ? 'bg-accent-500 text-white shadow-sm'

@@ -156,9 +156,50 @@ start coverage/index.html  # Windows
 
 ```
 tests/
-├── vault-core.test.ts         # Main contract tests
-├── vitest-env.d.ts           # Type declarations
-└── (future test files)
+├── vault-core.test.ts                      # V1 vault core tests
+├── bitflow-vault-core.comprehensive.test.ts # V1 comprehensive tests
+├── bitflow-vault-core.boundary.test.ts     # V1 boundary/edge case tests
+├── bitflow-vault-core.concurrent.test.ts   # V1 concurrent operation tests
+├── bitflow-vault-core.state.test.ts        # V1 state management tests
+├── bitflow-vault-core.liquidation.test.ts  # V1 liquidation tests
+├── bitflow-vault-core.errors.test.ts       # V1 error condition tests
+├── bitflow-vault-core.gas.test.ts          # V1 gas optimization tests
+├── bitflow-vault-core.security.test.ts     # V1 security tests
+├── bitflow-vault-core.time.test.ts         # V1 time-dependent tests
+├── bitflow-vault-core.precision.test.ts    # V1 precision tests
+├── bitflow-vault-core-v2.test.ts           # V2 vault core tests
+├── bitflow-vault-core-v2.boundary.test.ts  # V2 boundary tests
+├── bitflow-vault-core-v2.liquidation.test.ts # V2 liquidation security
+├── bitflow-staking-pool.test.ts            # Staking pool tests
+├── bitflow-staking-pool.boundary.test.ts   # Staking boundary tests
+├── bitflow-staking-pool.state.test.ts      # Staking state management
+├── bitflow-oracle-registry.test.ts         # Oracle registry tests
+├── bitflow-oracle-registry.boundary.test.ts # Oracle boundary tests
+├── bitflow-oracle-registry.state.test.ts   # Oracle state management
+└── vitest-env.d.ts                         # Type declarations
+
+frontend/src/
+├── components/__tests__/
+│   ├── DepositCard.test.tsx
+│   ├── BorrowCard.test.tsx
+│   ├── RepayCard.test.tsx
+│   ├── Dashboard.test.tsx
+│   ├── WalletConnect.test.tsx
+│   ├── StatsCard.test.tsx
+│   ├── ErrorState.test.tsx
+│   ├── LoadingCard.test.tsx
+│   ├── NetworkIndicator.test.tsx
+│   ├── Toast.test.tsx
+│   ├── HealthMonitor.test.tsx
+│   ├── LiquidationList.test.tsx
+│   └── TransactionHistory.test.tsx
+├── hooks/__tests__/
+│   ├── useToast.test.ts
+│   ├── useSmartPolling.test.ts
+│   └── useStxPrice.test.ts
+└── utils/__tests__/
+    ├── calculations.test.ts
+    └── formatters.test.ts
 ```
 
 ### Test Suite Structure
@@ -721,15 +762,17 @@ it("allows repayment of active loan", () => {
 
 Current test suite metrics:
 
-| Metric | Value |
-|--------|-------|
-| Total Tests | 18 |
-| Passing | 18 (100%) |
-| Failing | 0 |
-| Average Duration | 62ms per test |
-| Total Duration | 1.1s |
-| Code Coverage | 100% statements |
-| Branch Coverage | 95% |
+| Category | Test Files | Description |
+|----------|-----------|-------------|
+| V1 Vault Core | 13 files | Comprehensive, boundary, state, liquidation, security, time, precision, gas, errors, concurrent, hardening, migration, position |
+| V2 Vault Core | 9 files | Core, boundary, liquidation, toggles, interest, repay, snapshot, migration, multi-user, admin |
+| Staking Pool | 8 files | Core, boundary, state, rewards, APY, cooldown, emergency, snapshot, stake-bounds |
+| Oracle Registry | 6 files | Core, boundary, state, deviation, admin, snapshot |
+| Frontend Components | 14 files | All main UI components + ErrorBoundary |
+| Frontend Hooks | 4 files | useToast, useSmartPolling, useStxPrice, useProtocolStats |
+| Frontend Utils | 2 files | calculations, formatters |
+| Frontend Config | 1 file | contracts config |
+| **Total** | **57+ files** | |
 
 ---
 
@@ -737,17 +780,21 @@ Current test suite metrics:
 
 ### Planned Additions
 
-- [ ] Integration tests with frontend
+- [x] Security testing (attempted exploits)
+- [x] Gas optimization tests
+- [x] Multi-user concurrent operation tests
+- [x] Boundary and edge case tests
+- [x] Staking pool and oracle registry contract tests
+- [x] Frontend component test suites
+- [x] Hook and utility test suites
+- [ ] Integration tests with frontend ↔ contract interaction
 - [ ] Load testing for high transaction volumes
-- [ ] Fuzz testing for edge cases
-- [ ] Security testing (attempted exploits)
-- [ ] Gas optimization tests
-- [ ] Multi-user concurrent operation tests
+- [ ] Fuzz testing for randomized inputs
 
 ---
 
-**Document Version:** 1.0.0  
-**Last Updated:** January 25, 2026
+**Document Version:** 2.1.0
+**Last Updated:** March 14, 2026
 
 For testing support:
 - **GitHub Issues:** [Report test issues](https://github.com/bitflow/vault-core/issues)

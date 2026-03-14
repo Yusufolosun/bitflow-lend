@@ -17,7 +17,7 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    sourcemap: false,
+    sourcemap: 'hidden',
     rollupOptions: {
       output: {
         manualChunks: {
@@ -33,5 +33,17 @@ export default defineConfig({
     setupFiles: ['./src/test/setup.ts'],
     css: true,
     include: ['src/**/*.{test,spec}.{ts,tsx}'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'lcov'],
+      include: ['src/**/*.{ts,tsx}'],
+      exclude: [
+        'src/test/**',
+        'src/**/*.test.*',
+        'src/**/*.spec.*',
+        'src/**/*.d.ts',
+        'src/vite-env.d.ts',
+      ],
+    },
   },
 });

@@ -62,8 +62,7 @@ export const LiquidationList: React.FC = () => {
         setPositions(prev => prev.filter(p => p.address !== position.address));
         setSelectedPosition(null);
       }, 2000);
-    } catch (error) {
-      console.error('Liquidation failed:', error);
+    } catch {
       alert('Liquidation failed. Please try again.');
       setSelectedPosition(null);
     }
@@ -80,7 +79,7 @@ export const LiquidationList: React.FC = () => {
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
         <div className="p-3 bg-red-100 rounded-lg">
-          <AlertTriangle className="text-red-600" size={24} />
+          <AlertTriangle className="text-red-600" size={24} aria-hidden="true" />
         </div>
         <div>
           <h3 className="text-xl font-bold text-gray-900">Liquidation Opportunities</h3>
@@ -118,7 +117,7 @@ export const LiquidationList: React.FC = () => {
       {/* Empty State */}
       {!isLoading && positions.length === 0 && (
         <div className="text-center py-12">
-          <TrendingDown className="mx-auto text-gray-400 mb-4" size={48} />
+          <TrendingDown className="mx-auto text-gray-400 mb-4" size={48} aria-hidden="true" />
           <p className="text-gray-600 mb-1 font-medium">No Liquidatable Positions Found</p>
           <p className="text-sm text-gray-500 max-w-sm mx-auto">
             Liquidatable positions will appear here once an on-chain indexer is
@@ -131,7 +130,7 @@ export const LiquidationList: React.FC = () => {
       {/* Positions Table */}
       {positions.length > 0 && (
         <div className="overflow-x-auto">
-          <table className="w-full">
+          <table className="w-full" aria-label="Liquidatable positions">
             <thead>
               <tr className="border-b border-gray-200">
                 <th className="text-left py-3 px-4 text-xs font-semibold text-gray-600 uppercase">

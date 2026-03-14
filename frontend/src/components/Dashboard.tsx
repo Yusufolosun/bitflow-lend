@@ -60,8 +60,8 @@ export const Dashboard: React.FC = () => {
       } else {
         setUserHealthFactor(null);
       }
-    } catch (err) {
-      console.error('Auto-refresh failed:', err);
+    } catch {
+      // Silently swallow — next poll will retry
     }
   }, [address, vault, stxPrice]);
 
@@ -96,9 +96,7 @@ export const Dashboard: React.FC = () => {
       } else {
         setUserHealthFactor(null);
       }
-      
     } catch (error: any) {
-      console.error('Error refreshing data:', error);
       setRefreshError(error.message || 'Failed to refresh data');
     } finally {
       setIsRefreshing(false);
@@ -112,6 +110,14 @@ export const Dashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 bg-grid-pattern">
+      {/* Skip to main content link for keyboard/screen-reader users */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:bg-white focus:px-4 focus:py-2 focus:rounded-lg focus:shadow-lg focus:text-accent-600 focus:font-semibold"
+      >
+        Skip to main content
+      </a>
+
       {/* Header */}
       <header className="glass sticky top-0 z-50 border-b border-gray-200/60">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
@@ -126,7 +132,7 @@ export const Dashboard: React.FC = () => {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main id="main-content" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Protocol Stats */}
         <section className="mb-8">
           <div className="flex items-center justify-between mb-5">
@@ -215,8 +221,8 @@ export const Dashboard: React.FC = () => {
             
             {/* Error Message */}
             {refreshError && (
-              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl flex items-center gap-2">
-                <svg className="w-5 h-5 text-red-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl flex items-center gap-2" role="alert">
+                <svg className="w-5 h-5 text-red-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <span className="text-sm text-red-700">{refreshError}</span>
@@ -310,8 +316,8 @@ export const Dashboard: React.FC = () => {
         <section>
           <div className="gradient-dark rounded-2xl p-8 text-white shadow-elevated relative overflow-hidden">
             {/* Subtle decorative elements */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-32 translate-x-32" />
-            <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-24 -translate-x-24" />
+            <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-32 translate-x-32" aria-hidden="true" />
+            <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-24 -translate-x-24" aria-hidden="true" />
             
             <div className="relative grid grid-cols-1 md:grid-cols-3 gap-8">
               <div>

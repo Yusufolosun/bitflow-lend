@@ -70,7 +70,7 @@ export const HealthMonitor: React.FC = () => {
       <div className="card-elevated">
         <div className="flex items-center gap-3 mb-4">
           <div className="p-3 bg-emerald-50 rounded-xl">
-            <CheckCircle className="text-emerald-600" size={22} />
+            <CheckCircle className="text-emerald-600" size={22} aria-hidden="true" />
           </div>
           <div>
             <h3 className="text-lg font-bold text-gray-900 tracking-tight">Health Monitor</h3>
@@ -112,7 +112,7 @@ export const HealthMonitor: React.FC = () => {
           <Activity className={`${
             healthColor === 'green' ? 'text-emerald-600' :
             healthColor === 'yellow' ? 'text-amber-600' : 'text-red-600'
-          }`} size={22} />
+          }`} size={22} aria-hidden="true" />
         </div>
         <div>
           <h3 className="text-lg font-bold text-gray-900 tracking-tight">Health Monitor</h3>
@@ -157,7 +157,7 @@ export const HealthMonitor: React.FC = () => {
             <span className="text-gray-600">Collateralization Ratio</span>
             <span className="font-semibold">{collateralRatio.toFixed(1)}%</span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+          <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden" role="progressbar" aria-valuenow={Math.round(collateralRatio)} aria-valuemin={0} aria-valuemax={200} aria-label="Collateralization ratio">
             <div
               className={`h-3 transition-all ${
                 collateralRatio >= PROTOCOL_CONSTANTS.MIN_COLLATERAL_RATIO ? 'bg-emerald-600' :

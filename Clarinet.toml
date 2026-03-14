@@ -10,6 +10,21 @@ path = "contracts/bitflow-vault-core.clar"
 clarity_version = 2
 epoch = 2.5
 
+[contracts.bitflow-vault-core-v2]
+path = "contracts/bitflow-vault-core-v2.clar"
+clarity_version = 2
+epoch = 2.5
+
+[contracts.bitflow-staking-pool]
+path = "contracts/bitflow-staking-pool.clar"
+clarity_version = 2
+epoch = 2.5
+
+[contracts.bitflow-oracle-registry]
+path = "contracts/bitflow-oracle-registry.clar"
+clarity_version = 2
+epoch = 2.5
+
 # [contracts.counter]
 # path = "contracts/counter.clar"
 # epoch = "latest"

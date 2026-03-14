@@ -245,13 +245,13 @@ export function validateWithdrawalAmount(
  * Validate borrow amount
  * @param amount - Amount to borrow
  * @param collateralSTX - Available collateral
- * @param minBorrow - Minimum borrow amount (default: 1)
+ * @param minBorrow - Minimum borrow amount (default: 0.1 STX, matching MIN-BORROW-AMOUNT u100000)
  * @returns Validation result
  */
 export function validateBorrowAmount(
   amount: number,
   collateralSTX: number,
-  minBorrow: number = 1
+  minBorrow: number = 0.1
 ): { valid: boolean; error?: string } {
   if (amount <= 0) {
     return { valid: false, error: 'Amount must be greater than 0' };
@@ -275,15 +275,15 @@ export function validateBorrowAmount(
 
 /**
  * Validate interest rate
- * @param ratePercent - Interest rate as percentage
- * @param minRate - Minimum allowed rate (default: 5)
- * @param maxRate - Maximum allowed rate (default: 30)
+ * @param ratePercent - Interest rate as percentage (e.g., 5 for 5%)
+ * @param minRate - Minimum allowed rate (default: 0.5%, matching contract min-interest-rate u50)
+ * @param maxRate - Maximum allowed rate (default: 100%, matching contract max-interest-rate u10000)
  * @returns Validation result
  */
 export function validateInterestRate(
   ratePercent: number,
-  minRate: number = 5,
-  maxRate: number = 30
+  minRate: number = 0.5,
+  maxRate: number = 100
 ): { valid: boolean; error?: string } {
   if (ratePercent < minRate) {
     return { valid: false, error: `Minimum interest rate is ${minRate}%` };
@@ -297,15 +297,20 @@ export function validateInterestRate(
 /**
  * Validate loan term
  * @param termDays - Loan term in days
- * @param allowedTerms - Array of allowed term lengths (default: [7, 30, 90, 365])
+ * @param minDays - Minimum term in days (default: 1, matching contract min-term-days)
+ * @param maxDays - Maximum term in days (default: 365, matching contract max-term-days)
  * @returns Validation result
  */
 export function validateLoanTerm(
   termDays: number,
-  allowedTerms: number[] = [7, 30, 90, 365]
+  minDays: number = 1,
+  maxDays: number = 365
 ): { valid: boolean; error?: string } {
-  if (!allowedTerms.includes(termDays)) {
-    return { valid: false, error: `Loan term must be one of: ${allowedTerms.join(', ')} days` };
+  if (termDays < minDays) {
+    return { valid: false, error: `Minimum loan term is ${minDays} day${minDays === 1 ? '' : 's'}` };
+  }
+  if (termDays > maxDays) {
+    return { valid: false, error: `Maximum loan term is ${maxDays} days` };
   }
   return { valid: true };
 }

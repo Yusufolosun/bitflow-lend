@@ -55,7 +55,11 @@ export interface RepaymentAmount {
   interest: bigint;
   /** Interest in STX */
   interestSTX: number;
-  /** Total repayment amount (principal + interest) in microSTX */
+  /** Late penalty in microSTX (0 if loan not overdue) */
+  penalty: bigint;
+  /** Penalty in STX */
+  penaltySTX: number;
+  /** Total repayment amount (principal + interest + penalty) in microSTX */
   total: bigint;
   /** Total in STX */
   totalSTX: number;

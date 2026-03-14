@@ -100,7 +100,7 @@ export const RepayCard: React.FC = () => {
       <div className="card-elevated">
         <div className="flex items-center gap-3 mb-4">
           <div className="p-3 bg-gray-100 rounded-xl">
-            <DollarSign className="text-gray-400" size={22} />
+            <DollarSign className="text-gray-400" size={22} aria-hidden="true" />
           </div>
           <div>
             <h3 className="text-lg font-bold text-gray-900 tracking-tight">Repay Loan</h3>
@@ -109,7 +109,7 @@ export const RepayCard: React.FC = () => {
         </div>
 
         <div className="bg-gray-50/80 rounded-xl p-6 text-center border border-gray-100">
-          <AlertCircle className="mx-auto text-gray-400 mb-3" size={48} />
+          <AlertCircle className="mx-auto text-gray-400 mb-3" size={48} aria-hidden="true" />
           <p className="text-gray-600 mb-1 font-medium">No Active Loan</p>
           <p className="text-sm text-gray-500">
             You don't have any active loans. Borrow STX to see repayment details here.
@@ -208,6 +208,13 @@ export const RepayCard: React.FC = () => {
             <span className="text-gray-600">Interest Accrued:</span>
             <span className="font-semibold">{formatSTX(repaymentAmount.interestSTX)} STX</span>
           </div>
+
+          {repaymentAmount.penaltySTX > 0 && (
+            <div className="flex justify-between text-sm">
+              <span className="text-red-600">Late Penalty:</span>
+              <span className="font-semibold text-red-600">{formatSTX(repaymentAmount.penaltySTX)} STX</span>
+            </div>
+          )}
 
           <div className="border-t border-gray-300 pt-2 mt-2"></div>
 

@@ -68,4 +68,19 @@ plan:
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             path: contracts/bitflow-vault-core.clar
             clarity-version: 2
+        - emulated-contract-publish:
+            contract-name: bitflow-vault-core-v2
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/bitflow-vault-core-v2.clar
+            clarity-version: 2
+        - emulated-contract-publish:
+            contract-name: bitflow-staking-pool
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/bitflow-staking-pool.clar
+            clarity-version: 2
+        - emulated-contract-publish:
+            contract-name: bitflow-oracle-registry
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/bitflow-oracle-registry.clar
+            clarity-version: 2
       epoch: "2.5"

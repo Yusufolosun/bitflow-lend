@@ -45,9 +45,19 @@ jobs:
         run: |
           echo "📋 Running contract checks..."
           echo "⚠️ Clarinet check not available in SDK mode"
-          
+
           echo "🧪 Running tests..."
           npm test
+
+      - name: Enforce mainnet deploys from main branch only
+        if: github.event.inputs.environment == 'mainnet'
+        run: |
+          BRANCH="${GITHUB_REF#refs/heads/}"
+          if [ "$BRANCH" != "main" ]; then
+            echo "❌ Mainnet deployments are only allowed from the main branch."
+            echo "   Current branch: $BRANCH"
+            exit 1
+          fi
       
       - name: Make deployment script executable
         run: chmod +x scripts/deploy-${{ github.event.inputs.environment }}.sh

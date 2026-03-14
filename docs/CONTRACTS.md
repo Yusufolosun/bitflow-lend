@@ -803,3 +803,130 @@ Users can deposit multiple times. Deposits are additive:
 ## Version History
 
 - **v1.0.0** - Initial release with deposit, withdraw, borrow, repay, and liquidation functionality
+- **v2.0.0** - Enhanced vault with precision interest, penalties, migration support, and admin controls
+
+---
+
+## Staking Pool Contract (`bitflow-staking-pool`)
+
+### Overview
+
+STX staking pool with checkpoint-based reward distribution. Users stake STX to earn protocol rewards proportional to their share of the pool.
+
+### Key Features
+
+- **Checkpoint accounting**: Rewards accrue per-block without iterating over all stakers
+- **Cooldown period**: ~1 day unstaking cooldown (144 blocks) prevents flash-stake attacks
+- **Emergency unstake**: When pool is paused, users can withdraw immediately (forfeiting rewards)
+- **Estimated APY**: On-chain `get-estimated-apy-bps` function for frontend display
+
+### Error Codes (u201–u210)
+
+| Code | Constant | Description |
+|------|----------|-------------|
+| u201 | `ERR-INSUFFICIENT-BALANCE` | Unstake amount exceeds staked balance |
+| u202 | `ERR-INVALID-AMOUNT` | Below minimum stake (1 STX) |
+| u203 | `ERR-NO-STAKE` | No staked balance found |
+| u204 | `ERR-COOLDOWN-ACTIVE` | Cooldown period not yet expired |
+| u205 | `ERR-NO-REWARDS` | No pending rewards to claim |
+| u206 | `ERR-OWNER-ONLY` | Admin-only function |
+| u207 | `ERR-PROTOCOL-PAUSED` | Pool is paused or not initialized |
+| u208 | `ERR-ZERO-AMOUNT` | Amount must be > 0 |
+| u209 | `ERR-MAX-STAKE-EXCEEDED` | Exceeds 5M STX per-user cap |
+| u210 | `ERR-INVALID-PARAM` | Parameter out of valid range |
+
+### Public Functions
+
+| Function | Description |
+|----------|-------------|
+| `stake (amount)` | Stake STX into the pool |
+| `request-unstake` | Start cooldown timer for unstaking |
+| `unstake (amount)` | Withdraw STX after cooldown expires |
+| `claim-rewards` | Claim accumulated staking rewards |
+| `emergency-unstake` | Withdraw all stake when pool is paused (no cooldown) |
+
+### Admin Functions
+
+| Function | Description |
+|----------|-------------|
+| `initialize-pool` | One-time pool initialization |
+| `set-reward-rate (rate)` | Set rewards per block (max 100 STX/block) |
+| `fund-rewards (amount)` | Transfer STX into reward pool |
+| `pause-pool` / `unpause-pool` | Emergency pause toggle |
+
+### Read-Only Functions
+
+| Function | Returns |
+|----------|---------|
+| `get-staker-balance (staker)` | Staked balance |
+| `get-total-staked` | Total pool TVL |
+| `get-pending-rewards (staker)` | Unclaimed reward amount |
+| `get-staker-share (staker)` | Pool share in basis points |
+| `get-estimated-apy-bps` | Estimated annual yield in bps |
+| `get-pool-stats` | Full pool statistics tuple |
+| `get-staker-info (staker)` | Complete staker details |
+
+---
+
+## Oracle Registry Contract (`bitflow-oracle-registry`)
+
+### Overview
+
+Multi-source price oracle for STX/USD feeds. Aggregates price submissions from whitelisted reporters with deviation and staleness thresholds.
+
+### Key Features
+
+- **Whitelisted reporters**: Up to 10 authorized price feed sources
+- **Deviation guard**: Rejects prices that deviate too far from current aggregate (default 20%)
+- **Staleness detection**: Prices expire after ~2 days (288 blocks)
+- **Admin override**: Emergency price setting for bootstrapping or reporter failure
+- **Submission tracking**: Per-reporter submission counts and rejection metrics
+
+### Error Codes (u301–u311)
+
+| Code | Constant | Description |
+|------|----------|-------------|
+| u301 | `ERR-OWNER-ONLY` | Admin-only function |
+| u302 | `ERR-NOT-REPORTER` | Caller is not a whitelisted reporter |
+| u303 | `ERR-INVALID-PRICE` | Price is 0 or exceeds sanity bound |
+| u304 | `ERR-STALE-PRICE` | Aggregated price is too old |
+| u305 | `ERR-DEVIATION-TOO-HIGH` | Price deviates too far from aggregate |
+| u306 | `ERR-ALREADY-REPORTER` | Reporter already registered |
+| u307 | `ERR-REPORTER-NOT-FOUND` | Reporter not in whitelist |
+| u308 | `ERR-MIN-REPORTERS` | Cannot remove below minimum reporter count |
+| u309 | `ERR-PAUSED` | Oracle is paused |
+| u310 | `ERR-INVALID-PARAM` | Parameter out of valid range |
+| u311 | `ERR-NO-PRICES` | No price data available |
+
+### Reporter Functions
+
+| Function | Description |
+|----------|-------------|
+| `submit-price (price)` | Submit a price observation (reporters only) |
+
+### Admin Functions
+
+| Function | Description |
+|----------|-------------|
+| `initialize-oracle` | One-time oracle initialization |
+| `add-reporter (reporter)` | Whitelist a new price reporter |
+| `remove-reporter (reporter)` | Remove a reporter from whitelist |
+| `set-min-reporters (n)` | Set minimum required reporters (1–10) |
+| `set-max-deviation (bps)` | Set max deviation threshold (0–5000 bps) |
+| `set-max-price-age (blocks)` | Set staleness threshold (72–2016 blocks) |
+| `admin-set-price (price)` | Emergency admin price override |
+| `pause-oracle` / `unpause-oracle` | Emergency pause toggle |
+
+### Read-Only Functions
+
+| Function | Returns |
+|----------|---------|
+| `get-aggregated-price` | Price, block, and freshness tuple |
+| `get-price` | Current aggregated price |
+| `get-price-age` | Blocks since last price update |
+| `get-is-price-fresh` | Boolean freshness check |
+| `get-reporter-price (reporter)` | Individual reporter's last submission |
+| `is-active-reporter (addr)` | Whether an address is a reporter |
+| `get-oracle-params` | Configuration parameters tuple |
+| `get-oracle-stats` | Aggregate statistics tuple |
+

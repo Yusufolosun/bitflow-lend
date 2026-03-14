@@ -4,8 +4,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useVault } from '../hooks/useVault';
 import { useSmartPolling } from '../hooks/useSmartPolling';
 import { formatSTX } from '../utils/formatters';
-import { PROTOCOL_CONSTANTS } from '../config/contracts';
-import { getExplorerUrl } from '../config/contracts';
+import { PROTOCOL_CONSTANTS, getExplorerUrl } from '../config/contracts';
 
 /**
  * DepositCard Component
@@ -54,7 +53,7 @@ export const DepositCard: React.FC = () => {
 
       if (result.success && result.txId) {
         setLastTxId(result.txId);
-        setErrorMessage(`Transaction submitted: ${result.txId}`);
+        setErrorMessage(`Transaction submitted. Waiting for confirmation...`);
         
         // Wait for transaction confirmation
         const result2 = await vault.pollTransactionStatus(result.txId);
@@ -102,7 +101,7 @@ export const DepositCard: React.FC = () => {
       {/* Header */}
       <div className="flex items-center gap-3">
         <div className="p-3 bg-accent-50 rounded-xl">
-          <ArrowDownCircle className="text-accent-600" size={22} />
+          <ArrowDownCircle className="text-accent-600" size={22} aria-hidden="true" />
         </div>
         <div>
           <h3 className="text-lg font-bold text-gray-900 tracking-tight">Deposit STX</h3>

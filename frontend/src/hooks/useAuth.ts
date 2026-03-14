@@ -49,8 +49,7 @@ export const useAuth = () => {
       
       const balance = BigInt(data.balance || '0');
       return balance;
-    } catch (error) {
-      console.error('Error fetching balance:', error);
+    } catch {
       // Return null to indicate fetch failure, don't reset to 0
       return null;
     }
@@ -63,8 +62,8 @@ export const useAuth = () => {
   const isSignedIn = useCallback((): boolean => {
     try {
       return userSession.isUserSignedIn();
-    } catch (error) {
-      console.warn('Corrupt session data detected, clearing localStorage:', error);
+    } catch {
+      console.warn('Corrupt session data detected, clearing localStorage');
       // Clear stale session data that can't be parsed by current library version
       localStorage.removeItem('blockstack-session');
       return false;
@@ -157,8 +156,7 @@ export const useAuth = () => {
         } else {
           // Balance fetch returned null, keep existing balance
         }
-      } catch (error) {
-        console.error('Error refreshing balance:', error);
+      } catch {
       }
     }
   }, [walletState, fetchBalance]);
@@ -187,18 +185,6 @@ export const useAuth = () => {
     
     initializeAuth();
   }, [userSession, fetchBalance, isSignedIn]);
-
-  // Auto-refresh disabled to prevent rate limiting
-  // Users can manually refresh using the refresh button
-  // useEffect(() => {
-  //   if (walletState.isConnected && walletState.address) {
-  //     const interval = setInterval(() => {
-  //       refreshBalance();
-  //     }, 120000); // 2 minutes
-  //
-  //     return () => clearInterval(interval);
-  //   }
-  // }, [walletState.isConnected, walletState.address, refreshBalance]);
 
   return {
     // State

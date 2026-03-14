@@ -126,9 +126,13 @@ jobs:
 
           echo "" >> changelog.md
           echo "### 📊 Stats" >> changelog.md
-          echo "- Contract Tests: 198 passing" >> changelog.md
-          echo "- Frontend Tests: 248 passing" >> changelog.md
-          echo "- Total Test Files: 19" >> changelog.md
+          CONTRACT_TESTS=$(find tests -name '*.test.ts' | wc -l)
+          FRONTEND_TESTS=$(find frontend/src -name '*.test.*' 2>/dev/null | wc -l)
+          TOTAL_TESTS=$((CONTRACT_TESTS + FRONTEND_TESTS))
+          echo "- Contract Test Files: $CONTRACT_TESTS" >> changelog.md
+          echo "- Frontend Test Files: $FRONTEND_TESTS" >> changelog.md
+          echo "- Total Test Files: $TOTAL_TESTS" >> changelog.md
+          echo "- Smart Contracts: $(find contracts -name '*.clar' | wc -l)" >> changelog.md
           echo "- Documentation Files: $(find docs -name '*.md' | wc -l)" >> changelog.md
 
       - name: Create archive

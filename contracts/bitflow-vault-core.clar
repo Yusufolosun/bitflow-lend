@@ -115,6 +115,11 @@
   (var-get total-liquidations)
 )
 
+;; Get total outstanding borrows
+(define-read-only (get-total-outstanding-borrows)
+  (var-get total-outstanding-borrows)
+)
+
 ;; Get protocol statistics
 (define-read-only (get-protocol-stats)
   {
@@ -209,6 +214,14 @@
   (var-get is-paused)
 )
 
+;; Get the number of blocks since the price was last updated
+(define-read-only (get-price-staleness-blocks)
+  (if (> (var-get last-activity-block) u0)
+    (- block-height (var-get last-activity-block))
+    u0
+  )
+)
+
 ;; Public functions
 
 ;; Pause the protocol (contract owner only)
@@ -236,7 +249,9 @@
   (begin
     (asserts! (is-eq tx-sender contract-owner) err-owner-only)
     (asserts! (> price u0) ERR-INVALID-AMOUNT)
+    (asserts! (< price u10000000) ERR-INVALID-PARAM) ;; sanity cap ~$100 USD
     (var-set admin-stx-price price)
+    (var-set last-activity-block block-height)
     (print { event: "set-stx-price", price: price })
     (ok true)
   )
@@ -313,29 +328,36 @@
   (begin
     ;; Check protocol is not paused
     (asserts! (not (var-get is-paused)) ERR-PROTOCOL-PAUSED)
-    
+
     ;; Validate amount is greater than zero
     (asserts! (> amount u0) ERR-INVALID-AMOUNT)
-    
-    ;; Transfer STX from user to contract
-    (try! (stx-transfer? amount tx-sender (as-contract tx-sender)))
-    
-    ;; Update user's deposit balance
-    (map-set user-deposits tx-sender 
-      (+ (default-to u0 (map-get? user-deposits tx-sender)) amount))
-    
-    ;; Update total deposits
-    (var-set total-deposits (+ (var-get total-deposits) amount))
-    
-    ;; Update analytics
-    (var-set total-deposits-count (+ (var-get total-deposits-count) u1))
-    (var-set total-deposit-volume (+ (var-get total-deposit-volume) amount))
-    (var-set last-activity-block block-height)
-    
-    ;; Emit event
-    (print { event: "deposit", user: tx-sender, amount: amount })
-    
-    (ok true)
+
+    (let (
+      (current-deposit (default-to u0 (map-get? user-deposits tx-sender)))
+      (new-deposit (+ current-deposit amount))
+    )
+      ;; Per-user deposit cap (10M STX)
+      (asserts! (<= new-deposit u10000000000000) ERR-INVALID-AMOUNT)
+
+      ;; Transfer STX from user to contract
+      (try! (stx-transfer? amount tx-sender (as-contract tx-sender)))
+
+      ;; Update user's deposit balance
+      (map-set user-deposits tx-sender new-deposit)
+
+      ;; Update total deposits
+      (var-set total-deposits (+ (var-get total-deposits) amount))
+
+      ;; Update analytics
+      (var-set total-deposits-count (+ (var-get total-deposits-count) u1))
+      (var-set total-deposit-volume (+ (var-get total-deposit-volume) amount))
+      (var-set last-activity-block block-height)
+
+      ;; Emit event
+      (print { event: "deposit", user: tx-sender, amount: amount })
+
+      (ok true)
+    )
   )
 )
 
@@ -354,7 +376,10 @@
   )
     ;; Check protocol is not paused
     (asserts! (not (var-get is-paused)) ERR-PROTOCOL-PAUSED)
-    
+
+    ;; Validate non-zero withdrawal
+    (asserts! (> amount u0) ERR-INVALID-AMOUNT)
+
     ;; Verify user has sufficient unlocked balance
     (asserts! (>= available-balance amount) ERR-INSUFFICIENT-BALANCE)
     
@@ -469,10 +494,10 @@
     (var-set last-activity-block block-height)
     
     ;; Emit event
-    (print { event: "repay", user: tx-sender, principal: loan-amount, interest: interest, total: total-repayment })
-    
+    (print { event: "repay", user: tx-sender, principal: loan-amount, interest: interest, penalty: penalty, total: total-repayment })
+
     ;; Return repayment details
-    (ok { principal: loan-amount, interest: interest, total: total-repayment })
+    (ok { principal: loan-amount, interest: interest, penalty: penalty, total: total-repayment })
     )
   )
 )
@@ -573,6 +598,29 @@
   (- block-height (var-get last-activity-block))
 )
 
+;; Single-call dashboard snapshot for frontend/indexer consumption
+(define-read-only (get-dashboard-snapshot)
+  (let (
+    (deposits (var-get total-deposits))
+    (borrowed (var-get total-outstanding-borrows))
+  )
+    {
+      total-deposits: deposits,
+      total-repaid: (var-get total-repaid),
+      total-liquidations: (var-get total-liquidations),
+      total-outstanding-borrows: borrowed,
+      utilization-bps: (if (> deposits u0) (/ (* borrowed u10000) deposits) u0),
+      deposit-volume: (var-get total-deposit-volume),
+      borrow-volume: (var-get total-borrow-volume),
+      repay-volume: (var-get total-repay-volume),
+      liquidation-volume: (var-get total-liquidation-volume),
+      stx-price: (var-get admin-stx-price),
+      is-paused: (var-get is-paused),
+      protocol-age-blocks: (- block-height (var-get protocol-start-block))
+    }
+  )
+)
+
 ;; Get comprehensive user position summary
 ;; @param user: Principal address of the user
 ;; @param stx-price: Current STX price for health factor calculation
@@ -670,6 +718,7 @@
     (asserts! (is-eq (var-get protocol-start-block) u0) err-owner-only)
     (var-set protocol-start-block block-height)
     (var-set last-activity-block block-height)
+    (print { event: "protocol-initialized", block: block-height })
     (ok true)
   )
 )

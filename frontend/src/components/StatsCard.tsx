@@ -85,9 +85,9 @@ export const StatsCard: React.FC<StatsCardProps> = ({
             }`}
           >
             {trend.isPositive ? (
-              <TrendingUp size={14} />
+              <TrendingUp size={14} aria-hidden="true" />
             ) : (
-              <TrendingDown size={14} />
+              <TrendingDown size={14} aria-hidden="true" />
             )}
             <span>{Math.abs(trend.value)}%</span>
           </div>

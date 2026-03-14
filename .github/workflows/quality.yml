@@ -107,30 +107,37 @@ jobs:
       - name: Check contract constants
         run: |
           echo "Verifying contract constants..."
-          CONTRACT="contracts/bitflow-vault-core.clar"
-          echo "Constants defined:"
-          grep -c "define-constant" "$CONTRACT" || echo "0"
-          echo "Functions defined:"
-          grep -c "define-public\|define-read-only\|define-private" "$CONTRACT" || echo "0"
-          echo "Data vars defined:"
-          grep -c "define-data-var\|define-map" "$CONTRACT" || echo "0"
+          for CONTRACT in contracts/*.clar; do
+            BASENAME=$(basename "$CONTRACT")
+            echo "--- $BASENAME ---"
+            echo "Constants defined:"
+            grep -c "define-constant" "$CONTRACT" || echo "0"
+            echo "Functions defined:"
+            grep -c "define-public\|define-read-only\|define-private" "$CONTRACT" || echo "0"
+            echo "Data vars defined:"
+            grep -c "define-data-var\|define-map" "$CONTRACT" || echo "0"
+            echo ""
+          done
 
       - name: Check for common Clarity anti-patterns
         run: |
-          CONTRACT="contracts/bitflow-vault-core.clar"
           echo "Checking for anti-patterns..."
+          for CONTRACT in contracts/*.clar; do
+            BASENAME=$(basename "$CONTRACT")
+            echo "--- $BASENAME ---"
 
-          # Check for unwrap-panic (should use unwrap! or unwrap-err! instead)
-          PANICS=$(grep -c "unwrap-panic" "$CONTRACT" || true)
-          if [ "$PANICS" -gt 0 ]; then
-            echo "⚠️ Found $PANICS uses of unwrap-panic (prefer unwrap! with error handling)"
-          else
-            echo "✅ No unwrap-panic found"
-          fi
+            # Check for unwrap-panic (should use unwrap! or unwrap-err! instead)
+            PANICS=$(grep -c "unwrap-panic" "$CONTRACT" || true)
+            if [ "$PANICS" -gt 0 ]; then
+              echo "⚠️ Found $PANICS uses of unwrap-panic (prefer unwrap! with error handling)"
+            else
+              echo "✅ No unwrap-panic found"
+            fi
 
-          # Check all public functions have authorization checks or are intentionally open
-          PUBLIC_FNS=$(grep -c "define-public" "$CONTRACT" || true)
-          echo "✅ $PUBLIC_FNS public functions defined"
+            # Check all public functions have authorization checks or are intentionally open
+            PUBLIC_FNS=$(grep -c "define-public" "$CONTRACT" || true)
+            echo "✅ $PUBLIC_FNS public functions defined"
+          done
 
       - name: Contract quality summary
         if: always()
