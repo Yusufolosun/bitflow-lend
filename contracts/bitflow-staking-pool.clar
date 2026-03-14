@@ -388,3 +388,25 @@
     )
   )
 )
+
+;; Single-call dashboard snapshot for frontend/indexer consumption
+(define-read-only (get-dashboard-snapshot)
+  (let (
+    (staked (var-get total-staked))
+    (rate (var-get reward-rate))
+  )
+    {
+      total-staked: staked,
+      total-stakers: (var-get total-stakers),
+      reward-rate: rate,
+      estimated-apy-bps: (if (is-eq staked u0) u0 (/ (* (* rate u52560) u10000) staked)),
+      total-rewards-distributed: (var-get total-rewards-distributed),
+      total-stake-volume: (var-get total-stake-volume),
+      total-unstake-volume: (var-get total-unstake-volume),
+      is-paused: (var-get is-paused),
+      protocol-age-blocks: (if (> (var-get protocol-start-block) u0)
+        (- block-height (var-get protocol-start-block))
+        u0)
+    }
+  )
+)
