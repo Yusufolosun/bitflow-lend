@@ -108,6 +108,7 @@ describe("bitflow-vault-core-v2 safe arithmetic tests", () => {
       deposit(10_000_000, wallet1());
       borrow(100_000, 50, 30, wallet1()); // minimum rate, small amount
 
+      simnet.mineEmptyBlocks(1); // need at least 1 block elapsed for non-zero interest
       const repayment = simnet.callReadOnlyFn(
         CONTRACT, "get-repayment-amount", [Cl.principal(wallet1())], deployer()
       );
