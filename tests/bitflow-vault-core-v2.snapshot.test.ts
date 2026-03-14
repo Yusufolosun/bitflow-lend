@@ -71,7 +71,7 @@ describe("bitflow-vault-core-v2 dashboard snapshot tests", () => {
     setup();
     simnet.mineEmptyBlocks(10);
     const { result } = getSnapshot();
-    const age = (result as any).data?.["protocol-age-blocks"]?.value;
+    const age = (result as any).value?.["protocol-age-blocks"]?.value;
     expect(Number(age)).toBeGreaterThanOrEqual(10);
   });
 });

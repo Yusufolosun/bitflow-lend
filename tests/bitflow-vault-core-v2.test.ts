@@ -271,8 +271,8 @@ describe("bitflow-vault-core-v2", () => {
       borrow(1000000, 500, 30, wallet1());
       const { result } = getUserLoan(wallet1());
       const data = result as any;
-      expect(data.data.amount).toBeUint(1000000);
-      expect(data.data["interest-rate"]).toBeUint(500);
+      expect(data.value.value.amount).toBeUint(1000000);
+      expect(data.value.value["interest-rate"]).toBeUint(500);
     });
 
     it("tracks outstanding borrows", () => {
@@ -281,7 +281,7 @@ describe("bitflow-vault-core-v2", () => {
       borrow(1000000, 500, 30, wallet1());
       const { result } = getProtocolStats();
       const data = result as any;
-      expect(data.data["total-outstanding-borrows"]).toBeUint(1000000);
+      expect(data.value["total-outstanding-borrows"]).toBeUint(1000000);
     });
 
     it("rejects second loan for same user", () => {
@@ -396,7 +396,7 @@ describe("bitflow-vault-core-v2", () => {
       repay(wallet1());
       const { result } = getProtocolStats();
       const data = result as any;
-      expect(data.data["total-outstanding-borrows"]).toBeUint(0);
+      expect(data.value["total-outstanding-borrows"]).toBeUint(0);
     });
 
     it("rejects repay with no active loan", () => {
@@ -456,7 +456,7 @@ describe("bitflow-vault-core-v2", () => {
       liquidate(wallet1(), wallet2());
       const { result } = getProtocolStats();
       const data = result as any;
-      expect(data.data["total-outstanding-borrows"]).toBeUint(0);
+      expect(data.value["total-outstanding-borrows"]).toBeUint(0);
     });
 
     it("rejects self-liquidation", () => {
@@ -660,7 +660,7 @@ describe("bitflow-vault-core-v2", () => {
       borrow(1000000, 500, 30, wallet1());
       const { result } = getRepaymentAmount(wallet1());
       const data = result as any;
-      expect(data.value.data.principal).toBeUint(1000000);
+      expect(data.value.value.principal).toBeUint(1000000);
     });
 
     it("returns none repayment for non-borrower", () => {
@@ -689,7 +689,7 @@ describe("bitflow-vault-core-v2", () => {
       deposit(10000000, wallet1());
       const { result } = simnet.callReadOnlyFn(CONTRACT, "get-protocol-metrics", [], deployer());
       const data = result as any;
-      expect(data.data["total-deposits"]).toBeUint(1);
+      expect(data.value["total-deposits"]).toBeUint(1);
     });
 
     it("returns volume metrics", () => {
@@ -697,7 +697,7 @@ describe("bitflow-vault-core-v2", () => {
       deposit(10000000, wallet1());
       const { result } = simnet.callReadOnlyFn(CONTRACT, "get-volume-metrics", [], deployer());
       const data = result as any;
-      expect(data.data["deposit-volume"]).toBeUint(10000000);
+      expect(data.value["deposit-volume"]).toBeUint(10000000);
     });
 
     it("returns protocol parameters", () => {
@@ -725,8 +725,8 @@ describe("bitflow-vault-core-v2", () => {
         CONTRACT, "export-user-position", [Cl.principal(wallet1())], deployer()
       );
       const data = result as any;
-      expect(data.data.deposit).toBeUint(10000000);
-      expect(data.data["has-loan"]).toBeBool(false);
+      expect(data.value.deposit).toBeUint(10000000);
+      expect(data.value["has-loan"]).toBeBool(false);
     });
 
     it("exports user position with active loan", () => {
@@ -737,9 +737,9 @@ describe("bitflow-vault-core-v2", () => {
         CONTRACT, "export-user-position", [Cl.principal(wallet1())], deployer()
       );
       const data = result as any;
-      expect(data.data.deposit).toBeUint(10000000);
-      expect(data.data["has-loan"]).toBeBool(true);
-      expect(data.data.loan.data.amount).toBeUint(1000000);
+      expect(data.value.deposit).toBeUint(10000000);
+      expect(data.value["has-loan"]).toBeBool(true);
+      expect(data.value.loan.value.amount).toBeUint(1000000);
     });
 
     it("exports protocol state", () => {
@@ -750,9 +750,9 @@ describe("bitflow-vault-core-v2", () => {
         CONTRACT, "export-protocol-state", [], deployer()
       );
       const data = result as any;
-      expect(data.data["total-deposits"]).toBeUint(10000000);
-      expect(data.data["total-outstanding-borrows"]).toBeUint(1000000);
-      expect(data.data["stx-price"]).toBeUint(10000);
+      expect(data.value["total-deposits"]).toBeUint(10000000);
+      expect(data.value["total-outstanding-borrows"]).toBeUint(1000000);
+      expect(data.value["stx-price"]).toBeUint(10000);
     });
 
     it("returns protocol age in blocks", () => {
@@ -785,8 +785,8 @@ describe("bitflow-vault-core-v2", () => {
 
       const loan1 = getUserLoan(wallet1());
       const loan2 = getUserLoan(wallet2());
-      expect((loan1.result as any).data.amount).toBeUint(1000000);
-      expect((loan2.result as any).data.amount).toBeUint(2000000);
+      expect((loan1.result as any).value.value.amount).toBeUint(1000000);
+      expect((loan2.result as any).value.value.amount).toBeUint(2000000);
     });
 
     it("repaying frees collateral for withdrawal", () => {
@@ -812,10 +812,10 @@ describe("bitflow-vault-core-v2", () => {
         deployer()
       );
       const data = result as any;
-      expect(data.data["deposit-amount"]).toBeUint(10000000);
-      expect(data.data["has-loan"]).toBeBool(true);
-      expect(data.data["loan-amount"]).toBeUint(1000000);
-      expect(data.data["is-liquidatable"]).toBeBool(false);
+      expect(data.value["deposit-amount"]).toBeUint(10000000);
+      expect(data.value["has-loan"]).toBeBool(true);
+      expect(data.value["loan-amount"]).toBeUint(1000000);
+      expect(data.value["is-liquidatable"]).toBeBool(false);
     });
 
     it("is-liquidatable detects undercollateralized position", () => {

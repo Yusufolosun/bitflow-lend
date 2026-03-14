@@ -111,7 +111,7 @@ describe("bitflow-vault-core-v2 safe arithmetic tests", () => {
       const repayment = simnet.callReadOnlyFn(
         CONTRACT, "get-repayment-amount", [Cl.principal(wallet1())], deployer()
       );
-      const interest = (repayment.result as any).data?.interest?.value;
+      const interest = (repayment.result as any).value?.interest?.value;
       expect(Number(interest)).toBeGreaterThanOrEqual(1);
     });
   });
