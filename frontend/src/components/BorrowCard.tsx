@@ -130,7 +130,7 @@ export const BorrowCard: React.FC = () => {
       <div className="card-elevated">
         <div className="flex items-center gap-3 mb-4">
           <div className="p-3 bg-amber-50 rounded-xl">
-            <AlertCircle className="text-amber-600" size={22} />
+            <AlertCircle className="text-amber-600" size={22} aria-hidden="true" />
           </div>
           <div>
             <h3 className="text-lg font-bold text-gray-900 tracking-tight">Active Loan</h3>
@@ -165,7 +165,7 @@ export const BorrowCard: React.FC = () => {
       {/* Header */}
       <div className="flex items-center gap-3">
         <div className="p-3 bg-emerald-50 rounded-xl">
-          <TrendingUp className="text-emerald-600" size={22} />
+          <TrendingUp className="text-emerald-600" size={22} aria-hidden="true" />
         </div>
         <div>
           <h3 className="text-lg font-bold text-gray-900 tracking-tight">Borrow STX</h3>
