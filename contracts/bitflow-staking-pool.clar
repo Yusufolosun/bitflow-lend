@@ -227,7 +227,7 @@
 
 ;; ===== USER FUNCTIONS =====
 
-;; Emergency unstake — only available when pool is paused.
+;; Emergency unstake -- only available when pool is paused.
 ;; Bypasses cooldown so users can retrieve funds during emergencies.
 ;; Forfeits any unclaimed rewards to keep the operation simple/safe.
 (define-public (emergency-unstake)
@@ -392,6 +392,7 @@
         (print { event: "rewards-claimed", user: recipient, amount: reward-amount })
         (ok reward-amount)
       )
+    )
   )
 )
 
