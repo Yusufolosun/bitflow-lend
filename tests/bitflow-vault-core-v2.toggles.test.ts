@@ -178,12 +178,12 @@ describe("bitflow-vault-core-v2 per-function toggle tests", () => {
       borrow(1_000_000, 500, 30, wallet1());
       toggle("toggle-liquidations-enabled", false);
       const { result } = simnet.callPublicFn(CONTRACT, "repay", [], wallet1());
-      // interest = ceil(1_000_000 * 500 * 1 / 5_256_000) = ceil(95.13) = 96
+      // 2 blocks elapsed (borrow → toggle → repay): ceil(1_000_000 * 500 * 2 / 5_256_000) = ceil(190.26) = 191
       expect(result).toBeOk(Cl.tuple({
         "principal": Cl.uint(1_000_000),
-        "interest": Cl.uint(96),
+        "interest": Cl.uint(191),
         "penalty": Cl.uint(0),
-        "total": Cl.uint(1_000_096),
+        "total": Cl.uint(1_000_191),
       }));
     });
   });
