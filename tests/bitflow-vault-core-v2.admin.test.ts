@@ -25,7 +25,7 @@ describe("bitflow-vault-core-v2 admin parameter bounds tests", () => {
       const { result } = simnet.callPublicFn(
         CONTRACT, "set-min-collateral-ratio", [Cl.uint(99)], deployer()
       );
-      expect(result).toBeErr(Cl.uint(118)); // ERR-INVALID-PARAM
+      expect(result).toBeErr(Cl.uint(120)); // ERR-INVALID-PARAM
     });
 
     it("rejects above 500%", () => {
@@ -33,7 +33,7 @@ describe("bitflow-vault-core-v2 admin parameter bounds tests", () => {
       const { result } = simnet.callPublicFn(
         CONTRACT, "set-min-collateral-ratio", [Cl.uint(501)], deployer()
       );
-      expect(result).toBeErr(Cl.uint(118));
+      expect(result).toBeErr(Cl.uint(120));
     });
 
     it("accepts 100%", () => {
@@ -68,7 +68,7 @@ describe("bitflow-vault-core-v2 admin parameter bounds tests", () => {
       const { result } = simnet.callPublicFn(
         CONTRACT, "set-liquidation-threshold", [Cl.uint(99)], deployer()
       );
-      expect(result).toBeErr(Cl.uint(118));
+      expect(result).toBeErr(Cl.uint(120));
     });
 
     it("rejects at or above collateral ratio", () => {
@@ -77,7 +77,7 @@ describe("bitflow-vault-core-v2 admin parameter bounds tests", () => {
       const { result } = simnet.callPublicFn(
         CONTRACT, "set-liquidation-threshold", [Cl.uint(150)], deployer()
       );
-      expect(result).toBeErr(Cl.uint(118));
+      expect(result).toBeErr(Cl.uint(120));
     });
 
     it("accepts valid threshold below collateral ratio", () => {
@@ -97,7 +97,7 @@ describe("bitflow-vault-core-v2 admin parameter bounds tests", () => {
         CONTRACT, "set-interest-rate-bounds",
         [Cl.uint(0), Cl.uint(1000)], deployer()
       );
-      expect(result).toBeErr(Cl.uint(118));
+      expect(result).toBeErr(Cl.uint(120));
     });
 
     it("rejects max ≤ min", () => {
@@ -106,7 +106,7 @@ describe("bitflow-vault-core-v2 admin parameter bounds tests", () => {
         CONTRACT, "set-interest-rate-bounds",
         [Cl.uint(500), Cl.uint(500)], deployer()
       );
-      expect(result).toBeErr(Cl.uint(118));
+      expect(result).toBeErr(Cl.uint(120));
     });
 
     it("rejects max above 50000 (500% APR)", () => {
@@ -115,7 +115,7 @@ describe("bitflow-vault-core-v2 admin parameter bounds tests", () => {
         CONTRACT, "set-interest-rate-bounds",
         [Cl.uint(50), Cl.uint(50001)], deployer()
       );
-      expect(result).toBeErr(Cl.uint(118));
+      expect(result).toBeErr(Cl.uint(120));
     });
 
     it("accepts valid bounds", () => {
@@ -136,7 +136,7 @@ describe("bitflow-vault-core-v2 admin parameter bounds tests", () => {
         CONTRACT, "set-term-limits",
         [Cl.uint(0), Cl.uint(365)], deployer()
       );
-      expect(result).toBeErr(Cl.uint(118));
+      expect(result).toBeErr(Cl.uint(120));
     });
 
     it("rejects max ≤ min", () => {
@@ -145,7 +145,7 @@ describe("bitflow-vault-core-v2 admin parameter bounds tests", () => {
         CONTRACT, "set-term-limits",
         [Cl.uint(30), Cl.uint(30)], deployer()
       );
-      expect(result).toBeErr(Cl.uint(118));
+      expect(result).toBeErr(Cl.uint(120));
     });
 
     it("rejects max above 730 days", () => {
@@ -154,7 +154,7 @@ describe("bitflow-vault-core-v2 admin parameter bounds tests", () => {
         CONTRACT, "set-term-limits",
         [Cl.uint(1), Cl.uint(731)], deployer()
       );
-      expect(result).toBeErr(Cl.uint(118));
+      expect(result).toBeErr(Cl.uint(120));
     });
 
     it("accepts valid limits", () => {
@@ -175,7 +175,7 @@ describe("bitflow-vault-core-v2 admin parameter bounds tests", () => {
         CONTRACT, "set-late-penalty-rate",
         [Cl.uint(2001)], deployer()
       );
-      expect(result).toBeErr(Cl.uint(118));
+      expect(result).toBeErr(Cl.uint(120));
     });
 
     it("accepts zero (no penalty)", () => {
@@ -210,7 +210,7 @@ describe("bitflow-vault-core-v2 admin parameter bounds tests", () => {
       const { result } = simnet.callPublicFn(
         CONTRACT, "set-stx-price", [Cl.uint(10000001)], deployer()
       );
-      expect(result).toBeErr(Cl.uint(118)); // ERR-INVALID-PARAM
+      expect(result).toBeErr(Cl.uint(120)); // ERR-INVALID-PARAM
     });
 
     it("non-admin cannot set price", () => {
