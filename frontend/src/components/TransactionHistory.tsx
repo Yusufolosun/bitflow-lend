@@ -15,6 +15,41 @@ type TransactionType = 'deposit' | 'withdraw' | 'borrow' | 'repay' | 'liquidate'
 type TransactionStatus = 'pending' | 'confirmed' | 'failed';
 
 /**
+ * Hiro API contract call function argument
+ */
+interface HiroFunctionArg {
+  hex: string;
+  repr: string;
+  name: string;
+  type: string;
+}
+
+/**
+ * Hiro API transaction result
+ */
+interface HiroTxResult {
+  hex: string;
+  repr: string;
+}
+
+/**
+ * Hiro API transaction shape (contract_call subset)
+ */
+interface HiroContractCallTx {
+  tx_id: string;
+  tx_type: string;
+  tx_status: string;
+  block_height?: number;
+  burn_block_time?: number;
+  contract_call?: {
+    contract_id: string;
+    function_name: string;
+    function_args?: HiroFunctionArg[];
+  };
+  tx_result?: HiroTxResult;
+}
+
+/**
  * Blockchain transaction interface
  */
 interface ChainTransaction {
@@ -45,7 +80,7 @@ const mapFunctionToType = (functionName: string): TransactionType => {
 /**
  * Extract STX amount from transaction args or result
  */
-const extractAmount = (tx: any): number => {
+const extractAmount = (tx: HiroContractCallTx): number => {
   try {
     const args = tx.contract_call?.function_args;
     if (args && args.length > 0) {
@@ -82,6 +117,8 @@ export const TransactionHistory: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<TransactionType | 'all'>('all');
+  const [page, setPage] = useState(0);
+  const PAGE_SIZE = 10;
 
   const contractId = ACTIVE_NETWORK === 'testnet'
     ? `${VAULT_CONTRACT.testnet.address}.${VAULT_CONTRACT.testnet.contractName}`
@@ -116,11 +153,11 @@ export const TransactionHistory: React.FC = () => {
 
       // Filter for vault contract interactions only
       const vaultTxs: ChainTransaction[] = results
-        .filter((tx: any) => {
+        .filter((tx: HiroContractCallTx) => {
           if (tx.tx_type !== 'contract_call') return false;
           return tx.contract_call?.contract_id === contractId;
         })
-        .map((tx: any) => {
+        .map((tx: HiroContractCallTx) => {
           const functionName = tx.contract_call?.function_name || 'unknown';
           const type = mapFunctionToType(functionName);
           const amount = extractAmount(tx);
@@ -157,6 +194,13 @@ export const TransactionHistory: React.FC = () => {
   const filteredTransactions = filter === 'all'
     ? transactions
     : transactions.filter(tx => tx.type === filter);
+
+  // Pagination
+  const totalPages = Math.ceil(filteredTransactions.length / PAGE_SIZE);
+  const paginatedTransactions = filteredTransactions.slice(
+    page * PAGE_SIZE,
+    (page + 1) * PAGE_SIZE
+  );
 
   // Icon helpers
   const getTransactionIcon = (type: TransactionType) => {
@@ -231,7 +275,7 @@ export const TransactionHistory: React.FC = () => {
         {(['all', 'deposit', 'withdraw', 'borrow', 'repay'] as const).map((type) => (
           <button
             key={type}
-            onClick={() => setFilter(type)}
+            onClick={() => { setFilter(type); setPage(0); }}
             aria-pressed={filter === type}
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors capitalize ${
               filter === type
@@ -291,7 +335,7 @@ export const TransactionHistory: React.FC = () => {
       {/* Transaction List */}
       {!isLoading && filteredTransactions.length > 0 && (
         <div className="space-y-3">
-          {filteredTransactions.map((tx) => (
+          {paginatedTransactions.map((tx) => (
             <div
               key={tx.id}
               className={`border rounded-xl p-4 transition-all hover:shadow-md ${getTransactionColor(tx.type)}`}
@@ -351,6 +395,29 @@ export const TransactionHistory: React.FC = () => {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100">
+          <button
+            onClick={() => setPage(p => Math.max(0, p - 1))}
+            disabled={page === 0}
+            className="px-3 py-1.5 text-xs font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          >
+            Previous
+          </button>
+          <span className="text-xs text-gray-500">
+            Page {page + 1} of {totalPages}
+          </span>
+          <button
+            onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
+            disabled={page >= totalPages - 1}
+            className="px-3 py-1.5 text-xs font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          >
+            Next
+          </button>
         </div>
       )}
 

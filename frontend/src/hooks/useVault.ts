@@ -111,12 +111,10 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
           postConditions,
           postConditionMode: PostConditionMode.Deny,
           onFinish: (data: any) => {
-            // Transaction submitted
             setIsLoading(false);
             resolve({ success: true, txId: data.txId });
           },
           onCancel: () => {
-            // Transaction cancelled
             setIsLoading(false);
             resolve({ success: false, error: 'Transaction cancelled by user' });
           },
@@ -154,12 +152,10 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
           postConditions: [],
           postConditionMode: PostConditionMode.Deny,
           onFinish: (data: any) => {
-            // Transaction submitted
             setIsLoading(false);
             resolve({ success: true, txId: data.txId });
           },
           onCancel: () => {
-            // Transaction cancelled
             setIsLoading(false);
             resolve({ success: false, error: 'Transaction cancelled by user' });
           },
@@ -205,12 +201,10 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
           ],
           postConditionMode: PostConditionMode.Allow,
           onFinish: (data: any) => {
-            // Transaction submitted
             setIsLoading(false);
             resolve({ success: true, txId: data.txId });
           },
           onCancel: () => {
-            // Transaction cancelled
             setIsLoading(false);
             resolve({ success: false, error: 'Transaction cancelled by user' });
           },
@@ -246,12 +240,10 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
           postConditions: [],
           postConditionMode: PostConditionMode.Deny,
           onFinish: (data: any) => {
-            // Transaction submitted
             setIsLoading(false);
             resolve({ success: true, txId: data.txId });
           },
           onCancel: () => {
-            // Transaction cancelled
             setIsLoading(false);
             resolve({ success: false, error: 'Transaction cancelled by user' });
           },
@@ -342,7 +334,7 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
         const blocksElapsed = 0; // For now, assume loan just started
         const startTimestamp = Date.now() / 1000 - (blocksElapsed * 600);
 
-        const loanResult = {
+        return {
           amount,
           amountSTX,
           interestRate,
@@ -354,10 +346,9 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
           collateralAmount,
           collateralAmountSTX,
         };
-
-        return loanResult;
       }
 
+      // Handle optional none (no loan)
       return null;
     } catch {
       return null;

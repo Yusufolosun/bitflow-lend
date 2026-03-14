@@ -153,6 +153,8 @@ export const useAuth = () => {
             balance,
             balanceSTX,
           }));
+        } else {
+          // Balance fetch returned null, keep existing balance
         }
       } catch {
       }

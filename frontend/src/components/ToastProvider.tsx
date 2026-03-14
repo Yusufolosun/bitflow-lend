@@ -12,6 +12,8 @@ interface ToastContextValue {
   addToast: (type: ToastType, title: string, options?: { message?: string; txId?: string; duration?: number }) => string;
   removeToast: (id: string) => void;
   clearToasts: () => void;
+  pauseTimer: (id: string) => void;
+  resumeTimer: (id: string) => void;
 }
 
 const ToastContext = createContext<ToastContextValue | null>(null);
@@ -50,13 +52,21 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
       addToast: toast.addToast,
       removeToast: toast.removeToast,
       clearToasts: toast.clearToasts,
+      pauseTimer: toast.pauseTimer,
+      resumeTimer: toast.resumeTimer,
     }}>
       {children}
       {/* ToastContainer is rendered inside the provider to access toasts */}
       {toast.toasts.length > 0 && (
         <div className="fixed bottom-4 right-4 z-[9999] flex flex-col gap-3" aria-live="polite" aria-atomic="false">
           {toast.toasts.map(t => (
-            <ToastItem key={t.id} toast={t} onDismiss={toast.removeToast} />
+            <ToastItem
+              key={t.id}
+              toast={t}
+              onDismiss={toast.removeToast}
+              onMouseEnter={() => toast.pauseTimer(t.id)}
+              onMouseLeave={() => toast.resumeTimer(t.id)}
+            />
           ))}
         </div>
       )}
@@ -76,16 +86,33 @@ const toastStyles = {
   warning: { icon: AlertTriangle, bg: 'bg-yellow-500' },
 };
 
-const ToastItem: React.FC<{ toast: Toast; onDismiss: (id: string) => void }> = ({ toast, onDismiss }) => {
+const ToastItem: React.FC<{
+  toast: Toast;
+  onDismiss: (id: string) => void;
+  onMouseEnter: () => void;
+  onMouseLeave: () => void;
+}> = ({ toast, onDismiss, onMouseEnter, onMouseLeave }) => {
   const style = toastStyles[toast.type];
   const Icon = style.icon;
 
   return (
-    <div className={`${style.bg} text-white rounded-lg shadow-2xl p-4 min-w-[320px] max-w-[420px] animate-toast-slide-up`} role="alert">
+    <div
+      className={`${style.bg} text-white rounded-lg shadow-2xl p-4 min-w-[320px] max-w-[420px] animate-toast-slide-up`}
+      role="alert"
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+    >
       <div className="flex items-start gap-3">
         <Icon size={20} className="flex-shrink-0 mt-0.5 opacity-90" />
         <div className="flex-1 min-w-0">
-          <p className="font-semibold text-sm">{toast.title}</p>
+          <div className="flex items-center gap-2">
+            <p className="font-semibold text-sm">{toast.title}</p>
+            {toast.count > 1 && (
+              <span className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-xs font-bold bg-white/25 rounded-full">
+                {toast.count}
+              </span>
+            )}
+          </div>
           {toast.message && <p className="text-xs opacity-90 mt-1">{toast.message}</p>}
           {toast.txId && (
             <a href={getExplorerUrl(toast.txId)} target="_blank" rel="noopener noreferrer"
