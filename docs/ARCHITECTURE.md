@@ -130,7 +130,40 @@ BitFlow is a decentralized lending protocol built on the Stacks blockchain that 
 
 **Purpose:** Core business logic and state management
 
-**File:** `contracts/vault-core.clar`
+**Contracts:**
+
+| Contract | File | Purpose |
+|----------|------|---------|
+| vault-core v1 | `contracts/bitflow-vault-core.clar` | Original lending protocol |
+| vault-core v2 | `contracts/bitflow-vault-core-v2.clar` | Enhanced v2 with per-function toggles, safe arithmetic, price snapshots |
+| staking-pool | `contracts/bitflow-staking-pool.clar` | STX staking with checkpoint rewards and cooldown |
+| oracle-registry | `contracts/bitflow-oracle-registry.clar` | Multi-reporter price oracle with deviation guards |
+
+**Contract Interaction Diagram:**
+
+```
+                     ┌──────────────────┐
+                     │   Admin (Owner)  │
+                     └────────┬─────────┘
+                              │ set-stx-price, pause, toggle, set-params
+            ┌─────────────────┼──────────────────┐
+            ▼                 ▼                   ▼
+  ┌──────────────────┐ ┌──────────────┐ ┌──────────────────┐
+  │ vault-core v1/v2 │ │ staking-pool │ │ oracle-registry  │
+  │                  │ │              │ │                  │
+  │ deposit/withdraw │ │ stake/unstake│ │ submit-price     │
+  │ borrow/repay     │ │ claim-rewards│ │ admin-set-price  │
+  │ liquidate        │ │ emergency-   │ │ add/remove-      │
+  │                  │ │   unstake    │ │   reporter       │
+  └──────────────────┘ └──────────────┘ └──────────────────┘
+          │                    │                   │
+          │    get-dashboard-snapshot (all 3)       │
+          └────────────────────┼───────────────────┘
+                               ▼
+                    ┌────────────────────┐
+                    │  Frontend / Indexer │
+                    └────────────────────┘
+```
 
 **Responsibilities:**
 - Validate all state transitions
@@ -138,11 +171,15 @@ BitFlow is a decentralized lending protocol built on the Stacks blockchain that 
 - Execute STX transfers
 - Track user positions
 - Calculate interest and health factors
+- Multi-source price aggregation (oracle)
+- Checkpoint-based reward accounting (staking)
 
 **Security Features:**
 - Clarity's built-in reentrancy protection
 - Automatic integer overflow checking
-- Immutable contract (no admin keys)
+- Admin-gated parameter changes with safety bounds
+- Per-function circuit breakers (v2 toggles)
+- Emergency withdrawal when paused (staking)
 
 ### 3. Blockchain Layer
 
