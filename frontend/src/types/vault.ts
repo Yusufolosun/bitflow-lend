@@ -226,49 +226,7 @@ export const LOAN_TERMS: LoanTermOption[] = [
 ];
 
 /**
- * Utility type conversions
+ * Protocol-specific constants
  */
 export const STX_DECIMALS = 6;
 export const MICRO_STX = 1_000_000;
-
-export const microStxToStx = (microStx: bigint | number): number => {
-  return Number(microStx) / MICRO_STX;
-};
-
-export const stxToMicroStx = (stx: number): bigint => {
-  return BigInt(Math.floor(stx * MICRO_STX));
-};
-
-/**
- * Calculate health factor status
- */
-export const getHealthStatus = (healthFactor: number): HealthFactor['status'] => {
-  if (healthFactor >= 150) return 'healthy';
-  if (healthFactor >= 110) return 'warning';
-  return 'danger';
-};
-
-/**
- * Format STX amount with proper decimals
- */
-export const formatSTX = (amount: number | bigint, decimals: number = 2): string => {
-  const stx = typeof amount === 'bigint' ? microStxToStx(amount) : amount;
-  return stx.toLocaleString('en-US', {
-    minimumFractionDigits: decimals,
-    maximumFractionDigits: decimals,
-  });
-};
-
-/**
- * Calculate required collateral for borrow amount
- */
-export const calculateRequiredCollateral = (borrowAmount: bigint, collateralRatio: number = 150): bigint => {
-  return (borrowAmount * BigInt(collateralRatio)) / BigInt(100);
-};
-
-/**
- * Calculate maximum borrow from deposit
- */
-export const calculateMaxBorrow = (depositAmount: bigint, collateralRatio: number = 150): bigint => {
-  return (depositAmount * BigInt(100)) / BigInt(collateralRatio);
-};
