@@ -851,16 +851,19 @@ describe("BitFlow Vault Core - Comprehensive Test Suite (40+ Tests)", () => {
 
     it("liquidation bonus calculation is correct", () => {
       const accounts = simnet.getAccounts();
+      const deployer = accounts.get("deployer")!;
       const wallet_1 = accounts.get("wallet_1")!;
       const wallet_2 = accounts.get("wallet_2")!;
 
       simnet.callPublicFn(CONTRACT_NAME, "deposit", [Cl.uint(2000)], wallet_1);
       simnet.callPublicFn(CONTRACT_NAME, "borrow", [Cl.uint(1300), Cl.uint(5), Cl.uint(30)], wallet_1);
 
+      simnet.callPublicFn(CONTRACT_NAME, "set-stx-price", [Cl.uint(70)], deployer);
+
       const liquidationResponse = simnet.callPublicFn(
         CONTRACT_NAME,
         "liquidate",
-        [Cl.principal(wallet_1), Cl.uint(70)],
+        [Cl.principal(wallet_1)],
         wallet_2
       );
 
