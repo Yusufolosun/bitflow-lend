@@ -328,29 +328,36 @@
   (begin
     ;; Check protocol is not paused
     (asserts! (not (var-get is-paused)) ERR-PROTOCOL-PAUSED)
-    
+
     ;; Validate amount is greater than zero
     (asserts! (> amount u0) ERR-INVALID-AMOUNT)
-    
-    ;; Transfer STX from user to contract
-    (try! (stx-transfer? amount tx-sender (as-contract tx-sender)))
-    
-    ;; Update user's deposit balance
-    (map-set user-deposits tx-sender 
-      (+ (default-to u0 (map-get? user-deposits tx-sender)) amount))
-    
-    ;; Update total deposits
-    (var-set total-deposits (+ (var-get total-deposits) amount))
-    
-    ;; Update analytics
-    (var-set total-deposits-count (+ (var-get total-deposits-count) u1))
-    (var-set total-deposit-volume (+ (var-get total-deposit-volume) amount))
-    (var-set last-activity-block block-height)
-    
-    ;; Emit event
-    (print { event: "deposit", user: tx-sender, amount: amount })
-    
-    (ok true)
+
+    (let (
+      (current-deposit (default-to u0 (map-get? user-deposits tx-sender)))
+      (new-deposit (+ current-deposit amount))
+    )
+      ;; Per-user deposit cap (10M STX)
+      (asserts! (<= new-deposit u10000000000000) ERR-INVALID-AMOUNT)
+
+      ;; Transfer STX from user to contract
+      (try! (stx-transfer? amount tx-sender (as-contract tx-sender)))
+
+      ;; Update user's deposit balance
+      (map-set user-deposits tx-sender new-deposit)
+
+      ;; Update total deposits
+      (var-set total-deposits (+ (var-get total-deposits) amount))
+
+      ;; Update analytics
+      (var-set total-deposits-count (+ (var-get total-deposits-count) u1))
+      (var-set total-deposit-volume (+ (var-get total-deposit-volume) amount))
+      (var-set last-activity-block block-height)
+
+      ;; Emit event
+      (print { event: "deposit", user: tx-sender, amount: amount })
+
+      (ok true)
+    )
   )
 )
 
