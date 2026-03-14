@@ -9,6 +9,7 @@ import {
   PostConditionMode,
   FungibleConditionCode,
   makeStandardSTXPostCondition,
+  makeContractSTXPostCondition,
 } from '@stacks/transactions';
 import {
   UserDeposit,
@@ -142,6 +143,16 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
     try {
       const amountMicroSTX = stxToMicroStx(amountSTX);
 
+      // Post-condition: contract must send exactly the withdrawal amount to user
+      const postConditions = [
+        makeContractSTXPostCondition(
+          contractAddress,
+          contractName,
+          FungibleConditionCode.Equal,
+          amountMicroSTX
+        ),
+      ];
+
       return new Promise((resolve) => {
         openContractCall({
           network,
@@ -149,7 +160,7 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
           contractName,
           functionName: 'withdraw',
           functionArgs: [uintCV(amountMicroSTX)],
-          postConditions: [],
+          postConditions,
           postConditionMode: PostConditionMode.Deny,
           onFinish: (data: any) => {
             setIsLoading(false);
@@ -230,6 +241,9 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
     setError(null);
 
     try {
+      // Repay amount is computed on-chain (principal + interest + penalty).
+      // We use Allow mode because the exact total depends on the current
+      // block height and cannot be predicted precisely from the frontend.
       return new Promise((resolve) => {
         openContractCall({
           network,
@@ -237,8 +251,7 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
           contractName,
           functionName: 'repay',
           functionArgs: [],
-          postConditions: [],
-          postConditionMode: PostConditionMode.Deny,
+          postConditionMode: PostConditionMode.Allow,
           onFinish: (data: any) => {
             setIsLoading(false);
             resolve({ success: true, txId: data.txId });
