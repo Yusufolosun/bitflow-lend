@@ -532,6 +532,7 @@ describe("loan repayment", () => {
       Cl.tuple({
         principal: Cl.uint(borrowAmount),
         interest: Cl.uint(96),  // ceil((1000 * 500 * 1001) / (100 * 52560)) = 96
+        penalty: Cl.uint(0),    // no penalty (repaid before term end)
         total: Cl.uint(1096),  // principal + interest
       })
     );
