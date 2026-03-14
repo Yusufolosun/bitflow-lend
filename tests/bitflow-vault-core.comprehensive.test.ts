@@ -379,7 +379,7 @@ describe("BitFlow Vault Core - Comprehensive Test Suite (40+ Tests)", () => {
       const borrowResponse = simnet.callPublicFn(
         CONTRACT_NAME,
         "borrow",
-        [Cl.uint(1000), Cl.uint(5), Cl.uint(7)],
+        [Cl.uint(1000), Cl.uint(500), Cl.uint(7)],
         wallet_1
       );
 
@@ -394,7 +394,7 @@ describe("BitFlow Vault Core - Comprehensive Test Suite (40+ Tests)", () => {
       const borrowResponse = simnet.callPublicFn(
         CONTRACT_NAME,
         "borrow",
-        [Cl.uint(1000), Cl.uint(5), Cl.uint(365)],
+        [Cl.uint(1000), Cl.uint(500), Cl.uint(365)],
         wallet_1
       );
 
@@ -595,21 +595,22 @@ describe("BitFlow Vault Core - Comprehensive Test Suite (40+ Tests)", () => {
       expect(secondBorrow.result).toBeOk(Cl.bool(true));
     });
 
-    it("handles repayment with zero interest for very recent loan", () => {
+    it("handles repayment with ceiling-minimum interest for very recent loan", () => {
       const accounts = simnet.getAccounts();
       const wallet_1 = accounts.get("wallet_1")!;
 
       simnet.callPublicFn(CONTRACT_NAME, "deposit", [Cl.uint(2000)], wallet_1);
       simnet.callPublicFn(CONTRACT_NAME, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], wallet_1);
 
+      // 1 block elapsed: ceil(1000 * 500 * 1 / 5256000) = ceil(0.095) = 1
       const repayResponse = simnet.callPublicFn(CONTRACT_NAME, "repay", [], wallet_1);
 
       expect(repayResponse.result).toBeOk(
         Cl.tuple({
           principal: Cl.uint(1000),
-          interest: Cl.uint(0),
+          interest: Cl.uint(1),
           penalty: Cl.uint(0),
-          total: Cl.uint(1000),
+          total: Cl.uint(1001),
         })
       );
     });
