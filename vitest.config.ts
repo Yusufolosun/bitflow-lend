@@ -38,6 +38,8 @@ export default defineConfig({
         // add or override options
       },
     },
+    // Report contract test results in verbose mode
+    reporters: ["verbose"],
   },
 });
 
