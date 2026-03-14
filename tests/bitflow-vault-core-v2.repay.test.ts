@@ -57,7 +57,7 @@ describe("bitflow-vault-core-v2 repay lifecycle tests", () => {
 
       const { result } = repay(wallet1());
       const principal = Number((result as any).value?.value?.principal?.value);
-      const interest = Number((result as any).value?.interest?.value);
+      const interest = Number((result as any).value?.value?.interest?.value);
       const penalty = Number((result as any).value?.value?.penalty?.value);
       const total = Number((result as any).value?.value?.total?.value);
 
