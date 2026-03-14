@@ -366,30 +366,32 @@
 
 ;; Claim accumulated rewards
 (define-public (claim-rewards)
-  (let (
-    (recipient tx-sender)
-  )
-    ;; Update reward accounting
-    (update-reward recipient)
-
+  (begin
+    (asserts! (not (var-get is-paused)) ERR-PROTOCOL-PAUSED)
     (let (
-      (reward-amount (default-to u0 (map-get? staker-rewards recipient)))
+      (recipient tx-sender)
     )
-      (asserts! (> reward-amount u0) ERR-NO-REWARDS)
+      ;; Update reward accounting
+      (update-reward recipient)
 
-      ;; Reset pending rewards
-      (map-set staker-rewards recipient u0)
+      (let (
+        (reward-amount (default-to u0 (map-get? staker-rewards recipient)))
+      )
+        (asserts! (> reward-amount u0) ERR-NO-REWARDS)
 
-      ;; Transfer rewards to staker
-      (try! (as-contract (stx-transfer? reward-amount tx-sender recipient)))
+        ;; Reset pending rewards
+        (map-set staker-rewards recipient u0)
 
-      ;; Update metrics
-      (var-set total-rewards-distributed (+ (var-get total-rewards-distributed) reward-amount))
-      (map-set staker-last-action recipient block-height)
+        ;; Transfer rewards to staker
+        (try! (as-contract (stx-transfer? reward-amount tx-sender recipient)))
 
-      (print { event: "rewards-claimed", user: recipient, amount: reward-amount })
-      (ok reward-amount)
-    )
+        ;; Update metrics
+        (var-set total-rewards-distributed (+ (var-get total-rewards-distributed) reward-amount))
+        (map-set staker-last-action recipient block-height)
+
+        (print { event: "rewards-claimed", user: recipient, amount: reward-amount })
+        (ok reward-amount)
+      )
   )
 )
 
