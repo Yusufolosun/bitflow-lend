@@ -37,7 +37,7 @@ describe("bitflow-staking-pool cooldown lifecycle tests", () => {
       requestUnstake(wallet1());
 
       const { result } = getStakerInfo(wallet1());
-      const cooldownEnd = (result as any).data?.["cooldown-end"]?.value;
+      const cooldownEnd = (result as any).value?.["cooldown-end"]?.value;
       expect(Number(cooldownEnd)).toBeGreaterThan(0);
     });
 
@@ -100,7 +100,7 @@ describe("bitflow-staking-pool cooldown lifecycle tests", () => {
       unstake(2_000_000, wallet1());
 
       const { result } = getStakerInfo(wallet1());
-      const cooldownEnd = (result as any).data?.["cooldown-end"]?.value;
+      const cooldownEnd = (result as any).value?.["cooldown-end"]?.value;
       expect(Number(cooldownEnd)).toBe(0);
     });
   });

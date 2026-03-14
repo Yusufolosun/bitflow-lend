@@ -268,7 +268,7 @@ describe("bitflow-staking-pool state tests", () => {
       const info = getStakerInfo(wallet1());
       // cooldown-end should be > 0
       // We can't predict exact block but it should be non-zero
-      const cooldownEnd = (info.result as any).data?.["cooldown-end"]?.value ?? 0;
+      const cooldownEnd = (info.result as any).value?.["cooldown-end"]?.value ?? 0;
       expect(Number(cooldownEnd)).toBeGreaterThan(0);
     });
 

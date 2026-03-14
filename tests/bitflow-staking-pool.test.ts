@@ -348,7 +348,7 @@ describe("bitflow-staking-pool", () => {
 
       const { result } = getStakerInfo(wallet1());
       const tupleData = result as any;
-      expect(tupleData.data.balance).toBeUint(5000000);
+      expect(tupleData.value.balance).toBeUint(5000000);
     });
 
     it("returns staker pool share in basis points", () => {
@@ -405,7 +405,7 @@ describe("bitflow-staking-pool", () => {
 
       const { result } = getPoolStats();
       const tupleData = result as any;
-      expect(tupleData.data["total-stakers"]).toBeUint(1);
+      expect(tupleData.value["total-stakers"]).toBeUint(1);
     });
 
     it("does not decrement staker count on partial unstake", () => {
@@ -418,7 +418,7 @@ describe("bitflow-staking-pool", () => {
 
       const { result } = getPoolStats();
       const tupleData = result as any;
-      expect(tupleData.data["total-stakers"]).toBeUint(1);
+      expect(tupleData.value["total-stakers"]).toBeUint(1);
     });
 
     it("rewards continue accruing after rate change", () => {

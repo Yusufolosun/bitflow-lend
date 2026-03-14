@@ -131,7 +131,7 @@ describe("bitflow-staking-pool reward edge cases", () => {
       claimRewards(wallet1());
 
       const stats = getPoolStats();
-      const distributed = (stats.result as any).data?.["total-rewards-distributed"]?.value;
+      const distributed = (stats.result as any).value?.["total-rewards-distributed"]?.value;
       expect(Number(distributed)).toBeGreaterThan(0);
     });
   });
