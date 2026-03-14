@@ -30,7 +30,8 @@ export default defineConfig({
     include: ["tests/**/*.{test,spec}.{ts,tsx}"],
     setupFiles: [
       vitestSetupFilePath,
-      // custom setup files can be added here
+      // custom matchers (toHaveTupleProperty, etc.)
+      "./tests/matchers.ts",
     ],
     environmentOptions: {
       clarinet: {
