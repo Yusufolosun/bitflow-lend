@@ -484,10 +484,10 @@
     (var-set last-activity-block block-height)
     
     ;; Emit event
-    (print { event: "repay", user: tx-sender, principal: loan-amount, interest: interest, total: total-repayment })
-    
+    (print { event: "repay", user: tx-sender, principal: loan-amount, interest: interest, penalty: penalty, total: total-repayment })
+
     ;; Return repayment details
-    (ok { principal: loan-amount, interest: interest, total: total-repayment })
+    (ok { principal: loan-amount, interest: interest, penalty: penalty, total: total-repayment })
     )
   )
 )
