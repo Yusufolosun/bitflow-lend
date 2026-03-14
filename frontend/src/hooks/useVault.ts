@@ -199,6 +199,16 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
       const amountMicroSTX = stxToMicroStx(amountSTX);
       const interestRateBPS = interestRatePercent * 100; // Convert to basis points
 
+      // Post-condition: contract sends exactly the borrowed amount to user
+      const postConditions = [
+        makeContractSTXPostCondition(
+          contractAddress,
+          contractName,
+          FungibleConditionCode.Equal,
+          amountMicroSTX
+        ),
+      ];
+
       return new Promise((resolve) => {
         openContractCall({
           network,
@@ -210,7 +220,8 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
             uintCV(interestRateBPS),
             uintCV(termDays),
           ],
-          postConditionMode: PostConditionMode.Allow,
+          postConditions,
+          postConditionMode: PostConditionMode.Deny,
           onFinish: (data: any) => {
             setIsLoading(false);
             resolve({ success: true, txId: data.txId });
@@ -482,6 +493,10 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
     setError(null);
 
     try {
+      // Liquidation involves two transfers: liquidator pays (loan + bonus),
+      // contract transfers borrower collateral to liquidator. Both amounts
+      // depend on on-chain state that may shift between signing and mining,
+      // so Allow mode is appropriate here.
       return new Promise((resolve) => {
         openContractCall({
           network,
