@@ -248,7 +248,9 @@
 )
 
 (define-read-only (get-price-staleness-blocks)
-  (- block-height (var-get price-update-block))
+  (if (> (var-get price-update-block) u0)
+    (- block-height (var-get price-update-block))
+    u0)
 )
 
 (define-read-only (get-is-paused)
@@ -668,12 +670,16 @@
 
 ;; Get protocol age in blocks
 (define-read-only (get-protocol-age)
-  (- block-height (var-get protocol-start-block))
+  (if (> (var-get protocol-start-block) u0)
+    (- block-height (var-get protocol-start-block))
+    u0)
 )
 
 ;; Get blocks since last activity
 (define-read-only (get-time-since-last-activity)
-  (- block-height (var-get last-activity-block))
+  (if (> (var-get last-activity-block) u0)
+    (- block-height (var-get last-activity-block))
+    u0)
 )
 
 ;; Single-call dashboard snapshot for frontend/indexer consumption
