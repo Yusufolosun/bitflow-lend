@@ -50,14 +50,14 @@ The contract assumes 10-minute blocks (144 blocks/day, 52,560 blocks/year). Actu
 
 ---
 
-### No Collateral Withdrawal While Borrowing
+### No Collateral Withdrawal While Borrowing (v1 only)
 
-**Status**: By design  
+**Status**: Resolved in v2.0.0
 **Impact**: Medium
 
-Users cannot withdraw deposited collateral while a loan is active, even if the withdrawal would leave sufficient collateral. The entire deposit is locked.
+In v1, users cannot withdraw deposited collateral while a loan is active, even if the withdrawal would leave sufficient collateral. The entire deposit is locked.
 
-**Workaround**: Repay the loan, withdraw desired amount, then re-borrow.
+**v2 Fix**: The v2 contract calculates `available-balance = user-balance - locked-collateral` and allows withdrawing excess collateral above the required collateral ratio.
 
 ---
 
@@ -125,6 +125,10 @@ Some wallet extensions require re-authentication after a page refresh.
 | v2 withdraw/borrow scope | v2.0.0 | Fixed as-contract scope sending STX to wrong address |
 | v2 interest on zero blocks | v2.0.0 | Fixed ceiling division returning ≥1 for zero elapsed blocks |
 | Console log pollution | v2.0.0 | Removed all console.log/error from production frontend |
+| v1 withdraw zero-amount | v2.0.0 | Added zero-amount guard to v1 withdraw function |
+| v1 deposit no cap | v2.0.0 | Added per-user deposit cap (10M STX) to v1 deposit function |
+| Oracle min-reporters lock | v2.0.0 | Prevented setting min-reporters above current reporter count |
+| Collateral withdrawal lock | v2.0.0 | v2 allows partial withdrawal of excess collateral |
 
 ---
 
