@@ -15,12 +15,9 @@ describe("Time-Based Functionality Tests", () => {
       simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(10000), Cl.uint(500), Cl.uint(30)], wallet);
 
       const repayment = simnet.callReadOnlyFn(CONTRACT, "get-repayment-amount", [Cl.principal(wallet)], wallet);
-      // With ceiling division, even 0 elapsed blocks yields interest >= 1
-      // At block of borrow call, blocks-elapsed = 0, but get-repayment-amount
-      // is called in same block so blocks-elapsed = 0, interest = ceil(0) = 0
-      // However the borrow and read happen in sequential blocks, so 1 block elapsed
+      // Read-only call in same block as borrow: 0 blocks elapsed, interest = 0
       expect(repayment.result).toBeSome(
-        Cl.tuple({ principal: Cl.uint(10000), interest: Cl.uint(1), penalty: Cl.uint(0), total: Cl.uint(10001) })
+        Cl.tuple({ principal: Cl.uint(10000), interest: Cl.uint(0), penalty: Cl.uint(0), total: Cl.uint(10000) })
       );
     });
 
@@ -91,9 +88,10 @@ describe("Time-Based Functionality Tests", () => {
 
       // Interest should reflect total blocks elapsed, not just term
       // = (10000 * 1000 * 5256) / (100 * 52560) = 10000
+      // Late penalty applies: block-height > term-end → penalty = 10000 * 500 / 10000 = 500
       const repayment = simnet.callReadOnlyFn(CONTRACT, "get-repayment-amount", [Cl.principal(wallet)], wallet);
       expect(repayment.result).toBeSome(
-        Cl.tuple({ principal: Cl.uint(10000), interest: Cl.uint(10000), penalty: Cl.uint(0), total: Cl.uint(20000) })
+        Cl.tuple({ principal: Cl.uint(10000), interest: Cl.uint(10000), penalty: Cl.uint(500), total: Cl.uint(20500) })
       );
     });
   });
