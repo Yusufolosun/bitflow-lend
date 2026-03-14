@@ -295,3 +295,25 @@
     )
   )
 )
+
+;; Single-call dashboard snapshot for frontend/indexer consumption
+(define-read-only (get-dashboard-snapshot)
+  {
+    aggregated-price: (var-get aggregated-price),
+    aggregated-block: (var-get aggregated-block),
+    is-fresh: (is-price-fresh),
+    price-age-blocks: (if (> (var-get aggregated-block) u0)
+      (- block-height (var-get aggregated-block))
+      u0),
+    reporter-count: (var-get reporter-count),
+    min-reporters-required: (var-get min-reporters-required),
+    max-deviation-bps: (var-get max-deviation),
+    max-price-age: (var-get max-price-age),
+    total-submissions: (var-get total-submissions),
+    total-rejections: (var-get total-rejections),
+    is-paused: (var-get is-paused),
+    protocol-age-blocks: (if (> (var-get protocol-start-block) u0)
+      (- block-height (var-get protocol-start-block))
+      u0)
+  }
+)
