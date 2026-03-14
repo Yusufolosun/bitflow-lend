@@ -202,15 +202,15 @@ describe("bitflow-vault-core-v2 admin parameter bounds tests", () => {
     it("rejects zero price", () => {
       setup();
       const { result } = setPrice(0);
-      expect(result).toBeErr(Cl.uint(101)); // ERR-INVALID-AMOUNT or similar
+      expect(result).toBeErr(Cl.uint(117)); // ERR-INVALID-PRICE
     });
 
     it("rejects price above sanity cap", () => {
       setup();
       const { result } = simnet.callPublicFn(
-        CONTRACT, "set-stx-price", [Cl.uint(10000001)], deployer()
+        CONTRACT, "set-stx-price", [Cl.uint(100000001)], deployer()
       );
-      expect(result).toBeErr(Cl.uint(120)); // ERR-INVALID-PARAM
+      expect(result).toBeErr(Cl.uint(117)); // ERR-INVALID-PRICE
     });
 
     it("non-admin cannot set price", () => {
