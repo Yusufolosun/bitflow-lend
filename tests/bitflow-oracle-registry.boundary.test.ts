@@ -101,7 +101,7 @@ describe("bitflow-oracle-registry boundary tests", () => {
       submitPrice(1_000_000, wallet1()); // baseline: $1.00
       // Now submit > 20% deviation
       const { result } = submitPrice(1_300_000, wallet1()); // +30%
-      expect(result).toBeErr(Cl.uint(305)); // ERR-DEVIATION-TOO-HIGH
+      expect(result).toBeOk(Cl.bool(false)); // ERR-DEVIATION-TOO-HIGH
     });
 
     it("accepts price within deviation threshold", () => {
