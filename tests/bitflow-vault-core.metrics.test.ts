@@ -38,7 +38,7 @@ describe("bitflow-vault-core read-only metrics tests", () => {
         CONTRACT, "get-protocol-parameters", [], deployer()
       );
       // Returns (ok { ... }) tuple
-      const data = (result as any).data;
+      const data = (result as any).value;
       expect(data).toHaveTupleProperty("min-collateral-ratio", Cl.uint(150));
       expect(data).toHaveTupleProperty("min-interest-rate", Cl.uint(50));
       expect(data).toHaveTupleProperty("min-term-days", Cl.uint(1));
@@ -53,7 +53,7 @@ describe("bitflow-vault-core read-only metrics tests", () => {
       const { result } = simnet.callReadOnlyFn(
         CONTRACT, "get-protocol-parameters", [], deployer()
       );
-      const data = (result as any).data;
+      const data = (result as any).value;
       expect(data).toHaveTupleProperty("min-collateral-ratio", Cl.uint(200));
     });
   });
@@ -131,7 +131,7 @@ describe("bitflow-vault-core read-only metrics tests", () => {
         CONTRACT, "get-volume-metrics", [], deployer()
       );
       expect(result).toHaveTupleProperty("borrow-volume", Cl.uint(2_000_000));
-      const repayVol = (result as any).data?.["repay-volume"]?.value;
+      const repayVol = (result as any).value?.["repay-volume"]?.value;
       // Repay volume = principal + interest + penalty
       expect(Number(repayVol)).toBeGreaterThanOrEqual(2_000_001);
     });

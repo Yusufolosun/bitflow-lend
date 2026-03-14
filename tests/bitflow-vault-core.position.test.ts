@@ -58,7 +58,7 @@ describe("bitflow-vault-core user-position-summary tests", () => {
 
       const { result } = getPositionSummary(wallet1(), 100);
       // max borrow = deposit * 100 / 150 = 6,666,666
-      const maxBorrow = (result as any).data?.["max-borrow-available"]?.value;
+      const maxBorrow = (result as any).value?.["max-borrow-available"]?.value;
       expect(Number(maxBorrow)).toBe(6666666);
     });
   });
@@ -84,7 +84,7 @@ describe("bitflow-vault-core user-position-summary tests", () => {
       const { result } = getPositionSummary(wallet1(), 100);
       // health = (deposit * price / 100) * 100 / loan
       // = (10M * 100 / 100) * 100 / 3M = 10M * 100 / 3M = 333
-      const healthFactor = (result as any).data?.["health-factor"]?.value;
+      const healthFactor = (result as any).value?.["health-factor"]?.value;
       expect(Number(healthFactor)).toBe(333);
     });
 

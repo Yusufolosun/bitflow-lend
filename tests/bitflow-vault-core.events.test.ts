@@ -24,7 +24,7 @@ describe("bitflow-vault-core event emission", () => {
     );
     const prints = events.filter((e: any) => e.event === "print_event");
     expect(prints.length).toBeGreaterThanOrEqual(1);
-    const payload = (prints[0] as any).data;
+    const payload = (prints[0] as any).value;
     expect(payload).toHaveTupleProperty("event", Cl.stringAscii("deposit"));
   });
 
@@ -36,7 +36,7 @@ describe("bitflow-vault-core event emission", () => {
     );
     const prints = events.filter((e: any) => e.event === "print_event");
     expect(prints.length).toBeGreaterThanOrEqual(1);
-    const payload = (prints[0] as any).data;
+    const payload = (prints[0] as any).value;
     expect(payload).toHaveTupleProperty("event", Cl.stringAscii("withdraw"));
   });
 
@@ -48,7 +48,7 @@ describe("bitflow-vault-core event emission", () => {
     );
     const prints = events.filter((e: any) => e.event === "print_event");
     expect(prints.length).toBeGreaterThanOrEqual(1);
-    const payload = (prints[0] as any).data;
+    const payload = (prints[0] as any).value;
     expect(payload).toHaveTupleProperty("event", Cl.stringAscii("borrow"));
   });
 
@@ -61,7 +61,7 @@ describe("bitflow-vault-core event emission", () => {
     const { events } = simnet.callPublicFn(CONTRACT, "repay", [], wallet1());
     const prints = events.filter((e: any) => e.event === "print_event");
     expect(prints.length).toBeGreaterThanOrEqual(1);
-    const payload = (prints[0] as any).data;
+    const payload = (prints[0] as any).value;
     expect(payload).toHaveTupleProperty("event", Cl.stringAscii("repay"));
   });
 
@@ -77,7 +77,7 @@ describe("bitflow-vault-core event emission", () => {
     );
     const prints = events.filter((e: any) => e.event === "print_event");
     expect(prints.length).toBeGreaterThanOrEqual(1);
-    const payload = (prints[0] as any).data;
+    const payload = (prints[0] as any).value;
     expect(payload).toHaveTupleProperty("event", Cl.stringAscii("liquidation"));
   });
 
@@ -85,7 +85,7 @@ describe("bitflow-vault-core event emission", () => {
     init();
     const { events } = simnet.callPublicFn(CONTRACT, "pause", [], deployer());
     const prints = events.filter((e: any) => e.event === "print_event");
-    const payload = (prints[0] as any).data;
+    const payload = (prints[0] as any).value;
     expect(payload).toHaveTupleProperty("event", Cl.stringAscii("pause"));
   });
 
@@ -94,7 +94,7 @@ describe("bitflow-vault-core event emission", () => {
     simnet.callPublicFn(CONTRACT, "pause", [], deployer());
     const { events } = simnet.callPublicFn(CONTRACT, "unpause", [], deployer());
     const prints = events.filter((e: any) => e.event === "print_event");
-    const payload = (prints[0] as any).data;
+    const payload = (prints[0] as any).value;
     expect(payload).toHaveTupleProperty("event", Cl.stringAscii("unpause"));
   });
 
@@ -104,14 +104,14 @@ describe("bitflow-vault-core event emission", () => {
       CONTRACT, "set-stx-price", [Cl.uint(200)], deployer()
     );
     const prints = events.filter((e: any) => e.event === "print_event");
-    const payload = (prints[0] as any).data;
+    const payload = (prints[0] as any).value;
     expect(payload).toHaveTupleProperty("event", Cl.stringAscii("set-stx-price"));
   });
 
   it("emits protocol-initialized event", () => {
     const { events } = simnet.callPublicFn(CONTRACT, "initialize", [], deployer());
     const prints = events.filter((e: any) => e.event === "print_event");
-    const payload = (prints[0] as any).data;
+    const payload = (prints[0] as any).value;
     expect(payload).toHaveTupleProperty("event", Cl.stringAscii("protocol-initialized"));
   });
 });
