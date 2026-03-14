@@ -588,6 +588,29 @@
   (- block-height (var-get last-activity-block))
 )
 
+;; Single-call dashboard snapshot for frontend/indexer consumption
+(define-read-only (get-dashboard-snapshot)
+  (let (
+    (deposits (var-get total-deposits))
+    (borrowed (var-get total-outstanding-borrows))
+  )
+    {
+      total-deposits: deposits,
+      total-repaid: (var-get total-repaid),
+      total-liquidations: (var-get total-liquidations),
+      total-outstanding-borrows: borrowed,
+      utilization-bps: (if (> deposits u0) (/ (* borrowed u10000) deposits) u0),
+      deposit-volume: (var-get total-deposit-volume),
+      borrow-volume: (var-get total-borrow-volume),
+      repay-volume: (var-get total-repay-volume),
+      liquidation-volume: (var-get total-liquidation-volume),
+      stx-price: (var-get admin-stx-price),
+      is-paused: (var-get is-paused),
+      protocol-age-blocks: (- block-height (var-get protocol-start-block))
+    }
+  )
+)
+
 ;; Get comprehensive user position summary
 ;; @param user: Principal address of the user
 ;; @param stx-price: Current STX price for health factor calculation
