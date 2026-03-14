@@ -375,9 +375,14 @@ describe("bitflow-vault-core-v2", () => {
       deposit(10000000, wallet1());
       borrow(1000000, 500, 30, wallet1());
       const { result } = repay(wallet1());
-      expect(result).toBeOk(Cl.some(Cl.tuple({
+      // repay returns (ok { principal, interest, penalty, total }) — no some wrapper
+      // interest = ceil(1000000 * 500 * 1 / 5256000) = ceil(95.13) = 96
+      expect(result).toBeOk(Cl.tuple({
         principal: Cl.uint(1000000),
-      })));
+        interest: Cl.uint(96),
+        penalty: Cl.uint(0),
+        total: Cl.uint(1000096),
+      }));
     });
 
     it("removes loan record after repayment", () => {
@@ -427,9 +432,12 @@ describe("bitflow-vault-core-v2", () => {
       // Keep price fresh
       setPrice(10000);
       const { result } = liquidate(wallet1(), wallet2());
-      expect(result).toBeOk(Cl.some(Cl.tuple({
+      // liquidate returns (ok { seized-collateral, paid, bonus }) — no some wrapper
+      expect(result).toBeOk(Cl.tuple({
         "seized-collateral": Cl.uint(10000000),
-      })));
+        "paid": Cl.uint(1050000),
+        "bonus": Cl.uint(50000),
+      }));
     });
 
     it("clears borrower loan and deposit after liquidation", () => {
