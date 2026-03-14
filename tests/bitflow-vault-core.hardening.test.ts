@@ -28,7 +28,7 @@ describe("bitflow-vault-core v1 hardening verification tests", () => {
       setup();
       deposit(5_000_000, wallet1());
       const { result } = withdraw(0, wallet1());
-      expect(result).toBeErr(Cl.uint(101)); // ERR-INVALID-AMOUNT
+      expect(result).toBeErr(Cl.uint(102)); // ERR-INVALID-AMOUNT
     });
 
     it("allows non-zero withdrawal", () => {
@@ -44,7 +44,7 @@ describe("bitflow-vault-core v1 hardening verification tests", () => {
     it("rejects zero deposit", () => {
       setup();
       const { result } = deposit(0, wallet1());
-      expect(result).toBeErr(Cl.uint(101)); // ERR-INVALID-AMOUNT
+      expect(result).toBeErr(Cl.uint(102)); // ERR-INVALID-AMOUNT
     });
   });
 
@@ -56,7 +56,7 @@ describe("bitflow-vault-core v1 hardening verification tests", () => {
       deposit(9_999_999_000_000, wallet1());
       // This should push over the 10T microSTX cap
       const { result } = deposit(2_000_000, wallet1());
-      expect(result).toBeErr(Cl.uint(101)); // ERR-INVALID-AMOUNT
+      expect(result).toBeErr(Cl.uint(102)); // ERR-INVALID-AMOUNT
     });
 
     it("accepts deposit at exactly the cap", () => {
@@ -73,7 +73,7 @@ describe("bitflow-vault-core v1 hardening verification tests", () => {
       setup();
       deposit(5_000_000, wallet1());
       const { result } = withdraw(6_000_000, wallet1());
-      expect(result).toBeErr(Cl.uint(102)); // ERR-INSUFFICIENT-BALANCE
+      expect(result).toBeErr(Cl.uint(101)); // ERR-INSUFFICIENT-BALANCE
     });
   });
 
@@ -92,7 +92,7 @@ describe("bitflow-vault-core v1 hardening verification tests", () => {
       // Available = 10M - 7.5M = 2.5M
       // Try to withdraw 3M (more than available)
       const { result } = withdraw(3_000_000, wallet1());
-      expect(result).toBeErr(Cl.uint(102));
+      expect(result).toBeErr(Cl.uint(101));
     });
 
     it("allows withdrawal within available balance", () => {
@@ -115,7 +115,7 @@ describe("bitflow-vault-core v1 hardening verification tests", () => {
       setup();
       simnet.callPublicFn(CONTRACT, "pause", [], deployer());
       const { result } = deposit(1_000_000, wallet1());
-      expect(result).toBeErr(Cl.uint(108)); // ERR-PROTOCOL-PAUSED
+      expect(result).toBeErr(Cl.uint(112)); // ERR-PROTOCOL-PAUSED
     });
 
     it("rejects withdrawal when paused", () => {
@@ -123,7 +123,7 @@ describe("bitflow-vault-core v1 hardening verification tests", () => {
       deposit(5_000_000, wallet1());
       simnet.callPublicFn(CONTRACT, "pause", [], deployer());
       const { result } = withdraw(1_000_000, wallet1());
-      expect(result).toBeErr(Cl.uint(108));
+      expect(result).toBeErr(Cl.uint(112));
     });
   });
 });
