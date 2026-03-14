@@ -141,12 +141,12 @@ describe("bitflow-oracle-registry deviation and precision tests", () => {
       adminSetPrice(1_000_000);
 
       const before = getStats();
-      const subsBefore = (before.result as any).data?.["total-submissions"]?.value;
+      const subsBefore = (before.result as any).value?.["total-submissions"]?.value;
 
       submitPrice(2_000_000, reporter1()); // rejected
 
       const after = getStats();
-      const subsAfter = (after.result as any).data?.["total-submissions"]?.value;
+      const subsAfter = (after.result as any).value?.["total-submissions"]?.value;
 
       expect(subsAfter).toBe(subsBefore);
     });

@@ -55,7 +55,7 @@ describe("bitflow-oracle-registry dashboard snapshot tests", () => {
     submitPrice(1_000_000, reporter1());
     simnet.mineEmptyBlocks(50);
     const { result } = getSnapshot();
-    const age = (result as any).data?.["price-age-blocks"]?.value;
+    const age = (result as any).value?.["price-age-blocks"]?.value;
     expect(Number(age)).toBeGreaterThanOrEqual(50);
   });
 
@@ -63,7 +63,7 @@ describe("bitflow-oracle-registry dashboard snapshot tests", () => {
     setup();
     simnet.mineEmptyBlocks(20);
     const { result } = getSnapshot();
-    const age = (result as any).data?.["protocol-age-blocks"]?.value;
+    const age = (result as any).value?.["protocol-age-blocks"]?.value;
     expect(Number(age)).toBeGreaterThanOrEqual(20);
   });
 });
