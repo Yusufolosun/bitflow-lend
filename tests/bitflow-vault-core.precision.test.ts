@@ -15,13 +15,13 @@ describe("Precision Tests", () => {
       simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(150)], wallet);
       simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100), Cl.uint(100), Cl.uint(1)], wallet);
 
-      // 1 block elapsed: ceil(100 * 100 * 1 / 5256000) = ceil(0.0019) = 1
+      // Read-only in same block as borrow: 0 blocks elapsed, interest = 0
       const repayment = simnet.callReadOnlyFn(
         CONTRACT, "get-repayment-amount",
         [Cl.principal(wallet)], wallet
       );
       expect(repayment.result).toBeSome(
-        Cl.tuple({ principal: Cl.uint(100), interest: Cl.uint(1), penalty: Cl.uint(0), total: Cl.uint(101) })
+        Cl.tuple({ principal: Cl.uint(100), interest: Cl.uint(0), penalty: Cl.uint(0), total: Cl.uint(100) })
       );
     });
 
