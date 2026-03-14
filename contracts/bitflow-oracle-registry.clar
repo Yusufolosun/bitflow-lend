@@ -196,6 +196,8 @@
     (asserts! (is-eq tx-sender contract-owner) ERR-OWNER-ONLY)
     (asserts! (>= new-min u1) ERR-INVALID-PARAM)
     (asserts! (<= new-min MAX-REPORTERS) ERR-INVALID-PARAM)
+    ;; Prevent setting min above current reporter count (would lock submissions)
+    (asserts! (<= new-min (var-get reporter-count)) ERR-INVALID-PARAM)
     (var-set min-reporters-required new-min)
     (print { event: "min-reporters-updated", value: new-min })
     (ok true)
