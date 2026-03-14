@@ -369,7 +369,10 @@
   )
     ;; Check protocol is not paused
     (asserts! (not (var-get is-paused)) ERR-PROTOCOL-PAUSED)
-    
+
+    ;; Validate non-zero withdrawal
+    (asserts! (> amount u0) ERR-INVALID-AMOUNT)
+
     ;; Verify user has sufficient unlocked balance
     (asserts! (>= available-balance amount) ERR-INSUFFICIENT-BALANCE)
     
