@@ -275,8 +275,8 @@ describe("bitflow-staking-pool boundary tests", () => {
       const { result } = simnet.callReadOnlyFn(
         CONTRACT, "get-estimated-apy-bps", [], deployer()
       );
-      // rate=1000 * 52560 * 10000 / 10_000_000 = 52560000
-      expect(result).toBeUint(52560000);
+      // rate=1000 * 52560 * 10000 / 10_000_000 = 52560
+      expect(result).toBeUint(52560);
     });
   });
 });
