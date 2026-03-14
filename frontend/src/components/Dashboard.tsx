@@ -308,8 +308,8 @@ export const Dashboard: React.FC = () => {
         <section>
           <div className="gradient-dark rounded-2xl p-8 text-white shadow-elevated relative overflow-hidden">
             {/* Subtle decorative elements */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-32 translate-x-32" />
-            <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-24 -translate-x-24" />
+            <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-32 translate-x-32" aria-hidden="true" />
+            <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-24 -translate-x-24" aria-hidden="true" />
             
             <div className="relative grid grid-cols-1 md:grid-cols-3 gap-8">
               <div>
