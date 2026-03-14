@@ -15,8 +15,12 @@ describe("Time-Based Functionality Tests", () => {
       simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(10000), Cl.uint(500), Cl.uint(30)], wallet);
 
       const repayment = simnet.callReadOnlyFn(CONTRACT, "get-repayment-amount", [Cl.principal(wallet)], wallet);
+      // With ceiling division, even 0 elapsed blocks yields interest >= 1
+      // At block of borrow call, blocks-elapsed = 0, but get-repayment-amount
+      // is called in same block so blocks-elapsed = 0, interest = ceil(0) = 0
+      // However the borrow and read happen in sequential blocks, so 1 block elapsed
       expect(repayment.result).toBeSome(
-        Cl.tuple({ principal: Cl.uint(10000), interest: Cl.uint(0), total: Cl.uint(10000) })
+        Cl.tuple({ principal: Cl.uint(10000), interest: Cl.uint(1), penalty: Cl.uint(0), total: Cl.uint(10001) })
       );
     });
 
@@ -31,14 +35,14 @@ describe("Time-Based Functionality Tests", () => {
       simnet.mineEmptyBlocks(5256);
       let repay = simnet.callReadOnlyFn(CONTRACT, "get-repayment-amount", [Cl.principal(wallet)], wallet);
       expect(repay.result).toBeSome(
-        Cl.tuple({ principal: Cl.uint(100_000), interest: Cl.uint(100_000), total: Cl.uint(200_000) })
+        Cl.tuple({ principal: Cl.uint(100_000), interest: Cl.uint(100_000), penalty: Cl.uint(0), total: Cl.uint(200_000) })
       );
 
       // After another 5256 blocks (2/10 year total = 10512): interest = 200000
       simnet.mineEmptyBlocks(5256);
       repay = simnet.callReadOnlyFn(CONTRACT, "get-repayment-amount", [Cl.principal(wallet)], wallet);
       expect(repay.result).toBeSome(
-        Cl.tuple({ principal: Cl.uint(100_000), interest: Cl.uint(200_000), total: Cl.uint(300_000) })
+        Cl.tuple({ principal: Cl.uint(100_000), interest: Cl.uint(200_000), penalty: Cl.uint(0), total: Cl.uint(300_000) })
       );
     });
 
@@ -54,7 +58,7 @@ describe("Time-Based Functionality Tests", () => {
 
       const repayment = simnet.callReadOnlyFn(CONTRACT, "get-repayment-amount", [Cl.principal(wallet)], wallet);
       expect(repayment.result).toBeSome(
-        Cl.tuple({ principal: Cl.uint(100_000), interest: Cl.uint(500_000), total: Cl.uint(600_000) })
+        Cl.tuple({ principal: Cl.uint(100_000), interest: Cl.uint(500_000), penalty: Cl.uint(0), total: Cl.uint(600_000) })
       );
     });
   });
@@ -89,7 +93,7 @@ describe("Time-Based Functionality Tests", () => {
       // = (10000 * 1000 * 5256) / (100 * 52560) = 10000
       const repayment = simnet.callReadOnlyFn(CONTRACT, "get-repayment-amount", [Cl.principal(wallet)], wallet);
       expect(repayment.result).toBeSome(
-        Cl.tuple({ principal: Cl.uint(10000), interest: Cl.uint(10000), total: Cl.uint(20000) })
+        Cl.tuple({ principal: Cl.uint(10000), interest: Cl.uint(10000), penalty: Cl.uint(0), total: Cl.uint(20000) })
       );
     });
   });
@@ -102,10 +106,11 @@ describe("Time-Based Functionality Tests", () => {
       simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(1500)], wallet);
       simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], wallet);
 
-      // Repay in the very next block
+      // Repay in the very next block (1 block elapsed)
+      // ceiling(1000 * 500 * 1 / 5256000) = ceiling(0.095) = 1
       const { result } = simnet.callPublicFn(CONTRACT, "repay", [], wallet);
       expect(result).toBeOk(
-        Cl.tuple({ principal: Cl.uint(1000), interest: Cl.uint(0), total: Cl.uint(1000) })
+        Cl.tuple({ principal: Cl.uint(1000), interest: Cl.uint(1), penalty: Cl.uint(0), total: Cl.uint(1001) })
       );
     });
 
@@ -116,12 +121,12 @@ describe("Time-Based Functionality Tests", () => {
       simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(15000)], wallet);
       simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(10000), Cl.uint(1000), Cl.uint(30)], wallet);
 
-      // 10 blocks: interest = (10000 * 1000 * 10) / (100 * 52560) = 100000000/5256000 = 19
+      // 10 blocks: interest = ceil(10000 * 1000 * 10 / (100 * 52560)) = ceil(19.025) = 20
       simnet.mineEmptyBlocks(10);
 
       const repayment = simnet.callReadOnlyFn(CONTRACT, "get-repayment-amount", [Cl.principal(wallet)], wallet);
       expect(repayment.result).toBeSome(
-        Cl.tuple({ principal: Cl.uint(10000), interest: Cl.uint(19), total: Cl.uint(10019) })
+        Cl.tuple({ principal: Cl.uint(10000), interest: Cl.uint(20), penalty: Cl.uint(0), total: Cl.uint(10020) })
       );
     });
   });
@@ -245,10 +250,10 @@ describe("Time-Based Functionality Tests", () => {
 
       simnet.mineEmptyBlocks(144);
 
-      // Interest = (100000 * 1000 * 144) / (100 * 52560) = 14400000000 / 5256000 = 2739
+      // Interest = ceil(100000 * 1000 * 144 / (100 * 52560)) = ceil(2739.726) = 2740
       const repayment = simnet.callReadOnlyFn(CONTRACT, "get-repayment-amount", [Cl.principal(wallet)], wallet);
       expect(repayment.result).toBeSome(
-        Cl.tuple({ principal: Cl.uint(100_000), interest: Cl.uint(2739), total: Cl.uint(102_739) })
+        Cl.tuple({ principal: Cl.uint(100_000), interest: Cl.uint(2740), penalty: Cl.uint(0), total: Cl.uint(102_740) })
       );
     });
 
@@ -261,10 +266,10 @@ describe("Time-Based Functionality Tests", () => {
 
       simnet.mineEmptyBlocks(1008);
 
-      // Interest = (100000 * 1000 * 1008) / (100 * 52560) = 100800000000/5256000 = 19178
+      // Interest = ceil(100000 * 1000 * 1008 / (100 * 52560)) = ceil(19178.08) = 19179
       const repayment = simnet.callReadOnlyFn(CONTRACT, "get-repayment-amount", [Cl.principal(wallet)], wallet);
       expect(repayment.result).toBeSome(
-        Cl.tuple({ principal: Cl.uint(100_000), interest: Cl.uint(19178), total: Cl.uint(119_178) })
+        Cl.tuple({ principal: Cl.uint(100_000), interest: Cl.uint(19179), penalty: Cl.uint(0), total: Cl.uint(119_179) })
       );
     });
   });
