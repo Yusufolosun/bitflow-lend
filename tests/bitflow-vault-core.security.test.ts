@@ -101,6 +101,7 @@ describe("Security Tests", () => {
         Cl.tuple({
           principal: Cl.uint(10_000_000),
           interest: Cl.uint(1_000_000_000),
+          penalty: Cl.uint(0),
           total: Cl.uint(1_010_000_000),
         })
       );
@@ -268,13 +269,13 @@ describe("Security Tests", () => {
       const wallet = accounts.get("wallet_1")!;
 
       simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(1500)], wallet);
-      // Small borrow that rounds interest to 0
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100), Cl.uint(1), Cl.uint(1)], wallet);
+      // Small borrow with minimum valid rate (50 bps)
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100), Cl.uint(50), Cl.uint(1)], wallet);
 
-      // Should still be able to repay even with 0 interest
+      // Should still be able to repay — ceiling division ensures interest >= 1
       const repay = simnet.callPublicFn(CONTRACT, "repay", [], wallet);
       expect(repay.result).toBeOk(
-        Cl.tuple({ principal: Cl.uint(100), interest: Cl.uint(0), total: Cl.uint(100) })
+        Cl.tuple({ principal: Cl.uint(100), interest: Cl.uint(1), penalty: Cl.uint(0), total: Cl.uint(101) })
       );
     });
 
