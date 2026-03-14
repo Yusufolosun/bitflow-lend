@@ -685,6 +685,7 @@
     (asserts! (is-eq (var-get protocol-start-block) u0) err-owner-only)
     (var-set protocol-start-block block-height)
     (var-set last-activity-block block-height)
+    (print { event: "protocol-initialized", block: block-height })
     (ok true)
   )
 )
