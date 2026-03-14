@@ -261,8 +261,8 @@ describe("bitflow-staking-pool", () => {
       const r1 = getPendingRewards(wallet1());
       const r2 = getPendingRewards(wallet2());
 
-      // Equal stakes => equal rewards
-      expect(r1.result).toBeUint(5000);
+      // wallet1 earns 1 extra block solo before wallet2 joins
+      expect(r1.result).toBeUint(6000);
       expect(r2.result).toBeUint(5000);
     });
   });
