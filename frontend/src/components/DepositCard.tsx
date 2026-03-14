@@ -101,7 +101,7 @@ export const DepositCard: React.FC = () => {
       {/* Header */}
       <div className="flex items-center gap-3">
         <div className="p-3 bg-accent-50 rounded-xl">
-          <ArrowDownCircle className="text-accent-600" size={22} />
+          <ArrowDownCircle className="text-accent-600" size={22} aria-hidden="true" />
         </div>
         <div>
           <h3 className="text-lg font-bold text-gray-900 tracking-tight">Deposit STX</h3>
