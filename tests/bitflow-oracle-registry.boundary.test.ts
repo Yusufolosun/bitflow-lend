@@ -145,6 +145,14 @@ describe("bitflow-oracle-registry boundary tests", () => {
       );
       expect(result).toBeOk(Cl.bool(true));
 
+      // Add 9 more reporters (total 10) so set-min-reporters(10) is valid
+      const accounts = simnet.getAccounts();
+      for (let i = 2; i <= 8; i++) {
+        addReporter(accounts.get(`wallet_${i}`)!);
+      }
+      addReporter(deployer());
+      addReporter(accounts.get("faucet")!);
+
       ({ result } = simnet.callPublicFn(
         CONTRACT, "set-min-reporters", [Cl.uint(10)], deployer()
       ));
