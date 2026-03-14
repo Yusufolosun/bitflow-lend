@@ -764,14 +764,15 @@ Current test suite metrics:
 
 | Category | Test Files | Description |
 |----------|-----------|-------------|
-| V1 Vault Core | 10 files | Comprehensive, boundary, state, liquidation, security, time, precision, gas, errors, concurrent |
-| V2 Vault Core | 3 files | Core, boundary, liquidation security |
-| Staking Pool | 3 files | Core, boundary, state management |
-| Oracle Registry | 3 files | Core, boundary, state management |
-| Frontend Components | 13 files | All main UI components |
-| Frontend Hooks | 3 files | useToast, useSmartPolling, useStxPrice |
+| V1 Vault Core | 13 files | Comprehensive, boundary, state, liquidation, security, time, precision, gas, errors, concurrent, hardening, migration, position |
+| V2 Vault Core | 9 files | Core, boundary, liquidation, toggles, interest, repay, snapshot, migration, multi-user, admin |
+| Staking Pool | 8 files | Core, boundary, state, rewards, APY, cooldown, emergency, snapshot, stake-bounds |
+| Oracle Registry | 6 files | Core, boundary, state, deviation, admin, snapshot |
+| Frontend Components | 14 files | All main UI components + ErrorBoundary |
+| Frontend Hooks | 4 files | useToast, useSmartPolling, useStxPrice, useProtocolStats |
 | Frontend Utils | 2 files | calculations, formatters |
-| **Total** | **37 files** | |
+| Frontend Config | 1 file | contracts config |
+| **Total** | **57+ files** | |
 
 ---
 
@@ -792,8 +793,8 @@ Current test suite metrics:
 
 ---
 
-**Document Version:** 2.0.0
-**Last Updated:** March 13, 2026
+**Document Version:** 2.1.0
+**Last Updated:** March 14, 2026
 
 For testing support:
 - **GitHub Issues:** [Report test issues](https://github.com/bitflow/vault-core/issues)
