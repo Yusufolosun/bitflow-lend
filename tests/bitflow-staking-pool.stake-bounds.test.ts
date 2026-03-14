@@ -28,7 +28,7 @@ describe("bitflow-staking-pool stake boundary tests", () => {
     it("rejects zero stake", () => {
       setup();
       const { result } = stake(0, wallet1());
-      expect(result).toBeErr(Cl.uint(201)); // ERR-ZERO-AMOUNT
+      expect(result).toBeErr(Cl.uint(208)); // ERR-ZERO-AMOUNT
     });
   });
 
@@ -37,7 +37,7 @@ describe("bitflow-staking-pool stake boundary tests", () => {
     it("rejects below MIN-STAKE-AMOUNT (1 STX = 1_000_000 microSTX)", () => {
       setup();
       const { result } = stake(999_999, wallet1());
-      expect(result).toBeErr(Cl.uint(206)); // ERR-INVALID-AMOUNT
+      expect(result).toBeErr(Cl.uint(202)); // ERR-INVALID-AMOUNT
     });
 
     it("accepts exactly MIN-STAKE-AMOUNT", () => {
