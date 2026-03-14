@@ -7,7 +7,7 @@ describe("Precision Tests", () => {
   // ===== TASK 1.4: Calculation Precision Tests =====
 
   describe("interest calculation precision", () => {
-    it("calculates zero interest for very small principal over short time", () => {
+    it("calculates ceiling-minimum interest for very small principal over short time", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
@@ -15,13 +15,13 @@ describe("Precision Tests", () => {
       simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(150)], wallet);
       simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100), Cl.uint(100), Cl.uint(1)], wallet);
 
-      // 1 block elapsed: interest = (100 * 100 * 1) / (100 * 52560) = 0 (integer)
+      // 1 block elapsed: ceil(100 * 100 * 1 / 5256000) = ceil(0.0019) = 1
       const repayment = simnet.callReadOnlyFn(
         CONTRACT, "get-repayment-amount",
         [Cl.principal(wallet)], wallet
       );
       expect(repayment.result).toBeSome(
-        Cl.tuple({ principal: Cl.uint(100), interest: Cl.uint(0), total: Cl.uint(100) })
+        Cl.tuple({ principal: Cl.uint(100), interest: Cl.uint(1), penalty: Cl.uint(0), total: Cl.uint(101) })
       );
     });
 
@@ -49,6 +49,7 @@ describe("Precision Tests", () => {
         Cl.tuple({
           principal: Cl.uint(borrowAmount),
           interest: Cl.uint(50_000_000),
+          penalty: Cl.uint(0),
           total: Cl.uint(60_000_000),
         })
       );
@@ -73,6 +74,7 @@ describe("Precision Tests", () => {
         Cl.tuple({
           principal: Cl.uint(1_000_000),
           interest: Cl.uint(1_000_000),
+          penalty: Cl.uint(0),
           total: Cl.uint(2_000_000),
         })
       );
@@ -83,9 +85,10 @@ describe("Precision Tests", () => {
       const wallet = accounts.get("wallet_1")!;
 
       simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(150_000)], wallet);
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100_000), Cl.uint(1), Cl.uint(365)], wallet);
+      // Rate 1 is below min-interest-rate (50), use rate 50 instead
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100_000), Cl.uint(50), Cl.uint(365)], wallet);
 
-      // Mine full year: interest = (100_000 * 1 * 52560) / (100 * 52560) = 1000
+      // Mine full year: interest = (100_000 * 50 * 52560) / (100 * 52560) = 50000
       simnet.mineEmptyBlocks(52560);
 
       const repayment = simnet.callReadOnlyFn(
@@ -95,8 +98,9 @@ describe("Precision Tests", () => {
       expect(repayment.result).toBeSome(
         Cl.tuple({
           principal: Cl.uint(100_000),
-          interest: Cl.uint(1000),
-          total: Cl.uint(101_000),
+          interest: Cl.uint(50_000),
+          penalty: Cl.uint(0),
+          total: Cl.uint(150_000),
         })
       );
     });
@@ -219,15 +223,14 @@ describe("Precision Tests", () => {
   // ===== TASK 1.5: Rounding Behavior Tests =====
 
   describe("interest rounding behavior", () => {
-    it("interest rounds down (floor) for small calculations", () => {
+    it("interest rounds up (ceiling) for small calculations", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
       simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(1500)], wallet);
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(5), Cl.uint(30)], wallet);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(50), Cl.uint(30)], wallet);
 
-      // After 10 blocks: interest = (1000 * 5 * 10) / (100 * 52560)
-      // = 50000 / 5256000 = 0 (integer floor)
+      // After 10 blocks: ceil(1000 * 50 * 10 / 5256000) = ceil(0.095) = 1
       simnet.mineEmptyBlocks(10);
 
       const repayment = simnet.callReadOnlyFn(
@@ -235,20 +238,18 @@ describe("Precision Tests", () => {
         [Cl.principal(wallet)], wallet
       );
       expect(repayment.result).toBeSome(
-        Cl.tuple({ principal: Cl.uint(1000), interest: Cl.uint(0), total: Cl.uint(1000) })
+        Cl.tuple({ principal: Cl.uint(1000), interest: Cl.uint(1), penalty: Cl.uint(0), total: Cl.uint(1001) })
       );
     });
 
-    it("interest rounds down just below threshold", () => {
+    it("interest rounds up just below exact division", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
       simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(1500)], wallet);
       simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(100), Cl.uint(30)], wallet);
 
-      // Find threshold where interest flips from 0 to 1
-      // Need: (1000 * 100 * blocks) / (100 * 52560) >= 1
-      // => blocks >= 52560 / 1000 = 52.56, so 52 blocks => 0, 53 blocks => 1
+      // Ceiling division: ceil(1000 * 100 * 52 / 5256000) = ceil(0.989) = 1
       simnet.mineEmptyBlocks(52);
 
       const repaymentLow = simnet.callReadOnlyFn(
@@ -256,18 +257,18 @@ describe("Precision Tests", () => {
         [Cl.principal(wallet)], wallet
       );
       expect(repaymentLow.result).toBeSome(
-        Cl.tuple({ principal: Cl.uint(1000), interest: Cl.uint(0), total: Cl.uint(1000) })
+        Cl.tuple({ principal: Cl.uint(1000), interest: Cl.uint(1), penalty: Cl.uint(0), total: Cl.uint(1001) })
       );
     });
 
-    it("interest flips to 1 at exact threshold", () => {
+    it("interest increases at exact division boundary", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
       simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(1500)], wallet);
       simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(100), Cl.uint(30)], wallet);
 
-      // At 53 blocks: interest = (1000 * 100 * 53) / (100 * 52560) = 5300000 / 5256000 = 1
+      // At 53 blocks: ceil(1000 * 100 * 53 / 5256000) = ceil(1.008) = 2
       simnet.mineEmptyBlocks(53);
 
       const repaymentHigh = simnet.callReadOnlyFn(
@@ -275,7 +276,7 @@ describe("Precision Tests", () => {
         [Cl.principal(wallet)], wallet
       );
       expect(repaymentHigh.result).toBeSome(
-        Cl.tuple({ principal: Cl.uint(1000), interest: Cl.uint(1), total: Cl.uint(1001) })
+        Cl.tuple({ principal: Cl.uint(1000), interest: Cl.uint(2), penalty: Cl.uint(0), total: Cl.uint(1002) })
       );
     });
 
