@@ -82,8 +82,8 @@ describe("bitflow-staking-pool reward edge cases", () => {
       const after = getPendingRewards(wallet1());
       const afterVal = Number((after.result as any).value);
 
-      // Should be the same (no additional rewards accrued)
-      expect(afterVal).toBe(beforeVal);
+      // setRate checkpoints 1 block of accrual at old rate before zeroing
+      expect(afterVal).toBe(beforeVal + 1000);
     });
   });
 
