@@ -22,8 +22,9 @@ export const NetworkIndicator: React.FC = () => {
         className={`inline-block w-2 h-2 rounded-full ${
           isMainnet ? 'bg-green-500 animate-pulse' : 'bg-yellow-500 animate-pulse'
         }`}
+        aria-hidden="true"
       />
-      <Wifi size={12} />
+      <Wifi size={12} aria-hidden="true" />
       <span>{isMainnet ? 'Mainnet' : 'Testnet'}</span>
     </div>
   );
