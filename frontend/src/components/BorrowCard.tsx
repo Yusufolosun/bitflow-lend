@@ -32,7 +32,7 @@ export const BorrowCard: React.FC = () => {
     if (deposit) setUserDeposit(deposit.amountSTX);
     const loan = await vault.getUserLoan();
     setActiveLoan(loan);
-  }, [address, vault]);
+  }, [address, vault.getUserDeposit, vault.getUserLoan]);
 
   useSmartPolling(fetchData, 60_000, !!address);
 
