@@ -154,32 +154,34 @@ export function calculateAPY(ratePercent: number, compoundFrequency: number = 36
 
 /**
  * Calculate liquidation bonus amount
- * @param collateralSTX - Collateral amount in STX
+ * The bonus is 5% of the loan amount, paid by the liquidator on top of the debt
+ * @param loanAmountSTX - Loan principal in STX
  * @param bonusPercent - Liquidation bonus percentage (default: from protocol constants)
  * @returns Bonus amount in STX
  */
 export function calculateLiquidationBonus(
-  collateralSTX: number,
+  loanAmountSTX: number,
   bonusPercent: number = PROTOCOL_CONSTANTS.LIQUIDATION_BONUS
 ): number {
-  return collateralSTX * (bonusPercent / 100);
+  return loanAmountSTX * (bonusPercent / 100);
 }
 
 /**
  * Calculate profit from liquidation
+ * Liquidator pays (debt + 5% bonus) and receives the borrower's full collateral
  * @param collateralSTX - Collateral seized in STX
- * @param debtSTX - Debt to be repaid in STX
+ * @param debtSTX - Debt principal in STX
  * @param bonusPercent - Liquidation bonus percentage
- * @returns Profit in STX
+ * @returns Profit in STX (collateral received - total paid)
  */
 export function calculateLiquidationProfit(
   collateralSTX: number,
   debtSTX: number,
   bonusPercent: number = PROTOCOL_CONSTANTS.LIQUIDATION_BONUS
 ): number {
-  const bonus = calculateLiquidationBonus(collateralSTX, bonusPercent);
-  const totalReceived = collateralSTX + bonus;
-  return totalReceived - debtSTX;
+  const bonus = calculateLiquidationBonus(debtSTX, bonusPercent);
+  const totalPaid = debtSTX + bonus;
+  return collateralSTX - totalPaid;
 }
 
 /**
