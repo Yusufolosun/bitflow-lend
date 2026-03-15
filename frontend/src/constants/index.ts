@@ -49,7 +49,7 @@ export const STACKS_API_URL = import.meta.env.VITE_STACKS_API_URL || API_URLS[CU
 // Additional protocol-level settings that don't exist on-chain:
 export const PROTOCOL_PARAMS = {
   INTEREST_RATE_BP: 10, // 0.1% per 52,560 blocks (~1 year)
-  MIN_BORROW_AMOUNT: 100, // minimum borrow in STX
+  MIN_BORROW_AMOUNT: 0.1, // minimum borrow in STX (matches contract MIN-BORROW-AMOUNT u100000)
   MAX_LTV: 66.67, // 1/1.5 = ~66.67%
   PROTOCOL_FEE_BP: 25, // 0.25%
 } as const;
