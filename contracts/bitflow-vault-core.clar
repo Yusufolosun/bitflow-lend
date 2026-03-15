@@ -622,7 +622,9 @@
       liquidation-volume: (var-get total-liquidation-volume),
       stx-price: (var-get admin-stx-price),
       is-paused: (var-get is-paused),
-      protocol-age-blocks: (- block-height (var-get protocol-start-block))
+      protocol-age-blocks: (if (> (var-get protocol-start-block) u0)
+        (- block-height (var-get protocol-start-block))
+        u0)
     }
   )
 )
