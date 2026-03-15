@@ -57,6 +57,7 @@
 
 ;; Time-based metrics
 (define-data-var last-activity-block uint u0)
+(define-data-var price-update-block uint u0)
 (define-data-var protocol-start-block uint u0)
 
 ;; Contract owner for initialization
@@ -219,8 +220,8 @@
 
 ;; Get the number of blocks since the price was last updated
 (define-read-only (get-price-staleness-blocks)
-  (if (> (var-get last-activity-block) u0)
-    (- block-height (var-get last-activity-block))
+  (if (> (var-get price-update-block) u0)
+    (- block-height (var-get price-update-block))
     u0
   )
 )
@@ -254,6 +255,7 @@
     (asserts! (> price u0) ERR-INVALID-AMOUNT)
     (asserts! (< price u10000000) ERR-INVALID-PARAM) ;; sanity cap ~$100 USD
     (var-set admin-stx-price price)
+    (var-set price-update-block block-height)
     (var-set last-activity-block block-height)
     (print { event: "set-stx-price", price: price })
     (ok true)
