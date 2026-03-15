@@ -203,15 +203,17 @@ describe('Calculations Utility', () => {
 
   describe('calculateLiquidationProfit', () => {
     it('calculates profit from liquidation', () => {
-      // 100 collateral + 5% bonus (5) - 80 debt = 25 profit
+      // 100 collateral received, paid (80 debt + 4 bonus) = 16 profit
       const profit = calculateLiquidationProfit(100, 80);
-      expect(profit).toBe(25);
+      expect(profit).toBe(16);
     });
 
     it('handles break-even scenario', () => {
-      // collateral 100 + 5 bonus - 105 debt = 0
-      const profit = calculateLiquidationProfit(100, 105);
-      expect(profit).toBe(0);
+      // collateral 100 - (debt 95.238 + bonus 4.762) = 0
+      // Exact: debt * 1.05 = 100, so debt = 100/1.05 ≈ 95.238
+      const debt = 100 / 1.05;
+      const profit = calculateLiquidationProfit(100, debt);
+      expect(profit).toBeCloseTo(0, 5);
     });
   });
 
