@@ -35,6 +35,7 @@
 (define-constant ERR-HEALTH-FACTOR-LOW (err u118))
 (define-constant ERR-ZERO-AMOUNT (err u119))
 (define-constant ERR-INVALID-PARAM (err u120))
+(define-constant ERR-INSUFFICIENT-LIQUIDITY (err u121))
 
 ;; ===== TUNABLE PROTOCOL PARAMETERS =====
 (define-data-var min-collateral-ratio uint u150)
@@ -557,6 +558,9 @@
 
       ;; One loan per user
       (asserts! (is-none (map-get? user-loans recipient)) ERR-ALREADY-HAS-LOAN)
+
+      ;; Verify contract has sufficient STX liquidity to fund the loan
+      (asserts! (>= (stx-get-balance (as-contract tx-sender)) amount) ERR-INSUFFICIENT-LIQUIDITY)
 
       ;; Transfer borrowed STX from contract to user
       (try! (as-contract (stx-transfer? amount tx-sender recipient)))
