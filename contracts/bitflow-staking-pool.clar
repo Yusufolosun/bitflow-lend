@@ -387,6 +387,10 @@
       )
         (asserts! (> reward-amount u0) ERR-NO-REWARDS)
 
+        ;; Verify contract has sufficient STX to pay rewards
+        (asserts! (>= (stx-get-balance (as-contract tx-sender)) reward-amount)
+          (err u210))
+
         ;; Reset pending rewards
         (map-set staker-rewards recipient u0)
 
