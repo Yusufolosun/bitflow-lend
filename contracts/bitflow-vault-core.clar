@@ -398,7 +398,7 @@
     (var-set last-activity-block block-height)
     
     ;; Emit event
-    (print { event: "withdraw", user: tx-sender, amount: amount })
+    (print { event: "withdraw", user: tx-sender, amount: amount, remaining-balance: (- user-balance amount) })
     
     (ok true)
   )
