@@ -560,8 +560,10 @@
     ;; Set borrower's deposit to 0
     (map-set user-deposits borrower u0)
     
-    ;; Update total deposits
-    (var-set total-deposits (- (var-get total-deposits) borrower-deposit))
+    ;; Update total deposits (guarded against underflow)
+    (var-set total-deposits (if (>= (var-get total-deposits) borrower-deposit)
+      (- (var-get total-deposits) borrower-deposit)
+      u0))
     
     ;; Increment liquidation counter
     (var-set total-liquidations (+ (var-get total-liquidations) u1))
