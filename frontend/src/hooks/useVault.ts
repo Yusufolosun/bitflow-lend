@@ -480,9 +480,21 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
         if (loanResult.type === ClarityType.OptionalSome) {
           const loanData = cvToValue(loanResult.value);
           const amountSTX = microStxToStx(BigInt(loanData.amount));
-          const collateralAmountSTX = microStxToStx((BigInt(loanData.amount) * BigInt(PROTOCOL_CONSTANTS.MIN_COLLATERAL_RATIO)) / BigInt(100));
 
-          collateralValueUSD = collateralAmountSTX * stxPriceUSD;
+          // Fetch actual deposit to use as collateral value, not the required collateral
+          const depositResult = await callReadOnlyFunction({
+            network,
+            contractAddress,
+            contractName,
+            functionName: 'get-user-deposit',
+            functionArgs: [principalCV(userAddress)],
+            senderAddress: userAddress,
+          });
+          const depositSTX = depositResult.type === ClarityType.UInt
+            ? microStxToStx(depositResult.value)
+            : 0;
+
+          collateralValueUSD = depositSTX * stxPriceUSD;
           debtValueUSD = amountSTX * stxPriceUSD;
         }
 
