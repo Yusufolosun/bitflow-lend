@@ -13,14 +13,14 @@ describe("oracle deviation bounds manipulation", () => {
     simnet.callPublicFn(CONTRACT, "add-reporter", [Cl.principal(wallet1())], deployer());
   };
 
-  it("rejects price beyond 20% default deviation", () => {
+  it("rejects price beyond 20% default deviation with err u305", () => {
     setup();
     simnet.callPublicFn(CONTRACT, "submit-price", [Cl.uint(1000000)], wallet1());
     // 25% up = 1250000
     const { result } = simnet.callPublicFn(
       CONTRACT, "submit-price", [Cl.uint(1250000)], wallet1()
     );
-    expect(result).toBeOk(Cl.bool(false));
+    expect(result).toBeErr(Cl.uint(305));
   });
 
   it("accepts price within 20% deviation", () => {
@@ -33,7 +33,7 @@ describe("oracle deviation bounds manipulation", () => {
     expect(result).toBeOk(Cl.bool(true));
   });
 
-  it("tightened deviation rejects previously valid change", () => {
+  it("tightened deviation rejects previously valid change with err u305", () => {
     setup();
     simnet.callPublicFn(CONTRACT, "submit-price", [Cl.uint(1000000)], wallet1());
     // Tighten to 5%
@@ -44,7 +44,7 @@ describe("oracle deviation bounds manipulation", () => {
     const { result } = simnet.callPublicFn(
       CONTRACT, "submit-price", [Cl.uint(1100000)], wallet1()
     );
-    expect(result).toBeOk(Cl.bool(false));
+    expect(result).toBeErr(Cl.uint(305));
   });
 
   it("widened deviation accepts previously invalid change", () => {

@@ -30,8 +30,8 @@ describe("Gas Consumption and Limit Tests", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(3000)], wallet);
-      const { result, events } = simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(2000), Cl.uint(500), Cl.uint(30)], wallet);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(300000)], wallet);
+      const { result, events } = simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(200000), Cl.uint(500), Cl.uint(30)], wallet);
       expect(result).toBeOk(Cl.bool(true));
       expect(events.length).toBeGreaterThanOrEqual(1);
     });
@@ -40,8 +40,8 @@ describe("Gas Consumption and Limit Tests", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(3000)], wallet);
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(2000), Cl.uint(500), Cl.uint(30)], wallet);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(300000)], wallet);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(200000), Cl.uint(500), Cl.uint(30)], wallet);
       simnet.mineEmptyBlocks(100);
 
       const { result, events } = simnet.callPublicFn(CONTRACT, "repay", [], wallet);
@@ -55,8 +55,8 @@ describe("Gas Consumption and Limit Tests", () => {
       const borrower = accounts.get("wallet_1")!;
       const liquidator = accounts.get("wallet_2")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(1500)], borrower);
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], borrower);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(150000)], borrower);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100000), Cl.uint(500), Cl.uint(30)], borrower);
 
       simnet.callPublicFn(CONTRACT, "set-stx-price", [Cl.uint(70)], deployer);
       const { result, events } = simnet.callPublicFn(CONTRACT, "liquidate", [Cl.principal(borrower)], liquidator);
@@ -121,8 +121,8 @@ describe("Gas Consumption and Limit Tests", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(3000)], wallet);
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(2000), Cl.uint(500), Cl.uint(30)], wallet);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(300000)], wallet);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(200000), Cl.uint(500), Cl.uint(30)], wallet);
 
       const { result } = simnet.callReadOnlyFn(CONTRACT, "calculate-health-factor", [Cl.principal(wallet), Cl.uint(100)], wallet);
       expect(result).toBeSome(Cl.uint(150));
@@ -132,14 +132,14 @@ describe("Gas Consumption and Limit Tests", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(3000)], wallet);
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(2000), Cl.uint(500), Cl.uint(30)], wallet);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(300000)], wallet);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(200000), Cl.uint(500), Cl.uint(30)], wallet);
 
       const { result } = simnet.callReadOnlyFn(CONTRACT, "get-user-position-summary", [Cl.principal(wallet), Cl.uint(100)], wallet);
       expect(result).toBeTuple({
-        "deposit-amount": Cl.uint(3000),
+        "deposit-amount": Cl.uint(300000),
         "has-loan": Cl.bool(true),
-        "loan-amount": Cl.uint(2000),
+        "loan-amount": Cl.uint(200000),
         "loan-interest-rate": Cl.uint(500),
         "loan-term-end": expect.any(Object),
         "health-factor": expect.any(Object),
@@ -168,10 +168,10 @@ describe("Gas Consumption and Limit Tests", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(15000)], wallet);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(1500000)], wallet);
 
       for (let i = 0; i < 3; i++) {
-        const borrow = simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], wallet);
+        const borrow = simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100000), Cl.uint(500), Cl.uint(30)], wallet);
         expect(borrow.result).toBeOk(Cl.bool(true));
 
         const repay = simnet.callPublicFn(CONTRACT, "repay", [], wallet);

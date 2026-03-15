@@ -38,10 +38,10 @@ describe("Comprehensive Error Code Coverage", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(6000)], wallet);
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], wallet);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(600000)], wallet);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100000), Cl.uint(500), Cl.uint(30)], wallet);
 
-      const { result } = simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(500), Cl.uint(500), Cl.uint(30)], wallet);
+      const { result } = simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100000), Cl.uint(500), Cl.uint(30)], wallet);
       expect(result).toBeErr(Cl.uint(103));
     });
   });
@@ -51,10 +51,10 @@ describe("Comprehensive Error Code Coverage", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(1000)], wallet);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(100000)], wallet);
 
-      // Need 1500 collateral for 1000 borrow, only have 1000
-      const { result } = simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], wallet);
+      // Need 150000 collateral for 100000 borrow, only have 100000
+      const { result } = simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100000), Cl.uint(500), Cl.uint(30)], wallet);
       expect(result).toBeErr(Cl.uint(105));
     });
 
@@ -62,7 +62,7 @@ describe("Comprehensive Error Code Coverage", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
-      const { result } = simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], wallet);
+      const { result } = simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100000), Cl.uint(500), Cl.uint(30)], wallet);
       expect(result).toBeErr(Cl.uint(105));
     });
   });
@@ -95,8 +95,8 @@ describe("Comprehensive Error Code Coverage", () => {
       const borrower = accounts.get("wallet_1")!;
       const liquidator = accounts.get("wallet_2")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(3000)], borrower);
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], borrower);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(300000)], borrower);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100000), Cl.uint(500), Cl.uint(30)], borrower);
 
       simnet.callPublicFn(CONTRACT, "set-stx-price", [Cl.uint(100)], deployer);
       const { result } = simnet.callPublicFn(CONTRACT, "liquidate", [Cl.principal(borrower)], liquidator);
@@ -110,8 +110,8 @@ describe("Comprehensive Error Code Coverage", () => {
       const deployer = accounts.get("deployer")!;
       const wallet = accounts.get("wallet_1")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(1500)], wallet);
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], wallet);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(150000)], wallet);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100000), Cl.uint(500), Cl.uint(30)], wallet);
 
       simnet.callPublicFn(CONTRACT, "set-stx-price", [Cl.uint(70)], deployer);
       const { result } = simnet.callPublicFn(CONTRACT, "liquidate", [Cl.principal(wallet)], wallet);
@@ -134,9 +134,9 @@ describe("Comprehensive Error Code Coverage", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(15000)], wallet);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(150000)], wallet);
 
-      const { result } = simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(10000), Cl.uint(10001), Cl.uint(30)], wallet);
+      const { result } = simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100000), Cl.uint(10001), Cl.uint(30)], wallet);
       expect(result).toBeErr(Cl.uint(110));
     });
   });
@@ -146,9 +146,9 @@ describe("Comprehensive Error Code Coverage", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(15000)], wallet);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(150000)], wallet);
 
-      const { result } = simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(10000), Cl.uint(500), Cl.uint(0)], wallet);
+      const { result } = simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100000), Cl.uint(500), Cl.uint(0)], wallet);
       expect(result).toBeErr(Cl.uint(111));
     });
 
@@ -156,9 +156,9 @@ describe("Comprehensive Error Code Coverage", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(15000)], wallet);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(150000)], wallet);
 
-      const { result } = simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(10000), Cl.uint(500), Cl.uint(366)], wallet);
+      const { result } = simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100000), Cl.uint(500), Cl.uint(366)], wallet);
       expect(result).toBeErr(Cl.uint(111));
     });
   });
@@ -172,7 +172,7 @@ describe("Comprehensive Error Code Coverage", () => {
       // Contract checks: interest-rate first, then term, then existing loan, then collateral
       const { result } = simnet.callPublicFn(
         CONTRACT, "borrow",
-        [Cl.uint(1000), Cl.uint(10001), Cl.uint(0)],
+        [Cl.uint(100000), Cl.uint(10001), Cl.uint(0)],
         wallet
       );
       // Interest rate checked first
@@ -186,7 +186,7 @@ describe("Comprehensive Error Code Coverage", () => {
       // Valid rate but invalid term + no collateral
       const { result } = simnet.callPublicFn(
         CONTRACT, "borrow",
-        [Cl.uint(1000), Cl.uint(500), Cl.uint(0)],
+        [Cl.uint(100000), Cl.uint(500), Cl.uint(0)],
         wallet
       );
       expect(result).toBeErr(Cl.uint(111));
@@ -196,13 +196,13 @@ describe("Comprehensive Error Code Coverage", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(3000)], wallet);
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], wallet);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(300000)], wallet);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100000), Cl.uint(500), Cl.uint(30)], wallet);
 
       // Valid params but already has loan
       const { result } = simnet.callPublicFn(
         CONTRACT, "borrow",
-        [Cl.uint(500), Cl.uint(500), Cl.uint(30)],
+        [Cl.uint(100000), Cl.uint(500), Cl.uint(30)],
         wallet
       );
       expect(result).toBeErr(Cl.uint(103));

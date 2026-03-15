@@ -37,11 +37,11 @@ describe("Boundary Value Tests", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
-      // Deposit 1500, borrow exactly 1000 (150% ratio)
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(1500)], wallet);
+      // Deposit 150000, borrow exactly 100000 (150% ratio)
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(150000)], wallet);
       const { result } = simnet.callPublicFn(
         CONTRACT, "borrow",
-        [Cl.uint(1000), Cl.uint(500), Cl.uint(30)],
+        [Cl.uint(100000), Cl.uint(500), Cl.uint(30)],
         wallet
       );
       expect(result).toBeOk(Cl.bool(true));
@@ -51,11 +51,11 @@ describe("Boundary Value Tests", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
-      // Deposit 1490, try to borrow 1000 (149% ratio)
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(1490)], wallet);
+      // Deposit 149000, try to borrow 100000 (149% ratio)
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(149000)], wallet);
       const { result } = simnet.callPublicFn(
         CONTRACT, "borrow",
-        [Cl.uint(1000), Cl.uint(500), Cl.uint(30)],
+        [Cl.uint(100000), Cl.uint(500), Cl.uint(30)],
         wallet
       );
       expect(result).toBeErr(Cl.uint(105)); // ERR-INSUFFICIENT-COLLATERAL
@@ -65,10 +65,10 @@ describe("Boundary Value Tests", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(15000)], wallet);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(1500000)], wallet);
       const { result } = simnet.callPublicFn(
         CONTRACT, "borrow",
-        [Cl.uint(10000), Cl.uint(50), Cl.uint(30)],
+        [Cl.uint(1000000), Cl.uint(50), Cl.uint(30)],
         wallet
       );
       expect(result).toBeOk(Cl.bool(true));
@@ -78,10 +78,10 @@ describe("Boundary Value Tests", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(15000)], wallet);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(1500000)], wallet);
       const { result } = simnet.callPublicFn(
         CONTRACT, "borrow",
-        [Cl.uint(10000), Cl.uint(10000), Cl.uint(30)],
+        [Cl.uint(1000000), Cl.uint(10000), Cl.uint(30)],
         wallet
       );
       expect(result).toBeOk(Cl.bool(true));
@@ -91,10 +91,10 @@ describe("Boundary Value Tests", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(15000)], wallet);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(1500000)], wallet);
       const { result } = simnet.callPublicFn(
         CONTRACT, "borrow",
-        [Cl.uint(10000), Cl.uint(500), Cl.uint(1)],
+        [Cl.uint(1000000), Cl.uint(500), Cl.uint(1)],
         wallet
       );
       expect(result).toBeOk(Cl.bool(true));
@@ -104,10 +104,10 @@ describe("Boundary Value Tests", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(15000)], wallet);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(1500000)], wallet);
       const { result } = simnet.callPublicFn(
         CONTRACT, "borrow",
-        [Cl.uint(10000), Cl.uint(500), Cl.uint(365)],
+        [Cl.uint(1000000), Cl.uint(500), Cl.uint(365)],
         wallet
       );
       expect(result).toBeOk(Cl.bool(true));
@@ -117,18 +117,18 @@ describe("Boundary Value Tests", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(15000)], wallet);
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], wallet);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(1500000)], wallet);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100000), Cl.uint(500), Cl.uint(30)], wallet);
 
       // Repay in the next block (1 block elapsed)
-      // ceiling(1000 * 500 * 1 / 5256000) = ceiling(0.095) = 1
+      // ceiling(100000 * 500 * 1 / 5256000) = ceiling(9.51) = 10
       const { result } = simnet.callPublicFn(CONTRACT, "repay", [], wallet);
       expect(result).toBeOk(
         Cl.tuple({
-          interest: Cl.uint(1),
+          interest: Cl.uint(10),
           penalty: Cl.uint(0),
-          principal: Cl.uint(1000),
-          total: Cl.uint(1001),
+          principal: Cl.uint(100000),
+          total: Cl.uint(100010),
         })
       );
     });
@@ -175,10 +175,10 @@ describe("Boundary Value Tests", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(15000)], wallet);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(150000)], wallet);
       const { result } = simnet.callPublicFn(
         CONTRACT, "borrow",
-        [Cl.uint(10000), Cl.uint(10001), Cl.uint(30)],
+        [Cl.uint(100000), Cl.uint(10001), Cl.uint(30)],
         wallet
       );
       expect(result).toBeErr(Cl.uint(110)); // ERR-INVALID-INTEREST-RATE
@@ -188,10 +188,10 @@ describe("Boundary Value Tests", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(15000)], wallet);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(150000)], wallet);
       const { result } = simnet.callPublicFn(
         CONTRACT, "borrow",
-        [Cl.uint(10000), Cl.uint(500), Cl.uint(366)],
+        [Cl.uint(100000), Cl.uint(500), Cl.uint(366)],
         wallet
       );
       expect(result).toBeErr(Cl.uint(111)); // ERR-INVALID-TERM
@@ -201,10 +201,10 @@ describe("Boundary Value Tests", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(15000)], wallet);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(150000)], wallet);
       const { result } = simnet.callPublicFn(
         CONTRACT, "borrow",
-        [Cl.uint(10000), Cl.uint(500), Cl.uint(0)],
+        [Cl.uint(100000), Cl.uint(500), Cl.uint(0)],
         wallet
       );
       expect(result).toBeErr(Cl.uint(111)); // ERR-INVALID-TERM

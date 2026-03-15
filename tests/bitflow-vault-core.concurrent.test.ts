@@ -61,13 +61,13 @@ describe("Concurrent User Interaction Tests", () => {
       const wallet3 = accounts.get("wallet_3")!;
 
       // Each deposits and borrows
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(3000)], wallet1);
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(4500)], wallet2);
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(6000)], wallet3);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(300000)], wallet1);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(450000)], wallet2);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(600000)], wallet3);
 
-      const borrow1 = simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(2000), Cl.uint(500), Cl.uint(30)], wallet1);
-      const borrow2 = simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(3000), Cl.uint(600), Cl.uint(60)], wallet2);
-      const borrow3 = simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(4000), Cl.uint(700), Cl.uint(90)], wallet3);
+      const borrow1 = simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(200000), Cl.uint(500), Cl.uint(30)], wallet1);
+      const borrow2 = simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(300000), Cl.uint(600), Cl.uint(60)], wallet2);
+      const borrow3 = simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(400000), Cl.uint(700), Cl.uint(90)], wallet3);
 
       expect(borrow1.result).toBeOk(Cl.bool(true));
       expect(borrow2.result).toBeOk(Cl.bool(true));
@@ -91,11 +91,11 @@ describe("Concurrent User Interaction Tests", () => {
       const wallet2 = accounts.get("wallet_2")!;
 
       // Setup: both deposit and borrow
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(3000)], wallet1);
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(2000), Cl.uint(500), Cl.uint(30)], wallet1);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(300000)], wallet1);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(200000), Cl.uint(500), Cl.uint(30)], wallet1);
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(4500)], wallet2);
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(3000), Cl.uint(500), Cl.uint(30)], wallet2);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(450000)], wallet2);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(300000), Cl.uint(500), Cl.uint(30)], wallet2);
 
       simnet.mineEmptyBlocks(100);
 
@@ -123,11 +123,11 @@ describe("Concurrent User Interaction Tests", () => {
       const liquidator = accounts.get("wallet_3")!;
 
       // Setup two undercollateralized positions
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(1500)], wallet1);
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], wallet1);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(150000)], wallet1);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100000), Cl.uint(500), Cl.uint(30)], wallet1);
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(1500)], wallet2);
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], wallet2);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(150000)], wallet2);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100000), Cl.uint(500), Cl.uint(30)], wallet2);
 
       // Liquidate both at low price
       const stxPrice = 70;
@@ -158,15 +158,15 @@ describe("Concurrent User Interaction Tests", () => {
       const wallet3 = accounts.get("wallet_3")!;
 
       // User 1: deposit
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(3000)], wallet1);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(300000)], wallet1);
       // User 2: deposit
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(4500)], wallet2);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(450000)], wallet2);
       // User 1: borrow
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(2000), Cl.uint(500), Cl.uint(30)], wallet1);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(200000), Cl.uint(500), Cl.uint(30)], wallet1);
       // User 3: deposit
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(6000)], wallet3);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(600000)], wallet3);
       // User 2: borrow
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(3000), Cl.uint(500), Cl.uint(60)], wallet2);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(300000), Cl.uint(500), Cl.uint(60)], wallet2);
 
       simnet.mineEmptyBlocks(50);
 
@@ -175,10 +175,10 @@ describe("Concurrent User Interaction Tests", () => {
       expect(repay1.result).toBeOk(expect.any(Object));
 
       // User 3: borrow (now that user 1 freed up capital)
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(4000), Cl.uint(500), Cl.uint(90)], wallet3);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(400000), Cl.uint(500), Cl.uint(90)], wallet3);
 
       // User 1: should be able to borrow again
-      const borrow1Again = simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], wallet1);
+      const borrow1Again = simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100000), Cl.uint(500), Cl.uint(30)], wallet1);
       expect(borrow1Again.result).toBeOk(Cl.bool(true));
 
       // Verify protocol state

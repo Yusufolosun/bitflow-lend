@@ -96,11 +96,11 @@ describe("vault-core contract", () => {
     const accounts = simnet.getAccounts();
     const wallet_1 = accounts.get("wallet_1")!;
 
-    // Deposit 1500 STX and borrow 1000 (locks 1500 as collateral)
-    simnet.callPublicFn("bitflow-vault-core", "deposit", [Cl.uint(1500)], wallet_1);
-    simnet.callPublicFn("bitflow-vault-core", "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], wallet_1);
+    // Deposit 150000 STX and borrow 100000 (locks 150000 as collateral)
+    simnet.callPublicFn("bitflow-vault-core", "deposit", [Cl.uint(150000)], wallet_1);
+    simnet.callPublicFn("bitflow-vault-core", "borrow", [Cl.uint(100000), Cl.uint(500), Cl.uint(30)], wallet_1);
 
-    // Attempting to withdraw any amount should fail since all 1500 is locked
+    // Attempting to withdraw any amount should fail since all 150000 is locked
     const withdrawResponse = simnet.callPublicFn(
       "bitflow-vault-core",
       "withdraw",
@@ -115,20 +115,20 @@ describe("vault-core contract", () => {
     const accounts = simnet.getAccounts();
     const wallet_1 = accounts.get("wallet_1")!;
 
-    // Deposit 2000 STX and borrow 1000 (locks 1500, leaves 500 available)
-    simnet.callPublicFn("bitflow-vault-core", "deposit", [Cl.uint(2000)], wallet_1);
-    simnet.callPublicFn("bitflow-vault-core", "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], wallet_1);
+    // Deposit 200000 STX and borrow 100000 (locks 150000, leaves 50000 available)
+    simnet.callPublicFn("bitflow-vault-core", "deposit", [Cl.uint(200000)], wallet_1);
+    simnet.callPublicFn("bitflow-vault-core", "borrow", [Cl.uint(100000), Cl.uint(500), Cl.uint(30)], wallet_1);
 
-    // Withdraw 500 (the unlocked portion) should succeed
+    // Withdraw 50000 (the unlocked portion) should succeed
     const withdrawResponse = simnet.callPublicFn(
       "bitflow-vault-core",
       "withdraw",
-      [Cl.uint(500)],
+      [Cl.uint(50000)],
       wallet_1
     );
     expect(withdrawResponse.result).toBeOk(Cl.bool(true));
 
-    // Withdraw 1 more should fail — nothing left above the locked 1500
+    // Withdraw 1 more should fail — nothing left above the locked 150000
     const overWithdraw = simnet.callPublicFn(
       "bitflow-vault-core",
       "withdraw",
@@ -181,7 +181,7 @@ describe("vault-core contract", () => {
     const depositResponse = simnet.callPublicFn(
       "bitflow-vault-core",
       "deposit",
-      [Cl.uint(1500)],
+      [Cl.uint(150000)],
       wallet_1
     );
     const depositEvents = depositResponse.events.filter(
@@ -193,7 +193,7 @@ describe("vault-core contract", () => {
     const borrowResponse = simnet.callPublicFn(
       "bitflow-vault-core",
       "borrow",
-      [Cl.uint(1000), Cl.uint(500), Cl.uint(30)],
+      [Cl.uint(100000), Cl.uint(500), Cl.uint(30)],
       wallet_1
     );
     const borrowEvents = borrowResponse.events.filter(
@@ -220,8 +220,8 @@ describe("loan management", () => {
     const accounts = simnet.getAccounts();
     const wallet_1 = accounts.get("wallet_1")!;
 
-    // wallet_1 deposits 1500 STX
-    const depositAmount = 1500;
+    // wallet_1 deposits 150000 STX
+    const depositAmount = 150000;
     simnet.callPublicFn(
       "bitflow-vault-core",
       "deposit",
@@ -229,10 +229,10 @@ describe("loan management", () => {
       wallet_1
     );
 
-    // wallet_1 borrows 1000 STX at 5% interest for 30 days
+    // wallet_1 borrows 100000 STX at 5% interest for 30 days
     // Get current block height right before borrow
     const startBlock = simnet.blockHeight;
-    const borrowAmount = 1000;
+    const borrowAmount = 100000;
     const interestRate = 500;
     const termDays = 30;
     const borrowResponse = simnet.callPublicFn(
@@ -268,8 +268,8 @@ describe("loan management", () => {
     const wallet_1 = accounts.get("wallet_1")!;
     const deployer = accounts.get("deployer")!;
 
-    const depositAmount = 1500;
-    const borrowAmount = 1000;
+    const depositAmount = 150000;
+    const borrowAmount = 100000;
 
     // Record balance before deposit
     const balanceBefore = simnet.getAssetsMap().get("STX")?.get(wallet_1) ?? BigInt(0);
@@ -327,7 +327,7 @@ describe("loan management", () => {
     simnet.callPublicFn(
       "bitflow-vault-core",
       "deposit",
-      [Cl.uint(1500)],
+      [Cl.uint(150000)],
       wallet_1
     );
 
@@ -335,7 +335,7 @@ describe("loan management", () => {
     const zeroRate = simnet.callPublicFn(
       "bitflow-vault-core",
       "borrow",
-      [Cl.uint(1000), Cl.uint(0), Cl.uint(30)],
+      [Cl.uint(100000), Cl.uint(0), Cl.uint(30)],
       wallet_1
     );
     expect(zeroRate.result).toBeErr(Cl.uint(110));
@@ -344,7 +344,7 @@ describe("loan management", () => {
     const belowMinRate = simnet.callPublicFn(
       "bitflow-vault-core",
       "borrow",
-      [Cl.uint(1000), Cl.uint(49), Cl.uint(30)],
+      [Cl.uint(100000), Cl.uint(49), Cl.uint(30)],
       wallet_1
     );
     expect(belowMinRate.result).toBeErr(Cl.uint(110));
@@ -353,7 +353,7 @@ describe("loan management", () => {
     const atMinRate = simnet.callPublicFn(
       "bitflow-vault-core",
       "borrow",
-      [Cl.uint(1000), Cl.uint(50), Cl.uint(30)],
+      [Cl.uint(100000), Cl.uint(50), Cl.uint(30)],
       wallet_1
     );
     expect(atMinRate.result).toBeOk(Cl.bool(true));
@@ -363,8 +363,8 @@ describe("loan management", () => {
     const accounts = simnet.getAccounts();
     const wallet_1 = accounts.get("wallet_1")!;
 
-    // wallet_1 deposits 1000 STX (insufficient for borrowing 1000)
-    const depositAmount = 1000;
+    // wallet_1 deposits 100000 STX (insufficient for borrowing 100000)
+    const depositAmount = 100000;
     simnet.callPublicFn(
       "bitflow-vault-core",
       "deposit",
@@ -372,8 +372,8 @@ describe("loan management", () => {
       wallet_1
     );
 
-    // wallet_1 tries to borrow 1000 STX (requires 1500 collateral)
-    const borrowAmount = 1000;
+    // wallet_1 tries to borrow 100000 STX (requires 150000 collateral)
+    const borrowAmount = 100000;
     const borrowResponse = simnet.callPublicFn(
       "bitflow-vault-core",
       "borrow",
@@ -389,28 +389,28 @@ describe("loan management", () => {
     const accounts = simnet.getAccounts();
     const wallet_1 = accounts.get("wallet_1")!;
 
-    // wallet_1 deposits 3000 STX
+    // wallet_1 deposits 300000 STX
     simnet.callPublicFn(
       "bitflow-vault-core",
       "deposit",
-      [Cl.uint(3000)],
+      [Cl.uint(300000)],
       wallet_1
     );
 
-    // wallet_1 successfully borrows 1000 STX
+    // wallet_1 successfully borrows 100000 STX
     const firstBorrow = simnet.callPublicFn(
       "bitflow-vault-core",
       "borrow",
-      [Cl.uint(1000), Cl.uint(500), Cl.uint(30)],
+      [Cl.uint(100000), Cl.uint(500), Cl.uint(30)],
       wallet_1
     );
     expect(firstBorrow.result).toBeOk(Cl.bool(true));
 
-    // wallet_1 tries to borrow another 500 STX
+    // wallet_1 tries to borrow another 100000 STX
     const secondBorrow = simnet.callPublicFn(
       "bitflow-vault-core",
       "borrow",
-      [Cl.uint(500), Cl.uint(500), Cl.uint(30)],
+      [Cl.uint(100000), Cl.uint(500), Cl.uint(30)],
       wallet_1
     );
 
@@ -455,11 +455,11 @@ describe("loan management", () => {
     const accounts = simnet.getAccounts();
     const wallet_1 = accounts.get("wallet_1")!;
 
-    // wallet_1 deposits 1500 and borrows 1000 for 30 days
+    // wallet_1 deposits 150000 and borrows 100000 for 30 days
     simnet.callPublicFn(
       "bitflow-vault-core",
       "deposit",
-      [Cl.uint(1500)],
+      [Cl.uint(150000)],
       wallet_1
     );
 
@@ -469,7 +469,7 @@ describe("loan management", () => {
     simnet.callPublicFn(
       "bitflow-vault-core",
       "borrow",
-      [Cl.uint(1000), Cl.uint(500), Cl.uint(termDays)],
+      [Cl.uint(100000), Cl.uint(500), Cl.uint(termDays)],
       wallet_1
     );
 
@@ -484,7 +484,7 @@ describe("loan management", () => {
     const expectedTermEnd = startBlock + 1 + termDays * 144; // +1 for transaction block
     expect(loanResponse.result).toBeSome(
       Cl.tuple({
-        amount: Cl.uint(1000),
+        amount: Cl.uint(100000),
         "interest-rate": Cl.uint(500),
         "start-block": Cl.uint(startBlock + 1),
         "term-end": Cl.uint(expectedTermEnd),
@@ -498,16 +498,16 @@ describe("loan repayment", () => {
     const accounts = simnet.getAccounts();
     const wallet_1 = accounts.get("wallet_1")!;
 
-    // wallet_1 deposits 2000 STX
+    // wallet_1 deposits 200000 STX
     simnet.callPublicFn(
       "bitflow-vault-core",
       "deposit",
-      [Cl.uint(2000)],
+      [Cl.uint(200000)],
       wallet_1
     );
 
-    // wallet_1 borrows 1000 STX at 10% for 30 days
-    const borrowAmount = 1000;
+    // wallet_1 borrows 100000 STX at 5% for 30 days
+    const borrowAmount = 100000;
     const interestRate = 500;
     simnet.callPublicFn(
       "bitflow-vault-core",
@@ -528,12 +528,13 @@ describe("loan repayment", () => {
     );
 
     // Verify repay succeeds and returns repayment details
+    // interest = ceil((100000 * 500 * 1001) / (100 * 52560)) = 9523
     expect(repayResponse.result).toBeOk(
       Cl.tuple({
         principal: Cl.uint(borrowAmount),
-        interest: Cl.uint(96),  // ceil((1000 * 500 * 1001) / (100 * 52560)) = 96
+        interest: Cl.uint(9523),
         penalty: Cl.uint(0),    // no penalty (repaid before term end)
-        total: Cl.uint(1096),  // principal + interest
+        total: Cl.uint(109523),  // principal + interest
       })
     );
 
@@ -567,15 +568,15 @@ describe("loan repayment", () => {
     const accounts = simnet.getAccounts();
     const wallet_1 = accounts.get("wallet_1")!;
 
-    // wallet_1 deposits 2000 and borrows 1000 at 5% for 90 days
+    // wallet_1 deposits 200000 and borrows 100000 at 5% for 90 days
     simnet.callPublicFn(
       "bitflow-vault-core",
       "deposit",
-      [Cl.uint(2000)],
+      [Cl.uint(200000)],
       wallet_1
     );
 
-    const borrowAmount = 1000;
+    const borrowAmount = 100000;
     const interestRate = 500;
     simnet.callPublicFn(
       "bitflow-vault-core",
@@ -614,13 +615,13 @@ describe("loan repayment", () => {
     );
 
     // Should return some with accumulated interest
-    // Expected interest: ceil((1000 * 500 * 4320) / (100 * 52560)) = 411
+    // Expected interest: ceil((100000 * 500 * 4320) / (100 * 52560)) = 41096
     expect(laterRepayment.result).toBeSome(
       Cl.tuple({
         principal: Cl.uint(borrowAmount),
-        interest: Cl.uint(411),
+        interest: Cl.uint(41096),
         penalty: Cl.uint(0),  // Still within 90-day term
-        total: Cl.uint(1411),
+        total: Cl.uint(141096),
       })
     );
   });
@@ -639,17 +640,17 @@ describe("loan repayment", () => {
     );
     expect(initialTotal.result).toBeUint(0);
 
-    // wallet_1 deposits 2000, borrows 1000
+    // wallet_1 deposits 200000, borrows 100000
     simnet.callPublicFn(
       "bitflow-vault-core",
       "deposit",
-      [Cl.uint(2000)],
+      [Cl.uint(200000)],
       wallet_1
     );
     simnet.callPublicFn(
       "bitflow-vault-core",
       "borrow",
-      [Cl.uint(1000), Cl.uint(500), Cl.uint(30)],
+      [Cl.uint(100000), Cl.uint(500), Cl.uint(30)],
       wallet_1
     );
 
@@ -673,21 +674,21 @@ describe("loan repayment", () => {
       wallet_1
     );
     const firstRepayAmount = afterFirstRepay.result;
-    
+
     // Should be greater than 0
     expect(firstRepayAmount).not.toBeUint(0);
 
-    // wallet_2 deposits 3000, borrows 1500
+    // wallet_2 deposits 300000, borrows 150000
     simnet.callPublicFn(
       "bitflow-vault-core",
       "deposit",
-      [Cl.uint(3000)],
+      [Cl.uint(300000)],
       wallet_2
     );
     simnet.callPublicFn(
       "bitflow-vault-core",
       "borrow",
-      [Cl.uint(1500), Cl.uint(800), Cl.uint(60)],
+      [Cl.uint(150000), Cl.uint(800), Cl.uint(60)],
       wallet_2
     );
 
@@ -710,7 +711,7 @@ describe("loan repayment", () => {
       [],
       wallet_2
     );
-    
+
     // Final total should be greater than first repay amount
     expect(finalTotal.result).not.toEqual(firstRepayAmount);
   });
@@ -721,17 +722,17 @@ describe("liquidation system", () => {
     const accounts = simnet.getAccounts();
     const wallet_1 = accounts.get("wallet_1")!;
 
-    // wallet_1 deposits 1500 STX, borrows 1000 STX
+    // wallet_1 deposits 150000 STX, borrows 100000 STX
     simnet.callPublicFn(
       "bitflow-vault-core",
       "deposit",
-      [Cl.uint(1500)],
+      [Cl.uint(150000)],
       wallet_1
     );
     simnet.callPublicFn(
       "bitflow-vault-core",
       "borrow",
-      [Cl.uint(1000), Cl.uint(500), Cl.uint(30)],
+      [Cl.uint(100000), Cl.uint(500), Cl.uint(30)],
       wallet_1
     );
 
@@ -744,7 +745,7 @@ describe("liquidation system", () => {
       wallet_1
     );
 
-    // Health factor = 150 (1500 * 100 / 100 / 1000 * 100 = 150%)
+    // Health factor = 150 (150000 * 100 / 100 / 100000 * 100 = 150%)
     expect(healthFactor.result).toBeSome(Cl.uint(150));
   });
 
@@ -752,17 +753,17 @@ describe("liquidation system", () => {
     const accounts = simnet.getAccounts();
     const wallet_1 = accounts.get("wallet_1")!;
 
-    // wallet_1 deposits 1500, borrows 1000
+    // wallet_1 deposits 150000, borrows 100000
     simnet.callPublicFn(
       "bitflow-vault-core",
       "deposit",
-      [Cl.uint(1500)],
+      [Cl.uint(150000)],
       wallet_1
     );
     simnet.callPublicFn(
       "bitflow-vault-core",
       "borrow",
-      [Cl.uint(1000), Cl.uint(500), Cl.uint(30)],
+      [Cl.uint(100000), Cl.uint(500), Cl.uint(30)],
       wallet_1
     );
 
@@ -799,17 +800,17 @@ describe("liquidation system", () => {
     const wallet_1 = accounts.get("wallet_1")!;
     const wallet_2 = accounts.get("wallet_2")!;
 
-    // wallet_1 deposits 1500, borrows 1000
+    // wallet_1 deposits 150000, borrows 100000
     simnet.callPublicFn(
       "bitflow-vault-core",
       "deposit",
-      [Cl.uint(1500)],
+      [Cl.uint(150000)],
       wallet_1
     );
     simnet.callPublicFn(
       "bitflow-vault-core",
       "borrow",
-      [Cl.uint(1000), Cl.uint(500), Cl.uint(30)],
+      [Cl.uint(100000), Cl.uint(500), Cl.uint(30)],
       wallet_1
     );
 
@@ -830,7 +831,7 @@ describe("liquidation system", () => {
       [Cl.uint(70)],
       deployer
     );
-    
+
     // wallet_2 liquidates wallet_1
     const liquidationResponse = simnet.callPublicFn(
       "bitflow-vault-core",
@@ -840,13 +841,13 @@ describe("liquidation system", () => {
     );
 
     // Verify liquidation succeeds
-    // Liquidation bonus = 1000 * 5 / 100 = 50
-    // Total to pay = 1000 + 50 = 1050
+    // Liquidation bonus = 100000 * 5 / 100 = 5000
+    // Total to pay = 100000 + 5000 = 105000
     expect(liquidationResponse.result).toBeOk(
       Cl.tuple({
-        "seized-collateral": Cl.uint(1500),
-        paid: Cl.uint(1050),
-        bonus: Cl.uint(50),
+        "seized-collateral": Cl.uint(150000),
+        paid: Cl.uint(105000),
+        bonus: Cl.uint(5000),
       })
     );
 
@@ -886,17 +887,17 @@ describe("liquidation system", () => {
     const initialBalances = simnet.getAssetsMap().get("STX")!;
     const wallet2Before = initialBalances.get(wallet_2)!;
 
-    // wallet_1 deposits 1500, borrows 1000
+    // wallet_1 deposits 150000, borrows 100000
     simnet.callPublicFn(
       "bitflow-vault-core",
       "deposit",
-      [Cl.uint(1500)],
+      [Cl.uint(150000)],
       wallet_1
     );
     simnet.callPublicFn(
       "bitflow-vault-core",
       "borrow",
-      [Cl.uint(1000), Cl.uint(500), Cl.uint(30)],
+      [Cl.uint(100000), Cl.uint(500), Cl.uint(30)],
       wallet_1
     );
 
@@ -915,11 +916,11 @@ describe("liquidation system", () => {
       wallet_2
     );
 
-    // wallet_2 paid 1050 STX (loan + bonus) and received 1500 collateral
-    // net gain = 1500 - 1050 = 450 STX
+    // wallet_2 paid 105000 STX (loan + bonus) and received 150000 collateral
+    // net gain = 150000 - 105000 = 45000 STX
     const finalBalances = simnet.getAssetsMap().get("STX")!;
     const wallet2After = finalBalances.get(wallet_2)!;
-    expect(wallet2After - wallet2Before).toBe(450n);
+    expect(wallet2After - wallet2Before).toBe(45000n);
   });
 
   it("prevents liquidating healthy positions", () => {
@@ -927,17 +928,17 @@ describe("liquidation system", () => {
     const wallet_1 = accounts.get("wallet_1")!;
     const wallet_2 = accounts.get("wallet_2")!;
 
-    // wallet_1 deposits 2000, borrows 1000
+    // wallet_1 deposits 200000, borrows 100000
     simnet.callPublicFn(
       "bitflow-vault-core",
       "deposit",
-      [Cl.uint(2000)],
+      [Cl.uint(200000)],
       wallet_1
     );
     simnet.callPublicFn(
       "bitflow-vault-core",
       "borrow",
-      [Cl.uint(1000), Cl.uint(500), Cl.uint(30)],
+      [Cl.uint(100000), Cl.uint(500), Cl.uint(30)],
       wallet_1
     );
 
@@ -964,17 +965,17 @@ describe("liquidation system", () => {
     const accounts = simnet.getAccounts();
     const wallet_1 = accounts.get("wallet_1")!;
 
-    // wallet_1 deposits 1500, borrows 1000
+    // wallet_1 deposits 150000, borrows 100000
     simnet.callPublicFn(
       "bitflow-vault-core",
       "deposit",
-      [Cl.uint(1500)],
+      [Cl.uint(150000)],
       wallet_1
     );
     simnet.callPublicFn(
       "bitflow-vault-core",
       "borrow",
-      [Cl.uint(1000), Cl.uint(500), Cl.uint(30)],
+      [Cl.uint(100000), Cl.uint(500), Cl.uint(30)],
       wallet_1
     );
 
@@ -1002,17 +1003,17 @@ describe("liquidation system", () => {
     const wallet_1 = accounts.get("wallet_1")!;
     const wallet_2 = accounts.get("wallet_2")!;
 
-    // wallet_1 deposits 2000, borrows 1000 for 1 day (144 blocks)
+    // wallet_1 deposits 200000, borrows 100000 for 1 day (144 blocks)
     simnet.callPublicFn(
       "bitflow-vault-core",
       "deposit",
-      [Cl.uint(2000)],
+      [Cl.uint(200000)],
       wallet_1
     );
     simnet.callPublicFn(
       "bitflow-vault-core",
       "borrow",
-      [Cl.uint(1000), Cl.uint(500), Cl.uint(1)],
+      [Cl.uint(100000), Cl.uint(500), Cl.uint(1)],
       wallet_1
     );
 
@@ -1058,17 +1059,17 @@ describe("liquidation system", () => {
     const accounts = simnet.getAccounts();
     const wallet_1 = accounts.get("wallet_1")!;
 
-    // wallet_1 deposits 2000, borrows 1000 for 1 day
+    // wallet_1 deposits 200000, borrows 100000 for 1 day
     simnet.callPublicFn(
       "bitflow-vault-core",
       "deposit",
-      [Cl.uint(2000)],
+      [Cl.uint(200000)],
       wallet_1
     );
     simnet.callPublicFn(
       "bitflow-vault-core",
       "borrow",
-      [Cl.uint(1000), Cl.uint(500), Cl.uint(1)],
+      [Cl.uint(100000), Cl.uint(500), Cl.uint(1)],
       wallet_1
     );
 
@@ -1083,15 +1084,15 @@ describe("liquidation system", () => {
       wallet_1
     );
 
-    // penalty = 1000 * 500 / 10000 = 50
-    // interest = ceil((1000 * 500 * 201) / (100 * 52560)) = 20
-    // total = 1000 + 20 + 50 = 1070
+    // penalty = 100000 * 500 / 10000 = 5000
+    // interest = ceil((100000 * 500 * 200) / (100 * 52560)) = 1903
+    // total = 100000 + 1903 + 5000 = 106903
     expect(repaymentInfo.result).toBeSome(
       Cl.tuple({
-        principal: Cl.uint(1000),
-        interest: Cl.uint(20),
-        penalty: Cl.uint(50),
-        total: Cl.uint(1070),
+        principal: Cl.uint(100000),
+        interest: Cl.uint(1903),
+        penalty: Cl.uint(5000),
+        total: Cl.uint(106903),
       })
     );
 
@@ -1147,13 +1148,13 @@ describe("liquidation system", () => {
     simnet.callPublicFn(
       "bitflow-vault-core",
       "deposit",
-      [Cl.uint(1500)],
+      [Cl.uint(150000)],
       wallet_1
     );
     simnet.callPublicFn(
       "bitflow-vault-core",
       "borrow",
-      [Cl.uint(1000), Cl.uint(500), Cl.uint(30)],
+      [Cl.uint(100000), Cl.uint(500), Cl.uint(30)],
       wallet_1
     );
 
@@ -1229,7 +1230,7 @@ describe("emergency pause", () => {
     simnet.callPublicFn(
       "bitflow-vault-core",
       "deposit",
-      [Cl.uint(2000)],
+      [Cl.uint(200000)],
       wallet_1
     );
 
@@ -1263,7 +1264,7 @@ describe("emergency pause", () => {
     const borrowResult = simnet.callPublicFn(
       "bitflow-vault-core",
       "borrow",
-      [Cl.uint(1000), Cl.uint(500), Cl.uint(30)],
+      [Cl.uint(100000), Cl.uint(500), Cl.uint(30)],
       wallet_1
     );
     expect(borrowResult.result).toBeErr(Cl.uint(112));

@@ -42,9 +42,9 @@ describe("bitflow-vault-core event emission", () => {
 
   it("emits borrow event with rate and term", () => {
     init();
-    simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(5000)], wallet1());
+    simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(200000)], wallet1());
     const { events } = simnet.callPublicFn(
-      CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], wallet1()
+      CONTRACT, "borrow", [Cl.uint(100000), Cl.uint(500), Cl.uint(30)], wallet1()
     );
     const prints = events.filter((e: any) => e.event === "print_event");
     expect(prints.length).toBeGreaterThanOrEqual(1);
@@ -54,9 +54,9 @@ describe("bitflow-vault-core event emission", () => {
 
   it("emits repay event with principal, interest, penalty, total", () => {
     init();
-    simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(5000)], wallet1());
+    simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(200000)], wallet1());
     simnet.callPublicFn(
-      CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], wallet1()
+      CONTRACT, "borrow", [Cl.uint(100000), Cl.uint(500), Cl.uint(30)], wallet1()
     );
     const { events } = simnet.callPublicFn(CONTRACT, "repay", [], wallet1());
     const prints = events.filter((e: any) => e.event === "print_event");
@@ -67,9 +67,9 @@ describe("bitflow-vault-core event emission", () => {
 
   it("emits liquidation event with liquidator and borrower", () => {
     init();
-    simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(3000)], wallet1());
+    simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(200000)], wallet1());
     simnet.callPublicFn(
-      CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], wallet1()
+      CONTRACT, "borrow", [Cl.uint(100000), Cl.uint(500), Cl.uint(30)], wallet1()
     );
     simnet.callPublicFn(CONTRACT, "set-stx-price", [Cl.uint(30)], deployer());
     const { events } = simnet.callPublicFn(

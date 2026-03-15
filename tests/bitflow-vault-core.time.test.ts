@@ -11,13 +11,13 @@ describe("Time-Based Functionality Tests", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(15000)], wallet);
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(10000), Cl.uint(500), Cl.uint(30)], wallet);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(1500000)], wallet);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000000), Cl.uint(500), Cl.uint(30)], wallet);
 
       const repayment = simnet.callReadOnlyFn(CONTRACT, "get-repayment-amount", [Cl.principal(wallet)], wallet);
       // Read-only call in same block as borrow: 0 blocks elapsed, interest = 0
       expect(repayment.result).toBeSome(
-        Cl.tuple({ principal: Cl.uint(10000), interest: Cl.uint(0), penalty: Cl.uint(0), total: Cl.uint(10000) })
+        Cl.tuple({ principal: Cl.uint(1000000), interest: Cl.uint(0), penalty: Cl.uint(0), total: Cl.uint(1000000) })
       );
     });
 
@@ -65,8 +65,8 @@ describe("Time-Based Functionality Tests", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(1500)], wallet);
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(1)], wallet);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(150000)], wallet);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100000), Cl.uint(500), Cl.uint(1)], wallet);
 
       // Term = 1 day = 144 blocks. Mine past it.
       simnet.mineEmptyBlocks(300);
@@ -80,18 +80,18 @@ describe("Time-Based Functionality Tests", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(15000)], wallet);
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(10000), Cl.uint(1000), Cl.uint(1)], wallet);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(1500000)], wallet);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000000), Cl.uint(1000), Cl.uint(1)], wallet);
 
       // Term = 1 day = 144 blocks. Mine much past it.
       simnet.mineEmptyBlocks(5256);
 
       // Interest should reflect total blocks elapsed, not just term
-      // = (10000 * 1000 * 5256) / (100 * 52560) = 10000
-      // Late penalty applies: block-height > term-end → penalty = 10000 * 500 / 10000 = 500
+      // = (1000000 * 1000 * 5256) / (100 * 52560) = 1000000
+      // Late penalty applies: block-height > term-end -> penalty = 1000000 * 500 / 10000 = 50000
       const repayment = simnet.callReadOnlyFn(CONTRACT, "get-repayment-amount", [Cl.principal(wallet)], wallet);
       expect(repayment.result).toBeSome(
-        Cl.tuple({ principal: Cl.uint(10000), interest: Cl.uint(10000), penalty: Cl.uint(500), total: Cl.uint(20500) })
+        Cl.tuple({ principal: Cl.uint(1000000), interest: Cl.uint(1000000), penalty: Cl.uint(50000), total: Cl.uint(2050000) })
       );
     });
   });
@@ -101,14 +101,14 @@ describe("Time-Based Functionality Tests", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(1500)], wallet);
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], wallet);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(150000)], wallet);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100000), Cl.uint(500), Cl.uint(30)], wallet);
 
       // Repay in the very next block (1 block elapsed)
-      // ceiling(1000 * 500 * 1 / 5256000) = ceiling(0.095) = 1
+      // ceiling(100000 * 500 * 1 / 5256000) = ceiling(9.512) = 10
       const { result } = simnet.callPublicFn(CONTRACT, "repay", [], wallet);
       expect(result).toBeOk(
-        Cl.tuple({ principal: Cl.uint(1000), interest: Cl.uint(1), penalty: Cl.uint(0), total: Cl.uint(1001) })
+        Cl.tuple({ principal: Cl.uint(100000), interest: Cl.uint(10), penalty: Cl.uint(0), total: Cl.uint(100010) })
       );
     });
 
@@ -116,15 +116,15 @@ describe("Time-Based Functionality Tests", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(15000)], wallet);
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(10000), Cl.uint(1000), Cl.uint(30)], wallet);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(1500000)], wallet);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000000), Cl.uint(1000), Cl.uint(30)], wallet);
 
-      // 10 blocks: interest = ceil(10000 * 1000 * 10 / (100 * 52560)) = ceil(19.025) = 20
+      // 10 blocks: interest = ceil(1000000 * 1000 * 10 / (100 * 52560)) = ceil(1902.587) = 1903
       simnet.mineEmptyBlocks(10);
 
       const repayment = simnet.callReadOnlyFn(CONTRACT, "get-repayment-amount", [Cl.principal(wallet)], wallet);
       expect(repayment.result).toBeSome(
-        Cl.tuple({ principal: Cl.uint(10000), interest: Cl.uint(20), penalty: Cl.uint(0), total: Cl.uint(10020) })
+        Cl.tuple({ principal: Cl.uint(1000000), interest: Cl.uint(1903), penalty: Cl.uint(0), total: Cl.uint(1001903) })
       );
     });
   });
@@ -134,8 +134,8 @@ describe("Time-Based Functionality Tests", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(15000)], wallet);
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(10000), Cl.uint(500), Cl.uint(1)], wallet);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(1500000)], wallet);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000000), Cl.uint(500), Cl.uint(1)], wallet);
 
       // Term was 1 day (144 blocks), mine 10000 blocks past
       simnet.mineEmptyBlocks(10000);
@@ -155,16 +155,16 @@ describe("Time-Based Functionality Tests", () => {
       const wallet2 = accounts.get("wallet_2")!;
 
       // Wallet 1: borrow and check interest early
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(15000)], wallet1);
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(10000), Cl.uint(1000), Cl.uint(30)], wallet1);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(1500000)], wallet1);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000000), Cl.uint(1000), Cl.uint(30)], wallet1);
 
       simnet.mineEmptyBlocks(100);
 
       const earlyRepay = simnet.callReadOnlyFn(CONTRACT, "get-repayment-amount", [Cl.principal(wallet1)], wallet1);
 
       // Wallet 2: same loan but check interest much later
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(15000)], wallet2);
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(10000), Cl.uint(1000), Cl.uint(30)], wallet2);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(1500000)], wallet2);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000000), Cl.uint(1000), Cl.uint(30)], wallet2);
 
       simnet.mineEmptyBlocks(10000);
 
@@ -183,15 +183,15 @@ describe("Time-Based Functionality Tests", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(1500)], wallet);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(150000)], wallet);
       const startBlock = simnet.blockHeight;
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(1)], wallet);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100000), Cl.uint(500), Cl.uint(1)], wallet);
 
       const loan = simnet.callReadOnlyFn(CONTRACT, "get-user-loan", [Cl.principal(wallet)], wallet);
       // Borrow happens at startBlock+1, term-end = startBlock+1 + 1*144
       expect(loan.result).toBeSome(
         Cl.tuple({
-          amount: Cl.uint(1000),
+          amount: Cl.uint(100000),
           "interest-rate": Cl.uint(500),
           "start-block": Cl.uint(startBlock + 1),
           "term-end": Cl.uint(startBlock + 1 + 144),
@@ -203,14 +203,14 @@ describe("Time-Based Functionality Tests", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(1500)], wallet);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(150000)], wallet);
       const startBlock = simnet.blockHeight;
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], wallet);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100000), Cl.uint(500), Cl.uint(30)], wallet);
 
       const loan = simnet.callReadOnlyFn(CONTRACT, "get-user-loan", [Cl.principal(wallet)], wallet);
       expect(loan.result).toBeSome(
         Cl.tuple({
-          amount: Cl.uint(1000),
+          amount: Cl.uint(100000),
           "interest-rate": Cl.uint(500),
           "start-block": Cl.uint(startBlock + 1),
           "term-end": Cl.uint(startBlock + 1 + 4320),
@@ -222,14 +222,14 @@ describe("Time-Based Functionality Tests", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(1500)], wallet);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(150000)], wallet);
       const startBlock = simnet.blockHeight;
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(365)], wallet);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100000), Cl.uint(500), Cl.uint(365)], wallet);
 
       const loan = simnet.callReadOnlyFn(CONTRACT, "get-user-loan", [Cl.principal(wallet)], wallet);
       expect(loan.result).toBeSome(
         Cl.tuple({
-          amount: Cl.uint(1000),
+          amount: Cl.uint(100000),
           "interest-rate": Cl.uint(500),
           "start-block": Cl.uint(startBlock + 1),
           "term-end": Cl.uint(startBlock + 1 + 52560),
@@ -277,8 +277,8 @@ describe("Time-Based Functionality Tests", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(2000)], wallet);
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], wallet);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(200000)], wallet);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100000), Cl.uint(500), Cl.uint(30)], wallet);
 
       // Check immediately
       const health1 = simnet.callReadOnlyFn(CONTRACT, "calculate-health-factor", [Cl.principal(wallet), Cl.uint(100)], wallet);
@@ -297,22 +297,22 @@ describe("Time-Based Functionality Tests", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(2000)], wallet);
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], wallet);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(200000)], wallet);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100000), Cl.uint(500), Cl.uint(30)], wallet);
 
       // Price = 100: health = 200
       const h1 = simnet.callReadOnlyFn(CONTRACT, "calculate-health-factor", [Cl.principal(wallet), Cl.uint(100)], wallet);
       expect(h1.result).toBeSome(Cl.uint(200));
 
-      // Price = 80: health = (2000*80/100)*100/1000 = 160
+      // Price = 80: health = (200000*80/100)*100/100000 = 160
       const h2 = simnet.callReadOnlyFn(CONTRACT, "calculate-health-factor", [Cl.principal(wallet), Cl.uint(80)], wallet);
       expect(h2.result).toBeSome(Cl.uint(160));
 
-      // Price = 55: health = (2000*55/100)*100/1000 = 110
+      // Price = 55: health = (200000*55/100)*100/100000 = 110
       const h3 = simnet.callReadOnlyFn(CONTRACT, "calculate-health-factor", [Cl.principal(wallet), Cl.uint(55)], wallet);
       expect(h3.result).toBeSome(Cl.uint(110));
 
-      // Price = 50: health = (2000*50/100)*100/1000 = 100
+      // Price = 50: health = (200000*50/100)*100/100000 = 100
       const h4 = simnet.callReadOnlyFn(CONTRACT, "calculate-health-factor", [Cl.principal(wallet), Cl.uint(50)], wallet);
       expect(h4.result).toBeSome(Cl.uint(100));
     });
