@@ -62,10 +62,15 @@
 
 ;; Check if the aggregated price is still fresh
 (define-private (is-price-fresh)
-  (and
-    (> (var-get aggregated-price) u0)
-    (> (var-get aggregated-block) u0)
-    (< (- block-height (var-get aggregated-block)) (var-get max-price-age))
+  (let (
+    (agg-block (var-get aggregated-block))
+  )
+    (and
+      (> (var-get aggregated-price) u0)
+      (> agg-block u0)
+      (>= block-height agg-block)
+      (< (- block-height agg-block) (var-get max-price-age))
+    )
   )
 )
 
