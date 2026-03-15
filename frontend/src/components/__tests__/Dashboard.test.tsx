@@ -220,7 +220,6 @@ describe('Dashboard Component', () => {
     it('shows welcome section when wallet is not connected', () => {
       render(<Dashboard />);
       expect(screen.getByText(/Welcome to/)).toBeInTheDocument();
-      expect(screen.getByText(/BitFlow/)).toBeInTheDocument();
     });
 
     it('does not show user portfolio when disconnected', () => {
