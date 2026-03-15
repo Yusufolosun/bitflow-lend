@@ -19,6 +19,7 @@
 (define-constant ERR-ZERO-AMOUNT (err u208))
 (define-constant ERR-MAX-STAKE-EXCEEDED (err u209))
 (define-constant ERR-INVALID-PARAM (err u210))
+(define-constant ERR-INSUFFICIENT-REWARD-BALANCE (err u211))
 
 ;; ===== CONSTANTS =====
 (define-constant MIN-STAKE-AMOUNT u1000000)        ;; 1 STX minimum stake
@@ -389,7 +390,7 @@
 
         ;; Verify contract has sufficient STX to pay rewards
         (asserts! (>= (stx-get-balance (as-contract tx-sender)) reward-amount)
-          (err u210))
+          ERR-INSUFFICIENT-REWARD-BALANCE)
 
         ;; Reset pending rewards
         (map-set staker-rewards recipient u0)
