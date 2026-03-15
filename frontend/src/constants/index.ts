@@ -37,7 +37,7 @@ if (import.meta.env.MODE !== 'test') {
 // API Endpoints
 export const API_URLS = {
   testnet: 'https://api.testnet.hiro.so',
-  mainnet: 'https://api.hiro.so',
+  mainnet: 'https://api.mainnet.hiro.so',
   devnet: 'http://localhost:3999',
 } as const;
 
