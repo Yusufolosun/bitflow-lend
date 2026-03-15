@@ -301,10 +301,28 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
         const amount = result.value;
         const amountSTX = microStxToStx(amount);
 
-        // Calculate available to withdraw (assuming no active loan for now)
-        // In a real implementation, you'd check if there's an active loan
-        const availableToWithdraw = amount;
-        const availableToWithdrawSTX = amountSTX;
+        // Check for active loan to calculate locked collateral
+        let lockedCollateral = BigInt(0);
+        try {
+          const loanResult = await callReadOnlyFunction({
+            network,
+            contractAddress,
+            contractName,
+            functionName: 'get-user-loan',
+            functionArgs: [principalCV(userAddress)],
+            senderAddress: userAddress,
+          });
+          if (loanResult.type === ClarityType.OptionalSome && loanResult.value) {
+            const loanData = cvToValue(loanResult.value);
+            const loanAmount = BigInt(loanData.amount);
+            lockedCollateral = (loanAmount * BigInt(PROTOCOL_CONSTANTS.MIN_COLLATERAL_RATIO)) / BigInt(100);
+          }
+        } catch {
+          // If loan check fails, assume no loan (safe default: shows full balance)
+        }
+
+        const availableToWithdraw = amount > lockedCollateral ? amount - lockedCollateral : BigInt(0);
+        const availableToWithdrawSTX = microStxToStx(availableToWithdraw);
 
         return {
           amount,
