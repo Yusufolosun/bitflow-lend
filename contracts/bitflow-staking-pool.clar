@@ -320,6 +320,7 @@
 ;; Unstake STX after cooldown period
 (define-public (unstake (amount uint))
   (begin
+    (asserts! (not (var-get is-paused)) ERR-PROTOCOL-PAUSED)
     (asserts! (> amount u0) ERR-ZERO-AMOUNT)
 
     (let (
