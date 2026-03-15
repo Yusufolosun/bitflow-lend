@@ -65,7 +65,7 @@ describe('BorrowCard Component', () => {
     mockGetUserDeposit.mockResolvedValue({ amountSTX: 150 });
     mockGetUserLoan.mockResolvedValue(null); // No active loan
     mockBorrow.mockResolvedValue({ success: true, txId: '0x123' });
-    mockPollTransactionStatus.mockResolvedValue(true);
+    mockPollTransactionStatus.mockResolvedValue('confirmed');
   });
 
   describe('Rendering (no active loan)', () => {
@@ -266,7 +266,7 @@ describe('BorrowCard Component', () => {
 
     it('shows success message after confirmed borrow', async () => {
       mockBorrow.mockResolvedValue({ success: true, txId: '0xabc' });
-      mockPollTransactionStatus.mockResolvedValue(true);
+      mockPollTransactionStatus.mockResolvedValue('confirmed');
 
       const user = userEvent.setup();
       render(<BorrowCard />);
