@@ -34,7 +34,7 @@ export const HealthMonitor: React.FC = () => {
       const health = await vault.getHealthFactor(stxPrice);
       setHealthFactor(health);
     }
-  }, [address, vault, stxPrice]);
+  }, [address, vault.getUserDeposit, vault.getUserLoan, vault.getHealthFactor, stxPrice]);
 
   useSmartPolling(fetchData, 30_000, !!address);
 
