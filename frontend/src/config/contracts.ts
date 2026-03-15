@@ -102,13 +102,14 @@ export const getContractAddress = () => {
     : VAULT_CONTRACT.mainnet.address;
 };
 
-// Get the full contract identifier
+// Get the full contract identifier (uses active version)
 export const getContractId = () => {
-  const config = ACTIVE_NETWORK === 'testnet' 
-    ? VAULT_CONTRACT.testnet 
-    : VAULT_CONTRACT.mainnet;
-  
-  return `${config.address}.${config.contractName}`;
+  const active = getActiveContractVersion();
+  const address = ACTIVE_NETWORK === 'testnet'
+    ? active.address.testnet
+    : active.address.mainnet;
+
+  return `${address}.${active.contractName}`;
 };
 
 // Protocol Constants — canonical source, matches the Clarity contract definitions:
