@@ -371,9 +371,21 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
         const collateralAmount = (amount * BigInt(PROTOCOL_CONSTANTS.MIN_COLLATERAL_RATIO)) / BigInt(100);
         const collateralAmountSTX = microStxToStx(collateralAmount);
 
-        // Estimate start timestamp (blocks are ~10 minutes apart)
-        // This is an approximation - in production you'd use block height API
-        const blocksElapsed = 0; // For now, assume loan just started
+        // Estimate start timestamp using chain tip height
+        let blocksElapsed = 0;
+        try {
+          const apiUrl = getApiEndpoint();
+          const tipRes = await fetch(`${apiUrl}/v2/info`);
+          if (tipRes.ok) {
+            const tipData = await tipRes.json();
+            const currentBlock = Number(tipData.stacks_tip_height || 0);
+            if (currentBlock > startBlock) {
+              blocksElapsed = currentBlock - startBlock;
+            }
+          }
+        } catch {
+          // Fall back to 0 if chain info unavailable
+        }
         const startTimestamp = Date.now() / 1000 - (blocksElapsed * 600);
 
         return {
