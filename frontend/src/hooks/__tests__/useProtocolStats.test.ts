@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { renderHook, waitFor } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { renderHook, waitFor, act } from '@testing-library/react';
 import { useProtocolStats } from '../useProtocolStats';
 
 // Mock @stacks/transactions
@@ -23,11 +23,6 @@ const mockCvToValue = cvToValue as ReturnType<typeof vi.fn>;
 describe('useProtocolStats', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.useFakeTimers();
-  });
-
-  afterEach(() => {
-    vi.useRealTimers();
   });
 
   it('starts in loading state', () => {
@@ -129,6 +124,8 @@ describe('useProtocolStats', () => {
   });
 
   it('does not auto-refresh when interval is 0', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+
     mockCallReadOnly.mockResolvedValue({});
     mockCvToValue.mockReturnValue({
       'total-deposits': 0,
@@ -144,7 +141,11 @@ describe('useProtocolStats', () => {
     });
 
     // Advance time — should NOT trigger another fetch
-    vi.advanceTimersByTime(60000);
+    act(() => {
+      vi.advanceTimersByTime(60000);
+    });
     expect(mockCallReadOnly).toHaveBeenCalledTimes(1);
+
+    vi.useRealTimers();
   });
 });
