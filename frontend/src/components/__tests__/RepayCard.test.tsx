@@ -11,6 +11,7 @@ import { RepayCard } from '../RepayCard';
 const mockRepay = vi.fn();
 const mockGetUserLoan = vi.fn();
 const mockGetRepaymentAmount = vi.fn();
+const mockPollTransactionStatus = vi.fn();
 
 vi.mock('../../hooks/useAuth', () => ({
   useAuth: () => ({
@@ -25,6 +26,7 @@ vi.mock('../../hooks/useVault', () => ({
     repay: mockRepay,
     getUserLoan: mockGetUserLoan,
     getRepaymentAmount: mockGetRepaymentAmount,
+    pollTransactionStatus: mockPollTransactionStatus,
   }),
 }));
 
@@ -39,6 +41,7 @@ vi.mock('lucide-react', () => ({
   CheckCircle: () => <span>CheckCircle</span>,
   XCircle: () => <span>XCircle</span>,
   Clock: () => <span>Clock</span>,
+  ExternalLink: () => <span>ExternalLink</span>,
 }));
 
 describe('RepayCard Component', () => {
@@ -209,7 +212,8 @@ describe('RepayCard Component', () => {
     });
 
     it('calls repay on button click', async () => {
-      mockRepay.mockResolvedValue({ success: true });
+      mockRepay.mockResolvedValue({ success: true, txId: '0xabc' });
+      mockPollTransactionStatus.mockResolvedValue('confirmed');
       const user = userEvent.setup();
       render(<RepayCard />);
 
@@ -222,7 +226,8 @@ describe('RepayCard Component', () => {
     });
 
     it('shows success message after repayment', async () => {
-      mockRepay.mockResolvedValue({ success: true });
+      mockRepay.mockResolvedValue({ success: true, txId: '0xabc' });
+      mockPollTransactionStatus.mockResolvedValue('confirmed');
       const user = userEvent.setup();
       render(<RepayCard />);
 
