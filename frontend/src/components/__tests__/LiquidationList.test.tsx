@@ -10,6 +10,13 @@ import { LiquidationList } from '../LiquidationList';
 vi.mock('../../hooks/useAuth', () => ({
   useAuth: () => ({
     address: 'ST1TEST',
+    userSession: {},
+  }),
+}));
+
+vi.mock('../../hooks/useVault', () => ({
+  useVault: () => ({
+    liquidate: vi.fn(),
   }),
 }));
 
@@ -29,6 +36,7 @@ vi.mock('../../config/contracts', () => ({
     BLOCKS_PER_YEAR: 52560,
     BLOCK_TIME_MINUTES: 10,
   },
+  getExplorerUrl: (txId?: string) => `https://explorer.hiro.so/txid/${txId}?chain=testnet`,
 }));
 
 describe('LiquidationList Component', () => {
