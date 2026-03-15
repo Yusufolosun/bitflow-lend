@@ -195,7 +195,9 @@
   (match (map-get? user-loans user)
     loan
       (let (
-        (blocks-elapsed (- block-height (get start-block loan)))
+        (blocks-elapsed (if (>= block-height (get start-block loan))
+          (- block-height (get start-block loan))
+          u0))
         (interest (calculate-interest (get amount loan) (get interest-rate loan) blocks-elapsed))
         (penalty (if (> block-height (get term-end loan))
           (/ (* (get amount loan) (var-get late-penalty-rate)) u10000)
@@ -478,7 +480,9 @@
     (let (
       (loan (unwrap! (map-get? user-loans tx-sender) ERR-NO-ACTIVE-LOAN))
       (loan-amount (get amount loan))
-      (blocks-elapsed (- block-height (get start-block loan)))
+      (blocks-elapsed (if (>= block-height (get start-block loan))
+        (- block-height (get start-block loan))
+        u0))
       (interest (calculate-interest loan-amount (get interest-rate loan) blocks-elapsed))
       (penalty (if (> block-height (get term-end loan))
         (/ (* loan-amount (var-get late-penalty-rate)) u10000)
