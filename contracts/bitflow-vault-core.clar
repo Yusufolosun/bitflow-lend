@@ -462,7 +462,7 @@
     (var-set last-activity-block block-height)
     
     ;; Emit event
-    (print { event: "borrow", user: tx-sender, amount: amount, rate: interest-rate, term: term-days })
+    (print { event: "borrow", user: tx-sender, amount: amount, rate: interest-rate, term: term-days, start-block: block-height })
     
     (ok true)
   )
