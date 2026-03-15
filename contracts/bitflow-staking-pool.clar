@@ -352,12 +352,16 @@
         (map-set staker-cooldown-end recipient u0)
 
         ;; Update pool metrics
-        (var-set total-staked (- (var-get total-staked) amount))
+        (var-set total-staked (if (>= (var-get total-staked) amount)
+          (- (var-get total-staked) amount)
+          u0))
         (var-set total-unstake-volume (+ (var-get total-unstake-volume) amount))
 
         ;; Decrement staker count if fully unstaked
         (if (is-eq new-balance u0)
-          (var-set total-stakers (- (var-get total-stakers) u1))
+          (var-set total-stakers (if (> (var-get total-stakers) u0)
+            (- (var-get total-stakers) u1)
+            u0))
           true
         )
 
