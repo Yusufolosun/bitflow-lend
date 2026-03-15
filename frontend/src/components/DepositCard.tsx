@@ -25,7 +25,7 @@ export const DepositCard: React.FC = () => {
     if (!address) return;
     const deposit = await vault.getUserDeposit();
     if (deposit) setUserDeposit(deposit.amountSTX);
-  }, [address, vault]);
+  }, [address, vault.getUserDeposit]);
 
   useSmartPolling(fetchDeposit, 60_000, !!address);
 
