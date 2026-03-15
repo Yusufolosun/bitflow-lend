@@ -376,7 +376,7 @@
     (locked-collateral (match (map-get? user-loans tx-sender)
       loan (calculate-required-collateral (get amount loan))
       u0))
-    (available-balance (- user-balance locked-collateral))
+    (available-balance (if (> user-balance locked-collateral) (- user-balance locked-collateral) u0))
     (recipient tx-sender)
   )
     ;; Check protocol is not paused
