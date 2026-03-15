@@ -12,12 +12,7 @@ global.fetch = mockFetch;
 
 describe('useStxPrice Hook', () => {
   beforeEach(() => {
-    vi.useFakeTimers();
     vi.clearAllMocks();
-  });
-
-  afterEach(() => {
-    vi.useRealTimers();
   });
 
   it('starts with fallback price and loading state', () => {
@@ -104,6 +99,8 @@ describe('useStxPrice Hook', () => {
   });
 
   it('does not set interval when refreshInterval is 0', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+
     mockFetch.mockResolvedValue({
       ok: true,
       json: () => Promise.resolve({ stacks: { usd: 1.5 } }),
@@ -122,6 +119,7 @@ describe('useStxPrice Hook', () => {
     });
 
     expect(mockFetch).toHaveBeenCalledTimes(1);
+    vi.useRealTimers();
   });
 
   it('sets lastUpdated timestamp on success', async () => {
