@@ -22,6 +22,10 @@
 (define-constant ERR-PROTOCOL-PAUSED (err u112))
 (define-constant ERR-INVALID-PARAM (err u120))
 (define-constant ERR-INSUFFICIENT-LIQUIDITY (err u121))
+(define-constant ERR-MIN-BORROW-AMOUNT (err u122))
+
+;; Minimum borrow amount to prevent dust loans
+(define-constant MIN-BORROW-AMOUNT u100000) ;; 0.1 STX minimum
 
 ;; Tunable protocol parameters (admin-updatable)
 (define-data-var min-collateral-ratio uint u150)
@@ -434,6 +438,9 @@
     
     ;; Validate borrow amount is greater than zero
     (asserts! (> amount u0) ERR-INVALID-AMOUNT)
+
+    ;; Enforce minimum borrow to prevent dust loans
+    (asserts! (>= amount MIN-BORROW-AMOUNT) ERR-MIN-BORROW-AMOUNT)
 
     ;; Validate interest rate (must be between 0.5% and 100% APR)
     (asserts! (and (>= interest-rate (var-get min-interest-rate)) (<= interest-rate (var-get max-interest-rate))) ERR-INVALID-INTEREST-RATE)
