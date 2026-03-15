@@ -561,7 +561,7 @@
     (var-set last-activity-block block-height)
     
     ;; Emit event
-    (print { event: "liquidation", liquidator: tx-sender, borrower: borrower, seized: borrower-deposit, paid: total-to-pay })
+    (print { event: "liquidation", liquidator: tx-sender, borrower: borrower, seized: borrower-deposit, paid: total-to-pay, bonus: liquidation-bonus })
     
     ;; Return liquidation details
     (ok { seized-collateral: borrower-deposit, paid: total-to-pay, bonus: liquidation-bonus })
