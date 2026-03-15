@@ -25,6 +25,9 @@ frontend/.env.*
 *seed-phrase*
 *private-key*
 *secret*
+*.keystore
+*.wallet
+*credentials*
 
 # Mainnet credentials (encrypted mnemonics and private keys)
 settings/
