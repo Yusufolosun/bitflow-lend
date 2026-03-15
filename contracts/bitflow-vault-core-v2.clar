@@ -653,7 +653,7 @@
       (var-set total-outstanding-borrows (safe-sub (var-get total-outstanding-borrows) loan-amount))
       (var-set total-liquidations (+ (var-get total-liquidations) u1))
       (var-set total-liquidations-count (+ (var-get total-liquidations-count) u1))
-      (var-set total-liquidation-volume (safe-add (var-get total-liquidation-volume) borrower-deposit))
+      (var-set total-liquidation-volume (safe-add (var-get total-liquidation-volume) loan-amount))
       (var-set last-activity-block block-height)
 
       (print { event: "liquidation", liquidator: liquidator, borrower: borrower, seized: borrower-deposit, paid: total-to-pay, bonus: liquidation-bonus })
