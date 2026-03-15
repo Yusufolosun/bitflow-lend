@@ -18,10 +18,10 @@ import {
   ContractCallResponse,
 } from '../types/vault';
 import { microStxToStx, stxToMicroStx } from '../utils/formatters';
-import { 
-  getNetwork, 
-  getContractAddress, 
-  VAULT_CONTRACT,
+import {
+  getNetwork,
+  getContractAddress,
+  getActiveContractVersion,
   PROTOCOL_CONSTANTS,
   getApiEndpoint,
 } from '../config/contracts';
@@ -77,7 +77,7 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
 
   const network = getNetwork();
   const contractAddress = getContractAddress();
-  const contractName = VAULT_CONTRACT.name;
+  const contractName = getActiveContractVersion().contractName;
 
   /**
    * Deposit STX into the vault
