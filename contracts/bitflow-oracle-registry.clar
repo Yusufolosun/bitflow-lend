@@ -64,6 +64,7 @@
 (define-private (is-price-fresh)
   (and
     (> (var-get aggregated-price) u0)
+    (> (var-get aggregated-block) u0)
     (< (- block-height (var-get aggregated-block)) (var-get max-price-age))
   )
 )
