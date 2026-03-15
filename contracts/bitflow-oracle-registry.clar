@@ -298,7 +298,7 @@
       (begin
         (var-set total-rejections (+ (var-get total-rejections) u1))
         (print { event: "price-rejected-deviation", reporter: tx-sender, price: price })
-        (ok false)
+        ERR-DEVIATION-TOO-HIGH
       )
     )
   )
