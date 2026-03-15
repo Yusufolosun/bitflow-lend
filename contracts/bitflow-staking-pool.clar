@@ -76,9 +76,11 @@
     (paid (default-to u0 (map-get? staker-reward-per-token-paid staker)))
     (pending (default-to u0 (map-get? staker-rewards staker)))
   )
-    (+ pending
-       (/ (* balance (- per-token paid))
-          REWARD-PRECISION))
+    (if (>= per-token paid)
+      (+ pending
+         (/ (* balance (- per-token paid))
+            REWARD-PRECISION))
+      pending)
   )
 )
 
