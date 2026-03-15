@@ -146,12 +146,16 @@
 )
 
 ;; Get maximum borrow amount for a user based on their deposit
+;; Returns 0 if the user already has an active loan (one-loan-per-user)
 (define-read-only (get-max-borrow-amount (user principal))
-  (let (
-    (user-deposit (default-to u0 (map-get? user-deposits user)))
-    (max-borrow (/ (* user-deposit u100) (var-get min-collateral-ratio)))
-  )
-    max-borrow
+  (if (is-some (map-get? user-loans user))
+    u0
+    (let (
+      (user-deposit (default-to u0 (map-get? user-deposits user)))
+      (max-borrow (/ (* user-deposit u100) (var-get min-collateral-ratio)))
+    )
+      max-borrow
+    )
   )
 )
 
