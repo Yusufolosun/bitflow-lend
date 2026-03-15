@@ -557,7 +557,7 @@
     
     ;; Update analytics
     (var-set total-liquidations-count (+ (var-get total-liquidations-count) u1))
-    (var-set total-liquidation-volume (+ (var-get total-liquidation-volume) borrower-deposit))
+    (var-set total-liquidation-volume (+ (var-get total-liquidation-volume) loan-amount))
     (var-set last-activity-block block-height)
     
     ;; Emit event
