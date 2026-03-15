@@ -318,6 +318,7 @@
 (define-public (set-late-penalty-rate (new-rate uint))
   (begin
     (asserts! (is-eq tx-sender contract-owner) err-owner-only)
+    (asserts! (>= new-rate u10) ERR-INVALID-PARAM)    ;; min 0.1% penalty
     (asserts! (<= new-rate u2000) ERR-INVALID-PARAM) ;; cap at 20%
     (var-set late-penalty-rate new-rate)
     (print { event: "set-late-penalty-rate", value: new-rate })
