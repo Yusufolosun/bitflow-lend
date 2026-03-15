@@ -82,8 +82,8 @@ export const TRANSACTION_STATUS = {
 // Health Factor Thresholds
 export const HEALTH_THRESHOLDS = {
   CRITICAL: 110,  // Below this = liquidatable
-  WARNING: 150,   // Below this = at risk
-  SAFE: 150,      // Above this = healthy
+  WARNING: 130,   // Below this = at risk, above CRITICAL
+  SAFE: 150,      // Above this = healthy (matches min collateral ratio)
 } as const;
 
 // Health Factor Colors
