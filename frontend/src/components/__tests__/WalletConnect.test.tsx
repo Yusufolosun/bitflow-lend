@@ -18,6 +18,16 @@ vi.mock('../../hooks/useAuth', () => ({
   useAuth: () => mockUseAuth(),
 }));
 
+// Mock ToastProvider (WalletConnect uses useToastContext)
+vi.mock('../ToastProvider', () => ({
+  useToastContext: () => ({
+    success: vi.fn(),
+    error: vi.fn(),
+    info: vi.fn(),
+    warning: vi.fn(),
+  }),
+}));
+
 // Mock lucide-react icons
 vi.mock('lucide-react', () => ({
   Wallet: () => <span data-testid="wallet-icon">Wallet</span>,
