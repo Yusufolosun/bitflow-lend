@@ -355,7 +355,7 @@
       (var-set last-activity-block block-height)
 
       ;; Emit event
-      (print { event: "deposit", user: tx-sender, amount: amount })
+      (print { event: "deposit", user: tx-sender, amount: amount, new-balance: new-deposit })
 
       (ok true)
     )
