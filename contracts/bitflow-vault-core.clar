@@ -21,6 +21,7 @@
 (define-constant ERR-PRICE-NOT-SET (err u113))
 (define-constant ERR-PROTOCOL-PAUSED (err u112))
 (define-constant ERR-INVALID-PARAM (err u120))
+(define-constant ERR-INSUFFICIENT-LIQUIDITY (err u121))
 
 ;; Tunable protocol parameters (admin-updatable)
 (define-data-var min-collateral-ratio uint u150)
@@ -433,7 +434,10 @@
     
     ;; Verify user has enough deposited collateral (150% ratio)
     (asserts! (>= user-balance required-collateral) ERR-INSUFFICIENT-COLLATERAL)
-    
+
+    ;; Verify contract has sufficient STX liquidity to fund the loan
+    (asserts! (>= (stx-get-balance (as-contract tx-sender)) amount) ERR-INSUFFICIENT-LIQUIDITY)
+
     ;; Transfer borrowed STX from contract to user
     (try! (as-contract (stx-transfer? amount tx-sender recipient)))
     
