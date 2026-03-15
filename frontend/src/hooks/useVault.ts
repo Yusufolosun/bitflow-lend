@@ -252,9 +252,23 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
     setError(null);
 
     try {
-      // Repay amount is computed on-chain (principal + interest + penalty).
-      // We use Allow mode because the exact total depends on the current
-      // block height and cannot be predicted precisely from the frontend.
+      // Query the on-chain repayment amount for a ceiling post-condition.
+      // The actual total at mining time may be slightly higher due to
+      // additional blocks elapsed, so we add a 1% buffer as the upper bound.
+      const repaymentInfo = await getRepaymentAmount();
+      const postConditions = repaymentInfo
+        ? [
+            makeStandardSTXPostCondition(
+              userAddress,
+              FungibleConditionCode.LessEqual,
+              repaymentInfo.total + repaymentInfo.total / BigInt(100)
+            ),
+          ]
+        : [];
+      const conditionMode = repaymentInfo
+        ? PostConditionMode.Deny
+        : PostConditionMode.Allow;
+
       return new Promise((resolve) => {
         openContractCall({
           network,
@@ -262,7 +276,8 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
           contractName,
           functionName: 'repay',
           functionArgs: [],
-          postConditionMode: PostConditionMode.Allow,
+          postConditions,
+          postConditionMode: conditionMode,
           onFinish: (data: any) => {
             setIsLoading(false);
             resolve({ success: true, txId: data.txId });
@@ -535,10 +550,41 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
     setError(null);
 
     try {
-      // Liquidation involves two transfers: liquidator pays (loan + bonus),
-      // contract transfers borrower collateral to liquidator. Both amounts
-      // depend on on-chain state that may shift between signing and mining,
-      // so Allow mode is appropriate here.
+      // Pre-fetch borrower's loan to compute a ceiling post-condition.
+      // Liquidator pays: loan_amount + 5% bonus. We add a 1% buffer
+      // in case the on-chain values shift slightly between query and mining.
+      let postConditions: any[] = [];
+      let conditionMode = PostConditionMode.Allow;
+
+      try {
+        const loanResult = await callReadOnlyFunction({
+          network,
+          contractAddress,
+          contractName,
+          functionName: 'get-user-loan',
+          functionArgs: [principalCV(borrowerAddress)],
+          senderAddress: userAddress,
+        });
+
+        if (loanResult.type === ClarityType.OptionalSome && loanResult.value) {
+          const loanData = cvToValue(loanResult.value);
+          const loanAmount = BigInt(loanData.amount);
+          const bonus = loanAmount * BigInt(5) / BigInt(100);
+          const ceiling = (loanAmount + bonus) + (loanAmount + bonus) / BigInt(100);
+
+          postConditions = [
+            makeStandardSTXPostCondition(
+              userAddress,
+              FungibleConditionCode.LessEqual,
+              ceiling
+            ),
+          ];
+          conditionMode = PostConditionMode.Deny;
+        }
+      } catch {
+        // Fallback to Allow if we can't fetch loan data
+      }
+
       return new Promise((resolve) => {
         openContractCall({
           network,
@@ -546,7 +592,8 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
           contractName,
           functionName: 'liquidate',
           functionArgs: [principalCV(borrowerAddress)],
-          postConditionMode: PostConditionMode.Allow,
+          postConditions,
+          postConditionMode: conditionMode,
           onFinish: (data: any) => {
             // Transaction submitted
             setIsLoading(false);
