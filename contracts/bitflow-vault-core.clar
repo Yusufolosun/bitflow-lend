@@ -395,7 +395,9 @@
     (map-set user-deposits recipient (- user-balance amount))
     
     ;; Update total deposits
-    (var-set total-deposits (- (var-get total-deposits) amount))
+    (var-set total-deposits (if (>= (var-get total-deposits) amount)
+      (- (var-get total-deposits) amount)
+      u0))
     
     ;; Update analytics
     (var-set total-withdrawals-count (+ (var-get total-withdrawals-count) u1))
