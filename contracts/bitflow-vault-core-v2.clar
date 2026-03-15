@@ -125,10 +125,16 @@
 
 ;; Validate price not stale
 (define-private (is-price-valid)
-  (and
-    (> (var-get admin-stx-price) u0)
-    (> (var-get price-update-block) u0)
-    (< (- block-height (var-get price-update-block)) PRICE-STALENESS-THRESHOLD)
+  (let (
+    (price (var-get admin-stx-price))
+    (update-block (var-get price-update-block))
+  )
+    (and
+      (> price u0)
+      (> update-block u0)
+      (>= block-height update-block)
+      (< (- block-height update-block) PRICE-STALENESS-THRESHOLD)
+    )
   )
 )
 
