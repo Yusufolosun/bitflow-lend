@@ -289,7 +289,7 @@ describe('Calculations Utility', () => {
     });
 
     it('rejects below minimum', () => {
-      const result = validateBorrowAmount(0.5, 150);
+      const result = validateBorrowAmount(0.05, 150);
       expect(result.valid).toBe(false);
       expect(result.error).toContain('Minimum borrow');
     });
@@ -307,13 +307,13 @@ describe('Calculations Utility', () => {
     });
 
     it('rejects below minimum', () => {
-      const result = validateInterestRate(3);
+      const result = validateInterestRate(0.3);
       expect(result.valid).toBe(false);
       expect(result.error).toContain('Minimum');
     });
 
     it('rejects above maximum', () => {
-      const result = validateInterestRate(50);
+      const result = validateInterestRate(150);
       expect(result.valid).toBe(false);
       expect(result.error).toContain('Maximum');
     });
@@ -324,17 +324,29 @@ describe('Calculations Utility', () => {
       expect(validateLoanTerm(30)).toEqual({ valid: true });
     });
 
-    it('rejects disallowed term', () => {
-      const result = validateLoanTerm(15);
+    it('rejects term below minimum', () => {
+      const result = validateLoanTerm(0);
       expect(result.valid).toBe(false);
-      expect(result.error).toContain('must be one of');
+      expect(result.error).toContain('Minimum');
     });
 
-    it('validates all allowed terms', () => {
+    it('rejects term above maximum', () => {
+      const result = validateLoanTerm(400);
+      expect(result.valid).toBe(false);
+      expect(result.error).toContain('Maximum');
+    });
+
+    it('validates all standard terms', () => {
       expect(validateLoanTerm(7).valid).toBe(true);
       expect(validateLoanTerm(30).valid).toBe(true);
       expect(validateLoanTerm(90).valid).toBe(true);
       expect(validateLoanTerm(365).valid).toBe(true);
+    });
+
+    it('validates any term within range', () => {
+      expect(validateLoanTerm(1).valid).toBe(true);
+      expect(validateLoanTerm(15).valid).toBe(true);
+      expect(validateLoanTerm(200).valid).toBe(true);
     });
   });
 
