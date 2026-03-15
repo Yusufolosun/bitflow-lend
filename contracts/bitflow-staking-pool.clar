@@ -307,13 +307,16 @@
 
 ;; Request unstake (starts cooldown timer)
 (define-public (request-unstake)
-  (let (
-    (balance (default-to u0 (map-get? staker-balances tx-sender)))
-  )
-    (asserts! (> balance u0) ERR-NO-STAKE)
-    (map-set staker-cooldown-end tx-sender (+ block-height COOLDOWN-PERIOD))
-    (print { event: "unstake-requested", user: tx-sender, cooldown-end: (+ block-height COOLDOWN-PERIOD) })
-    (ok true)
+  (begin
+    (asserts! (not (var-get is-paused)) ERR-PROTOCOL-PAUSED)
+    (let (
+      (balance (default-to u0 (map-get? staker-balances tx-sender)))
+    )
+      (asserts! (> balance u0) ERR-NO-STAKE)
+      (map-set staker-cooldown-end tx-sender (+ block-height COOLDOWN-PERIOD))
+      (print { event: "unstake-requested", user: tx-sender, cooldown-end: (+ block-height COOLDOWN-PERIOD) })
+      (ok true)
+    )
   )
 )
 
