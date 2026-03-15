@@ -45,7 +45,7 @@ export const RepayCard: React.FC = () => {
         setTimeElapsed(`${minutes}m`);
       }
     }
-  }, [address, vault]);
+  }, [address, vault.getUserLoan, vault.getRepaymentAmount]);
 
   useSmartPolling(fetchData, 60_000, !!address);
 
