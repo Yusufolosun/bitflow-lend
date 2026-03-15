@@ -262,9 +262,10 @@
 )
 
 (define-read-only (get-price-staleness-blocks)
-  (if (> (var-get price-update-block) u0)
-    (- block-height (var-get price-update-block))
-    u0)
+  (let ((update-block (var-get price-update-block)))
+    (if (and (> update-block u0) (>= block-height update-block))
+      (- block-height update-block)
+      u0))
 )
 
 (define-read-only (get-is-paused)
