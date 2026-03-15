@@ -110,14 +110,14 @@ describe("bitflow-oracle-registry state tests", () => {
       expect(stats.result).toHaveTupleProperty("total-submissions", Cl.uint(2));
     });
 
-    it("increments total rejections on deviation reject", () => {
+    it("does not increment total rejections on deviation reject (err rolls back state)", () => {
       setup();
       adminSetPrice(1_000_000);
-      // Submit price with > 20% deviation
+      // Submit price with > 20% deviation — returns err u305, state rolled back
       submitPrice(1_500_000, wallet1());
 
       const stats = getOracleStats();
-      expect(stats.result).toHaveTupleProperty("total-rejections", Cl.uint(1));
+      expect(stats.result).toHaveTupleProperty("total-rejections", Cl.uint(0));
     });
 
     it("tracks per-reporter submission count", () => {

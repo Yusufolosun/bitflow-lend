@@ -11,9 +11,9 @@ describe("Precision Tests", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
-      // Deposit 150 (enough for 150% collateral on 100)
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(150)], wallet);
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100), Cl.uint(100), Cl.uint(1)], wallet);
+      // Deposit 150000 (enough for 150% collateral on 100000)
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(150000)], wallet);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100000), Cl.uint(100), Cl.uint(1)], wallet);
 
       // Read-only in same block as borrow: 0 blocks elapsed, interest = 0
       const repayment = simnet.callReadOnlyFn(
@@ -21,7 +21,7 @@ describe("Precision Tests", () => {
         [Cl.principal(wallet)], wallet
       );
       expect(repayment.result).toBeSome(
-        Cl.tuple({ principal: Cl.uint(100), interest: Cl.uint(0), penalty: Cl.uint(0), total: Cl.uint(100) })
+        Cl.tuple({ principal: Cl.uint(100000), interest: Cl.uint(0), penalty: Cl.uint(0), total: Cl.uint(100000) })
       );
     });
 
@@ -111,10 +111,10 @@ describe("Precision Tests", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(1500)], wallet);
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], wallet);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(150000)], wallet);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100000), Cl.uint(500), Cl.uint(30)], wallet);
 
-      // With price = 100: health = (1500 * 100 / 100) * 100 / 1000 = 150
+      // With price = 100: health = (150000 * 100 / 100) * 100 / 100000 = 150
       const health = simnet.callReadOnlyFn(
         CONTRACT, "calculate-health-factor",
         [Cl.principal(wallet), Cl.uint(100)], wallet
@@ -126,8 +126,8 @@ describe("Precision Tests", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(2000)], wallet);
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], wallet);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(200000)], wallet);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100000), Cl.uint(500), Cl.uint(30)], wallet);
 
       const health = simnet.callReadOnlyFn(
         CONTRACT, "calculate-health-factor",
@@ -140,10 +140,10 @@ describe("Precision Tests", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(2000)], wallet);
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], wallet);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(200000)], wallet);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100000), Cl.uint(500), Cl.uint(30)], wallet);
 
-      // At price 50: health = (2000 * 50 / 100) * 100 / 1000 = 100
+      // At price 50: health = (200000 * 50 / 100) * 100 / 100000 = 100
       const health = simnet.callReadOnlyFn(
         CONTRACT, "calculate-health-factor",
         [Cl.principal(wallet), Cl.uint(50)], wallet
@@ -227,10 +227,10 @@ describe("Precision Tests", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(1500)], wallet);
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(50), Cl.uint(30)], wallet);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(150000)], wallet);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100000), Cl.uint(50), Cl.uint(30)], wallet);
 
-      // After 10 blocks: ceil(1000 * 50 * 10 / 5256000) = ceil(0.095) = 1
+      // After 10 blocks: ceil(100000 * 50 * 10 / 5256000) = ceil(9.513) = 10
       simnet.mineEmptyBlocks(10);
 
       const repayment = simnet.callReadOnlyFn(
@@ -238,7 +238,7 @@ describe("Precision Tests", () => {
         [Cl.principal(wallet)], wallet
       );
       expect(repayment.result).toBeSome(
-        Cl.tuple({ principal: Cl.uint(1000), interest: Cl.uint(1), penalty: Cl.uint(0), total: Cl.uint(1001) })
+        Cl.tuple({ principal: Cl.uint(100000), interest: Cl.uint(10), penalty: Cl.uint(0), total: Cl.uint(100010) })
       );
     });
 
@@ -246,10 +246,10 @@ describe("Precision Tests", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(1500)], wallet);
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(100), Cl.uint(30)], wallet);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(150000)], wallet);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100000), Cl.uint(100), Cl.uint(30)], wallet);
 
-      // Ceiling division: ceil(1000 * 100 * 52 / 5256000) = ceil(0.989) = 1
+      // Ceiling division: ceil(100000 * 100 * 52 / 5256000) = ceil(98.934) = 99
       simnet.mineEmptyBlocks(52);
 
       const repaymentLow = simnet.callReadOnlyFn(
@@ -257,7 +257,7 @@ describe("Precision Tests", () => {
         [Cl.principal(wallet)], wallet
       );
       expect(repaymentLow.result).toBeSome(
-        Cl.tuple({ principal: Cl.uint(1000), interest: Cl.uint(1), penalty: Cl.uint(0), total: Cl.uint(1001) })
+        Cl.tuple({ principal: Cl.uint(100000), interest: Cl.uint(99), penalty: Cl.uint(0), total: Cl.uint(100099) })
       );
     });
 
@@ -265,10 +265,10 @@ describe("Precision Tests", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(1500)], wallet);
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(100), Cl.uint(30)], wallet);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(150000)], wallet);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100000), Cl.uint(100), Cl.uint(30)], wallet);
 
-      // At 53 blocks: ceil(1000 * 100 * 53 / 5256000) = ceil(1.008) = 2
+      // At 53 blocks: ceil(100000 * 100 * 53 / 5256000) = ceil(100.837) = 101
       simnet.mineEmptyBlocks(53);
 
       const repaymentHigh = simnet.callReadOnlyFn(
@@ -276,7 +276,7 @@ describe("Precision Tests", () => {
         [Cl.principal(wallet)], wallet
       );
       expect(repaymentHigh.result).toBeSome(
-        Cl.tuple({ principal: Cl.uint(1000), interest: Cl.uint(2), penalty: Cl.uint(0), total: Cl.uint(1002) })
+        Cl.tuple({ principal: Cl.uint(100000), interest: Cl.uint(101), penalty: Cl.uint(0), total: Cl.uint(100101) })
       );
     });
 
@@ -303,16 +303,16 @@ describe("Precision Tests", () => {
       const wallet2 = accounts.get("wallet_2")!;
 
       // User 1 borrows and repays
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(1500)], wallet1);
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], wallet1);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(150000)], wallet1);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100000), Cl.uint(500), Cl.uint(30)], wallet1);
       simnet.mineEmptyBlocks(100);
       simnet.callPublicFn(CONTRACT, "repay", [], wallet1);
 
       simnet.callReadOnlyFn(CONTRACT, "get-total-repaid", [], wallet1);
 
       // User 2 borrows and repays
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(1500)], wallet2);
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], wallet2);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(150000)], wallet2);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100000), Cl.uint(500), Cl.uint(30)], wallet2);
       simnet.mineEmptyBlocks(100);
       simnet.callPublicFn(CONTRACT, "repay", [], wallet2);
 

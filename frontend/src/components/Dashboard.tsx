@@ -5,6 +5,7 @@ import { useVault } from '../hooks/useVault';
 import { StatsCard } from './StatsCard';
 import { WalletConnect } from './WalletConnect';
 import { DepositCard } from './DepositCard';
+import { WithdrawCard } from './WithdrawCard';
 import { BorrowCard } from './BorrowCard';
 import { RepayCard } from './RepayCard';
 import { HealthMonitor } from './HealthMonitor';
@@ -292,6 +293,7 @@ export const Dashboard: React.FC = () => {
               {/* Left Column */}
               <div className="space-y-6">
                 <DepositCard />
+                <WithdrawCard />
                 <BorrowCard />
               </div>
 

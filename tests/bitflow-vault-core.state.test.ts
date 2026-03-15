@@ -25,14 +25,14 @@ describe("State Transition Tests", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(3000)], wallet);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(300000)], wallet);
 
       // Verify no loan exists
       const loanBefore = simnet.callReadOnlyFn(CONTRACT, "get-user-loan", [Cl.principal(wallet)], wallet);
       expect(loanBefore.result).toBeNone();
 
       // Transition: borrow
-      const { result } = simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(2000), Cl.uint(500), Cl.uint(30)], wallet);
+      const { result } = simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(200000), Cl.uint(500), Cl.uint(30)], wallet);
       expect(result).toBeOk(Cl.bool(true));
 
       const loanAfter = simnet.callReadOnlyFn(CONTRACT, "get-user-loan", [Cl.principal(wallet)], wallet);
@@ -43,8 +43,8 @@ describe("State Transition Tests", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(3000)], wallet);
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(2000), Cl.uint(500), Cl.uint(30)], wallet);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(300000)], wallet);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(200000), Cl.uint(500), Cl.uint(30)], wallet);
 
       // Verify loan exists
       const loanBefore = simnet.callReadOnlyFn(CONTRACT, "get-user-loan", [Cl.principal(wallet)], wallet);
@@ -62,12 +62,12 @@ describe("State Transition Tests", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(3000)], wallet);
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(2000), Cl.uint(500), Cl.uint(30)], wallet);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(300000)], wallet);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(200000), Cl.uint(500), Cl.uint(30)], wallet);
       simnet.callPublicFn(CONTRACT, "repay", [], wallet);
 
       // Transition: withdraw
-      const { result } = simnet.callPublicFn(CONTRACT, "withdraw", [Cl.uint(3000)], wallet);
+      const { result } = simnet.callPublicFn(CONTRACT, "withdraw", [Cl.uint(300000)], wallet);
       expect(result).toBeOk(Cl.bool(true));
 
       const finalBalance = simnet.callReadOnlyFn(CONTRACT, "get-user-deposit", [Cl.principal(wallet)], wallet);
@@ -78,12 +78,12 @@ describe("State Transition Tests", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(3000)], wallet);
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], wallet);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(300000)], wallet);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100000), Cl.uint(500), Cl.uint(30)], wallet);
       simnet.callPublicFn(CONTRACT, "repay", [], wallet);
 
       // Should allow new borrow
-      const { result } = simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1500), Cl.uint(600), Cl.uint(60)], wallet);
+      const { result } = simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(150000), Cl.uint(600), Cl.uint(60)], wallet);
       expect(result).toBeOk(Cl.bool(true));
     });
 
@@ -92,11 +92,11 @@ describe("State Transition Tests", () => {
       const wallet = accounts.get("wallet_1")!;
 
       // Step 1: Deposit
-      let res = simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(5000)], wallet);
+      let res = simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(500000)], wallet);
       expect(res.result).toBeOk(Cl.bool(true));
 
       // Step 2: Borrow
-      res = simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(3000), Cl.uint(500), Cl.uint(30)], wallet);
+      res = simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(300000), Cl.uint(500), Cl.uint(30)], wallet);
       expect(res.result).toBeOk(Cl.bool(true));
 
       // Step 3: Repay
@@ -104,7 +104,7 @@ describe("State Transition Tests", () => {
       expect(res.result).toBeOk(expect.any(Object));
 
       // Step 4: Withdraw all
-      res = simnet.callPublicFn(CONTRACT, "withdraw", [Cl.uint(5000)], wallet);
+      res = simnet.callPublicFn(CONTRACT, "withdraw", [Cl.uint(500000)], wallet);
       expect(res.result).toBeOk(Cl.bool(true));
 
       // Step 5: Deposit again
@@ -121,7 +121,7 @@ describe("State Transition Tests", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
-      const { result } = simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], wallet);
+      const { result } = simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100000), Cl.uint(500), Cl.uint(30)], wallet);
       expect(result).toBeErr(Cl.uint(105)); // ERR-INSUFFICIENT-COLLATERAL
     });
 
@@ -147,10 +147,10 @@ describe("State Transition Tests", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(6000)], wallet);
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(2000), Cl.uint(500), Cl.uint(30)], wallet);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(600000)], wallet);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(200000), Cl.uint(500), Cl.uint(30)], wallet);
 
-      const { result } = simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], wallet);
+      const { result } = simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100000), Cl.uint(500), Cl.uint(30)], wallet);
       expect(result).toBeErr(Cl.uint(103)); // ERR-ALREADY-HAS-LOAN
     });
 

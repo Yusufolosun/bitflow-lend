@@ -96,12 +96,12 @@ describe("bitflow-oracle-registry boundary tests", () => {
 
   // ── Deviation guard ─────────────────────────────────────────────
   describe("deviation guard", () => {
-    it("rejects price exceeding deviation threshold", () => {
+    it("rejects price exceeding deviation threshold with err u305", () => {
       setup();
       submitPrice(1_000_000, wallet1()); // baseline: $1.00
       // Now submit > 20% deviation
       const { result } = submitPrice(1_300_000, wallet1()); // +30%
-      expect(result).toBeOk(Cl.bool(false)); // ERR-DEVIATION-TOO-HIGH
+      expect(result).toBeErr(Cl.uint(305)); // ERR-DEVIATION-TOO-HIGH
     });
 
     it("accepts price within deviation threshold", () => {
@@ -307,17 +307,17 @@ describe("bitflow-oracle-registry boundary tests", () => {
       expect(result).toBeUint(2);
     });
 
-    it("tracks rejections in oracle stats", () => {
+    it("rejection count stays at zero because err rolls back state", () => {
       setup();
       submitPrice(1_000_000, wallet1());
-      submitPrice(2_000_000, wallet1()); // rejected — too far from 1M
+      submitPrice(2_000_000, wallet1()); // rejected with err u305 — state rolled back
 
       const { result } = simnet.callReadOnlyFn(
         CONTRACT, "get-oracle-stats", [], deployer()
       );
       const stats = result as any;
-      // result is a tuple; check total-rejections field
-      expect(stats.value["total-rejections"]).toStrictEqual(Cl.uint(1));
+      // err rolls back ALL state changes, so total-rejections remains 0
+      expect(stats.value["total-rejections"]).toStrictEqual(Cl.uint(0));
     });
   });
 });

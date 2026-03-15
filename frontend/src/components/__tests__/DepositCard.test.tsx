@@ -55,7 +55,7 @@ describe('DepositCard Component', () => {
     vi.clearAllMocks();
     mockGetUserDeposit.mockResolvedValue({ amountSTX: 50 });
     mockDeposit.mockResolvedValue({ success: true, txId: '0x123' });
-    mockPollTransactionStatus.mockResolvedValue(true);
+    mockPollTransactionStatus.mockResolvedValue('confirmed');
   });
 
   describe('Rendering', () => {
@@ -205,7 +205,7 @@ describe('DepositCard Component', () => {
 
     it('shows success message after confirmed deposit', async () => {
       mockDeposit.mockResolvedValue({ success: true, txId: '0xabc123' });
-      mockPollTransactionStatus.mockResolvedValue(true);
+      mockPollTransactionStatus.mockResolvedValue('confirmed');
       mockGetUserDeposit.mockResolvedValue({ amountSTX: 60 });
 
       const user = userEvent.setup();
@@ -239,13 +239,13 @@ describe('DepositCard Component', () => {
       });
     });
 
-    it('shows error when transaction times out', async () => {
+    it('shows warning when transaction times out', async () => {
       mockDeposit.mockResolvedValue({ success: true, txId: '0xabc' });
-      mockPollTransactionStatus.mockResolvedValue(false);
+      mockPollTransactionStatus.mockResolvedValue('timeout');
 
       const user = userEvent.setup();
       render(<DepositCard />);
-      
+
       const input = screen.getByPlaceholderText('0.00');
       await user.type(input, '10');
 
@@ -253,7 +253,7 @@ describe('DepositCard Component', () => {
       await user.click(submitBtn);
 
       await waitFor(() => {
-        expect(screen.getByText(/Transaction failed or timed out/)).toBeInTheDocument();
+        expect(screen.getByText(/Transaction still processing/)).toBeInTheDocument();
       });
     });
 

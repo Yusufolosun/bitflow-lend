@@ -178,13 +178,13 @@ describe("bitflow-vault-core-v2 admin parameter bounds tests", () => {
       expect(result).toBeErr(Cl.uint(120));
     });
 
-    it("accepts zero (no penalty)", () => {
+    it("rejects zero (below minimum)", () => {
       setup();
       const { result } = simnet.callPublicFn(
         CONTRACT, "set-late-penalty-rate",
         [Cl.uint(0)], deployer()
       );
-      expect(result).toBeOk(Cl.bool(true));
+      expect(result).toBeErr(Cl.uint(120)); // ERR-INVALID-PARAM
     });
 
     it("accepts max (2000 bps)", () => {

@@ -41,8 +41,8 @@ describe("Security Tests", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(3000)], wallet);
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(2000), Cl.uint(500), Cl.uint(30)], wallet);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(300000)], wallet);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(200000), Cl.uint(500), Cl.uint(30)], wallet);
 
       // Loan should exist with correct amount
       const loan = simnet.callReadOnlyFn(CONTRACT, "get-user-loan", [Cl.principal(wallet)], wallet);
@@ -53,15 +53,15 @@ describe("Security Tests", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(1000)], wallet);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(100000)], wallet);
 
       // This should fail - insufficient collateral
-      const borrowResult = simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], wallet);
+      const borrowResult = simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100000), Cl.uint(500), Cl.uint(30)], wallet);
       expect(borrowResult.result).toBeErr(Cl.uint(105));
 
       // Deposit should still be intact
       const balance = simnet.callReadOnlyFn(CONTRACT, "get-user-deposit", [Cl.principal(wallet)], wallet);
-      expect(balance.result).toBeUint(1000);
+      expect(balance.result).toBeUint(100000);
 
       // No loan should exist
       const loan = simnet.callReadOnlyFn(CONTRACT, "get-user-loan", [Cl.principal(wallet)], wallet);
@@ -154,8 +154,8 @@ describe("Security Tests", () => {
       const wallet1 = accounts.get("wallet_1")!;
       const wallet2 = accounts.get("wallet_2")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(3000)], wallet1);
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(2000), Cl.uint(500), Cl.uint(30)], wallet1);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(300000)], wallet1);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(200000), Cl.uint(500), Cl.uint(30)], wallet1);
 
       // Wallet 2 tries to repay (has no loan)
       const { result } = simnet.callPublicFn(CONTRACT, "repay", [], wallet2);
@@ -204,14 +204,14 @@ describe("Security Tests", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(1500)], wallet);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(150000)], wallet);
 
       // Borrow exactly at limit
-      const b1 = simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], wallet);
+      const b1 = simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100000), Cl.uint(500), Cl.uint(30)], wallet);
       expect(b1.result).toBeOk(Cl.bool(true));
 
       // Cannot borrow again (already has loan)
-      const b2 = simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1), Cl.uint(500), Cl.uint(30)], wallet);
+      const b2 = simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100000), Cl.uint(500), Cl.uint(30)], wallet);
       expect(b2.result).toBeErr(Cl.uint(103));
     });
 
@@ -219,8 +219,8 @@ describe("Security Tests", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(15000)], wallet);
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(10000), Cl.uint(500), Cl.uint(30)], wallet);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(1500000)], wallet);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000000), Cl.uint(500), Cl.uint(30)], wallet);
 
       simnet.mineEmptyBlocks(100);
 
@@ -268,14 +268,14 @@ describe("Security Tests", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(1500)], wallet);
-      // Small borrow with minimum valid rate (50 bps)
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100), Cl.uint(50), Cl.uint(1)], wallet);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(150000)], wallet);
+      // Minimum borrow with minimum valid rate (50 bps)
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100000), Cl.uint(50), Cl.uint(1)], wallet);
 
       // Should still be able to repay — ceiling division ensures interest >= 1
       const repay = simnet.callPublicFn(CONTRACT, "repay", [], wallet);
       expect(repay.result).toBeOk(
-        Cl.tuple({ principal: Cl.uint(100), interest: Cl.uint(1), penalty: Cl.uint(0), total: Cl.uint(101) })
+        Cl.tuple({ principal: Cl.uint(100000), interest: Cl.uint(1), penalty: Cl.uint(0), total: Cl.uint(100001) })
       );
     });
 
@@ -297,8 +297,8 @@ describe("Security Tests", () => {
       const borrower = accounts.get("wallet_1")!;
       const attacker = accounts.get("wallet_2")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(2000)], borrower);
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], borrower);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(200000)], borrower);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100000), Cl.uint(500), Cl.uint(30)], borrower);
 
       // Even with manipulated price, the contract's health check is strict
       // At price 100: healthy (200%)
@@ -318,12 +318,12 @@ describe("Security Tests", () => {
       const borrower = accounts.get("wallet_1")!;
       const attacker = accounts.get("wallet_2")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(3000)], borrower);
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], borrower);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(300000)], borrower);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100000), Cl.uint(500), Cl.uint(30)], borrower);
 
       // Try to liquidate at various prices - all should fail (300% collateralized)
       for (const price of [100, 90, 80, 70, 60]) {
-        // health = 3000*price/100*100/1000 = 3000*price/1000 = 3*price
+        // health = 300000*price/100*100/100000 = 300000*price/100000 = 3*price
         // At price 60: health = 180, still above 110
         simnet.callPublicFn(CONTRACT, "set-stx-price", [Cl.uint(price)], deployer);
         const liqAttempt = simnet.callPublicFn(CONTRACT, "liquidate", [Cl.principal(borrower)], attacker);
@@ -334,16 +334,16 @@ describe("Security Tests", () => {
 
       // Borrower collateral untouched
       const deposit = simnet.callReadOnlyFn(CONTRACT, "get-user-deposit", [Cl.principal(borrower)], borrower);
-      expect(deposit.result).toBeUint(3000);
+      expect(deposit.result).toBeUint(300000);
     });
 
     it("loan terms fixed at borrow time, cannot be changed after", () => {
       const accounts = simnet.getAccounts();
       const wallet = accounts.get("wallet_1")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(3000)], wallet);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(300000)], wallet);
       const startBlock = simnet.blockHeight;
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(2000), Cl.uint(500), Cl.uint(30)], wallet);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(200000), Cl.uint(500), Cl.uint(30)], wallet);
 
       simnet.mineEmptyBlocks(100);
 
@@ -351,7 +351,7 @@ describe("Security Tests", () => {
       const loan = simnet.callReadOnlyFn(CONTRACT, "get-user-loan", [Cl.principal(wallet)], wallet);
       expect(loan.result).toBeSome(
         Cl.tuple({
-          amount: Cl.uint(2000),
+          amount: Cl.uint(200000),
           "interest-rate": Cl.uint(500),
           "start-block": Cl.uint(startBlock + 1),
           "term-end": Cl.uint(startBlock + 1 + 30 * 144),

@@ -22,6 +22,10 @@
 (define-constant ERR-PROTOCOL-PAUSED (err u112))
 (define-constant ERR-INVALID-PARAM (err u120))
 (define-constant ERR-INSUFFICIENT-LIQUIDITY (err u121))
+(define-constant ERR-MIN-BORROW-AMOUNT (err u122))
+
+;; Minimum borrow amount to prevent dust loans
+(define-constant MIN-BORROW-AMOUNT u100000) ;; 0.1 STX minimum
 
 ;; Tunable protocol parameters (admin-updatable)
 (define-data-var min-collateral-ratio uint u150)
@@ -314,6 +318,7 @@
 (define-public (set-late-penalty-rate (new-rate uint))
   (begin
     (asserts! (is-eq tx-sender contract-owner) err-owner-only)
+    (asserts! (>= new-rate u10) ERR-INVALID-PARAM)    ;; min 0.1% penalty
     (asserts! (<= new-rate u2000) ERR-INVALID-PARAM) ;; cap at 20%
     (var-set late-penalty-rate new-rate)
     (print { event: "set-late-penalty-rate", value: new-rate })
@@ -434,6 +439,9 @@
     
     ;; Validate borrow amount is greater than zero
     (asserts! (> amount u0) ERR-INVALID-AMOUNT)
+
+    ;; Enforce minimum borrow to prevent dust loans
+    (asserts! (>= amount MIN-BORROW-AMOUNT) ERR-MIN-BORROW-AMOUNT)
 
     ;; Validate interest rate (must be between 0.5% and 100% APR)
     (asserts! (and (>= interest-rate (var-get min-interest-rate)) (<= interest-rate (var-get max-interest-rate))) ERR-INVALID-INTEREST-RATE)
@@ -560,8 +568,10 @@
     ;; Set borrower's deposit to 0
     (map-set user-deposits borrower u0)
     
-    ;; Update total deposits
-    (var-set total-deposits (- (var-get total-deposits) borrower-deposit))
+    ;; Update total deposits (guarded against underflow)
+    (var-set total-deposits (if (>= (var-get total-deposits) borrower-deposit)
+      (- (var-get total-deposits) borrower-deposit)
+      u0))
     
     ;; Increment liquidation counter
     (var-set total-liquidations (+ (var-get total-liquidations) u1))

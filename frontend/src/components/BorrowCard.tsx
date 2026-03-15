@@ -55,6 +55,12 @@ export const BorrowCard: React.FC = () => {
       return;
     }
 
+    if (amount < 0.1) {
+      setErrorMessage('Minimum borrow amount is 0.1 STX');
+      setTxStatus('error');
+      return;
+    }
+
     if (amount > maxBorrowSTX) {
       setErrorMessage(`Maximum borrow is ${formatSTX(maxBorrowSTX)} STX`);
       setTxStatus('error');
@@ -208,6 +214,12 @@ export const BorrowCard: React.FC = () => {
             MAX
           </button>
         </div>
+        {borrowAmount && parseFloat(borrowAmount) > 0 && parseFloat(borrowAmount) < 0.1 && (
+          <div className="flex items-center gap-2 text-xs text-red-700 bg-red-50 rounded-lg p-2" role="alert">
+            <XCircle size={14} className="flex-shrink-0" />
+            <span>Minimum borrow amount is 0.1 STX</span>
+          </div>
+        )}
       </div>
 
       {/* Interest Rate */}

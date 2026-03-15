@@ -62,10 +62,15 @@
 
 ;; Check if the aggregated price is still fresh
 (define-private (is-price-fresh)
-  (and
-    (> (var-get aggregated-price) u0)
-    (> (var-get aggregated-block) u0)
-    (< (- block-height (var-get aggregated-block)) (var-get max-price-age))
+  (let (
+    (agg-block (var-get aggregated-block))
+  )
+    (and
+      (> (var-get aggregated-price) u0)
+      (> agg-block u0)
+      (>= block-height agg-block)
+      (< (- block-height agg-block) (var-get max-price-age))
+    )
   )
 )
 
@@ -184,7 +189,7 @@
     (asserts! (is-eq tx-sender contract-owner) ERR-OWNER-ONLY)
     (asserts! (is-reporter reporter) ERR-REPORTER-NOT-FOUND)
     (asserts! (> (var-get reporter-count) (var-get min-reporters-required)) ERR-MIN-REPORTERS)
-    (map-set reporters reporter false)
+    (map-delete reporters reporter)
     (map-delete reporter-prices reporter)
     (var-set reporter-count (- (var-get reporter-count) u1))
     (print { event: "reporter-removed", reporter: reporter })
@@ -293,7 +298,7 @@
       (begin
         (var-set total-rejections (+ (var-get total-rejections) u1))
         (print { event: "price-rejected-deviation", reporter: tx-sender, price: price })
-        (ok false)
+        ERR-DEVIATION-TOO-HIGH
       )
     )
   )

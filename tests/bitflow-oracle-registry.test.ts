@@ -265,14 +265,14 @@ describe("bitflow-oracle-registry", () => {
       expect(result).toBeOk(Cl.bool(true));
     });
 
-    it("rejects price exceeding deviation threshold", () => {
+    it("rejects price exceeding deviation threshold with err u305", () => {
       initOracle();
       addReporter(wallet1());
       addReporter(wallet2());
       submitPrice(50000000, wallet1());
       // 25% change exceeds 20% default threshold
       const { result } = submitPrice(62500001, wallet2());
-      expect(result).toBeOk(Cl.bool(false));
+      expect(result).toBeErr(Cl.uint(305));
     });
 
     it("accepts first price without deviation check", () => {
@@ -283,25 +283,25 @@ describe("bitflow-oracle-registry", () => {
       expect(result).toBeOk(Cl.bool(true));
     });
 
-    it("rejects price deviating downward too far", () => {
+    it("rejects price deviating downward too far with err u305", () => {
       initOracle();
       addReporter(wallet1());
       addReporter(wallet2());
       submitPrice(50000000, wallet1());
       // 25% drop exceeds 20% threshold
       const { result } = submitPrice(37499999, wallet2());
-      expect(result).toBeOk(Cl.bool(false));
+      expect(result).toBeErr(Cl.uint(305));
     });
 
-    it("increments rejection count on deviation failure", () => {
+    it("does not increment rejection count on deviation failure (err rolls back state)", () => {
       initOracle();
       addReporter(wallet1());
       addReporter(wallet2());
       submitPrice(50000000, wallet1());
-      submitPrice(80000000, wallet2()); // will be rejected
+      submitPrice(80000000, wallet2()); // will be rejected with err u305
       const { result } = getOracleStats();
       const data = result as any;
-      expect(data.value["total-rejections"]).toBeUint(1);
+      expect(data.value["total-rejections"]).toBeUint(0);
     });
   });
 
@@ -543,7 +543,7 @@ describe("bitflow-oracle-registry", () => {
       expect(result).toBeOk(Cl.bool(true));
     });
 
-    it("tightened deviation rejects previously valid price", () => {
+    it("tightened deviation rejects previously valid price with err u305", () => {
       initOracle();
       addReporter(wallet1());
       addReporter(wallet2());
@@ -552,7 +552,7 @@ describe("bitflow-oracle-registry", () => {
       setMaxDeviation(500);
       // 10% change now exceeds 5% threshold
       const { result } = submitPrice(55000001, wallet2());
-      expect(result).toBeOk(Cl.bool(false));
+      expect(result).toBeErr(Cl.uint(305));
     });
 
     it("widened deviation accepts previously invalid price", () => {

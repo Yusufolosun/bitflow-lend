@@ -125,10 +125,16 @@
 
 ;; Validate price not stale
 (define-private (is-price-valid)
-  (and
-    (> (var-get admin-stx-price) u0)
-    (> (var-get price-update-block) u0)
-    (< (- block-height (var-get price-update-block)) PRICE-STALENESS-THRESHOLD)
+  (let (
+    (price (var-get admin-stx-price))
+    (update-block (var-get price-update-block))
+  )
+    (and
+      (> price u0)
+      (> update-block u0)
+      (>= block-height update-block)
+      (< (- block-height update-block) PRICE-STALENESS-THRESHOLD)
+    )
   )
 )
 
@@ -188,31 +194,37 @@
 )
 
 (define-read-only (get-max-borrow-amount (user principal))
-  (let (
-    (user-deposit (default-to u0 (map-get? user-deposits user)))
-    (max-borrow (/ (* user-deposit u100) (var-get min-collateral-ratio)))
-  )
-    (if (> max-borrow MAX-BORROW-AMOUNT)
-      MAX-BORROW-AMOUNT
-      max-borrow
+  (if (is-some (map-get? user-loans user))
+    u0
+    (let (
+      (user-deposit (default-to u0 (map-get? user-deposits user)))
+      (max-borrow (/ (* user-deposit u100) (var-get min-collateral-ratio)))
+    )
+      (if (> max-borrow MAX-BORROW-AMOUNT)
+        MAX-BORROW-AMOUNT
+        max-borrow
+      )
     )
   )
 )
 
 (define-read-only (calculate-health-factor (user principal) (stx-price uint))
-  (match (map-get? user-loans user)
-    loan
-      (let (
-        (user-deposit (default-to u0 (map-get? user-deposits user)))
-        (loan-amount (get amount loan))
-        (collateral-value (/ (* user-deposit stx-price) u100))
-        (health-factor (if (> loan-amount u0)
-          (/ (* collateral-value u100) loan-amount)
-          u200))
-      )
-        (some health-factor)
-      )
+  (if (is-eq stx-price u0)
     none
+    (match (map-get? user-loans user)
+      loan
+        (let (
+          (user-deposit (default-to u0 (map-get? user-deposits user)))
+          (loan-amount (get amount loan))
+          (collateral-value (/ (* user-deposit stx-price) u100))
+          (health-factor (if (> loan-amount u0)
+            (/ (* collateral-value u100) loan-amount)
+            u200))
+        )
+          (some health-factor)
+        )
+      none
+    )
   )
 )
 
@@ -253,9 +265,10 @@
 )
 
 (define-read-only (get-price-staleness-blocks)
-  (if (> (var-get price-update-block) u0)
-    (- block-height (var-get price-update-block))
-    u0)
+  (let ((update-block (var-get price-update-block)))
+    (if (and (> update-block u0) (>= block-height update-block))
+      (- block-height update-block)
+      u0))
 )
 
 (define-read-only (get-is-paused)
@@ -449,6 +462,7 @@
 (define-public (set-late-penalty-rate (new-rate uint))
   (begin
     (asserts! (is-eq tx-sender contract-owner) ERR-OWNER-ONLY)
+    (asserts! (>= new-rate u10) ERR-INVALID-PARAM)   ;; min 0.1% penalty
     (asserts! (<= new-rate u2000) ERR-INVALID-PARAM)
     (var-set late-penalty-rate new-rate)
     (print { event: "set-late-penalty-rate", value: new-rate })

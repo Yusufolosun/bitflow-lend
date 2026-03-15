@@ -45,14 +45,14 @@ describe("bitflow-oracle-registry deviation and precision tests", () => {
       expect(result).toBeOk(Cl.bool(true));
     });
 
-    it("rejects price just beyond max deviation", () => {
+    it("rejects price just beyond max deviation with err u305", () => {
       setup();
       adminSetPrice(1_000_000);
 
       // 20% above = 1_200_000. Anything above should be rejected.
       // 1_200_001 is 20.0001% deviation
       const { result } = submitPrice(1_200_001, reporter1());
-      expect(result).toBeOk(Cl.bool(false)); // ERR-DEVIATION-TOO-HIGH
+      expect(result).toBeErr(Cl.uint(305)); // ERR-DEVIATION-TOO-HIGH
     });
 
     it("accepts price at max deviation below", () => {
@@ -64,13 +64,13 @@ describe("bitflow-oracle-registry deviation and precision tests", () => {
       expect(result).toBeOk(Cl.bool(true));
     });
 
-    it("rejects price beyond max deviation below", () => {
+    it("rejects price beyond max deviation below with err u305", () => {
       setup();
       adminSetPrice(1_000_000);
 
       // 799_999 is just beyond 20% below
       const { result } = submitPrice(799_999, reporter1());
-      expect(result).toBeOk(Cl.bool(false));
+      expect(result).toBeErr(Cl.uint(305));
     });
   });
 
@@ -90,9 +90,9 @@ describe("bitflow-oracle-registry deviation and precision tests", () => {
       // Reset price for next test
       adminSetPrice(1_000_000);
 
-      // 6% above = 1_060_000, should be rejected
+      // 6% above = 1_060_000, should be rejected with err u305
       const { result: fail } = submitPrice(1_060_000, reporter2());
-      expect(fail).toBeOk(Cl.bool(false));
+      expect(fail).toBeErr(Cl.uint(305));
     });
 
     it("widest deviation (5000 bps = 50%) allows large swings", () => {
@@ -125,7 +125,7 @@ describe("bitflow-oracle-registry deviation and precision tests", () => {
 
   // ── Rejection accounting ────────────────────────────────────────
   describe("rejection accounting", () => {
-    it("increments rejection count on deviation failure", () => {
+    it("does not increment rejection count because err rolls back state", () => {
       setup();
       adminSetPrice(1_000_000);
 
@@ -133,7 +133,7 @@ describe("bitflow-oracle-registry deviation and precision tests", () => {
       submitPrice(2_000_000, reporter1());
 
       const { result } = getStats();
-      expect(result).toHaveTupleProperty("total-rejections", Cl.uint(1));
+      expect(result).toHaveTupleProperty("total-rejections", Cl.uint(0));
     });
 
     it("does not increment submissions on rejection", () => {

@@ -11,10 +11,10 @@ describe("Comprehensive Liquidation Scenario Tests", () => {
       const wallet1 = accounts.get("wallet_1")!;
       const liquidator = accounts.get("wallet_2")!;
 
-      // Deposit 2000, borrow 1000. health = deposit*price/100*100/loan
-      // At price=55: health = 2000*55/100*100/1000 = 110 exactly
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(2000)], wallet1);
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], wallet1);
+      // Deposit 200000, borrow 100000. health = deposit*price/100*100/loan
+      // At price=55: health = 200000*55/100*100/100000 = 110 exactly
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(200000)], wallet1);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100000), Cl.uint(500), Cl.uint(30)], wallet1);
 
       // At 110%, it should NOT be liquidatable (threshold is < 110, not <=)
       const isLiq110 = simnet.callReadOnlyFn(CONTRACT, "is-liquidatable", [Cl.principal(wallet1), Cl.uint(55)], wallet1);
@@ -32,10 +32,10 @@ describe("Comprehensive Liquidation Scenario Tests", () => {
       const wallet1 = accounts.get("wallet_1")!;
       const liquidator = accounts.get("wallet_2")!;
 
-      // Deposit 2000, borrow 1000
-      // At price=54: health = 2000*54/100*100/1000 = 108
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(2000)], wallet1);
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], wallet1);
+      // Deposit 200000, borrow 100000
+      // At price=54: health = 200000*54/100*100/100000 = 108
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(200000)], wallet1);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100000), Cl.uint(500), Cl.uint(30)], wallet1);
 
       const isLiq = simnet.callReadOnlyFn(CONTRACT, "is-liquidatable", [Cl.principal(wallet1), Cl.uint(54)], wallet1);
       expect(isLiq.result).toBeBool(true);
@@ -55,8 +55,8 @@ describe("Comprehensive Liquidation Scenario Tests", () => {
       const liquidator1 = accounts.get("wallet_2")!;
       const liquidator2 = accounts.get("wallet_3")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(1500)], borrower);
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], borrower);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(150000)], borrower);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100000), Cl.uint(500), Cl.uint(30)], borrower);
 
       const stxPrice = 70; // Makes it liquidatable
       simnet.callPublicFn(CONTRACT, "set-stx-price", [Cl.uint(stxPrice)], deployer);
@@ -78,18 +78,18 @@ describe("Comprehensive Liquidation Scenario Tests", () => {
       const borrower = accounts.get("wallet_1")!;
       const liquidator = accounts.get("wallet_2")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(1500)], borrower);
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], borrower);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(150000)], borrower);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100000), Cl.uint(500), Cl.uint(30)], borrower);
 
       simnet.callPublicFn(CONTRACT, "set-stx-price", [Cl.uint(70)], deployer);
       const liqResult = simnet.callPublicFn(CONTRACT, "liquidate", [Cl.principal(borrower)], liquidator);
-      // Bonus = 1000 * 5 / 100 = 50
-      // Total paid = 1000 + 50 = 1050
+      // Bonus = 100000 * 5 / 100 = 5000
+      // Total paid = 100000 + 5000 = 105000
       expect(liqResult.result).toBeOk(
         Cl.tuple({
-          "seized-collateral": Cl.uint(1500),
-          paid: Cl.uint(1050),
-          bonus: Cl.uint(50),
+          "seized-collateral": Cl.uint(150000),
+          paid: Cl.uint(105000),
+          bonus: Cl.uint(5000),
         })
       );
     });
@@ -100,18 +100,18 @@ describe("Comprehensive Liquidation Scenario Tests", () => {
       const borrower = accounts.get("wallet_1")!;
       const liquidator = accounts.get("wallet_2")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(150_000)], borrower);
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100_000), Cl.uint(500), Cl.uint(30)], borrower);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(15_000_000)], borrower);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(10_000_000), Cl.uint(500), Cl.uint(30)], borrower);
 
       simnet.callPublicFn(CONTRACT, "set-stx-price", [Cl.uint(70)], deployer);
       const liqResult = simnet.callPublicFn(CONTRACT, "liquidate", [Cl.principal(borrower)], liquidator);
-      // Bonus = 100000 * 5 / 100 = 5000
-      // Total paid = 100000 + 5000 = 105000
+      // Bonus = 10000000 * 5 / 100 = 500000
+      // Total paid = 10000000 + 500000 = 10500000
       expect(liqResult.result).toBeOk(
         Cl.tuple({
-          "seized-collateral": Cl.uint(150_000),
-          paid: Cl.uint(105_000),
-          bonus: Cl.uint(5000),
+          "seized-collateral": Cl.uint(15_000_000),
+          paid: Cl.uint(10_500_000),
+          bonus: Cl.uint(500_000),
         })
       );
     });
@@ -122,17 +122,17 @@ describe("Comprehensive Liquidation Scenario Tests", () => {
       const borrower = accounts.get("wallet_1")!;
       const liquidator = accounts.get("wallet_2")!;
 
-      // Borrow 333: bonus = 333 * 5 / 100 = 16 (integer division)
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(500)], borrower);
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(333), Cl.uint(500), Cl.uint(30)], borrower);
+      // Borrow 333000: bonus = 333000 * 5 / 100 = 16650
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(500000)], borrower);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(333000), Cl.uint(500), Cl.uint(30)], borrower);
 
       simnet.callPublicFn(CONTRACT, "set-stx-price", [Cl.uint(70)], deployer);
       const liqResult = simnet.callPublicFn(CONTRACT, "liquidate", [Cl.principal(borrower)], liquidator);
       expect(liqResult.result).toBeOk(
         Cl.tuple({
-          "seized-collateral": Cl.uint(500),
-          paid: Cl.uint(349), // 333 + 16
-          bonus: Cl.uint(16),
+          "seized-collateral": Cl.uint(500000),
+          paid: Cl.uint(349650), // 333000 + 16650
+          bonus: Cl.uint(16650),
         })
       );
     });
@@ -145,8 +145,8 @@ describe("Comprehensive Liquidation Scenario Tests", () => {
       const borrower = accounts.get("wallet_1")!;
       const liquidator = accounts.get("wallet_2")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(2000)], borrower);
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], borrower);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(200000)], borrower);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100000), Cl.uint(500), Cl.uint(30)], borrower);
 
       // Health = 200%, not liquidatable
       simnet.callPublicFn(CONTRACT, "set-stx-price", [Cl.uint(100)], deployer);
@@ -160,11 +160,11 @@ describe("Comprehensive Liquidation Scenario Tests", () => {
       const borrower = accounts.get("wallet_1")!;
       const liquidator = accounts.get("wallet_2")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(1500)], borrower);
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], borrower);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(150000)], borrower);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100000), Cl.uint(500), Cl.uint(30)], borrower);
 
-      // At price 73: health = 1500*73/100*100/1000 = 109 (just below) — should liquidate
-      // At price 74: health = 1500*74/100*100/1000 = 111 — not liquidatable
+      // At price 73: health = 150000*73/100*100/100000 = 109 (just below) -- should liquidate
+      // At price 74: health = 150000*74/100*100/100000 = 111 -- not liquidatable
       simnet.callPublicFn(CONTRACT, "set-stx-price", [Cl.uint(74)], deployer);
       const liqHigh = simnet.callPublicFn(CONTRACT, "liquidate", [Cl.principal(borrower)], liquidator);
       expect(liqHigh.result).toBeErr(Cl.uint(107)); // ERR-NOT-LIQUIDATABLE
@@ -175,8 +175,8 @@ describe("Comprehensive Liquidation Scenario Tests", () => {
       const deployer = accounts.get("deployer")!;
       const borrower = accounts.get("wallet_1")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(1500)], borrower);
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], borrower);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(150000)], borrower);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100000), Cl.uint(500), Cl.uint(30)], borrower);
 
       simnet.callPublicFn(CONTRACT, "set-stx-price", [Cl.uint(70)], deployer);
       const liqResult = simnet.callPublicFn(CONTRACT, "liquidate", [Cl.principal(borrower)], borrower);
@@ -202,8 +202,8 @@ describe("Comprehensive Liquidation Scenario Tests", () => {
       const borrower = accounts.get("wallet_1")!;
       const liquidator = accounts.get("wallet_2")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(1500)], borrower);
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], borrower);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(150000)], borrower);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100000), Cl.uint(500), Cl.uint(30)], borrower);
       simnet.callPublicFn(CONTRACT, "set-stx-price", [Cl.uint(70)], deployer);
       simnet.callPublicFn(CONTRACT, "liquidate", [Cl.principal(borrower)], liquidator);
 
@@ -217,8 +217,8 @@ describe("Comprehensive Liquidation Scenario Tests", () => {
       const borrower = accounts.get("wallet_1")!;
       const liquidator = accounts.get("wallet_2")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(1500)], borrower);
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], borrower);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(150000)], borrower);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100000), Cl.uint(500), Cl.uint(30)], borrower);
       simnet.callPublicFn(CONTRACT, "set-stx-price", [Cl.uint(70)], deployer);
       simnet.callPublicFn(CONTRACT, "liquidate", [Cl.principal(borrower)], liquidator);
 
@@ -232,16 +232,16 @@ describe("Comprehensive Liquidation Scenario Tests", () => {
       const borrower = accounts.get("wallet_1")!;
       const liquidator = accounts.get("wallet_2")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(1500)], borrower);
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], borrower);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(150000)], borrower);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100000), Cl.uint(500), Cl.uint(30)], borrower);
       simnet.callPublicFn(CONTRACT, "set-stx-price", [Cl.uint(70)], deployer);
       simnet.callPublicFn(CONTRACT, "liquidate", [Cl.principal(borrower)], liquidator);
 
       // Should be able to start fresh
-      const newDeposit = simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(3000)], borrower);
+      const newDeposit = simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(300000)], borrower);
       expect(newDeposit.result).toBeOk(Cl.bool(true));
 
-      const newBorrow = simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(2000), Cl.uint(500), Cl.uint(30)], borrower);
+      const newBorrow = simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(200000), Cl.uint(500), Cl.uint(30)], borrower);
       expect(newBorrow.result).toBeOk(Cl.bool(true));
     });
 
@@ -252,20 +252,20 @@ describe("Comprehensive Liquidation Scenario Tests", () => {
       const user2 = accounts.get("wallet_2")!;
       const liquidator = accounts.get("wallet_3")!;
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(1500)], borrower);
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(5000)], user2);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(150000)], borrower);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(500000)], user2);
 
-      // Total = 6500
+      // Total = 650000
       let total = simnet.callReadOnlyFn(CONTRACT, "get-total-deposits", [], borrower);
-      expect(total.result).toBeUint(6500);
+      expect(total.result).toBeUint(650000);
 
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], borrower);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100000), Cl.uint(500), Cl.uint(30)], borrower);
       simnet.callPublicFn(CONTRACT, "set-stx-price", [Cl.uint(70)], deployer);
       simnet.callPublicFn(CONTRACT, "liquidate", [Cl.principal(borrower)], liquidator);
 
-      // After liquidation, borrower's 1500 is removed from total
+      // After liquidation, borrower's 150000 is removed from total
       total = simnet.callReadOnlyFn(CONTRACT, "get-total-deposits", [], borrower);
-      expect(total.result).toBeUint(5000);
+      expect(total.result).toBeUint(500000);
     });
 
     it("liquidation counter increments correctly", () => {
@@ -276,11 +276,11 @@ describe("Comprehensive Liquidation Scenario Tests", () => {
       const liquidator = accounts.get("wallet_3")!;
 
       // Setup two positions
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(1500)], borrower1);
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], borrower1);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(150000)], borrower1);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100000), Cl.uint(500), Cl.uint(30)], borrower1);
 
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(1500)], borrower2);
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], borrower2);
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(150000)], borrower2);
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100000), Cl.uint(500), Cl.uint(30)], borrower2);
 
       simnet.callPublicFn(CONTRACT, "set-stx-price", [Cl.uint(70)], deployer);
 

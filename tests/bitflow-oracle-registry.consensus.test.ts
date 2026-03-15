@@ -81,7 +81,7 @@ describe("bitflow-oracle-registry multi-reporter consensus", () => {
     submitPrice(1_000_000, reporter1());
     // Reporter2 submits wildly different price (>20% deviation)
     const rejected = submitPrice(2_000_000, reporter2());
-    expect(rejected.result).toBeOk(Cl.bool(false));
+    expect(rejected.result).toBeErr(Cl.uint(305));
 
     // Reporter3 can still submit a valid price
     const accepted = submitPrice(1_050_000, reporter3());
@@ -128,16 +128,16 @@ describe("bitflow-oracle-registry multi-reporter consensus", () => {
   });
 
   // ── Stats track total submissions and rejections ──────────────
-  it("oracle stats reflect submissions and rejections", () => {
+  it("oracle stats reflect submissions (rejections rolled back by err)", () => {
     setup();
     submitPrice(1_000_000, reporter1());
     submitPrice(1_010_000, reporter2());
-    submitPrice(5_000_000, reporter3()); // should be rejected
+    submitPrice(5_000_000, reporter3()); // rejected with err u305, state rolled back
 
     const { result } = simnet.callReadOnlyFn(
       CONTRACT, "get-oracle-stats", [], deployer()
     );
     expect(result).toHaveTupleProperty("total-submissions", Cl.uint(2));
-    expect(result).toHaveTupleProperty("total-rejections", Cl.uint(1));
+    expect(result).toHaveTupleProperty("total-rejections", Cl.uint(0));
   });
 });
