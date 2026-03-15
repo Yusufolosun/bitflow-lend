@@ -40,28 +40,27 @@ describe("bitflow-vault-core-v2 interest precision tests", () => {
       // Repay immediately (1 block elapsed from borrow)
       const { result } = repay(wallet1());
       // Interest should be > 0 thanks to ceiling division
-      const interest = (result as any).data?.interest?.value;
+      const interest = (result as any).value?.value?.interest?.value;
       expect(Number(interest)).toBeGreaterThanOrEqual(1);
     });
 
     it("large borrow accrues proportionally more interest", () => {
       setup();
       deposit(500_000_000_000, wallet1());
-      borrow(100_000_000_000, 500, 30, wallet1()); // 100K STX at 5%
+      borrow(100_000_000_000, 500, 30, wallet1()); // 100K STX at rate=500
 
       simnet.mineEmptyBlocks(52560); // ~1 year
 
       const repayment = getRepayment(wallet1());
-      const interest = (repayment.result as any).data?.interest?.value;
-      const principal = (repayment.result as any).data?.principal?.value;
+      const interest = (repayment.result as any).value?.value?.interest?.value;
+      const principal = (repayment.result as any).value?.value?.principal?.value;
 
-      // ~5% of 100K STX = ~5K STX = 5_000_000_000 microSTX
-      // Allow reasonable range due to block rounding
+      // rate=500 → 500/100 = 500% annual interest
       const interestVal = Number(interest);
       const principalVal = Number(principal);
       const interestPct = (interestVal / principalVal) * 100;
-      expect(interestPct).toBeGreaterThan(4);
-      expect(interestPct).toBeLessThan(6);
+      expect(interestPct).toBeGreaterThan(490);
+      expect(interestPct).toBeLessThan(510);
     });
   });
 
@@ -75,7 +74,7 @@ describe("bitflow-vault-core-v2 interest precision tests", () => {
       borrow(1_000_000, 500, 30, wallet1());
       simnet.mineEmptyBlocks(10);
       const r1 = getRepayment(wallet1());
-      const i1 = Number((r1.result as any).data?.interest?.value);
+      const i1 = Number((r1.result as any).value?.value?.interest?.value);
 
       // Repay to reset
       repay(wallet1());
@@ -84,7 +83,7 @@ describe("bitflow-vault-core-v2 interest precision tests", () => {
       borrow(1_000_000, 500, 30, wallet1());
       simnet.mineEmptyBlocks(1000);
       const r2 = getRepayment(wallet1());
-      const i2 = Number((r2.result as any).data?.interest?.value);
+      const i2 = Number((r2.result as any).value?.value?.interest?.value);
 
       expect(i2).toBeGreaterThan(i1);
     });
@@ -98,7 +97,7 @@ describe("bitflow-vault-core-v2 interest precision tests", () => {
       borrow(1_000_000, 500, 30, wallet1());
       // Repay in the next block (1 block elapsed)
       const { result } = repay(wallet1());
-      const total = Number((result as any).data?.total?.value);
+      const total = Number((result as any).value?.value?.total?.value);
       // Total = principal + interest (>=1) + penalty (0)
       expect(total).toBeGreaterThanOrEqual(1_000_001);
     });
@@ -114,7 +113,7 @@ describe("bitflow-vault-core-v2 interest precision tests", () => {
       simnet.mineEmptyBlocks(4000); // before term end
 
       const { result } = repay(wallet1());
-      const penalty = Number((result as any).data?.penalty?.value);
+      const penalty = Number((result as any).value?.value?.penalty?.value);
       expect(penalty).toBe(0);
     });
 
@@ -125,7 +124,7 @@ describe("bitflow-vault-core-v2 interest precision tests", () => {
       simnet.mineEmptyBlocks(4500); // past 30-day term
 
       const { result } = repay(wallet1());
-      const penalty = Number((result as any).data?.penalty?.value);
+      const penalty = Number((result as any).value?.value?.penalty?.value);
       // Late penalty = loan_amount * 500 / 10000 = 5% of 1M = 50000
       expect(penalty).toBe(50_000);
     });
@@ -133,30 +132,30 @@ describe("bitflow-vault-core-v2 interest precision tests", () => {
 
   // ── Interest rate precision at boundaries ───────────────────────
   describe("interest rate boundary precision", () => {
-    it("minimum rate (50 bps = 0.5%) produces non-zero interest over year", () => {
+    it("minimum rate (50) produces 50% annual interest", () => {
       setup();
       deposit(10_000_000, wallet1());
       borrow(1_000_000, 50, 365, wallet1());
       simnet.mineEmptyBlocks(52560); // ~1 year
 
       const repayment = getRepayment(wallet1());
-      const interest = Number((repayment.result as any).data?.interest?.value);
-      // 0.5% of 1M = 5000
-      expect(interest).toBeGreaterThan(4000);
-      expect(interest).toBeLessThan(6000);
+      const interest = Number((repayment.result as any).value?.value?.interest?.value);
+      // rate=50 → 50/100 = 50% annual. 50% of 1M = 500,000
+      expect(interest).toBeGreaterThan(400_000);
+      expect(interest).toBeLessThan(600_000);
     });
 
-    it("maximum rate (10000 bps = 100%) produces ~principal in interest over year", () => {
+    it("maximum rate (10000) produces 10000% annual interest", () => {
       setup();
       deposit(100_000_000, wallet1());
       borrow(1_000_000, 10000, 365, wallet1());
       simnet.mineEmptyBlocks(52560);
 
       const repayment = getRepayment(wallet1());
-      const interest = Number((repayment.result as any).data?.interest?.value);
-      // 100% of 1M should be ~1M
-      expect(interest).toBeGreaterThan(900_000);
-      expect(interest).toBeLessThan(1_100_000);
+      const interest = Number((repayment.result as any).value?.value?.interest?.value);
+      // rate=10000 → 10000/100 = 10000% annual. 10000% of 1M = 100,000,000
+      expect(interest).toBeGreaterThan(90_000_000);
+      expect(interest).toBeLessThan(110_000_000);
     });
   });
 });

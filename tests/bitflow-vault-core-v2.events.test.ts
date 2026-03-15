@@ -26,7 +26,7 @@ describe("bitflow-vault-core-v2 event emission", () => {
       );
       const prints = events.filter((e: any) => e.event === "print_event");
       expect(prints.length).toBeGreaterThanOrEqual(1);
-      const payload = (prints[0] as any).data;
+      const payload = (prints[0] as any).data.value;
       expect(payload).toHaveTupleProperty("event", Cl.stringAscii("deposit"));
     });
   });
@@ -41,7 +41,7 @@ describe("bitflow-vault-core-v2 event emission", () => {
       );
       const prints = events.filter((e: any) => e.event === "print_event");
       expect(prints.length).toBeGreaterThanOrEqual(1);
-      const payload = (prints[0] as any).data;
+      const payload = (prints[0] as any).data.value;
       expect(payload).toHaveTupleProperty("event", Cl.stringAscii("withdraw"));
     });
   });
@@ -50,13 +50,13 @@ describe("bitflow-vault-core-v2 event emission", () => {
   describe("borrow event", () => {
     it("emits borrow event with amount, rate, term, price snapshot", () => {
       init();
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(5000)], wallet1());
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(500_000)], wallet1());
       const { events } = simnet.callPublicFn(
-        CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], wallet1()
+        CONTRACT, "borrow", [Cl.uint(100_000), Cl.uint(500), Cl.uint(30)], wallet1()
       );
       const prints = events.filter((e: any) => e.event === "print_event");
       expect(prints.length).toBeGreaterThanOrEqual(1);
-      const payload = (prints[0] as any).data;
+      const payload = (prints[0] as any).data.value;
       expect(payload).toHaveTupleProperty("event", Cl.stringAscii("borrow"));
     });
   });
@@ -65,14 +65,14 @@ describe("bitflow-vault-core-v2 event emission", () => {
   describe("repay event", () => {
     it("emits repay event with principal, interest, penalty, total", () => {
       init();
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(5000)], wallet1());
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(500_000)], wallet1());
       simnet.callPublicFn(
-        CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], wallet1()
+        CONTRACT, "borrow", [Cl.uint(100_000), Cl.uint(500), Cl.uint(30)], wallet1()
       );
       const { events } = simnet.callPublicFn(CONTRACT, "repay", [], wallet1());
       const prints = events.filter((e: any) => e.event === "print_event");
       expect(prints.length).toBeGreaterThanOrEqual(1);
-      const payload = (prints[0] as any).data;
+      const payload = (prints[0] as any).data.value;
       expect(payload).toHaveTupleProperty("event", Cl.stringAscii("repay"));
     });
   });
@@ -81,9 +81,9 @@ describe("bitflow-vault-core-v2 event emission", () => {
   describe("liquidation event", () => {
     it("emits liquidation event with liquidator, borrower, seized, paid", () => {
       init();
-      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(3000)], wallet1());
+      simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(300_000)], wallet1());
       simnet.callPublicFn(
-        CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], wallet1()
+        CONTRACT, "borrow", [Cl.uint(100_000), Cl.uint(500), Cl.uint(30)], wallet1()
       );
       // Drop price to make liquidatable
       simnet.callPublicFn(CONTRACT, "set-stx-price", [Cl.uint(30)], deployer());
@@ -92,7 +92,7 @@ describe("bitflow-vault-core-v2 event emission", () => {
       );
       const prints = events.filter((e: any) => e.event === "print_event");
       expect(prints.length).toBeGreaterThanOrEqual(1);
-      const payload = (prints[0] as any).data;
+      const payload = (prints[0] as any).data.value;
       expect(payload).toHaveTupleProperty("event", Cl.stringAscii("liquidation"));
     });
   });
@@ -103,7 +103,7 @@ describe("bitflow-vault-core-v2 event emission", () => {
       init();
       const { events } = simnet.callPublicFn(CONTRACT, "pause-protocol", [], deployer());
       const prints = events.filter((e: any) => e.event === "print_event");
-      const payload = (prints[0] as any).data;
+      const payload = (prints[0] as any).data.value;
       expect(payload).toHaveTupleProperty("event", Cl.stringAscii("protocol-paused"));
     });
 
@@ -112,7 +112,7 @@ describe("bitflow-vault-core-v2 event emission", () => {
       simnet.callPublicFn(CONTRACT, "pause-protocol", [], deployer());
       const { events } = simnet.callPublicFn(CONTRACT, "unpause-protocol", [], deployer());
       const prints = events.filter((e: any) => e.event === "print_event");
-      const payload = (prints[0] as any).data;
+      const payload = (prints[0] as any).data.value;
       expect(payload).toHaveTupleProperty("event", Cl.stringAscii("protocol-unpaused"));
     });
 
@@ -122,7 +122,7 @@ describe("bitflow-vault-core-v2 event emission", () => {
         CONTRACT, "set-stx-price", [Cl.uint(200)], deployer()
       );
       const prints = events.filter((e: any) => e.event === "print_event");
-      const payload = (prints[0] as any).data;
+      const payload = (prints[0] as any).data.value;
       expect(payload).toHaveTupleProperty("event", Cl.stringAscii("price-updated"));
     });
 
@@ -132,7 +132,7 @@ describe("bitflow-vault-core-v2 event emission", () => {
         CONTRACT, "toggle-deposits-enabled", [Cl.bool(false)], deployer()
       );
       const prints = events.filter((e: any) => e.event === "print_event");
-      const payload = (prints[0] as any).data;
+      const payload = (prints[0] as any).data.value;
       expect(payload).toHaveTupleProperty("event", Cl.stringAscii("deposits-toggled"));
     });
   });
@@ -142,7 +142,7 @@ describe("bitflow-vault-core-v2 event emission", () => {
     it("emits protocol-initialized event", () => {
       const { events } = simnet.callPublicFn(CONTRACT, "initialize", [], deployer());
       const prints = events.filter((e: any) => e.event === "print_event");
-      const payload = (prints[0] as any).data;
+      const payload = (prints[0] as any).data.value;
       expect(payload).toHaveTupleProperty("event", Cl.stringAscii("protocol-initialized"));
     });
   });

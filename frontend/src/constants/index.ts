@@ -16,25 +16,28 @@ export const CURRENT_NETWORK = import.meta.env.VITE_NETWORK || NETWORK.TESTNET;
 
 // Contract Addresses
 export const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS || '';
-export const CONTRACT_NAME = 'vault-core';
+export const CONTRACT_NAME = 'bitflow-vault-core';
 
 // Validate required env vars on startup so misconfiguration fails fast
-// instead of producing cryptic contract call errors at runtime
+// instead of producing cryptic contract call errors at runtime.
+// Skip validation during test runs where VITE_ vars are not injected.
 const REQUIRED_ENV_VARS = ['VITE_CONTRACT_ADDRESS'] as const;
 
-for (const key of REQUIRED_ENV_VARS) {
-  if (!import.meta.env[key]) {
-    throw new Error(
-      `Missing required environment variable: ${key}. ` +
-      'Copy .env.example to .env and fill in the values before starting the app.'
-    );
+if (import.meta.env.MODE !== 'test') {
+  for (const key of REQUIRED_ENV_VARS) {
+    if (!import.meta.env[key]) {
+      throw new Error(
+        `Missing required environment variable: ${key}. ` +
+        'Copy .env.example to .env and fill in the values before starting the app.'
+      );
+    }
   }
 }
 
 // API Endpoints
 export const API_URLS = {
   testnet: 'https://api.testnet.hiro.so',
-  mainnet: 'https://api.hiro.so',
+  mainnet: 'https://api.mainnet.hiro.so',
   devnet: 'http://localhost:3999',
 } as const;
 
@@ -46,7 +49,7 @@ export const STACKS_API_URL = import.meta.env.VITE_STACKS_API_URL || API_URLS[CU
 // Additional protocol-level settings that don't exist on-chain:
 export const PROTOCOL_PARAMS = {
   INTEREST_RATE_BP: 10, // 0.1% per 52,560 blocks (~1 year)
-  MIN_BORROW_AMOUNT: 100, // minimum borrow in STX
+  MIN_BORROW_AMOUNT: 0.1, // minimum borrow in STX (matches contract MIN-BORROW-AMOUNT u100000)
   MAX_LTV: 66.67, // 1/1.5 = ~66.67%
   PROTOCOL_FEE_BP: 25, // 0.25%
 } as const;
@@ -79,8 +82,8 @@ export const TRANSACTION_STATUS = {
 // Health Factor Thresholds
 export const HEALTH_THRESHOLDS = {
   CRITICAL: 110,  // Below this = liquidatable
-  WARNING: 150,   // Below this = at risk
-  SAFE: 150,      // Above this = healthy
+  WARNING: 130,   // Below this = at risk, above CRITICAL
+  SAFE: 150,      // Above this = healthy (matches min collateral ratio)
 } as const;
 
 // Health Factor Colors

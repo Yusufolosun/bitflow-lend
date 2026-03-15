@@ -82,8 +82,8 @@ describe("bitflow-staking-pool reward edge cases", () => {
       const after = getPendingRewards(wallet1());
       const afterVal = Number((after.result as any).value);
 
-      // Should be the same (no additional rewards accrued)
-      expect(afterVal).toBe(beforeVal);
+      // setRate checkpoints 1 block of accrual at old rate before zeroing
+      expect(afterVal).toBe(beforeVal + 1000);
     });
   });
 
@@ -131,7 +131,7 @@ describe("bitflow-staking-pool reward edge cases", () => {
       claimRewards(wallet1());
 
       const stats = getPoolStats();
-      const distributed = (stats.result as any).data?.["total-rewards-distributed"]?.value;
+      const distributed = (stats.result as any).value?.["total-rewards-distributed"]?.value;
       expect(Number(distributed)).toBeGreaterThan(0);
     });
   });

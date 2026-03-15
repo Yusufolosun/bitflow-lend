@@ -21,6 +21,7 @@
 (define-constant ERR-PRICE-NOT-SET (err u113))
 (define-constant ERR-PROTOCOL-PAUSED (err u112))
 (define-constant ERR-INVALID-PARAM (err u120))
+(define-constant ERR-INSUFFICIENT-LIQUIDITY (err u121))
 
 ;; Tunable protocol parameters (admin-updatable)
 (define-data-var min-collateral-ratio uint u150)
@@ -56,6 +57,7 @@
 
 ;; Time-based metrics
 (define-data-var last-activity-block uint u0)
+(define-data-var price-update-block uint u0)
 (define-data-var protocol-start-block uint u0)
 
 ;; Contract owner for initialization
@@ -144,12 +146,16 @@
 )
 
 ;; Get maximum borrow amount for a user based on their deposit
+;; Returns 0 if the user already has an active loan (one-loan-per-user)
 (define-read-only (get-max-borrow-amount (user principal))
-  (let (
-    (user-deposit (default-to u0 (map-get? user-deposits user)))
-    (max-borrow (/ (* user-deposit u100) (var-get min-collateral-ratio)))
-  )
-    max-borrow
+  (if (is-some (map-get? user-loans user))
+    u0
+    (let (
+      (user-deposit (default-to u0 (map-get? user-deposits user)))
+      (max-borrow (/ (* user-deposit u100) (var-get min-collateral-ratio)))
+    )
+      max-borrow
+    )
   )
 )
 
@@ -161,7 +167,9 @@
         (user-deposit (default-to u0 (map-get? user-deposits user)))
         (loan-amount (get amount loan))
         (collateral-value (/ (* user-deposit stx-price) u100))
-        (health-factor (/ (* collateral-value u100) loan-amount))
+        (health-factor (if (> loan-amount u0)
+          (/ (* collateral-value u100) loan-amount)
+          u200))
       )
         (some health-factor)
       )
@@ -191,7 +199,9 @@
   (match (map-get? user-loans user)
     loan
       (let (
-        (blocks-elapsed (- block-height (get start-block loan)))
+        (blocks-elapsed (if (>= block-height (get start-block loan))
+          (- block-height (get start-block loan))
+          u0))
         (interest (calculate-interest (get amount loan) (get interest-rate loan) blocks-elapsed))
         (penalty (if (> block-height (get term-end loan))
           (/ (* (get amount loan) (var-get late-penalty-rate)) u10000)
@@ -216,8 +226,8 @@
 
 ;; Get the number of blocks since the price was last updated
 (define-read-only (get-price-staleness-blocks)
-  (if (> (var-get last-activity-block) u0)
-    (- block-height (var-get last-activity-block))
+  (if (> (var-get price-update-block) u0)
+    (- block-height (var-get price-update-block))
     u0
   )
 )
@@ -251,6 +261,7 @@
     (asserts! (> price u0) ERR-INVALID-AMOUNT)
     (asserts! (< price u10000000) ERR-INVALID-PARAM) ;; sanity cap ~$100 USD
     (var-set admin-stx-price price)
+    (var-set price-update-block block-height)
     (var-set last-activity-block block-height)
     (print { event: "set-stx-price", price: price })
     (ok true)
@@ -354,7 +365,7 @@
       (var-set last-activity-block block-height)
 
       ;; Emit event
-      (print { event: "deposit", user: tx-sender, amount: amount })
+      (print { event: "deposit", user: tx-sender, amount: amount, new-balance: new-deposit })
 
       (ok true)
     )
@@ -371,7 +382,7 @@
     (locked-collateral (match (map-get? user-loans tx-sender)
       loan (calculate-required-collateral (get amount loan))
       u0))
-    (available-balance (- user-balance locked-collateral))
+    (available-balance (if (> user-balance locked-collateral) (- user-balance locked-collateral) u0))
     (recipient tx-sender)
   )
     ;; Check protocol is not paused
@@ -390,14 +401,16 @@
     (map-set user-deposits recipient (- user-balance amount))
     
     ;; Update total deposits
-    (var-set total-deposits (- (var-get total-deposits) amount))
+    (var-set total-deposits (if (>= (var-get total-deposits) amount)
+      (- (var-get total-deposits) amount)
+      u0))
     
     ;; Update analytics
     (var-set total-withdrawals-count (+ (var-get total-withdrawals-count) u1))
     (var-set last-activity-block block-height)
     
     ;; Emit event
-    (print { event: "withdraw", user: tx-sender, amount: amount })
+    (print { event: "withdraw", user: tx-sender, amount: amount, remaining-balance: (- user-balance amount) })
     
     (ok true)
   )
@@ -433,7 +446,10 @@
     
     ;; Verify user has enough deposited collateral (150% ratio)
     (asserts! (>= user-balance required-collateral) ERR-INSUFFICIENT-COLLATERAL)
-    
+
+    ;; Verify contract has sufficient STX liquidity to fund the loan
+    (asserts! (>= (stx-get-balance (as-contract tx-sender)) amount) ERR-INSUFFICIENT-LIQUIDITY)
+
     ;; Transfer borrowed STX from contract to user
     (try! (as-contract (stx-transfer? amount tx-sender recipient)))
     
@@ -452,7 +468,7 @@
     (var-set last-activity-block block-height)
     
     ;; Emit event
-    (print { event: "borrow", user: tx-sender, amount: amount, rate: interest-rate, term: term-days })
+    (print { event: "borrow", user: tx-sender, amount: amount, rate: interest-rate, term: term-days, start-block: block-height })
     
     (ok true)
   )
@@ -468,7 +484,9 @@
     (let (
       (loan (unwrap! (map-get? user-loans tx-sender) ERR-NO-ACTIVE-LOAN))
       (loan-amount (get amount loan))
-      (blocks-elapsed (- block-height (get start-block loan)))
+      (blocks-elapsed (if (>= block-height (get start-block loan))
+        (- block-height (get start-block loan))
+        u0))
       (interest (calculate-interest loan-amount (get interest-rate loan) blocks-elapsed))
       (penalty (if (> block-height (get term-end loan))
         (/ (* loan-amount (var-get late-penalty-rate)) u10000)
@@ -553,11 +571,11 @@
     
     ;; Update analytics
     (var-set total-liquidations-count (+ (var-get total-liquidations-count) u1))
-    (var-set total-liquidation-volume (+ (var-get total-liquidation-volume) borrower-deposit))
+    (var-set total-liquidation-volume (+ (var-get total-liquidation-volume) loan-amount))
     (var-set last-activity-block block-height)
     
     ;; Emit event
-    (print { event: "liquidation", liquidator: tx-sender, borrower: borrower, seized: borrower-deposit, paid: total-to-pay })
+    (print { event: "liquidation", liquidator: tx-sender, borrower: borrower, seized: borrower-deposit, paid: total-to-pay, bonus: liquidation-bonus })
     
     ;; Return liquidation details
     (ok { seized-collateral: borrower-deposit, paid: total-to-pay, bonus: liquidation-bonus })
@@ -589,13 +607,19 @@
 )
 
 ;; Get protocol age in blocks
+;; Returns 0 before initialize is called to avoid underflow
 (define-read-only (get-protocol-age)
-  (- block-height (var-get protocol-start-block))
+  (if (> (var-get protocol-start-block) u0)
+    (- block-height (var-get protocol-start-block))
+    u0)
 )
 
 ;; Get blocks since last activity
+;; Returns 0 before any activity to avoid underflow
 (define-read-only (get-time-since-last-activity)
-  (- block-height (var-get last-activity-block))
+  (if (> (var-get last-activity-block) u0)
+    (- block-height (var-get last-activity-block))
+    u0)
 )
 
 ;; Single-call dashboard snapshot for frontend/indexer consumption
@@ -616,7 +640,9 @@
       liquidation-volume: (var-get total-liquidation-volume),
       stx-price: (var-get admin-stx-price),
       is-paused: (var-get is-paused),
-      protocol-age-blocks: (- block-height (var-get protocol-start-block))
+      protocol-age-blocks: (if (> (var-get protocol-start-block) u0)
+        (- block-height (var-get protocol-start-block))
+        u0)
     }
   )
 )

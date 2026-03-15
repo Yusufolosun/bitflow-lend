@@ -225,8 +225,8 @@ describe("BitFlow Vault Core - Comprehensive Test Suite (40+ Tests)", () => {
         wallet_1
       );
 
-      // Contract returns STX transfer error (u3) for zero amount
-      expect(withdrawResponse.result).toBeErr(Cl.uint(3));
+      // Contract validates amount > 0 before transfer
+      expect(withdrawResponse.result).toBeErr(Cl.uint(102)); // ERR-INVALID-AMOUNT
     });
 
     it("prevents withdrawal when balance is zero", () => {
@@ -289,7 +289,7 @@ describe("BitFlow Vault Core - Comprehensive Test Suite (40+ Tests)", () => {
 
       const startBlock = simnet.blockHeight;
       const borrowAmount = 1000;
-      const interestRate = 5;
+      const interestRate = 500;
       const termDays = 30;
       const borrowResponse = simnet.callPublicFn(
         CONTRACT_NAME,
@@ -325,7 +325,7 @@ describe("BitFlow Vault Core - Comprehensive Test Suite (40+ Tests)", () => {
       const borrowResponse = simnet.callPublicFn(
         CONTRACT_NAME,
         "borrow",
-        [Cl.uint(1000), Cl.uint(5), Cl.uint(30)],
+        [Cl.uint(1000), Cl.uint(500), Cl.uint(30)],
         wallet_1
       );
 
@@ -337,12 +337,12 @@ describe("BitFlow Vault Core - Comprehensive Test Suite (40+ Tests)", () => {
       const wallet_1 = accounts.get("wallet_1")!;
 
       simnet.callPublicFn(CONTRACT_NAME, "deposit", [Cl.uint(3000)], wallet_1);
-      simnet.callPublicFn(CONTRACT_NAME, "borrow", [Cl.uint(1000), Cl.uint(5), Cl.uint(30)], wallet_1);
+      simnet.callPublicFn(CONTRACT_NAME, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], wallet_1);
 
       const secondBorrow = simnet.callPublicFn(
         CONTRACT_NAME,
         "borrow",
-        [Cl.uint(500), Cl.uint(5), Cl.uint(30)],
+        [Cl.uint(500), Cl.uint(500), Cl.uint(30)],
         wallet_1
       );
 
@@ -379,7 +379,7 @@ describe("BitFlow Vault Core - Comprehensive Test Suite (40+ Tests)", () => {
       const borrowResponse = simnet.callPublicFn(
         CONTRACT_NAME,
         "borrow",
-        [Cl.uint(1000), Cl.uint(5), Cl.uint(7)],
+        [Cl.uint(1000), Cl.uint(500), Cl.uint(7)],
         wallet_1
       );
 
@@ -394,7 +394,7 @@ describe("BitFlow Vault Core - Comprehensive Test Suite (40+ Tests)", () => {
       const borrowResponse = simnet.callPublicFn(
         CONTRACT_NAME,
         "borrow",
-        [Cl.uint(1000), Cl.uint(5), Cl.uint(365)],
+        [Cl.uint(1000), Cl.uint(500), Cl.uint(365)],
         wallet_1
       );
 
@@ -411,7 +411,7 @@ describe("BitFlow Vault Core - Comprehensive Test Suite (40+ Tests)", () => {
       simnet.callPublicFn(CONTRACT_NAME, "deposit", [Cl.uint(1500)], wallet_2);
       simnet.callPublicFn(CONTRACT_NAME, "deposit", [Cl.uint(1500)], wallet_3);
 
-      simnet.callPublicFn(CONTRACT_NAME, "borrow", [Cl.uint(1000), Cl.uint(1), Cl.uint(30)], wallet_1);
+      simnet.callPublicFn(CONTRACT_NAME, "borrow", [Cl.uint(1000), Cl.uint(100), Cl.uint(30)], wallet_1);
       simnet.callPublicFn(CONTRACT_NAME, "borrow", [Cl.uint(1000), Cl.uint(50), Cl.uint(30)], wallet_2);
       simnet.callPublicFn(CONTRACT_NAME, "borrow", [Cl.uint(1000), Cl.uint(100), Cl.uint(30)], wallet_3);
 
@@ -432,12 +432,12 @@ describe("BitFlow Vault Core - Comprehensive Test Suite (40+ Tests)", () => {
       const borrowResponse = simnet.callPublicFn(
         CONTRACT_NAME,
         "borrow",
-        [Cl.uint(0), Cl.uint(5), Cl.uint(30)],
+        [Cl.uint(0), Cl.uint(500), Cl.uint(30)],
         wallet_1
       );
 
-      // Contract returns STX transfer error (u3) for zero amount
-      expect(borrowResponse.result).toBeErr(Cl.uint(3));
+      // Contract validates amount > 0 before transfer
+      expect(borrowResponse.result).toBeErr(Cl.uint(102)); // ERR-INVALID-AMOUNT
     });
 
     it("correctly calculates term end block for various loan terms", () => {
@@ -448,7 +448,7 @@ describe("BitFlow Vault Core - Comprehensive Test Suite (40+ Tests)", () => {
 
       const startBlock = simnet.blockHeight;
       const termDays = 90;
-      simnet.callPublicFn(CONTRACT_NAME, "borrow", [Cl.uint(1000), Cl.uint(10), Cl.uint(termDays)], wallet_1);
+      simnet.callPublicFn(CONTRACT_NAME, "borrow", [Cl.uint(1000), Cl.uint(1000), Cl.uint(termDays)], wallet_1);
 
       const loanResponse = simnet.callReadOnlyFn(
         CONTRACT_NAME,
@@ -461,7 +461,7 @@ describe("BitFlow Vault Core - Comprehensive Test Suite (40+ Tests)", () => {
       expect(loanResponse.result).toBeSome(
         Cl.tuple({
           amount: Cl.uint(1000),
-          "interest-rate": Cl.uint(10),
+          "interest-rate": Cl.uint(1000),
           "start-block": Cl.uint(startBlock + 1),
           "term-end": Cl.uint(expectedTermEnd),
         })
@@ -475,7 +475,7 @@ describe("BitFlow Vault Core - Comprehensive Test Suite (40+ Tests)", () => {
       const wallet_1 = accounts.get("wallet_1")!;
 
       simnet.callPublicFn(CONTRACT_NAME, "deposit", [Cl.uint(2000)], wallet_1);
-      simnet.callPublicFn(CONTRACT_NAME, "borrow", [Cl.uint(1000), Cl.uint(10), Cl.uint(30)], wallet_1);
+      simnet.callPublicFn(CONTRACT_NAME, "borrow", [Cl.uint(1000), Cl.uint(1000), Cl.uint(30)], wallet_1);
 
       simnet.mineEmptyBlocks(1000);
 
@@ -505,7 +505,7 @@ describe("BitFlow Vault Core - Comprehensive Test Suite (40+ Tests)", () => {
       const wallet_1 = accounts.get("wallet_1")!;
 
       simnet.callPublicFn(CONTRACT_NAME, "deposit", [Cl.uint(2000)], wallet_1);
-      simnet.callPublicFn(CONTRACT_NAME, "borrow", [Cl.uint(1000), Cl.uint(12), Cl.uint(90)], wallet_1);
+      simnet.callPublicFn(CONTRACT_NAME, "borrow", [Cl.uint(1000), Cl.uint(1200), Cl.uint(90)], wallet_1);
 
       const immediateRepayment = simnet.callReadOnlyFn(
         CONTRACT_NAME,
@@ -518,6 +518,7 @@ describe("BitFlow Vault Core - Comprehensive Test Suite (40+ Tests)", () => {
         Cl.tuple({
           principal: Cl.uint(1000),
           interest: Cl.uint(0),
+          penalty: Cl.uint(0),
           total: Cl.uint(1000),
         })
       );
@@ -528,7 +529,7 @@ describe("BitFlow Vault Core - Comprehensive Test Suite (40+ Tests)", () => {
       const wallet_1 = accounts.get("wallet_1")!;
 
       simnet.callPublicFn(CONTRACT_NAME, "deposit", [Cl.uint(2000)], wallet_1);
-      simnet.callPublicFn(CONTRACT_NAME, "borrow", [Cl.uint(1000), Cl.uint(12), Cl.uint(90)], wallet_1);
+      simnet.callPublicFn(CONTRACT_NAME, "borrow", [Cl.uint(1000), Cl.uint(1200), Cl.uint(90)], wallet_1);
 
       simnet.mineEmptyBlocks(4320); // 30 days
 
@@ -539,11 +540,13 @@ describe("BitFlow Vault Core - Comprehensive Test Suite (40+ Tests)", () => {
         wallet_1
       );
 
+      // Interest = ceil((1000 * 1200 * 4320) / (100 * 52560)) = 987
       expect(laterRepayment.result).toBeSome(
         Cl.tuple({
           principal: Cl.uint(1000),
-          interest: Cl.uint(9),
-          total: Cl.uint(1009),
+          interest: Cl.uint(987),
+          penalty: Cl.uint(0),
+          total: Cl.uint(1987),
         })
       );
     });
@@ -557,7 +560,7 @@ describe("BitFlow Vault Core - Comprehensive Test Suite (40+ Tests)", () => {
       expect(initialTotal.result).toBeUint(0);
 
       simnet.callPublicFn(CONTRACT_NAME, "deposit", [Cl.uint(2000)], wallet_1);
-      simnet.callPublicFn(CONTRACT_NAME, "borrow", [Cl.uint(1000), Cl.uint(10), Cl.uint(30)], wallet_1);
+      simnet.callPublicFn(CONTRACT_NAME, "borrow", [Cl.uint(1000), Cl.uint(1000), Cl.uint(30)], wallet_1);
       simnet.mineEmptyBlocks(500);
       simnet.callPublicFn(CONTRACT_NAME, "repay", [], wallet_1);
 
@@ -565,7 +568,7 @@ describe("BitFlow Vault Core - Comprehensive Test Suite (40+ Tests)", () => {
       expect(afterFirstRepay.result).not.toBeUint(0);
 
       simnet.callPublicFn(CONTRACT_NAME, "deposit", [Cl.uint(3000)], wallet_2);
-      simnet.callPublicFn(CONTRACT_NAME, "borrow", [Cl.uint(1500), Cl.uint(8), Cl.uint(60)], wallet_2);
+      simnet.callPublicFn(CONTRACT_NAME, "borrow", [Cl.uint(1500), Cl.uint(800), Cl.uint(60)], wallet_2);
       simnet.mineEmptyBlocks(1000);
       simnet.callPublicFn(CONTRACT_NAME, "repay", [], wallet_2);
 
@@ -578,34 +581,36 @@ describe("BitFlow Vault Core - Comprehensive Test Suite (40+ Tests)", () => {
       const wallet_1 = accounts.get("wallet_1")!;
 
       simnet.callPublicFn(CONTRACT_NAME, "deposit", [Cl.uint(3000)], wallet_1);
-      simnet.callPublicFn(CONTRACT_NAME, "borrow", [Cl.uint(1000), Cl.uint(10), Cl.uint(30)], wallet_1);
+      simnet.callPublicFn(CONTRACT_NAME, "borrow", [Cl.uint(1000), Cl.uint(1000), Cl.uint(30)], wallet_1);
       simnet.mineEmptyBlocks(500);
       simnet.callPublicFn(CONTRACT_NAME, "repay", [], wallet_1);
 
       const secondBorrow = simnet.callPublicFn(
         CONTRACT_NAME,
         "borrow",
-        [Cl.uint(1500), Cl.uint(8), Cl.uint(60)],
+        [Cl.uint(1500), Cl.uint(800), Cl.uint(60)],
         wallet_1
       );
 
       expect(secondBorrow.result).toBeOk(Cl.bool(true));
     });
 
-    it("handles repayment with zero interest for very recent loan", () => {
+    it("handles repayment with ceiling-minimum interest for very recent loan", () => {
       const accounts = simnet.getAccounts();
       const wallet_1 = accounts.get("wallet_1")!;
 
       simnet.callPublicFn(CONTRACT_NAME, "deposit", [Cl.uint(2000)], wallet_1);
-      simnet.callPublicFn(CONTRACT_NAME, "borrow", [Cl.uint(1000), Cl.uint(5), Cl.uint(30)], wallet_1);
+      simnet.callPublicFn(CONTRACT_NAME, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], wallet_1);
 
+      // 1 block elapsed: ceil(1000 * 500 * 1 / 5256000) = ceil(0.095) = 1
       const repayResponse = simnet.callPublicFn(CONTRACT_NAME, "repay", [], wallet_1);
 
       expect(repayResponse.result).toBeOk(
         Cl.tuple({
           principal: Cl.uint(1000),
-          interest: Cl.uint(0),
-          total: Cl.uint(1000),
+          interest: Cl.uint(1),
+          penalty: Cl.uint(0),
+          total: Cl.uint(1001),
         })
       );
     });
@@ -615,7 +620,7 @@ describe("BitFlow Vault Core - Comprehensive Test Suite (40+ Tests)", () => {
       const wallet_1 = accounts.get("wallet_1")!;
 
       simnet.callPublicFn(CONTRACT_NAME, "deposit", [Cl.uint(2000)], wallet_1);
-      simnet.callPublicFn(CONTRACT_NAME, "borrow", [Cl.uint(1000), Cl.uint(20), Cl.uint(60)], wallet_1);
+      simnet.callPublicFn(CONTRACT_NAME, "borrow", [Cl.uint(1000), Cl.uint(2000), Cl.uint(60)], wallet_1);
 
       simnet.mineEmptyBlocks(1000);
       const repayment1 = simnet.callReadOnlyFn(
@@ -645,7 +650,7 @@ describe("BitFlow Vault Core - Comprehensive Test Suite (40+ Tests)", () => {
       const wallet_1 = accounts.get("wallet_1")!;
 
       simnet.callPublicFn(CONTRACT_NAME, "deposit", [Cl.uint(1500)], wallet_1);
-      simnet.callPublicFn(CONTRACT_NAME, "borrow", [Cl.uint(1000), Cl.uint(5), Cl.uint(30)], wallet_1);
+      simnet.callPublicFn(CONTRACT_NAME, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], wallet_1);
 
       const healthFactor = simnet.callReadOnlyFn(
         CONTRACT_NAME,
@@ -662,7 +667,7 @@ describe("BitFlow Vault Core - Comprehensive Test Suite (40+ Tests)", () => {
       const wallet_1 = accounts.get("wallet_1")!;
 
       simnet.callPublicFn(CONTRACT_NAME, "deposit", [Cl.uint(1500)], wallet_1);
-      simnet.callPublicFn(CONTRACT_NAME, "borrow", [Cl.uint(1000), Cl.uint(5), Cl.uint(30)], wallet_1);
+      simnet.callPublicFn(CONTRACT_NAME, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], wallet_1);
 
       const healthyCheck = simnet.callReadOnlyFn(
         CONTRACT_NAME,
@@ -683,16 +688,19 @@ describe("BitFlow Vault Core - Comprehensive Test Suite (40+ Tests)", () => {
 
     it("allows liquidation of unhealthy positions", () => {
       const accounts = simnet.getAccounts();
+      const deployer = accounts.get("deployer")!;
       const wallet_1 = accounts.get("wallet_1")!;
       const wallet_2 = accounts.get("wallet_2")!;
 
       simnet.callPublicFn(CONTRACT_NAME, "deposit", [Cl.uint(1500)], wallet_1);
-      simnet.callPublicFn(CONTRACT_NAME, "borrow", [Cl.uint(1000), Cl.uint(5), Cl.uint(30)], wallet_1);
+      simnet.callPublicFn(CONTRACT_NAME, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], wallet_1);
+
+      simnet.callPublicFn(CONTRACT_NAME, "set-stx-price", [Cl.uint(70)], deployer);
 
       const liquidationResponse = simnet.callPublicFn(
         CONTRACT_NAME,
         "liquidate",
-        [Cl.principal(wallet_1), Cl.uint(70)],
+        [Cl.principal(wallet_1)],
         wallet_2
       );
 
@@ -707,16 +715,19 @@ describe("BitFlow Vault Core - Comprehensive Test Suite (40+ Tests)", () => {
 
     it("prevents liquidating healthy positions", () => {
       const accounts = simnet.getAccounts();
+      const deployer = accounts.get("deployer")!;
       const wallet_1 = accounts.get("wallet_1")!;
       const wallet_2 = accounts.get("wallet_2")!;
 
       simnet.callPublicFn(CONTRACT_NAME, "deposit", [Cl.uint(2000)], wallet_1);
-      simnet.callPublicFn(CONTRACT_NAME, "borrow", [Cl.uint(1000), Cl.uint(5), Cl.uint(30)], wallet_1);
+      simnet.callPublicFn(CONTRACT_NAME, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], wallet_1);
+
+      simnet.callPublicFn(CONTRACT_NAME, "set-stx-price", [Cl.uint(100)], deployer);
 
       const liquidationAttempt = simnet.callPublicFn(
         CONTRACT_NAME,
         "liquidate",
-        [Cl.principal(wallet_1), Cl.uint(100)],
+        [Cl.principal(wallet_1)],
         wallet_2
       );
 
@@ -725,15 +736,18 @@ describe("BitFlow Vault Core - Comprehensive Test Suite (40+ Tests)", () => {
 
     it("prevents self-liquidation", () => {
       const accounts = simnet.getAccounts();
+      const deployer = accounts.get("deployer")!;
       const wallet_1 = accounts.get("wallet_1")!;
 
       simnet.callPublicFn(CONTRACT_NAME, "deposit", [Cl.uint(1500)], wallet_1);
-      simnet.callPublicFn(CONTRACT_NAME, "borrow", [Cl.uint(1000), Cl.uint(5), Cl.uint(30)], wallet_1);
+      simnet.callPublicFn(CONTRACT_NAME, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], wallet_1);
+
+      simnet.callPublicFn(CONTRACT_NAME, "set-stx-price", [Cl.uint(70)], deployer);
 
       const selfLiquidationAttempt = simnet.callPublicFn(
         CONTRACT_NAME,
         "liquidate",
-        [Cl.principal(wallet_1), Cl.uint(70)],
+        [Cl.principal(wallet_1)],
         wallet_1
       );
 
@@ -742,6 +756,7 @@ describe("BitFlow Vault Core - Comprehensive Test Suite (40+ Tests)", () => {
 
     it("tracks total liquidations correctly", () => {
       const accounts = simnet.getAccounts();
+      const deployer = accounts.get("deployer")!;
       const wallet_1 = accounts.get("wallet_1")!;
       const wallet_2 = accounts.get("wallet_2")!;
       const wallet_3 = accounts.get("wallet_3")!;
@@ -750,12 +765,13 @@ describe("BitFlow Vault Core - Comprehensive Test Suite (40+ Tests)", () => {
       expect(initialLiquidations.result).toBeUint(0);
 
       simnet.callPublicFn(CONTRACT_NAME, "deposit", [Cl.uint(1500)], wallet_1);
-      simnet.callPublicFn(CONTRACT_NAME, "borrow", [Cl.uint(1000), Cl.uint(5), Cl.uint(30)], wallet_1);
-      simnet.callPublicFn(CONTRACT_NAME, "liquidate", [Cl.principal(wallet_1), Cl.uint(70)], wallet_2);
+      simnet.callPublicFn(CONTRACT_NAME, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], wallet_1);
+      simnet.callPublicFn(CONTRACT_NAME, "set-stx-price", [Cl.uint(70)], deployer);
+      simnet.callPublicFn(CONTRACT_NAME, "liquidate", [Cl.principal(wallet_1)], wallet_2);
 
       simnet.callPublicFn(CONTRACT_NAME, "deposit", [Cl.uint(1500)], wallet_2);
-      simnet.callPublicFn(CONTRACT_NAME, "borrow", [Cl.uint(1000), Cl.uint(5), Cl.uint(30)], wallet_2);
-      simnet.callPublicFn(CONTRACT_NAME, "liquidate", [Cl.principal(wallet_2), Cl.uint(70)], wallet_3);
+      simnet.callPublicFn(CONTRACT_NAME, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], wallet_2);
+      simnet.callPublicFn(CONTRACT_NAME, "liquidate", [Cl.principal(wallet_2)], wallet_3);
 
       const finalLiquidations = simnet.callReadOnlyFn(CONTRACT_NAME, "get-total-liquidations", [], wallet_1);
       expect(finalLiquidations.result).toBeUint(2);
@@ -763,12 +779,14 @@ describe("BitFlow Vault Core - Comprehensive Test Suite (40+ Tests)", () => {
 
     it("removes loan after successful liquidation", () => {
       const accounts = simnet.getAccounts();
+      const deployer = accounts.get("deployer")!;
       const wallet_1 = accounts.get("wallet_1")!;
       const wallet_2 = accounts.get("wallet_2")!;
 
       simnet.callPublicFn(CONTRACT_NAME, "deposit", [Cl.uint(1500)], wallet_1);
-      simnet.callPublicFn(CONTRACT_NAME, "borrow", [Cl.uint(1000), Cl.uint(5), Cl.uint(30)], wallet_1);
-      simnet.callPublicFn(CONTRACT_NAME, "liquidate", [Cl.principal(wallet_1), Cl.uint(70)], wallet_2);
+      simnet.callPublicFn(CONTRACT_NAME, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], wallet_1);
+      simnet.callPublicFn(CONTRACT_NAME, "set-stx-price", [Cl.uint(70)], deployer);
+      simnet.callPublicFn(CONTRACT_NAME, "liquidate", [Cl.principal(wallet_1)], wallet_2);
 
       const loanCheck = simnet.callReadOnlyFn(
         CONTRACT_NAME,
@@ -781,12 +799,14 @@ describe("BitFlow Vault Core - Comprehensive Test Suite (40+ Tests)", () => {
 
     it("clears user deposit after liquidation", () => {
       const accounts = simnet.getAccounts();
+      const deployer = accounts.get("deployer")!;
       const wallet_1 = accounts.get("wallet_1")!;
       const wallet_2 = accounts.get("wallet_2")!;
 
       simnet.callPublicFn(CONTRACT_NAME, "deposit", [Cl.uint(1500)], wallet_1);
-      simnet.callPublicFn(CONTRACT_NAME, "borrow", [Cl.uint(1000), Cl.uint(5), Cl.uint(30)], wallet_1);
-      simnet.callPublicFn(CONTRACT_NAME, "liquidate", [Cl.principal(wallet_1), Cl.uint(70)], wallet_2);
+      simnet.callPublicFn(CONTRACT_NAME, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], wallet_1);
+      simnet.callPublicFn(CONTRACT_NAME, "set-stx-price", [Cl.uint(70)], deployer);
+      simnet.callPublicFn(CONTRACT_NAME, "liquidate", [Cl.principal(wallet_1)], wallet_2);
 
       const depositCheck = simnet.callReadOnlyFn(
         CONTRACT_NAME,
@@ -811,8 +831,8 @@ describe("BitFlow Vault Core - Comprehensive Test Suite (40+ Tests)", () => {
       simnet.callPublicFn(CONTRACT_NAME, "deposit", [Cl.uint(7000)], wallet_3);
 
       // Multiple borrows
-      simnet.callPublicFn(CONTRACT_NAME, "borrow", [Cl.uint(3000), Cl.uint(8), Cl.uint(45)], wallet_1);
-      simnet.callPublicFn(CONTRACT_NAME, "borrow", [Cl.uint(2000), Cl.uint(10), Cl.uint(60)], wallet_2);
+      simnet.callPublicFn(CONTRACT_NAME, "borrow", [Cl.uint(3000), Cl.uint(800), Cl.uint(45)], wallet_1);
+      simnet.callPublicFn(CONTRACT_NAME, "borrow", [Cl.uint(2000), Cl.uint(1000), Cl.uint(60)], wallet_2);
 
       // Partial withdrawal
       simnet.callPublicFn(CONTRACT_NAME, "withdraw", [Cl.uint(2000)], wallet_3);
@@ -826,7 +846,7 @@ describe("BitFlow Vault Core - Comprehensive Test Suite (40+ Tests)", () => {
       const wallet_1 = accounts.get("wallet_1")!;
 
       simnet.callPublicFn(CONTRACT_NAME, "deposit", [Cl.uint(3000)], wallet_1);
-      simnet.callPublicFn(CONTRACT_NAME, "borrow", [Cl.uint(2000), Cl.uint(10), Cl.uint(30)], wallet_1);
+      simnet.callPublicFn(CONTRACT_NAME, "borrow", [Cl.uint(2000), Cl.uint(1000), Cl.uint(30)], wallet_1);
       simnet.mineEmptyBlocks(1000);
       simnet.callPublicFn(CONTRACT_NAME, "repay", [], wallet_1);
       const withdrawResult = simnet.callPublicFn(CONTRACT_NAME, "withdraw", [Cl.uint(1000)], wallet_1);
@@ -836,16 +856,19 @@ describe("BitFlow Vault Core - Comprehensive Test Suite (40+ Tests)", () => {
 
     it("liquidation bonus calculation is correct", () => {
       const accounts = simnet.getAccounts();
+      const deployer = accounts.get("deployer")!;
       const wallet_1 = accounts.get("wallet_1")!;
       const wallet_2 = accounts.get("wallet_2")!;
 
       simnet.callPublicFn(CONTRACT_NAME, "deposit", [Cl.uint(2000)], wallet_1);
-      simnet.callPublicFn(CONTRACT_NAME, "borrow", [Cl.uint(1300), Cl.uint(5), Cl.uint(30)], wallet_1);
+      simnet.callPublicFn(CONTRACT_NAME, "borrow", [Cl.uint(1300), Cl.uint(500), Cl.uint(30)], wallet_1);
+
+      simnet.callPublicFn(CONTRACT_NAME, "set-stx-price", [Cl.uint(70)], deployer);
 
       const liquidationResponse = simnet.callPublicFn(
         CONTRACT_NAME,
         "liquidate",
-        [Cl.principal(wallet_1), Cl.uint(70)],
+        [Cl.principal(wallet_1)],
         wallet_2
       );
 
@@ -864,7 +887,7 @@ describe("BitFlow Vault Core - Comprehensive Test Suite (40+ Tests)", () => {
       const wallet_1 = accounts.get("wallet_1")!;
 
       simnet.callPublicFn(CONTRACT_NAME, "deposit", [Cl.uint(999999)], wallet_1);
-      simnet.callPublicFn(CONTRACT_NAME, "borrow", [Cl.uint(666666), Cl.uint(99), Cl.uint(365)], wallet_1);
+      simnet.callPublicFn(CONTRACT_NAME, "borrow", [Cl.uint(666666), Cl.uint(9900), Cl.uint(365)], wallet_1);
 
       simnet.mineEmptyBlocks(52560); // Full year
 

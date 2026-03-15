@@ -6,7 +6,7 @@ tests/** linguist-vendored
 vitest.config.ts linguist-vendored
 
 # Source code
-*.clar text
+*.clar text eol=lf
 *.ts text
 *.tsx text
 *.js text

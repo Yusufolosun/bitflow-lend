@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 
 const COINGECKO_URL =
-  'https://api.coingecko.com/api/v3/simple/price?ids=blockstack&vs_currencies=usd';
+  'https://api.coingecko.com/api/v3/simple/price?ids=stacks&vs_currencies=usd';
 
 const FALLBACK_PRICE = 1.5;
 const DEFAULT_INTERVAL = 60_000; // 60 seconds
@@ -34,7 +34,7 @@ export function useStxPrice(refreshInterval = DEFAULT_INTERVAL) {
       const res = await fetch(COINGECKO_URL);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
-      const price = data?.blockstack?.usd;
+      const price = data?.stacks?.usd;
 
       if (typeof price !== 'number' || isNaN(price)) {
         throw new Error('Unexpected response format');

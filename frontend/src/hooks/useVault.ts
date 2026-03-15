@@ -9,6 +9,7 @@ import {
   PostConditionMode,
   FungibleConditionCode,
   makeStandardSTXPostCondition,
+  makeContractSTXPostCondition,
 } from '@stacks/transactions';
 import {
   UserDeposit,
@@ -142,6 +143,16 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
     try {
       const amountMicroSTX = stxToMicroStx(amountSTX);
 
+      // Post-condition: contract must send exactly the withdrawal amount to user
+      const postConditions = [
+        makeContractSTXPostCondition(
+          contractAddress,
+          contractName,
+          FungibleConditionCode.Equal,
+          amountMicroSTX
+        ),
+      ];
+
       return new Promise((resolve) => {
         openContractCall({
           network,
@@ -149,7 +160,7 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
           contractName,
           functionName: 'withdraw',
           functionArgs: [uintCV(amountMicroSTX)],
-          postConditions: [],
+          postConditions,
           postConditionMode: PostConditionMode.Deny,
           onFinish: (data: any) => {
             setIsLoading(false);
@@ -188,6 +199,16 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
       const amountMicroSTX = stxToMicroStx(amountSTX);
       const interestRateBPS = interestRatePercent * 100; // Convert to basis points
 
+      // Post-condition: contract sends exactly the borrowed amount to user
+      const postConditions = [
+        makeContractSTXPostCondition(
+          contractAddress,
+          contractName,
+          FungibleConditionCode.Equal,
+          amountMicroSTX
+        ),
+      ];
+
       return new Promise((resolve) => {
         openContractCall({
           network,
@@ -199,7 +220,8 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
             uintCV(interestRateBPS),
             uintCV(termDays),
           ],
-          postConditionMode: PostConditionMode.Allow,
+          postConditions,
+          postConditionMode: PostConditionMode.Deny,
           onFinish: (data: any) => {
             setIsLoading(false);
             resolve({ success: true, txId: data.txId });
@@ -230,6 +252,9 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
     setError(null);
 
     try {
+      // Repay amount is computed on-chain (principal + interest + penalty).
+      // We use Allow mode because the exact total depends on the current
+      // block height and cannot be predicted precisely from the frontend.
       return new Promise((resolve) => {
         openContractCall({
           network,
@@ -237,8 +262,7 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
           contractName,
           functionName: 'repay',
           functionArgs: [],
-          postConditions: [],
-          postConditionMode: PostConditionMode.Deny,
+          postConditionMode: PostConditionMode.Allow,
           onFinish: (data: any) => {
             setIsLoading(false);
             resolve({ success: true, txId: data.txId });
@@ -277,10 +301,28 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
         const amount = result.value;
         const amountSTX = microStxToStx(amount);
 
-        // Calculate available to withdraw (assuming no active loan for now)
-        // In a real implementation, you'd check if there's an active loan
-        const availableToWithdraw = amount;
-        const availableToWithdrawSTX = amountSTX;
+        // Check for active loan to calculate locked collateral
+        let lockedCollateral = BigInt(0);
+        try {
+          const loanResult = await callReadOnlyFunction({
+            network,
+            contractAddress,
+            contractName,
+            functionName: 'get-user-loan',
+            functionArgs: [principalCV(userAddress)],
+            senderAddress: userAddress,
+          });
+          if (loanResult.type === ClarityType.OptionalSome && loanResult.value) {
+            const loanData = cvToValue(loanResult.value);
+            const loanAmount = BigInt(loanData.amount);
+            lockedCollateral = (loanAmount * BigInt(PROTOCOL_CONSTANTS.MIN_COLLATERAL_RATIO)) / BigInt(100);
+          }
+        } catch {
+          // If loan check fails, assume no loan (safe default: shows full balance)
+        }
+
+        const availableToWithdraw = amount > lockedCollateral ? amount - lockedCollateral : BigInt(0);
+        const availableToWithdrawSTX = microStxToStx(availableToWithdraw);
 
         return {
           amount,
@@ -329,9 +371,21 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
         const collateralAmount = (amount * BigInt(PROTOCOL_CONSTANTS.MIN_COLLATERAL_RATIO)) / BigInt(100);
         const collateralAmountSTX = microStxToStx(collateralAmount);
 
-        // Estimate start timestamp (blocks are ~10 minutes apart)
-        // This is an approximation - in production you'd use block height API
-        const blocksElapsed = 0; // For now, assume loan just started
+        // Estimate start timestamp using chain tip height
+        let blocksElapsed = 0;
+        try {
+          const apiUrl = getApiEndpoint();
+          const tipRes = await fetch(`${apiUrl}/v2/info`);
+          if (tipRes.ok) {
+            const tipData = await tipRes.json();
+            const currentBlock = Number(tipData.stacks_tip_height || 0);
+            if (currentBlock > startBlock) {
+              blocksElapsed = currentBlock - startBlock;
+            }
+          }
+        } catch {
+          // Fall back to 0 if chain info unavailable
+        }
         const startTimestamp = Date.now() / 1000 - (blocksElapsed * 600);
 
         return {
@@ -438,9 +492,21 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
         if (loanResult.type === ClarityType.OptionalSome) {
           const loanData = cvToValue(loanResult.value);
           const amountSTX = microStxToStx(BigInt(loanData.amount));
-          const collateralAmountSTX = microStxToStx((BigInt(loanData.amount) * BigInt(PROTOCOL_CONSTANTS.MIN_COLLATERAL_RATIO)) / BigInt(100));
 
-          collateralValueUSD = collateralAmountSTX * stxPriceUSD;
+          // Fetch actual deposit to use as collateral value, not the required collateral
+          const depositResult = await callReadOnlyFunction({
+            network,
+            contractAddress,
+            contractName,
+            functionName: 'get-user-deposit',
+            functionArgs: [principalCV(userAddress)],
+            senderAddress: userAddress,
+          });
+          const depositSTX = depositResult.type === ClarityType.UInt
+            ? microStxToStx(depositResult.value)
+            : 0;
+
+          collateralValueUSD = depositSTX * stxPriceUSD;
           debtValueUSD = amountSTX * stxPriceUSD;
         }
 
@@ -469,6 +535,10 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
     setError(null);
 
     try {
+      // Liquidation involves two transfers: liquidator pays (loan + bonus),
+      // contract transfers borrower collateral to liquidator. Both amounts
+      // depend on on-chain state that may shift between signing and mining,
+      // so Allow mode is appropriate here.
       return new Promise((resolve) => {
         openContractCall({
           network,

@@ -227,7 +227,7 @@
 
 ;; ===== USER FUNCTIONS =====
 
-;; Emergency unstake — only available when pool is paused.
+;; Emergency unstake -- only available when pool is paused.
 ;; Bypasses cooldown so users can retrieve funds during emergencies.
 ;; Forfeits any unclaimed rewards to keep the operation simple/safe.
 (define-public (emergency-unstake)
@@ -250,9 +250,13 @@
       (map-set staker-last-action recipient block-height)
 
       ;; Update pool metrics
-      (var-set total-staked (- (var-get total-staked) balance))
+      (var-set total-staked (if (>= (var-get total-staked) balance)
+        (- (var-get total-staked) balance)
+        u0))
       (var-set total-unstake-volume (+ (var-get total-unstake-volume) balance))
-      (var-set total-stakers (- (var-get total-stakers) u1))
+      (var-set total-stakers (if (> (var-get total-stakers) u0)
+        (- (var-get total-stakers) u1)
+        u0))
 
       (print { event: "emergency-unstake", user: recipient, amount: balance })
       (ok balance)
@@ -303,19 +307,23 @@
 
 ;; Request unstake (starts cooldown timer)
 (define-public (request-unstake)
-  (let (
-    (balance (default-to u0 (map-get? staker-balances tx-sender)))
-  )
-    (asserts! (> balance u0) ERR-NO-STAKE)
-    (map-set staker-cooldown-end tx-sender (+ block-height COOLDOWN-PERIOD))
-    (print { event: "unstake-requested", user: tx-sender, cooldown-end: (+ block-height COOLDOWN-PERIOD) })
-    (ok true)
+  (begin
+    (asserts! (not (var-get is-paused)) ERR-PROTOCOL-PAUSED)
+    (let (
+      (balance (default-to u0 (map-get? staker-balances tx-sender)))
+    )
+      (asserts! (> balance u0) ERR-NO-STAKE)
+      (map-set staker-cooldown-end tx-sender (+ block-height COOLDOWN-PERIOD))
+      (print { event: "unstake-requested", user: tx-sender, cooldown-end: (+ block-height COOLDOWN-PERIOD) })
+      (ok true)
+    )
   )
 )
 
 ;; Unstake STX after cooldown period
 (define-public (unstake (amount uint))
   (begin
+    (asserts! (not (var-get is-paused)) ERR-PROTOCOL-PAUSED)
     (asserts! (> amount u0) ERR-ZERO-AMOUNT)
 
     (let (
@@ -344,12 +352,16 @@
         (map-set staker-cooldown-end recipient u0)
 
         ;; Update pool metrics
-        (var-set total-staked (- (var-get total-staked) amount))
+        (var-set total-staked (if (>= (var-get total-staked) amount)
+          (- (var-get total-staked) amount)
+          u0))
         (var-set total-unstake-volume (+ (var-get total-unstake-volume) amount))
 
         ;; Decrement staker count if fully unstaked
         (if (is-eq new-balance u0)
-          (var-set total-stakers (- (var-get total-stakers) u1))
+          (var-set total-stakers (if (> (var-get total-stakers) u0)
+            (- (var-get total-stakers) u1)
+            u0))
           true
         )
 
@@ -362,29 +374,36 @@
 
 ;; Claim accumulated rewards
 (define-public (claim-rewards)
-  (let (
-    (recipient tx-sender)
-  )
-    ;; Update reward accounting
-    (update-reward recipient)
-
+  (begin
+    (asserts! (not (var-get is-paused)) ERR-PROTOCOL-PAUSED)
     (let (
-      (reward-amount (default-to u0 (map-get? staker-rewards recipient)))
+      (recipient tx-sender)
     )
-      (asserts! (> reward-amount u0) ERR-NO-REWARDS)
+      ;; Update reward accounting
+      (update-reward recipient)
 
-      ;; Reset pending rewards
-      (map-set staker-rewards recipient u0)
+      (let (
+        (reward-amount (default-to u0 (map-get? staker-rewards recipient)))
+      )
+        (asserts! (> reward-amount u0) ERR-NO-REWARDS)
 
-      ;; Transfer rewards to staker
-      (try! (as-contract (stx-transfer? reward-amount tx-sender recipient)))
+        ;; Verify contract has sufficient STX to pay rewards
+        (asserts! (>= (stx-get-balance (as-contract tx-sender)) reward-amount)
+          (err u210))
 
-      ;; Update metrics
-      (var-set total-rewards-distributed (+ (var-get total-rewards-distributed) reward-amount))
-      (map-set staker-last-action recipient block-height)
+        ;; Reset pending rewards
+        (map-set staker-rewards recipient u0)
 
-      (print { event: "rewards-claimed", user: recipient, amount: reward-amount })
-      (ok reward-amount)
+        ;; Transfer rewards to staker
+        (try! (as-contract (stx-transfer? reward-amount tx-sender recipient)))
+
+        ;; Update metrics
+        (var-set total-rewards-distributed (+ (var-get total-rewards-distributed) reward-amount))
+        (map-set staker-last-action recipient block-height)
+
+        (print { event: "rewards-claimed", user: recipient, amount: reward-amount })
+        (ok reward-amount)
+      )
     )
   )
 )

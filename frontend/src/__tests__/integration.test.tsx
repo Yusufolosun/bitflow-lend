@@ -35,6 +35,31 @@ vi.mock('../hooks/useToast', () => ({
   ToastProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
+vi.mock('../components/ToastProvider', () => ({
+  useToastContext: () => ({
+    success: vi.fn(),
+    error: vi.fn(),
+    info: vi.fn(),
+    warning: vi.fn(),
+  }),
+  ToastProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+}));
+
+vi.mock('../hooks/useStxPrice', () => ({
+  useStxPrice: () => ({
+    price: 1.5,
+    isLoading: false,
+    error: null,
+    isStale: false,
+    lastUpdated: new Date(),
+    refresh: vi.fn(),
+  }),
+}));
+
+vi.mock('../hooks/useSmartPolling', () => ({
+  useSmartPolling: vi.fn(),
+}));
+
 vi.mock('../config/contracts', () => ({
   ACTIVE_NETWORK: 'testnet',
   PROTOCOL_CONSTANTS: {
@@ -127,7 +152,7 @@ describe('App Integration', () => {
       getUserLoan: vi.fn().mockResolvedValue(null),
       getHealthFactor: vi.fn().mockResolvedValue(null),
       getRepaymentAmount: vi.fn().mockResolvedValue(null),
-      pollTransactionStatus: vi.fn().mockResolvedValue(true),
+      pollTransactionStatus: vi.fn().mockResolvedValue('confirmed'),
       isLoading: false,
       error: null,
     };
@@ -152,8 +177,8 @@ describe('App Integration', () => {
       const { Dashboard } = await import('../components/Dashboard');
       render(<Dashboard />);
 
-      expect(screen.getByText('BitFlow Lend')).toBeInTheDocument();
-      expect(screen.getByText('Welcome to BitFlow Lend')).toBeInTheDocument();
+      expect(screen.getByAltText('BitFlow Lend')).toBeInTheDocument();
+      expect(screen.getByText(/Welcome to/)).toBeInTheDocument();
       expect(screen.getByText(/Connect your wallet/)).toBeInTheDocument();
     });
 

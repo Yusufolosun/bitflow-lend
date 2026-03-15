@@ -1,8 +1,15 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { AppConfig, UserSession, showConnect } from '@stacks/connect';
 import { StacksMainnet, StacksTestnet } from '@stacks/network';
 import { WalletState } from '../types/vault';
 import { ACTIVE_NETWORK } from '../config/contracts';
+
+// Module-level singletons so identity is stable across renders
+const appConfig = new AppConfig(['store_write', 'publish_data']);
+const sharedUserSession = new UserSession({ appConfig });
+const sharedNetwork = ACTIVE_NETWORK === 'testnet'
+  ? new StacksTestnet()
+  : new StacksMainnet();
 
 /**
  * Custom hook for wallet authentication
@@ -17,14 +24,8 @@ export const useAuth = () => {
   });
   const [isLoading, setIsLoading] = useState(true);
 
-  // Initialize app config and user session
-  const appConfig = new AppConfig(['store_write', 'publish_data']);
-  const userSession = new UserSession({ appConfig });
-
-  // Get the appropriate network
-  const network = ACTIVE_NETWORK === 'testnet' 
-    ? new StacksTestnet() 
-    : new StacksMainnet();
+  const userSession = sharedUserSession;
+  const network = sharedNetwork;
 
   /**
    * Fetch STX balance for a given address

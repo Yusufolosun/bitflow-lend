@@ -12,18 +12,13 @@ global.fetch = mockFetch;
 
 describe('useStxPrice Hook', () => {
   beforeEach(() => {
-    vi.useFakeTimers();
     vi.clearAllMocks();
-  });
-
-  afterEach(() => {
-    vi.useRealTimers();
   });
 
   it('starts with fallback price and loading state', () => {
     mockFetch.mockResolvedValue({
       ok: true,
-      json: () => Promise.resolve({ blockstack: { usd: 1.5 } }),
+      json: () => Promise.resolve({ stacks: { usd: 1.5 } }),
     });
 
     const { result } = renderHook(() => useStxPrice());
@@ -37,7 +32,7 @@ describe('useStxPrice Hook', () => {
   it('updates price after successful fetch', async () => {
     mockFetch.mockResolvedValue({
       ok: true,
-      json: () => Promise.resolve({ blockstack: { usd: 2.35 } }),
+      json: () => Promise.resolve({ stacks: { usd: 2.35 } }),
     });
 
     const { result } = renderHook(() => useStxPrice());
@@ -69,7 +64,7 @@ describe('useStxPrice Hook', () => {
   it('handles malformed response gracefully', async () => {
     mockFetch.mockResolvedValue({
       ok: true,
-      json: () => Promise.resolve({ blockstack: {} }),
+      json: () => Promise.resolve({ stacks: {} }),
     });
 
     const { result } = renderHook(() => useStxPrice());
@@ -95,7 +90,7 @@ describe('useStxPrice Hook', () => {
   it('exposes a refresh function', () => {
     mockFetch.mockResolvedValue({
       ok: true,
-      json: () => Promise.resolve({ blockstack: { usd: 1.5 } }),
+      json: () => Promise.resolve({ stacks: { usd: 1.5 } }),
     });
 
     const { result } = renderHook(() => useStxPrice());
@@ -104,9 +99,11 @@ describe('useStxPrice Hook', () => {
   });
 
   it('does not set interval when refreshInterval is 0', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+
     mockFetch.mockResolvedValue({
       ok: true,
-      json: () => Promise.resolve({ blockstack: { usd: 1.5 } }),
+      json: () => Promise.resolve({ stacks: { usd: 1.5 } }),
     });
 
     renderHook(() => useStxPrice(0));
@@ -122,12 +119,13 @@ describe('useStxPrice Hook', () => {
     });
 
     expect(mockFetch).toHaveBeenCalledTimes(1);
+    vi.useRealTimers();
   });
 
   it('sets lastUpdated timestamp on success', async () => {
     mockFetch.mockResolvedValue({
       ok: true,
-      json: () => Promise.resolve({ blockstack: { usd: 2.0 } }),
+      json: () => Promise.resolve({ stacks: { usd: 2.0 } }),
     });
 
     const { result } = renderHook(() => useStxPrice());

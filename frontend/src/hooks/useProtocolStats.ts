@@ -72,15 +72,14 @@ export const useProtocolStats = (refreshInterval = 30000) => {
 
     // total-outstanding-borrows tracks live debt (increments on borrow,
     // decrements on repay/liquidation). active-loans count is not tracked
-    // on-chain so it defaults to 0 until enumeration support is added.
+    // on-chain (would require map enumeration), so always 0.
     const totalBorrowed = safeNumber(data['total-outstanding-borrows']) / 1_000_000;
-    const activeLoans = safeNumber(data['active-loans']);
 
     return {
       totalDeposits,
       totalBorrowed,
       totalRepaid,
-      activeLoans,
+      activeLoans: 0,
       totalLiquidations,
     };
   };

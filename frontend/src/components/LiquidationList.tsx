@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { AlertTriangle, DollarSign, TrendingDown, Zap } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
+import { useVault } from '../hooks/useVault';
 import { formatSTX, formatAddress } from '../utils/formatters';
-import { PROTOCOL_CONSTANTS } from '../config/contracts';
+import { PROTOCOL_CONSTANTS, getExplorerUrl } from '../config/contracts';
 
 /**
  * Position interface for liquidatable positions
@@ -21,11 +22,13 @@ interface LiquidatablePosition {
  * Displays positions at risk of liquidation and allows liquidation
  */
 export const LiquidationList: React.FC = () => {
-  const { address } = useAuth();
+  const { address, userSession } = useAuth();
+  const vault = useVault(userSession, address);
 
   const [positions, setPositions] = useState<LiquidatablePosition[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedPosition, setSelectedPosition] = useState<string | null>(null);
+  const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   // Fetch liquidatable positions
   useEffect(() => {
@@ -45,25 +48,25 @@ export const LiquidationList: React.FC = () => {
 
   const handleLiquidate = async (position: LiquidatablePosition) => {
     if (!address) {
-      alert('Please connect your wallet first');
+      setStatusMessage({ type: 'error', text: 'Please connect your wallet first' });
       return;
     }
 
     setSelectedPosition(position.address);
+    setStatusMessage(null);
 
     try {
-      // In a real implementation, this would call the liquidate function
-      // const result = await vault.liquidate(position.address);
+      const result = await vault.liquidate(position.address);
 
-      alert(`Liquidation initiated for ${formatAddress(position.address)}`);
-      
-      // Refresh positions after liquidation
-      setTimeout(() => {
+      if (result.success) {
+        setStatusMessage({ type: 'success', text: `Liquidation submitted for ${formatAddress(position.address)}` });
         setPositions(prev => prev.filter(p => p.address !== position.address));
-        setSelectedPosition(null);
-      }, 2000);
+      } else {
+        setStatusMessage({ type: 'error', text: result.error || `Liquidation failed for ${formatAddress(position.address)}` });
+      }
     } catch {
-      alert('Liquidation failed. Please try again.');
+      setStatusMessage({ type: 'error', text: 'Liquidation transaction failed. Please try again.' });
+    } finally {
       setSelectedPosition(null);
     }
   };

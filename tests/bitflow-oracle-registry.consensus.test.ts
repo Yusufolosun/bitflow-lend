@@ -81,7 +81,7 @@ describe("bitflow-oracle-registry multi-reporter consensus", () => {
     submitPrice(1_000_000, reporter1());
     // Reporter2 submits wildly different price (>20% deviation)
     const rejected = submitPrice(2_000_000, reporter2());
-    expect(rejected.result).toBeErr(Cl.uint(305));
+    expect(rejected.result).toBeOk(Cl.bool(false));
 
     // Reporter3 can still submit a valid price
     const accepted = submitPrice(1_050_000, reporter3());

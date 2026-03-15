@@ -44,7 +44,7 @@ describe("bitflow-vault-core-v2 repay lifecycle tests", () => {
       const { result } = repay(wallet1());
       expect(result).toHaveTupleProperty("principal", Cl.uint(1_000_000));
       // Interest should be >= 1 (ceiling division)
-      const interest = (result as any).data?.interest?.value;
+      const interest = (result as any).value?.value?.interest?.value;
       expect(Number(interest)).toBeGreaterThanOrEqual(1);
       expect(result).toHaveTupleProperty("penalty", Cl.uint(0));
     });
@@ -56,10 +56,10 @@ describe("bitflow-vault-core-v2 repay lifecycle tests", () => {
       simnet.mineEmptyBlocks(100);
 
       const { result } = repay(wallet1());
-      const principal = Number((result as any).data?.principal?.value);
-      const interest = Number((result as any).data?.interest?.value);
-      const penalty = Number((result as any).data?.penalty?.value);
-      const total = Number((result as any).data?.total?.value);
+      const principal = Number((result as any).value?.value?.principal?.value);
+      const interest = Number((result as any).value?.value?.interest?.value);
+      const penalty = Number((result as any).value?.value?.penalty?.value);
+      const total = Number((result as any).value?.value?.total?.value);
 
       expect(total).toBe(principal + interest + penalty);
     });
@@ -105,7 +105,7 @@ describe("bitflow-vault-core-v2 repay lifecycle tests", () => {
       setup();
       deposit(10_000_000, wallet1());
       borrow(1_000_000, 500, 30, wallet1());
-      simnet.callPublicFn(CONTRACT, "pause", [], deployer());
+      simnet.callPublicFn(CONTRACT, "pause-protocol", [], deployer());
 
       const { result } = repay(wallet1());
       expect(result).toBeErr(Cl.uint(112)); // ERR-PROTOCOL-PAUSED
@@ -131,7 +131,7 @@ describe("bitflow-vault-core-v2 repay lifecycle tests", () => {
       repay(wallet1());
 
       const stats = getProtocolStats();
-      const repaid = (stats.result as any).data?.["total-repaid"]?.value;
+      const repaid = (stats.result as any).value?.["total-repaid"]?.value;
       expect(Number(repaid)).toBeGreaterThanOrEqual(1_000_001);
     });
   });
@@ -159,7 +159,7 @@ describe("bitflow-vault-core-v2 repay lifecycle tests", () => {
       simnet.mineEmptyBlocks(5000);
 
       const { result } = repay(wallet1());
-      const penalty = Number((result as any).data?.penalty?.value);
+      const penalty = Number((result as any).value?.value?.penalty?.value);
       // 5% of 2M = 100_000
       expect(penalty).toBe(100_000);
     });

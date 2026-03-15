@@ -101,6 +101,7 @@ describe("Security Tests", () => {
         Cl.tuple({
           principal: Cl.uint(10_000_000),
           interest: Cl.uint(1_000_000_000),
+          penalty: Cl.uint(0),
           total: Cl.uint(1_010_000_000),
         })
       );
@@ -268,13 +269,13 @@ describe("Security Tests", () => {
       const wallet = accounts.get("wallet_1")!;
 
       simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(1500)], wallet);
-      // Small borrow that rounds interest to 0
-      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100), Cl.uint(1), Cl.uint(1)], wallet);
+      // Small borrow with minimum valid rate (50 bps)
+      simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(100), Cl.uint(50), Cl.uint(1)], wallet);
 
-      // Should still be able to repay even with 0 interest
+      // Should still be able to repay — ceiling division ensures interest >= 1
       const repay = simnet.callPublicFn(CONTRACT, "repay", [], wallet);
       expect(repay.result).toBeOk(
-        Cl.tuple({ principal: Cl.uint(100), interest: Cl.uint(0), total: Cl.uint(100) })
+        Cl.tuple({ principal: Cl.uint(100), interest: Cl.uint(1), penalty: Cl.uint(0), total: Cl.uint(101) })
       );
     });
 
@@ -292,6 +293,7 @@ describe("Security Tests", () => {
   describe("front-running protection", () => {
     it("liquidation requires actual unhealthy position - cannot fabricate price", () => {
       const accounts = simnet.getAccounts();
+      const deployer = accounts.get("deployer")!;
       const borrower = accounts.get("wallet_1")!;
       const attacker = accounts.get("wallet_2")!;
 
@@ -300,16 +302,19 @@ describe("Security Tests", () => {
 
       // Even with manipulated price, the contract's health check is strict
       // At price 100: healthy (200%)
-      const liq1 = simnet.callPublicFn(CONTRACT, "liquidate", [Cl.principal(borrower), Cl.uint(100)], attacker);
+      simnet.callPublicFn(CONTRACT, "set-stx-price", [Cl.uint(100)], deployer);
+      const liq1 = simnet.callPublicFn(CONTRACT, "liquidate", [Cl.principal(borrower)], attacker);
       expect(liq1.result).toBeErr(Cl.uint(107));
 
       // At price 56: health = 112% - still safe
-      const liq2 = simnet.callPublicFn(CONTRACT, "liquidate", [Cl.principal(borrower), Cl.uint(56)], attacker);
+      simnet.callPublicFn(CONTRACT, "set-stx-price", [Cl.uint(56)], deployer);
+      const liq2 = simnet.callPublicFn(CONTRACT, "liquidate", [Cl.principal(borrower)], attacker);
       expect(liq2.result).toBeErr(Cl.uint(107));
     });
 
     it("borrower's collateral is protected from unauthorized liquidation", () => {
       const accounts = simnet.getAccounts();
+      const deployer = accounts.get("deployer")!;
       const borrower = accounts.get("wallet_1")!;
       const attacker = accounts.get("wallet_2")!;
 
@@ -320,7 +325,8 @@ describe("Security Tests", () => {
       for (const price of [100, 90, 80, 70, 60]) {
         // health = 3000*price/100*100/1000 = 3000*price/1000 = 3*price
         // At price 60: health = 180, still above 110
-        const liqAttempt = simnet.callPublicFn(CONTRACT, "liquidate", [Cl.principal(borrower), Cl.uint(price)], attacker);
+        simnet.callPublicFn(CONTRACT, "set-stx-price", [Cl.uint(price)], deployer);
+        const liqAttempt = simnet.callPublicFn(CONTRACT, "liquidate", [Cl.principal(borrower)], attacker);
         if (price > 36) { // health > 110 when price > 36.67
           expect(liqAttempt.result).toBeErr(Cl.uint(107));
         }

@@ -1,9 +1,10 @@
 import React, { useState, useCallback } from 'react';
-import { DollarSign, AlertCircle, CheckCircle, XCircle, Clock } from 'lucide-react';
+import { DollarSign, AlertCircle, CheckCircle, XCircle, Clock, ExternalLink } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useVault } from '../hooks/useVault';
 import { useSmartPolling } from '../hooks/useSmartPolling';
 import { formatSTX } from '../utils/formatters';
+import { getExplorerUrl } from '../config/contracts';
 
 /**
  * RepayCard Component
@@ -15,9 +16,10 @@ export const RepayCard: React.FC = () => {
 
   const [activeLoan, setActiveLoan] = useState<any>(null);
   const [repaymentAmount, setRepaymentAmount] = useState<any>(null);
-  const [txStatus, setTxStatus] = useState<'idle' | 'pending' | 'success' | 'error'>('idle');
+  const [txStatus, setTxStatus] = useState<'idle' | 'pending' | 'success' | 'error' | 'timeout'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
   const [timeElapsed, setTimeElapsed] = useState('');
+  const [lastTxId, setLastTxId] = useState<string | null>(null);
 
   // Fetch active loan and repayment amount on a 60s smart interval
   const fetchData = useCallback(async () => {
@@ -43,7 +45,7 @@ export const RepayCard: React.FC = () => {
         setTimeElapsed(`${minutes}m`);
       }
     }
-  }, [address, vault]);
+  }, [address, vault.getUserLoan, vault.getRepaymentAmount]);
 
   useSmartPolling(fetchData, 60_000, !!address);
 
@@ -63,18 +65,31 @@ export const RepayCard: React.FC = () => {
 
     setTxStatus('pending');
     setErrorMessage('');
+    setLastTxId(null);
 
     try {
       const result = await vault.repay();
 
-      if (result.success) {
-        setTxStatus('success');
-        setTimeout(async () => {
-          const loan = await vault.getUserLoan();
-          setActiveLoan(loan);
-          setRepaymentAmount(null);
-          setTxStatus('idle');
-        }, 5000);
+      if (result.success && result.txId) {
+        setLastTxId(result.txId);
+
+        const pollResult = await vault.pollTransactionStatus(result.txId);
+
+        if (pollResult === 'confirmed') {
+          setTxStatus('success');
+          setTimeout(async () => {
+            const loan = await vault.getUserLoan();
+            setActiveLoan(loan);
+            setRepaymentAmount(null);
+            setTxStatus('idle');
+          }, 5000);
+        } else if (pollResult === 'failed') {
+          setTxStatus('error');
+          setErrorMessage('Transaction was rejected on-chain. Check the explorer for details.');
+        } else {
+          setTxStatus('timeout');
+          setErrorMessage('');
+        }
       } else {
         setTxStatus('error');
         setErrorMessage(result.error || 'Transaction failed');
@@ -277,18 +292,67 @@ export const RepayCard: React.FC = () => {
 
       {/* Status Messages */}
       {txStatus === 'success' && (
-        <div className="flex items-center gap-2 p-3 bg-emerald-50 rounded-xl border border-emerald-100" role="alert">
-          <CheckCircle className="text-emerald-600" size={20} />
-          <span className="text-sm text-emerald-700 font-medium">
-            Loan repaid successfully! Collateral released.
-          </span>
+        <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-100 space-y-2" role="alert">
+          <div className="flex items-center gap-2">
+            <CheckCircle className="text-emerald-600" size={20} />
+            <span className="text-sm text-emerald-700 font-medium">
+              Loan repaid successfully! Collateral released.
+            </span>
+          </div>
+          {lastTxId && (
+            <a
+              href={getExplorerUrl(lastTxId)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 text-xs text-emerald-600 hover:text-emerald-700 hover:underline"
+            >
+              View transaction
+              <ExternalLink size={12} />
+            </a>
+          )}
         </div>
       )}
 
       {txStatus === 'error' && errorMessage && (
-        <div className="flex items-center gap-2 p-3 bg-red-50 rounded-xl border border-red-100" role="alert">
-          <XCircle className="text-red-600" size={20} />
-          <span className="text-sm text-red-700 font-medium">{errorMessage}</span>
+        <div className="p-3 bg-red-50 rounded-xl border border-red-100 space-y-2" role="alert">
+          <div className="flex items-center gap-2">
+            <XCircle className="text-red-600" size={20} />
+            <span className="text-sm text-red-700 font-medium">{errorMessage}</span>
+          </div>
+          {lastTxId && (
+            <a
+              href={getExplorerUrl(lastTxId)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 text-xs text-red-600 hover:text-red-700 hover:underline"
+            >
+              View transaction
+              <ExternalLink size={12} />
+            </a>
+          )}
+        </div>
+      )}
+
+      {txStatus === 'timeout' && lastTxId && (
+        <div className="p-3 bg-amber-50 rounded-xl border border-amber-200 space-y-2" role="alert">
+          <div className="flex items-center gap-2">
+            <AlertCircle className="text-amber-600" size={20} />
+            <span className="text-sm text-amber-700 font-medium">
+              Transaction still processing
+            </span>
+          </div>
+          <p className="text-xs text-amber-700">
+            Your repayment may still go through. Do not retry — check the explorer for the latest status.
+          </p>
+          <a
+            href={getExplorerUrl(lastTxId)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1 text-xs text-amber-700 hover:text-amber-800 hover:underline font-medium"
+          >
+            Check transaction status
+            <ExternalLink size={12} />
+          </a>
         </div>
       )}
 

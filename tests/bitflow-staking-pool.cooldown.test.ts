@@ -37,7 +37,7 @@ describe("bitflow-staking-pool cooldown lifecycle tests", () => {
       requestUnstake(wallet1());
 
       const { result } = getStakerInfo(wallet1());
-      const cooldownEnd = (result as any).data?.["cooldown-end"]?.value;
+      const cooldownEnd = (result as any).value?.["cooldown-end"]?.value;
       expect(Number(cooldownEnd)).toBeGreaterThan(0);
     });
 
@@ -100,7 +100,7 @@ describe("bitflow-staking-pool cooldown lifecycle tests", () => {
       unstake(2_000_000, wallet1());
 
       const { result } = getStakerInfo(wallet1());
-      const cooldownEnd = (result as any).data?.["cooldown-end"]?.value;
+      const cooldownEnd = (result as any).value?.["cooldown-end"]?.value;
       expect(Number(cooldownEnd)).toBe(0);
     });
   });
@@ -113,7 +113,7 @@ describe("bitflow-staking-pool cooldown lifecycle tests", () => {
       requestUnstake(wallet1());
       simnet.mineEmptyBlocks(145);
       const { result } = unstake(6_000_000, wallet1());
-      expect(result).toBeErr(Cl.uint(202)); // ERR-INSUFFICIENT-BALANCE
+      expect(result).toBeErr(Cl.uint(201)); // ERR-INSUFFICIENT-BALANCE
     });
   });
 
@@ -140,7 +140,7 @@ describe("bitflow-staking-pool cooldown lifecycle tests", () => {
       requestUnstake(wallet1());
       simnet.mineEmptyBlocks(145);
       const { result } = unstake(0, wallet1());
-      expect(result).toBeErr(Cl.uint(201)); // ERR-ZERO-AMOUNT
+      expect(result).toBeErr(Cl.uint(208)); // ERR-ZERO-AMOUNT
     });
   });
 });

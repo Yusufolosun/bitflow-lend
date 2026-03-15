@@ -117,6 +117,7 @@ describe("Concurrent User Interaction Tests", () => {
   describe("parallel liquidations", () => {
     it("allows sequential liquidation of multiple undercollateralized positions", () => {
       const accounts = simnet.getAccounts();
+      const deployer = accounts.get("deployer")!;
       const wallet1 = accounts.get("wallet_1")!;
       const wallet2 = accounts.get("wallet_2")!;
       const liquidator = accounts.get("wallet_3")!;
@@ -130,8 +131,9 @@ describe("Concurrent User Interaction Tests", () => {
 
       // Liquidate both at low price
       const stxPrice = 70;
-      const liq1 = simnet.callPublicFn(CONTRACT, "liquidate", [Cl.principal(wallet1), Cl.uint(stxPrice)], liquidator);
-      const liq2 = simnet.callPublicFn(CONTRACT, "liquidate", [Cl.principal(wallet2), Cl.uint(stxPrice)], liquidator);
+      simnet.callPublicFn(CONTRACT, "set-stx-price", [Cl.uint(stxPrice)], deployer);
+      const liq1 = simnet.callPublicFn(CONTRACT, "liquidate", [Cl.principal(wallet1)], liquidator);
+      const liq2 = simnet.callPublicFn(CONTRACT, "liquidate", [Cl.principal(wallet2)], liquidator);
 
       expect(liq1.result).toBeOk(expect.any(Object));
       expect(liq2.result).toBeOk(expect.any(Object));

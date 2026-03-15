@@ -51,13 +51,15 @@ describe("Gas Consumption and Limit Tests", () => {
 
     it("liquidate completes within gas limits", () => {
       const accounts = simnet.getAccounts();
+      const deployer = accounts.get("deployer")!;
       const borrower = accounts.get("wallet_1")!;
       const liquidator = accounts.get("wallet_2")!;
 
       simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(1500)], borrower);
       simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], borrower);
 
-      const { result, events } = simnet.callPublicFn(CONTRACT, "liquidate", [Cl.principal(borrower), Cl.uint(70)], liquidator);
+      simnet.callPublicFn(CONTRACT, "set-stx-price", [Cl.uint(70)], deployer);
+      const { result, events } = simnet.callPublicFn(CONTRACT, "liquidate", [Cl.principal(borrower)], liquidator);
       expect(result).toBeOk(expect.any(Object));
       // Liquidation involves multiple STX transfers
       expect(events.length).toBeGreaterThanOrEqual(2);
@@ -84,6 +86,7 @@ describe("Gas Consumption and Limit Tests", () => {
         "total-deposits": expect.any(Object),
         "total-repaid": expect.any(Object),
         "total-liquidations": expect.any(Object),
+        "total-outstanding-borrows": expect.any(Object),
       });
     });
 

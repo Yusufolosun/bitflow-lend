@@ -48,7 +48,7 @@ describe("bitflow-staking-pool dashboard snapshot tests", () => {
     setup(1000);
     stake(1_000_000, wallet1());
     const { result } = getSnapshot();
-    const apy = (result as any).data?.["estimated-apy-bps"]?.value;
+    const apy = (result as any).value?.["estimated-apy-bps"]?.value;
     expect(Number(apy)).toBeGreaterThan(0);
   });
 
@@ -56,7 +56,7 @@ describe("bitflow-staking-pool dashboard snapshot tests", () => {
     setup();
     simnet.mineEmptyBlocks(10);
     const { result } = getSnapshot();
-    const age = (result as any).data?.["protocol-age-blocks"]?.value;
+    const age = (result as any).value?.["protocol-age-blocks"]?.value;
     expect(Number(age)).toBeGreaterThanOrEqual(10);
   });
 

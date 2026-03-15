@@ -72,6 +72,21 @@ vi.mock('../../hooks/useProtocolStats', () => ({
   useProtocolStats: () => mockUseProtocolStats(),
 }));
 
+vi.mock('../../hooks/useStxPrice', () => ({
+  useStxPrice: () => ({
+    price: 1.5,
+    isLoading: false,
+    error: null,
+    isStale: false,
+    lastUpdated: new Date(),
+    refresh: vi.fn(),
+  }),
+}));
+
+vi.mock('../../hooks/useSmartPolling', () => ({
+  useSmartPolling: vi.fn(),
+}));
+
 vi.mock('../../utils/formatters', () => ({
   formatSTX: (amount: number) => amount.toFixed(2),
 }));
@@ -122,14 +137,14 @@ describe('Dashboard Component', () => {
   });
 
   describe('Header', () => {
-    it('renders the app title', () => {
+    it('renders the app logo', () => {
       render(<Dashboard />);
-      expect(screen.getByText('BitFlow Lend')).toBeInTheDocument();
+      expect(screen.getByAltText('BitFlow Lend')).toBeInTheDocument();
     });
 
-    it('renders the subtitle', () => {
+    it('renders the protocol overview section', () => {
       render(<Dashboard />);
-      expect(screen.getByText('Decentralized Lending Protocol')).toBeInTheDocument();
+      expect(screen.getByText('Protocol Overview')).toBeInTheDocument();
     });
 
     it('renders the wallet connect component', () => {
@@ -204,7 +219,7 @@ describe('Dashboard Component', () => {
   describe('Disconnected State', () => {
     it('shows welcome section when wallet is not connected', () => {
       render(<Dashboard />);
-      expect(screen.getByText('Welcome to BitFlow Lend')).toBeInTheDocument();
+      expect(screen.getByText(/Welcome to/)).toBeInTheDocument();
     });
 
     it('does not show user portfolio when disconnected', () => {
@@ -265,7 +280,7 @@ describe('Dashboard Component', () => {
 
     it('does not show welcome section when connected', () => {
       render(<Dashboard />);
-      expect(screen.queryByText('Welcome to BitFlow Lend')).not.toBeInTheDocument();
+      expect(screen.queryByText(/Welcome to/)).not.toBeInTheDocument();
     });
 
     it('shows total deposited in portfolio', () => {

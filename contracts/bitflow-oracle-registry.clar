@@ -64,6 +64,7 @@
 (define-private (is-price-fresh)
   (and
     (> (var-get aggregated-price) u0)
+    (> (var-get aggregated-block) u0)
     (< (- block-height (var-get aggregated-block)) (var-get max-price-age))
   )
 )
@@ -292,7 +293,7 @@
       (begin
         (var-set total-rejections (+ (var-get total-rejections) u1))
         (print { event: "price-rejected-deviation", reporter: tx-sender, price: price })
-        ERR-DEVIATION-TOO-HIGH
+        (ok false)
       )
     )
   )

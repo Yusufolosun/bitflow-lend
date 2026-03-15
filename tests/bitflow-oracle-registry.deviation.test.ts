@@ -52,7 +52,7 @@ describe("bitflow-oracle-registry deviation and precision tests", () => {
       // 20% above = 1_200_000. Anything above should be rejected.
       // 1_200_001 is 20.0001% deviation
       const { result } = submitPrice(1_200_001, reporter1());
-      expect(result).toBeErr(Cl.uint(305)); // ERR-DEVIATION-TOO-HIGH
+      expect(result).toBeOk(Cl.bool(false)); // ERR-DEVIATION-TOO-HIGH
     });
 
     it("accepts price at max deviation below", () => {
@@ -70,7 +70,7 @@ describe("bitflow-oracle-registry deviation and precision tests", () => {
 
       // 799_999 is just beyond 20% below
       const { result } = submitPrice(799_999, reporter1());
-      expect(result).toBeErr(Cl.uint(305));
+      expect(result).toBeOk(Cl.bool(false));
     });
   });
 
@@ -92,7 +92,7 @@ describe("bitflow-oracle-registry deviation and precision tests", () => {
 
       // 6% above = 1_060_000, should be rejected
       const { result: fail } = submitPrice(1_060_000, reporter2());
-      expect(fail).toBeErr(Cl.uint(305));
+      expect(fail).toBeOk(Cl.bool(false));
     });
 
     it("widest deviation (5000 bps = 50%) allows large swings", () => {
@@ -141,12 +141,12 @@ describe("bitflow-oracle-registry deviation and precision tests", () => {
       adminSetPrice(1_000_000);
 
       const before = getStats();
-      const subsBefore = (before.result as any).data?.["total-submissions"]?.value;
+      const subsBefore = (before.result as any).value?.["total-submissions"]?.value;
 
       submitPrice(2_000_000, reporter1()); // rejected
 
       const after = getStats();
-      const subsAfter = (after.result as any).data?.["total-submissions"]?.value;
+      const subsAfter = (after.result as any).value?.["total-submissions"]?.value;
 
       expect(subsAfter).toBe(subsBefore);
     });

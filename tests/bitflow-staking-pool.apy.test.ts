@@ -67,8 +67,8 @@ describe("bitflow-staking-pool APY calculation tests", () => {
       // Now stake much more (from a different path — re-init)
       // Since we can't un-stake easily, just verify the formula:
       // APY = rate * 52560 * 10000 / total
-      // With 1M staked: 1000 * 52560 * 10000 / 1000000 = 525600000
-      expect(v1).toBe(525600000);
+      // With 1M staked: 1000 * 52560 * 10000 / 1000000 = 525600
+      expect(v1).toBe(525600);
     });
   });
 

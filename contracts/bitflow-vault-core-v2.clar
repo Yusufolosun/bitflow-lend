@@ -35,6 +35,7 @@
 (define-constant ERR-HEALTH-FACTOR-LOW (err u118))
 (define-constant ERR-ZERO-AMOUNT (err u119))
 (define-constant ERR-INVALID-PARAM (err u120))
+(define-constant ERR-INSUFFICIENT-LIQUIDITY (err u121))
 
 ;; ===== TUNABLE PROTOCOL PARAMETERS =====
 (define-data-var min-collateral-ratio uint u150)
@@ -104,10 +105,13 @@
 ;; ===== PRIVATE UTILITY FUNCTIONS =====
 
 ;; Safe addition with overflow protection
+;; Clarity uint is 128-bit; (+ a b) panics on overflow, so check first.
 (define-private (safe-add (a uint) (b uint))
-  (if (> (+ a b) u115792089237316195423570985008687907853269984665640564039457584007913129639935)
-    u115792089237316195423570985008687907853269984665640564039457584007913129639935
-    (+ a b)
+  (let ((max-uint u340282366920938463463374607431768211455))
+    (if (> a (- max-uint b))
+      max-uint
+      (+ a b)
+    )
   )
 )
 
@@ -123,6 +127,7 @@
 (define-private (is-price-valid)
   (and
     (> (var-get admin-stx-price) u0)
+    (> (var-get price-update-block) u0)
     (< (- block-height (var-get price-update-block)) PRICE-STALENESS-THRESHOLD)
   )
 )
@@ -248,7 +253,9 @@
 )
 
 (define-read-only (get-price-staleness-blocks)
-  (- block-height (var-get price-update-block))
+  (if (> (var-get price-update-block) u0)
+    (- block-height (var-get price-update-block))
+    u0)
 )
 
 (define-read-only (get-is-paused)
@@ -552,6 +559,9 @@
       ;; One loan per user
       (asserts! (is-none (map-get? user-loans recipient)) ERR-ALREADY-HAS-LOAN)
 
+      ;; Verify contract has sufficient STX liquidity to fund the loan
+      (asserts! (>= (stx-get-balance (as-contract tx-sender)) amount) ERR-INSUFFICIENT-LIQUIDITY)
+
       ;; Transfer borrowed STX from contract to user
       (try! (as-contract (stx-transfer? amount tx-sender recipient)))
 
@@ -643,7 +653,7 @@
       (var-set total-outstanding-borrows (safe-sub (var-get total-outstanding-borrows) loan-amount))
       (var-set total-liquidations (+ (var-get total-liquidations) u1))
       (var-set total-liquidations-count (+ (var-get total-liquidations-count) u1))
-      (var-set total-liquidation-volume (safe-add (var-get total-liquidation-volume) borrower-deposit))
+      (var-set total-liquidation-volume (safe-add (var-get total-liquidation-volume) loan-amount))
       (var-set last-activity-block block-height)
 
       (print { event: "liquidation", liquidator: liquidator, borrower: borrower, seized: borrower-deposit, paid: total-to-pay, bonus: liquidation-bonus })
@@ -668,12 +678,16 @@
 
 ;; Get protocol age in blocks
 (define-read-only (get-protocol-age)
-  (- block-height (var-get protocol-start-block))
+  (if (> (var-get protocol-start-block) u0)
+    (- block-height (var-get protocol-start-block))
+    u0)
 )
 
 ;; Get blocks since last activity
 (define-read-only (get-time-since-last-activity)
-  (- block-height (var-get last-activity-block))
+  (if (> (var-get last-activity-block) u0)
+    (- block-height (var-get last-activity-block))
+    u0)
 )
 
 ;; Single-call dashboard snapshot for frontend/indexer consumption
@@ -695,7 +709,9 @@
       liquidation-volume: (var-get total-liquidation-volume),
       stx-price: (var-get admin-stx-price),
       is-paused: (var-get is-paused),
-      protocol-age-blocks: (- block-height (var-get protocol-start-block))
+      protocol-age-blocks: (if (> (var-get protocol-start-block) u0)
+        (- block-height (var-get protocol-start-block))
+        u0)
     }
   )
 )

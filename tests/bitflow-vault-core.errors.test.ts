@@ -78,10 +78,12 @@ describe("Comprehensive Error Code Coverage", () => {
 
     it("triggers on liquidate with no loan", () => {
       const accounts = simnet.getAccounts();
+      const deployer = accounts.get("deployer")!;
       const wallet1 = accounts.get("wallet_1")!;
       const wallet2 = accounts.get("wallet_2")!;
 
-      const { result } = simnet.callPublicFn(CONTRACT, "liquidate", [Cl.principal(wallet1), Cl.uint(70)], wallet2);
+      simnet.callPublicFn(CONTRACT, "set-stx-price", [Cl.uint(70)], deployer);
+      const { result } = simnet.callPublicFn(CONTRACT, "liquidate", [Cl.principal(wallet1)], wallet2);
       expect(result).toBeErr(Cl.uint(106));
     });
   });
@@ -89,13 +91,15 @@ describe("Comprehensive Error Code Coverage", () => {
   describe("ERR-NOT-LIQUIDATABLE (u107)", () => {
     it("triggers when position is healthy", () => {
       const accounts = simnet.getAccounts();
+      const deployer = accounts.get("deployer")!;
       const borrower = accounts.get("wallet_1")!;
       const liquidator = accounts.get("wallet_2")!;
 
       simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(3000)], borrower);
       simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], borrower);
 
-      const { result } = simnet.callPublicFn(CONTRACT, "liquidate", [Cl.principal(borrower), Cl.uint(100)], liquidator);
+      simnet.callPublicFn(CONTRACT, "set-stx-price", [Cl.uint(100)], deployer);
+      const { result } = simnet.callPublicFn(CONTRACT, "liquidate", [Cl.principal(borrower)], liquidator);
       expect(result).toBeErr(Cl.uint(107));
     });
   });
@@ -103,12 +107,14 @@ describe("Comprehensive Error Code Coverage", () => {
   describe("ERR-LIQUIDATE-OWN-LOAN (u108)", () => {
     it("triggers on self-liquidation attempt", () => {
       const accounts = simnet.getAccounts();
+      const deployer = accounts.get("deployer")!;
       const wallet = accounts.get("wallet_1")!;
 
       simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(1500)], wallet);
       simnet.callPublicFn(CONTRACT, "borrow", [Cl.uint(1000), Cl.uint(500), Cl.uint(30)], wallet);
 
-      const { result } = simnet.callPublicFn(CONTRACT, "liquidate", [Cl.principal(wallet), Cl.uint(70)], wallet);
+      simnet.callPublicFn(CONTRACT, "set-stx-price", [Cl.uint(70)], deployer);
+      const { result } = simnet.callPublicFn(CONTRACT, "liquidate", [Cl.principal(wallet)], wallet);
       expect(result).toBeErr(Cl.uint(108));
     });
   });

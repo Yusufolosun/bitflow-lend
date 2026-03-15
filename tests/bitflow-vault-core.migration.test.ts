@@ -68,7 +68,7 @@ describe("bitflow-vault-core migration export tests", () => {
       borrow(2_000_000, 500, 30, wallet1());
 
       const { result } = exportUser(wallet1());
-      const loan = (result as any).data?.loan;
+      const loan = (result as any).value?.loan;
       expect(loan).toHaveTupleProperty("amount", Cl.uint(2_000_000));
       expect(loan).toHaveTupleProperty("interest-rate", Cl.uint(500));
     });
@@ -80,7 +80,7 @@ describe("bitflow-vault-core migration export tests", () => {
 
       const { result } = exportUser(wallet1());
       // Repayment should be (some { principal, interest, penalty, total })
-      const repayment = (result as any).data?.repayment;
+      const repayment = (result as any).value?.repayment;
       expect(repayment).not.toBeNull();
     });
   });
@@ -111,7 +111,7 @@ describe("bitflow-vault-core migration export tests", () => {
     it("includes exported-at-block", () => {
       setup();
       const { result } = exportProtocol();
-      const block = (result as any).data?.["exported-at-block"]?.value;
+      const block = (result as any).value?.["exported-at-block"]?.value;
       expect(Number(block)).toBeGreaterThan(0);
     });
   });
@@ -127,9 +127,9 @@ describe("bitflow-vault-core migration export tests", () => {
       const u2 = exportUser(wallet2());
       const proto = exportProtocol();
 
-      const d1 = Number((u1.result as any).data?.deposit?.value);
-      const d2 = Number((u2.result as any).data?.deposit?.value);
-      const total = Number((proto.result as any).data?.["total-deposits"]?.value);
+      const d1 = Number((u1.result as any).value?.deposit?.value);
+      const d2 = Number((u2.result as any).value?.deposit?.value);
+      const total = Number((proto.result as any).value?.["total-deposits"]?.value);
 
       expect(d1 + d2).toBe(total);
     });

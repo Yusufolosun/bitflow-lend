@@ -201,7 +201,7 @@ describe("bitflow-oracle-registry", () => {
       submitPrice(50000000, wallet1());
       const { result } = getReporterPrice(wallet1());
       const data = result as any;
-      expect(data.data.price).toBeUint(50000000);
+      expect(data.value.value.price).toBeUint(50000000);
     });
 
     it("increments reporter submission count", () => {
@@ -272,7 +272,7 @@ describe("bitflow-oracle-registry", () => {
       submitPrice(50000000, wallet1());
       // 25% change exceeds 20% default threshold
       const { result } = submitPrice(62500001, wallet2());
-      expect(result).toBeErr(Cl.uint(305));
+      expect(result).toBeOk(Cl.bool(false));
     });
 
     it("accepts first price without deviation check", () => {
@@ -290,7 +290,7 @@ describe("bitflow-oracle-registry", () => {
       submitPrice(50000000, wallet1());
       // 25% drop exceeds 20% threshold
       const { result } = submitPrice(37499999, wallet2());
-      expect(result).toBeErr(Cl.uint(305));
+      expect(result).toBeOk(Cl.bool(false));
     });
 
     it("increments rejection count on deviation failure", () => {
@@ -301,7 +301,7 @@ describe("bitflow-oracle-registry", () => {
       submitPrice(80000000, wallet2()); // will be rejected
       const { result } = getOracleStats();
       const data = result as any;
-      expect(data.data["total-rejections"]).toBeUint(1);
+      expect(data.value["total-rejections"]).toBeUint(1);
     });
   });
 
@@ -369,6 +369,9 @@ describe("bitflow-oracle-registry", () => {
 
     it("allows owner to set min-reporters", () => {
       initOracle();
+      addReporter(wallet1());
+      addReporter(wallet2());
+      addReporter(wallet3());
       const { result } = setMinReporters(3);
       expect(result).toBeOk(Cl.bool(true));
     });
@@ -438,8 +441,8 @@ describe("bitflow-oracle-registry", () => {
       submitPrice(50000000, wallet1());
       const { result } = getAggregatedPrice();
       const data = result as any;
-      expect(data.data.price).toBeUint(50000000);
-      expect(data.data["is-fresh"]).toBeBool(true);
+      expect(data.value.price).toBeUint(50000000);
+      expect(data.value["is-fresh"]).toBeBool(true);
     });
 
     it("returns zero price age when no price submitted", () => {
@@ -476,9 +479,9 @@ describe("bitflow-oracle-registry", () => {
       submitPrice(50100000, wallet1());
       const { result } = getOracleStats();
       const data = result as any;
-      expect(data.data["total-submissions"]).toBeUint(2);
-      expect(data.data["total-rejections"]).toBeUint(0);
-      expect(data.data["reporter-count"]).toBeUint(1);
+      expect(data.value["total-submissions"]).toBeUint(2);
+      expect(data.value["total-rejections"]).toBeUint(0);
+      expect(data.value["reporter-count"]).toBeUint(1);
     });
 
     it("returns zero for non-reporter submissions", () => {
@@ -510,7 +513,7 @@ describe("bitflow-oracle-registry", () => {
       submitPrice(51000000, wallet1());
       const { result } = getReporterPrice(wallet1());
       const data = result as any;
-      expect(data.data.price).toBeUint(51000000);
+      expect(data.value.value.price).toBeUint(51000000);
     });
 
     it("removed reporter cannot submit prices", () => {
@@ -549,7 +552,7 @@ describe("bitflow-oracle-registry", () => {
       setMaxDeviation(500);
       // 10% change now exceeds 5% threshold
       const { result } = submitPrice(55000001, wallet2());
-      expect(result).toBeErr(Cl.uint(305));
+      expect(result).toBeOk(Cl.bool(false));
     });
 
     it("widened deviation accepts previously invalid price", () => {

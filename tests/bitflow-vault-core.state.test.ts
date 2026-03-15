@@ -156,12 +156,14 @@ describe("State Transition Tests", () => {
 
     it("cannot liquidate position with no loan", () => {
       const accounts = simnet.getAccounts();
+      const deployer = accounts.get("deployer")!;
       const wallet1 = accounts.get("wallet_1")!;
       const wallet2 = accounts.get("wallet_2")!;
 
       simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(5000)], wallet1);
 
-      const { result } = simnet.callPublicFn(CONTRACT, "liquidate", [Cl.principal(wallet1), Cl.uint(70)], wallet2);
+      simnet.callPublicFn(CONTRACT, "set-stx-price", [Cl.uint(70)], deployer);
+      const { result } = simnet.callPublicFn(CONTRACT, "liquidate", [Cl.principal(wallet1)], wallet2);
       expect(result).toBeErr(Cl.uint(106)); // ERR-NO-ACTIVE-LOAN
     });
 
