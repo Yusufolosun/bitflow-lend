@@ -209,19 +209,22 @@
 )
 
 (define-read-only (calculate-health-factor (user principal) (stx-price uint))
-  (match (map-get? user-loans user)
-    loan
-      (let (
-        (user-deposit (default-to u0 (map-get? user-deposits user)))
-        (loan-amount (get amount loan))
-        (collateral-value (/ (* user-deposit stx-price) u100))
-        (health-factor (if (> loan-amount u0)
-          (/ (* collateral-value u100) loan-amount)
-          u200))
-      )
-        (some health-factor)
-      )
+  (if (is-eq stx-price u0)
     none
+    (match (map-get? user-loans user)
+      loan
+        (let (
+          (user-deposit (default-to u0 (map-get? user-deposits user)))
+          (loan-amount (get amount loan))
+          (collateral-value (/ (* user-deposit stx-price) u100))
+          (health-factor (if (> loan-amount u0)
+            (/ (* collateral-value u100) loan-amount)
+            u200))
+        )
+          (some health-factor)
+        )
+      none
+    )
   )
 )
 
