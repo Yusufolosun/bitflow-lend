@@ -126,6 +126,7 @@
 (define-private (is-price-valid)
   (and
     (> (var-get admin-stx-price) u0)
+    (> (var-get price-update-block) u0)
     (< (- block-height (var-get price-update-block)) PRICE-STALENESS-THRESHOLD)
   )
 )
