@@ -63,7 +63,7 @@ export const Dashboard: React.FC = () => {
     } catch {
       // Silently swallow — next poll will retry
     }
-  }, [address, vault, stxPrice]);
+  }, [address, vault.getUserDeposit, vault.getUserLoan, vault.getHealthFactor, stxPrice]);
 
   useSmartPolling(fetchUserData, 60_000, !!address);
 
