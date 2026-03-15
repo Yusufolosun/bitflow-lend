@@ -188,13 +188,16 @@
 )
 
 (define-read-only (get-max-borrow-amount (user principal))
-  (let (
-    (user-deposit (default-to u0 (map-get? user-deposits user)))
-    (max-borrow (/ (* user-deposit u100) (var-get min-collateral-ratio)))
-  )
-    (if (> max-borrow MAX-BORROW-AMOUNT)
-      MAX-BORROW-AMOUNT
-      max-borrow
+  (if (is-some (map-get? user-loans user))
+    u0
+    (let (
+      (user-deposit (default-to u0 (map-get? user-deposits user)))
+      (max-borrow (/ (* user-deposit u100) (var-get min-collateral-ratio)))
+    )
+      (if (> max-borrow MAX-BORROW-AMOUNT)
+        MAX-BORROW-AMOUNT
+        max-borrow
+      )
     )
   )
 )
