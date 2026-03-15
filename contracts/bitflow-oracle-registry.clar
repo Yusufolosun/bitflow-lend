@@ -184,7 +184,7 @@
     (asserts! (is-eq tx-sender contract-owner) ERR-OWNER-ONLY)
     (asserts! (is-reporter reporter) ERR-REPORTER-NOT-FOUND)
     (asserts! (> (var-get reporter-count) (var-get min-reporters-required)) ERR-MIN-REPORTERS)
-    (map-set reporters reporter false)
+    (map-delete reporters reporter)
     (map-delete reporter-prices reporter)
     (var-set reporter-count (- (var-get reporter-count) u1))
     (print { event: "reporter-removed", reporter: reporter })
