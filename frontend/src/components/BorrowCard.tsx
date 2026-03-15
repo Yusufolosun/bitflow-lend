@@ -219,15 +219,15 @@ export const BorrowCard: React.FC = () => {
           <input
             id="interest-rate"
             type="range"
-            min="5"
-            max="30"
+            min="1"
+            max="100"
             step="1"
             value={interestRate}
             onChange={(e) => setInterestRate(parseInt(e.target.value))}
             className="flex-1"
             disabled={txStatus === 'pending'}
-            aria-valuemin={5}
-            aria-valuemax={30}
+            aria-valuemin={1}
+            aria-valuemax={100}
             aria-valuenow={interestRate}
             aria-valuetext={`${interestRate}% APR`}
           />
