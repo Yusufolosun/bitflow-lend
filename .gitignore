@@ -29,9 +29,9 @@ frontend/.env.*
 *.wallet
 *credentials*
 
-# Mainnet credentials (encrypted mnemonics and private keys)
-settings/
-settings/*.toml
+# Network credentials (Mainnet and Testnet may contain real credentials)
+settings/Mainnet.toml
+settings/Testnet.toml
 
 # Deployment plans (may contain node credentials)
 # Allow simnet plan and .example templates; ignore everything else
@@ -57,9 +57,6 @@ build/
 # Clarinet
 .cache/
 contracts/vault-core-deploy.clar
-
-# Mainnet credentials (even encrypted, keep private)
-settings/
 
 # Temporary/history files
 history.txt
