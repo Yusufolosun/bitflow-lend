@@ -1,15 +1,13 @@
 import { useState, useCallback } from 'react';
 import { openContractCall } from '@stacks/connect';
 import {
-  callReadOnlyFunction,
+  fetchCallReadOnlyFunction,
   uintCV,
   principalCV,
   ClarityType,
   cvToValue,
   PostConditionMode,
-  FungibleConditionCode,
-  makeStandardSTXPostCondition,
-  makeContractSTXPostCondition,
+  Pc,
 } from '@stacks/transactions';
 import {
   UserDeposit,
@@ -31,6 +29,9 @@ import { UserSession } from '@stacks/connect';
  * Possible results from polling a transaction's on-chain status
  */
 export type PollResult = 'confirmed' | 'failed' | 'timeout';
+
+// Alias to keep the existing call sites readable while using the current API.
+const callReadOnlyFunction = fetchCallReadOnlyFunction;
 
 /**
  * Poll transaction status until confirmed, explicitly failed, or timed out.
@@ -95,11 +96,7 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
 
       // Create post-condition: user must transfer exact amount of STX
       const postConditions = [
-        makeStandardSTXPostCondition(
-          userAddress,
-          FungibleConditionCode.Equal,
-          amountMicroSTX
-        ),
+        Pc.principal(userAddress).willSendEq(amountMicroSTX).ustx(),
       ];
 
       return new Promise((resolve) => {
@@ -145,12 +142,7 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
 
       // Post-condition: contract must send exactly the withdrawal amount to user
       const postConditions = [
-        makeContractSTXPostCondition(
-          contractAddress,
-          contractName,
-          FungibleConditionCode.Equal,
-          amountMicroSTX
-        ),
+        Pc.principal(`${contractAddress}.${contractName}`).willSendEq(amountMicroSTX).ustx(),
       ];
 
       return new Promise((resolve) => {
@@ -201,12 +193,7 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
 
       // Post-condition: contract sends exactly the borrowed amount to user
       const postConditions = [
-        makeContractSTXPostCondition(
-          contractAddress,
-          contractName,
-          FungibleConditionCode.Equal,
-          amountMicroSTX
-        ),
+        Pc.principal(`${contractAddress}.${contractName}`).willSendEq(amountMicroSTX).ustx(),
       ];
 
       return new Promise((resolve) => {
@@ -258,11 +245,9 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
       const repaymentInfo = await getRepaymentAmount();
       const postConditions = repaymentInfo
         ? [
-            makeStandardSTXPostCondition(
-              userAddress,
-              FungibleConditionCode.LessEqual,
-              repaymentInfo.total + repaymentInfo.total / BigInt(100)
-            ),
+            Pc.principal(userAddress)
+              .willSendLte(repaymentInfo.total + repaymentInfo.total / BigInt(100))
+              .ustx(),
           ]
         : [];
       const conditionMode = repaymentInfo
@@ -573,11 +558,7 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
           const ceiling = (loanAmount + bonus) + (loanAmount + bonus) / BigInt(100);
 
           postConditions = [
-            makeStandardSTXPostCondition(
-              userAddress,
-              FungibleConditionCode.LessEqual,
-              ceiling
-            ),
+            Pc.principal(userAddress).willSendLte(ceiling).ustx(),
           ];
           conditionMode = PostConditionMode.Deny;
         }
