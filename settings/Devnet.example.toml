@@ -1,0 +1,10 @@
+[network]
+name = "devnet"
+deployment_fee_rate = 10
+
+[accounts.deployer]
+# Create a local-only mnemonic before running devnet.
+# Never commit raw mnemonics or private keys.
+mnemonic = "<devnet-mnemonic>"
+balance = 100_000_000_000_000
+sbtc_balance = 1_000_000_000

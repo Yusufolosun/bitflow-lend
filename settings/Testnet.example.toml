@@ -1,0 +1,10 @@
+[network]
+name = "testnet"
+node_rpc_address = "https://api.testnet.hiro.so"
+deployment_fee_rate = 10
+
+[accounts.deployer]
+# Use a dedicated testnet mnemonic generated locally.
+# Never commit raw mnemonics or private keys.
+mnemonic = "<testnet-mnemonic>"
+balance = 100_000_000_000_000
