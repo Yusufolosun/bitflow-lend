@@ -3,4 +3,13 @@
  */
 export * from './formatters';
 export * from './calculations';
-export * from './validation';
+export {
+	validateStxAmount,
+	validateLoanTerm as validateLoanTermInput,
+	validateStacksAddress,
+	validateContractId,
+	sanitizeString,
+	validateSufficientBalance,
+	RateLimiter,
+	validateHealthFactor,
+} from './validation';
