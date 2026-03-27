@@ -23,7 +23,7 @@
 const MAINNET = {
   contractAddress: 'SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193',
   contractName: 'bitflow-vault-core',
-  apiUrl: 'https://stacks-node-api.mainnet.stacks.co',
+  apiUrl: 'https://api.mainnet.hiro.so',
   explorerUrl: 'https://explorer.hiro.so',
 };
 ```
@@ -34,7 +34,7 @@ const MAINNET = {
 const TESTNET = {
   contractAddress: 'ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0',
   contractName: 'bitflow-vault-core',
-  apiUrl: 'https://stacks-node-api.testnet.stacks.co',
+  apiUrl: 'https://api.testnet.hiro.so',
   explorerUrl: 'https://explorer.hiro.so/?chain=testnet',
 };
 ```
@@ -73,14 +73,14 @@ const CONFIGS: Record<NetworkId, NetworkConfig> = {
   mainnet: {
     contractAddress: 'SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193',
     contractName: 'bitflow-vault-core',
-    apiUrl: 'https://stacks-node-api.mainnet.stacks.co',
+    apiUrl: 'https://api.mainnet.hiro.so',
     explorerUrl: 'https://explorer.hiro.so',
     isProduction: true,
   },
   testnet: {
     contractAddress: 'ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0',
     contractName: 'bitflow-vault-core',
-    apiUrl: 'https://stacks-node-api.testnet.stacks.co',
+    apiUrl: 'https://api.testnet.hiro.so',
     explorerUrl: 'https://explorer.hiro.so/?chain=testnet',
     isProduction: false,
   },
