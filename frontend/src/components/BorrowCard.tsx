@@ -353,7 +353,7 @@ export const BorrowCard: React.FC = () => {
             </span>
           </div>
           <p className="text-xs text-emerald-600">
-            Tip: Click "Refresh Data" on the Dashboard to update your portfolio view.
+            Tip: Click &quot;Refresh Data&quot; on the Dashboard to update your portfolio view.
           </p>
         </div>
       )}
