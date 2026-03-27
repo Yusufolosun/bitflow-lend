@@ -82,7 +82,7 @@ export const HealthMonitor: React.FC = () => {
           <CheckCircle className="mx-auto text-emerald-600 mb-3" size={48} />
           <p className="text-emerald-700 mb-1 font-medium">No Active Position</p>
           <p className="text-sm text-gray-600">
-            You don't have any active loans. Your collateral is safe.
+            You don&apos;t have any active loans. Your collateral is safe.
           </p>
         </div>
 
