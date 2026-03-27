@@ -201,7 +201,7 @@ export const DepositCard: React.FC = () => {
             </span>
           </div>
           <p className="text-xs text-emerald-600">
-            Tip: Click "Refresh Data" on Dashboard to update your total deposit view.
+            Tip: Click &quot;Refresh Data&quot; on Dashboard to update your total deposit view.
           </p>
           {lastTxId && (
             <a
