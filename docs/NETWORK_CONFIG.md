@@ -136,7 +136,8 @@ export default defineConfig(({ mode }) => {
 
 ### Devnet Settings
 
-Located at [settings/Devnet.toml](../settings/Devnet.toml) (gitignored):
+Use [settings/Devnet.example.toml](../settings/Devnet.example.toml) as the template,
+then create a local-only `settings/Devnet.toml` file.
 
 ```toml
 [network]
@@ -152,7 +153,8 @@ balance = 100_000_000_000_000 # 100M STX
 
 ### Testnet Settings
 
-Located at [settings/Testnet.toml](../settings/Testnet.toml):
+Use [settings/Testnet.example.toml](../settings/Testnet.example.toml) as the template,
+then create a local-only `settings/Testnet.toml` file.
 
 ```toml
 [network]
@@ -162,12 +164,21 @@ deployment_fee_rate = 10
 
 ### Mainnet Settings
 
-Located at [settings/Mainnet.toml](../settings/Mainnet.toml):
+Use [settings/Mainnet.example.toml](../settings/Mainnet.example.toml) as the template,
+then create a local-only `settings/Mainnet.toml` file.
 
 ```toml
 [network]
 name = "mainnet"
 deployment_fee_rate = 10
+```
+
+Create local copies before running deployments:
+
+```bash
+cp settings/Devnet.example.toml settings/Devnet.toml
+cp settings/Testnet.example.toml settings/Testnet.toml
+cp settings/Mainnet.example.toml settings/Mainnet.toml
 ```
 
 ---
