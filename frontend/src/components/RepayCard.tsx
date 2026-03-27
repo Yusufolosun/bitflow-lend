@@ -127,7 +127,7 @@ export const RepayCard: React.FC = () => {
           <AlertCircle className="mx-auto text-gray-400 mb-3" size={48} aria-hidden="true" />
           <p className="text-gray-600 mb-1 font-medium">No Active Loan</p>
           <p className="text-sm text-gray-500">
-            You don't have any active loans. Borrow STX to see repayment details here.
+            You don&apos;t have any active loans. Borrow STX to see repayment details here.
           </p>
         </div>
       </div>
