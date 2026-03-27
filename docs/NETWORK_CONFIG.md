@@ -222,14 +222,14 @@ async function waitForTransaction(txId: string, apiUrl: string): Promise<string>
 ```typescript
 function getExplorerUrl(txId: string, network: 'mainnet' | 'testnet'): string {
   const base = 'https://explorer.hiro.so';
-  const chain = network === 'testnet' ? '&chain=testnet' : '';
-  return `${base}/txid/${txId}?${chain}`;
+  const suffix = network === 'testnet' ? '?chain=testnet' : '';
+  return `${base}/txid/${txId}${suffix}`;
 }
 
 function getContractUrl(address: string, name: string, network: 'mainnet' | 'testnet'): string {
   const base = 'https://explorer.hiro.so';
-  const chain = network === 'testnet' ? '&chain=testnet' : '';
-  return `${base}/txid/${address}.${name}?${chain}`;
+  const suffix = network === 'testnet' ? '?chain=testnet' : '';
+  return `${base}/address/${address}.${name}${suffix}`;
 }
 ```
 
