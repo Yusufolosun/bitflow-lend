@@ -1,10 +1,10 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, waitFor, act } from '@testing-library/react';
 import { useProtocolStats } from '../useProtocolStats';
 
 // Mock @stacks/transactions
 vi.mock('@stacks/transactions', () => ({
-  callReadOnlyFunction: vi.fn(),
+  fetchCallReadOnlyFunction: vi.fn(),
   cvToValue: vi.fn(),
 }));
 
@@ -15,9 +15,9 @@ vi.mock('../../config/contracts', () => ({
   VAULT_CONTRACT: { name: 'bitflow-vault-core' },
 }));
 
-import { callReadOnlyFunction, cvToValue } from '@stacks/transactions';
+import { fetchCallReadOnlyFunction, cvToValue } from '@stacks/transactions';
 
-const mockCallReadOnly = callReadOnlyFunction as ReturnType<typeof vi.fn>;
+const mockCallReadOnly = fetchCallReadOnlyFunction as ReturnType<typeof vi.fn>;
 const mockCvToValue = cvToValue as ReturnType<typeof vi.fn>;
 
 describe('useProtocolStats', () => {
