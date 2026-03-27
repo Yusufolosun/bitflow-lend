@@ -102,6 +102,7 @@ vi.mock('lucide-react', () => ({
   Activity: () => <span>Activity</span>,
   Users: () => <span>Users</span>,
   Layers: () => <span>Layers</span>,
+  ArrowUpCircle: () => <span>ArrowUpCircle</span>,
 }));
 
 describe('Dashboard Component', () => {

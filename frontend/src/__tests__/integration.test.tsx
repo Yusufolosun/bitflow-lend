@@ -110,6 +110,7 @@ vi.mock('lucide-react', () => ({
   CheckCircle: () => <span>Check</span>,
   XCircle: () => <span>XCircle</span>,
   ExternalLink: () => <span>ExtLink</span>,
+  ArrowUpCircle: () => <span>ArrowUpCircle</span>,
   AlertTriangle: () => <span>Alert</span>,
   AlertCircle: () => <span>AlertCircle</span>,
   Clock: () => <span>Clock</span>,
