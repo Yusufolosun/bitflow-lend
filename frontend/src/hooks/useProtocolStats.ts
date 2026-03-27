@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import {
-  callReadOnlyFunction,
+  fetchCallReadOnlyFunction,
   cvToValue,
 } from '@stacks/transactions';
 import {
@@ -91,7 +91,7 @@ export const useProtocolStats = (refreshInterval = 30000) => {
     try {
       setError(null);
 
-      const result = await callReadOnlyFunction({
+      const result = await fetchCallReadOnlyFunction({
         network,
         contractAddress,
         contractName,
