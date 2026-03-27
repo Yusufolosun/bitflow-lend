@@ -4,7 +4,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useVault } from '../hooks/useVault';
 import { useSmartPolling } from '../hooks/useSmartPolling';
 import { formatSTX } from '../utils/formatters';
-import { PROTOCOL_CONSTANTS, getExplorerUrl } from '../config/contracts';
+import { getExplorerUrl } from '../config/contracts';
 
 /**
  * WithdrawCard Component
