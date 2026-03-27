@@ -2,7 +2,7 @@
  * useStxPrice Hook Tests
  * Covers: initial fallback, successful fetch, error handling, refresh interval, stale flag
  */
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, waitFor, act } from '@testing-library/react';
 import { useStxPrice } from '../useStxPrice';
 
