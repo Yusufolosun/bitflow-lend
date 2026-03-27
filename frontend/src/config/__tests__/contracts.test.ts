@@ -8,7 +8,6 @@ import {
   getActiveContractVersion,
   getContractAddress,
   getContractId,
-  getApiEndpoint,
   getExplorerUrl,
   API_ENDPOINTS,
 } from '../contracts';
