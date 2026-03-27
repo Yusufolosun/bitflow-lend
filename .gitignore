@@ -29,9 +29,9 @@ frontend/.env.*
 *.wallet
 *credentials*
 
-# Network credentials (Mainnet and Testnet may contain real credentials)
-settings/Mainnet.toml
-settings/Testnet.toml
+# Network credentials (settings can contain real mnemonics/keys)
+settings/*.toml
+!settings/*.example.toml
 
 # Deployment plans (may contain node credentials)
 # Allow simnet plan and .example templates; ignore everything else
