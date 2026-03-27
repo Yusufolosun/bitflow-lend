@@ -298,7 +298,7 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
       });
 
       if (result.type === ClarityType.UInt) {
-        const amount = result.value;
+        const amount = BigInt(result.value);
         const amountSTX = microStxToStx(amount);
 
         // Check for active loan to calculate locked collateral
@@ -503,7 +503,7 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
             senderAddress: userAddress,
           });
           const depositSTX = depositResult.type === ClarityType.UInt
-            ? microStxToStx(depositResult.value)
+            ? microStxToStx(BigInt(depositResult.value))
             : 0;
 
           collateralValueUSD = depositSTX * stxPriceUSD;
