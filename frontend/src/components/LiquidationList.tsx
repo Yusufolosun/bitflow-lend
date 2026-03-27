@@ -3,7 +3,7 @@ import { AlertTriangle, DollarSign, TrendingDown, Zap } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useVault } from '../hooks/useVault';
 import { formatSTX, formatAddress } from '../utils/formatters';
-import { PROTOCOL_CONSTANTS, getExplorerUrl } from '../config/contracts';
+import { PROTOCOL_CONSTANTS } from '../config/contracts';
 
 /**
  * Position interface for liquidatable positions
@@ -114,6 +114,19 @@ export const LiquidationList: React.FC = () => {
         <div className="text-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent-500 mx-auto mb-4"></div>
           <p className="text-gray-500">Loading positions...</p>
+        </div>
+      )}
+
+      {statusMessage && (
+        <div
+          className={`mb-6 rounded-lg border p-3 text-sm ${
+            statusMessage.type === 'success'
+              ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+              : 'border-red-200 bg-red-50 text-red-700'
+          }`}
+          role="alert"
+        >
+          {statusMessage.text}
         </div>
       )}
 
