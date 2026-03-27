@@ -27,6 +27,7 @@ const makeToast = (overrides: Partial<Toast> = {}): Toast => ({
   id: 'toast-1',
   type: 'success',
   title: 'Transaction Confirmed',
+  count: 1,
   ...overrides,
 });
 
