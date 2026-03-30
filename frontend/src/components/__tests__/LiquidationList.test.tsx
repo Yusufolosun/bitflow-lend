@@ -22,10 +22,10 @@ vi.mock('../../hooks/useVault', () => ({
 
 // Mock lucide-react icons
 vi.mock('lucide-react', () => ({
-  AlertTriangle: (props: any) => <span data-testid="alert-icon" {...props}>Alert</span>,
-  DollarSign: (props: any) => <span data-testid="dollar-icon" {...props}>Dollar</span>,
-  TrendingDown: (props: any) => <span data-testid="trending-down" {...props}>Trending</span>,
-  Zap: (props: any) => <span data-testid="zap-icon" {...props}>Zap</span>,
+  AlertTriangle: () => <span data-testid="alert-icon">Alert</span>,
+  DollarSign: () => <span data-testid="dollar-icon">Dollar</span>,
+  TrendingDown: () => <span data-testid="trending-down">Trending</span>,
+  Zap: () => <span data-testid="zap-icon">Zap</span>,
 }));
 
 vi.mock('../../config/contracts', () => ({

@@ -8,9 +8,9 @@ import React from 'react';
 
 // Hoisted mutable state - accessible from vi.mock factories
 const { mockAuthState, mockVaultState, mockProtocolStatsState } = vi.hoisted(() => ({
-  mockAuthState: { current: {} as any },
-  mockVaultState: { current: {} as any },
-  mockProtocolStatsState: { current: {} as any },
+  mockAuthState: { current: {} as Record<string, unknown> },
+  mockVaultState: { current: {} as Record<string, unknown> },
+  mockProtocolStatsState: { current: {} as Record<string, unknown> },
 }));
 
 // Mocks at module scope (hoisted)

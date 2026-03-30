@@ -32,26 +32,27 @@ vi.mock('../../utils/formatters', () => ({
 
 // Mock lucide-react
 vi.mock('lucide-react', () => ({
-  Clock: (props: any) => <span data-testid="clock-icon" {...props}>Clock</span>,
+  Clock: (props: { className?: string }) => <span data-testid="clock-icon" className={props.className}>Clock</span>,
   ArrowDownCircle: () => <span>ArrowDown</span>,
   ArrowUpCircle: () => <span>ArrowUp</span>,
   TrendingUp: () => <span>TrendingUp</span>,
   DollarSign: () => <span>DollarSign</span>,
   CheckCircle: () => <span>Check</span>,
-  XCircle: (props: any) => <span data-testid="x-icon" {...props}>X</span>,
+  XCircle: (props: { className?: string }) => <span data-testid="x-icon" className={props.className}>X</span>,
   Loader: () => <span>Loader</span>,
   ExternalLink: () => <span>Link</span>,
-  RefreshCw: (props: any) => <span data-testid="refresh-icon" {...props}>Refresh</span>,
+  RefreshCw: (props: { className?: string }) => <span data-testid="refresh-icon" className={props.className}>Refresh</span>,
 }));
 
 // Mock global fetch
-global.fetch = vi.fn();
+const mockFetch = vi.fn();
+global.fetch = mockFetch as unknown as typeof fetch;
 
 describe('TransactionHistory Component', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockAddress.current = '';
-    (global.fetch as any).mockResolvedValue({
+    mockFetch.mockResolvedValue({
       ok: true,
       json: () => Promise.resolve({ results: [] }),
     });
@@ -105,7 +106,7 @@ describe('TransactionHistory Component', () => {
 
   it('handles API error gracefully', async () => {
     mockAddress.current = 'ST1TESTUSER';
-    (global.fetch as any).mockResolvedValue({
+    mockFetch.mockResolvedValue({
       ok: false,
       status: 500,
     });

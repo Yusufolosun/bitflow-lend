@@ -61,7 +61,7 @@ vi.mock('../../config/contracts', () => ({
 vi.mock('lucide-react', () => ({
   Activity: () => <span data-testid="activity-icon">Activity</span>,
   AlertTriangle: () => <span data-testid="alert-icon">Alert</span>,
-  CheckCircle: (props: any) => <span data-testid="check-icon" className={props.className}>Check</span>,
+  CheckCircle: (props: { className?: string }) => <span data-testid="check-icon" className={props.className}>Check</span>,
   XCircle: () => <span data-testid="x-icon">X</span>,
   TrendingDown: () => <span data-testid="trending-down">Trending</span>,
 }));
