@@ -137,7 +137,7 @@ export const sanitizeString = (input: string): string => {
   if (!input) return '';
   
   // Encode special characters first
-  let sanitized = input
+  const sanitized = input
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
