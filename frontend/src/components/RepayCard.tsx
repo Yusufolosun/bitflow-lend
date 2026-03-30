@@ -5,6 +5,7 @@ import { useVault } from '../hooks/useVault';
 import { useSmartPolling } from '../hooks/useSmartPolling';
 import { formatSTX } from '../utils/formatters';
 import { getExplorerUrl } from '../config/contracts';
+import { RepaymentAmount, UserLoan } from '../types/vault';
 
 /**
  * RepayCard Component
@@ -14,8 +15,8 @@ export const RepayCard: React.FC = () => {
   const { address, balanceSTX, userSession } = useAuth();
   const vault = useVault(userSession, address);
 
-  const [activeLoan, setActiveLoan] = useState<any>(null);
-  const [repaymentAmount, setRepaymentAmount] = useState<any>(null);
+  const [activeLoan, setActiveLoan] = useState<UserLoan | null>(null);
+  const [repaymentAmount, setRepaymentAmount] = useState<RepaymentAmount | null>(null);
   const [txStatus, setTxStatus] = useState<'idle' | 'pending' | 'success' | 'error' | 'timeout'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
   const [timeElapsed, setTimeElapsed] = useState('');
@@ -45,7 +46,7 @@ export const RepayCard: React.FC = () => {
         setTimeElapsed(`${minutes}m`);
       }
     }
-  }, [address, vault.getUserLoan, vault.getRepaymentAmount]);
+  }, [address, vault]);
 
   useSmartPolling(fetchData, 60_000, !!address);
 
@@ -94,9 +95,10 @@ export const RepayCard: React.FC = () => {
         setTxStatus('error');
         setErrorMessage(result.error || 'Transaction failed');
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       setTxStatus('error');
-      setErrorMessage(error.message || 'An error occurred');
+      const errorMessage = error instanceof Error ? error.message : 'An error occurred';
+      setErrorMessage(errorMessage);
     }
   };
 
