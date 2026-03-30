@@ -7,6 +7,13 @@ import { useStxPrice } from '../hooks/useStxPrice';
 import { formatSTX } from '../utils/formatters';
 import { PROTOCOL_CONSTANTS } from '../config/contracts';
 import { getHealthStatus } from '../utils/calculations';
+import { UserDeposit, UserLoan } from '../types/vault';
+
+interface HealthFactorData {
+  healthFactorPercent: number;
+  collateralValueUSD: number;
+  debtValueUSD: number;
+}
 
 /**
  * HealthMonitor Component
@@ -17,9 +24,9 @@ export const HealthMonitor: React.FC = () => {
   const vault = useVault(userSession, address);
   const { price: stxPrice, lastUpdated: priceUpdated, isStale: priceIsStale } = useStxPrice();
 
-  const [healthFactor, setHealthFactor] = useState<any>(null);
-  const [userDeposit, setUserDeposit] = useState<any>(null);
-  const [activeLoan, setActiveLoan] = useState<any>(null);
+  const [healthFactor, setHealthFactor] = useState<HealthFactorData | null>(null);
+  const [userDeposit, setUserDeposit] = useState<UserDeposit | null>(null);
+  const [activeLoan, setActiveLoan] = useState<UserLoan | null>(null);
 
   // Fetch user data on a 30s smart interval — health factor is time-sensitive
   const fetchData = useCallback(async () => {
@@ -34,7 +41,7 @@ export const HealthMonitor: React.FC = () => {
       const health = await vault.getHealthFactor(stxPrice);
       setHealthFactor(health);
     }
-  }, [address, vault.getUserDeposit, vault.getUserLoan, vault.getHealthFactor, stxPrice]);
+  }, [address, vault, stxPrice]);
 
   useSmartPolling(fetchData, 30_000, !!address);
 
