@@ -18,7 +18,7 @@ echo "======================================"
 echo ""
 
 # ── 1. Clean working tree ────────────────────────────────────────────
-echo "[1/6] Checking git working tree..."
+echo "[1/7] Checking git working tree..."
 if [ -n "$(git status --porcelain 2>/dev/null)" ]; then
     fail "Working tree is dirty — commit or stash changes before deploying"
 else
@@ -26,7 +26,7 @@ else
 fi
 
 # ── 2. Contract syntax ───────────────────────────────────────────────
-echo "[2/6] Checking contract syntax..."
+echo "[2/7] Checking contract syntax..."
 if ! clarinet check 2>/dev/null; then
     fail "clarinet check reported syntax errors"
 else
@@ -34,7 +34,7 @@ else
 fi
 
 # ── 3. Test suite ────────────────────────────────────────────────────
-echo "[3/6] Running test suite..."
+echo "[3/7] Running test suite..."
 if ! npm test 2>/dev/null; then
     fail "test suite has failures"
 else
@@ -42,7 +42,7 @@ else
 fi
 
 # ── 4. Contract size ─────────────────────────────────────────────────
-echo "[4/6] Checking contract size..."
+echo "[4/7] Checking contract size..."
 CONTRACT_SIZE=$(wc -c < contracts/bitflow-vault-core.clar | tr -d ' ')
 echo "  Size: $CONTRACT_SIZE bytes (limit: $MAX_CONTRACT_BYTES)"
 if [ "$CONTRACT_SIZE" -gt "$MAX_CONTRACT_BYTES" ]; then
@@ -52,15 +52,23 @@ else
 fi
 
 # ── 5. Network connectivity ──────────────────────────────────────────
-echo "[5/6] Checking network connectivity..."
+echo "[5/7] Checking network connectivity..."
 if ! curl -sf --max-time 10 https://api.mainnet.hiro.so/v2/info > /dev/null 2>&1; then
     fail "cannot reach Stacks mainnet API"
 else
     echo "  OK: mainnet API reachable"
 fi
 
-# ── 6. Contract hash verification ────────────────────────────────────
-echo "[6/6] Generating contract hash..."
+# ── 6. Secret scan ────────────────────────────────────────────────────
+echo "[6/7] Scanning tracked config files for secret markers..."
+if ! bash scripts/check-tracked-secrets.sh > /dev/null 2>&1; then
+    fail "secret scan found sensitive markers in tracked config files"
+else
+    echo "  OK: no secret markers found"
+fi
+
+# ── 7. Contract hash verification ────────────────────────────────────
+echo "[7/7] Generating contract hash..."
 CONTRACT_HASH=$(sha256sum contracts/bitflow-vault-core.clar | cut -d' ' -f1)
 echo "  SHA-256: $CONTRACT_HASH"
 echo "  Verify this matches the audited contract before proceeding."

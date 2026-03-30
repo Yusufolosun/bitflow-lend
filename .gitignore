@@ -28,6 +28,7 @@ frontend/.env.*
 *.keystore
 *.wallet
 *credentials*
+!scripts/check-tracked-secrets.sh
 
 # Network credentials (settings can contain real mnemonics/keys)
 settings/*.toml

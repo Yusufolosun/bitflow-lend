@@ -8,7 +8,8 @@
     "test": "vitest run",
     "test:report": "vitest run -- --coverage --costs",
     "test:watch": "chokidar \"tests/**/*.ts\" \"contracts/**/*.clar\" -c \"npm run test:report\"",
-    "test:testnet": "node scripts/testnet-sdk-test.js"
+    "test:testnet": "node scripts/testnet-sdk-test.js",
+    "security:scan": "bash scripts/check-tracked-secrets.sh"
   },
   "author": "",
   "license": "ISC",
