@@ -1,4 +1,4 @@
-import { StacksMainnet, StacksTestnet } from '@stacks/network';
+import { STACKS_MAINNET, STACKS_TESTNET } from '@stacks/network';
 
 /**
  * Contract Configuration
@@ -6,8 +6,8 @@ import { StacksMainnet, StacksTestnet } from '@stacks/network';
  */
 
 export const NETWORK_CONFIG = {
-  testnet: new StacksTestnet(),
-  mainnet: new StacksMainnet(),
+  testnet: STACKS_TESTNET,
+  mainnet: STACKS_MAINNET,
 };
 
 // Determine active network from environment variable, defaulting to testnet for safety
