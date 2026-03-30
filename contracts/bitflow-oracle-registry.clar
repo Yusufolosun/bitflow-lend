@@ -12,20 +12,17 @@
 (define-constant ERR-OWNER-ONLY (err u301))
 (define-constant ERR-NOT-REPORTER (err u302))
 (define-constant ERR-INVALID-PRICE (err u303))
-(define-constant ERR-STALE-PRICE (err u304))
 (define-constant ERR-DEVIATION-TOO-HIGH (err u305))
 (define-constant ERR-ALREADY-REPORTER (err u306))
 (define-constant ERR-REPORTER-NOT-FOUND (err u307))
 (define-constant ERR-MIN-REPORTERS (err u308))
 (define-constant ERR-PAUSED (err u309))
 (define-constant ERR-INVALID-PARAM (err u310))
-(define-constant ERR-NO-PRICES (err u311))
 
 ;; ===== CONSTANTS =====
 (define-constant MAX-REPORTERS u10)
 (define-constant MAX-PRICE-AGE u288)                ;; ~2 days in blocks
 (define-constant MAX-DEVIATION-BPS u2000)           ;; 20% max deviation from median
-(define-constant PRICE-PRECISION u1000000)           ;; 6 decimal places
 (define-constant MAX-SANE-PRICE u1000000000000)     ;; $1M max sanity
 
 ;; ===== ADMIN =====
@@ -41,7 +38,6 @@
 ;; Aggregated price state
 (define-data-var aggregated-price uint u0)
 (define-data-var aggregated-block uint u0)
-(define-data-var last-update-block uint u0)
 
 ;; ===== METRICS =====
 (define-data-var total-submissions uint u0)
@@ -166,7 +162,6 @@
     (asserts! (is-eq tx-sender contract-owner) ERR-OWNER-ONLY)
     (asserts! (is-eq (var-get protocol-start-block) u0) ERR-OWNER-ONLY)
     (var-set protocol-start-block block-height)
-    (var-set last-update-block block-height)
     (print { event: "oracle-initialized", block: block-height })
     (ok true)
   )
@@ -258,7 +253,6 @@
     (asserts! (< price MAX-SANE-PRICE) ERR-INVALID-PRICE)
     (var-set aggregated-price price)
     (var-set aggregated-block block-height)
-    (var-set last-update-block block-height)
     (print { event: "admin-price-override", price: price, block: block-height })
     (ok true)
   )
@@ -289,7 +283,6 @@
         ;; but Clarity lacks sorting. We use the latest valid submission.
         (var-set aggregated-price price)
         (var-set aggregated-block block-height)
-        (var-set last-update-block block-height)
         (var-set total-submissions (+ (var-get total-submissions) u1))
 
         (print { event: "price-submitted", reporter: tx-sender, price: price, block: block-height })
