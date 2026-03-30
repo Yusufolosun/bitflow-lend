@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { openContractCall } from '@stacks/connect';
+import { openContractCall, type FinishedTxData } from '@stacks/connect';
 import {
   fetchCallReadOnlyFunction,
   uintCV,
@@ -9,6 +9,7 @@ import {
   PostConditionMode,
   Pc,
 } from '@stacks/transactions';
+import type { PostCondition } from '@stacks/transactions';
 import {
   UserDeposit,
   UserLoan,
@@ -32,6 +33,13 @@ export type PollResult = 'confirmed' | 'failed' | 'timeout';
 
 // Alias to keep the existing call sites readable while using the current API.
 const callReadOnlyFunction = fetchCallReadOnlyFunction;
+
+const getErrorMessage = (error: unknown, fallback: string): string => {
+  if (error instanceof Error && error.message) {
+    return error.message;
+  }
+  return fallback;
+};
 
 /**
  * Poll transaction status until confirmed, explicitly failed, or timed out.
@@ -108,7 +116,7 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
           functionArgs: [uintCV(amountMicroSTX)],
           postConditions,
           postConditionMode: PostConditionMode.Deny,
-          onFinish: (data: any) => {
+          onFinish: (data: FinishedTxData) => {
             setIsLoading(false);
             resolve({ success: true, txId: data.txId });
           },
@@ -118,8 +126,8 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
           },
         });
       });
-    } catch (err: any) {
-      const errorMsg = err.message || 'Failed to deposit';
+    } catch (err: unknown) {
+      const errorMsg = getErrorMessage(err, 'Failed to deposit');
       setError(errorMsg);
       setIsLoading(false);
       return { success: false, error: errorMsg };
@@ -154,7 +162,7 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
           functionArgs: [uintCV(amountMicroSTX)],
           postConditions,
           postConditionMode: PostConditionMode.Deny,
-          onFinish: (data: any) => {
+          onFinish: (data: FinishedTxData) => {
             setIsLoading(false);
             resolve({ success: true, txId: data.txId });
           },
@@ -164,8 +172,8 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
           },
         });
       });
-    } catch (err: any) {
-      const errorMsg = err.message || 'Failed to withdraw';
+    } catch (err: unknown) {
+      const errorMsg = getErrorMessage(err, 'Failed to withdraw');
       setError(errorMsg);
       setIsLoading(false);
       return { success: false, error: errorMsg };
@@ -209,7 +217,7 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
           ],
           postConditions,
           postConditionMode: PostConditionMode.Deny,
-          onFinish: (data: any) => {
+          onFinish: (data: FinishedTxData) => {
             setIsLoading(false);
             resolve({ success: true, txId: data.txId });
           },
@@ -219,8 +227,8 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
           },
         });
       });
-    } catch (err: any) {
-      const errorMsg = err.message || 'Failed to borrow';
+    } catch (err: unknown) {
+      const errorMsg = getErrorMessage(err, 'Failed to borrow');
       setError(errorMsg);
       setIsLoading(false);
       return { success: false, error: errorMsg };
@@ -239,10 +247,42 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
     setError(null);
 
     try {
+      let repaymentInfo: RepaymentAmount | null = null;
+      try {
+        const repaymentResult = await callReadOnlyFunction({
+          network,
+          contractAddress,
+          contractName,
+          functionName: 'get-repayment-amount',
+          functionArgs: [principalCV(userAddress)],
+          senderAddress: userAddress,
+        });
+
+        if (repaymentResult.type === ClarityType.OptionalSome) {
+          const repaymentData = cvToValue(repaymentResult.value);
+          const principal = BigInt(repaymentData.principal);
+          const interest = BigInt(repaymentData.interest);
+          const penalty = BigInt(repaymentData.penalty ?? 0);
+          const total = BigInt(repaymentData.total);
+
+          repaymentInfo = {
+            principal,
+            principalSTX: microStxToStx(principal),
+            interest,
+            interestSTX: microStxToStx(interest),
+            penalty,
+            penaltySTX: microStxToStx(penalty),
+            total,
+            totalSTX: microStxToStx(total),
+          };
+        }
+      } catch {
+        // Fallback to no post-condition if read-only fetch is unavailable.
+      }
+
       // Query the on-chain repayment amount for a ceiling post-condition.
       // The actual total at mining time may be slightly higher due to
       // additional blocks elapsed, so we add a 1% buffer as the upper bound.
-      const repaymentInfo = await getRepaymentAmount();
       const postConditions = repaymentInfo
         ? [
             Pc.principal(userAddress)
@@ -263,7 +303,7 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
           functionArgs: [],
           postConditions,
           postConditionMode: conditionMode,
-          onFinish: (data: any) => {
+          onFinish: (data: FinishedTxData) => {
             setIsLoading(false);
             resolve({ success: true, txId: data.txId });
           },
@@ -273,8 +313,8 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
           },
         });
       });
-    } catch (err: any) {
-      const errorMsg = err.message || 'Failed to repay';
+    } catch (err: unknown) {
+      const errorMsg = getErrorMessage(err, 'Failed to repay');
       setError(errorMsg);
       setIsLoading(false);
       return { success: false, error: errorMsg };
@@ -538,7 +578,7 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
       // Pre-fetch borrower's loan to compute a ceiling post-condition.
       // Liquidator pays: loan_amount + 5% bonus. We add a 1% buffer
       // in case the on-chain values shift slightly between query and mining.
-      let postConditions: any[] = [];
+      let postConditions: PostCondition[] = [];
       let conditionMode = PostConditionMode.Allow;
 
       try {
@@ -575,7 +615,7 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
           functionArgs: [principalCV(borrowerAddress)],
           postConditions,
           postConditionMode: conditionMode,
-          onFinish: (data: any) => {
+          onFinish: (data: FinishedTxData) => {
             // Transaction submitted
             setIsLoading(false);
             resolve({ success: true, txId: data.txId });
@@ -587,8 +627,8 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
           },
         });
       });
-    } catch (err: any) {
-      const errorMsg = err.message || 'Failed to liquidate';
+    } catch (err: unknown) {
+      const errorMsg = getErrorMessage(err, 'Failed to liquidate');
       setError(errorMsg);
       setIsLoading(false);
       return { success: false, error: errorMsg };
