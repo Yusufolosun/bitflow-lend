@@ -20,6 +20,12 @@ export interface Toast {
 
 const MAX_TOASTS = 5;
 
+type ToastTimer = {
+  timerId?: ReturnType<typeof setTimeout>;
+  remaining: number;
+  start: number;
+};
+
 /**
  * Build a dedup key from type + title + message so identical toasts
  * get grouped with a count badge instead of filling the queue.
@@ -36,7 +42,7 @@ export const useToast = () => {
   const [toasts, setToasts] = useState<Toast[]>([]);
   const counterRef = useRef(0);
   /** Tracks auto-dismiss timers so they can be paused on hover. */
-  const timersRef = useRef<Map<string, { timerId: ReturnType<typeof setTimeout>; remaining: number; start: number }>>(new Map());
+  const timersRef = useRef<Map<string, ToastTimer>>(new Map());
 
   /**
    * Schedule (or reschedule) the auto-dismiss timer for a toast.
@@ -58,9 +64,11 @@ export const useToast = () => {
   const pauseTimer = useCallback((id: string) => {
     const entry = timersRef.current.get(id);
     if (!entry) return;
-    clearTimeout(entry.timerId);
+    if (entry.timerId) {
+      clearTimeout(entry.timerId);
+    }
     const elapsed = Date.now() - entry.start;
-    timersRef.current.set(id, { ...entry, remaining: Math.max(0, entry.remaining - elapsed), timerId: undefined as any });
+    timersRef.current.set(id, { ...entry, remaining: Math.max(0, entry.remaining - elapsed), timerId: undefined });
   }, []);
 
   /**
@@ -96,7 +104,7 @@ export const useToast = () => {
         duplicateId = existing.id;
         // Reset the timer on the existing toast
         const entry = timersRef.current.get(existing.id);
-        if (entry) clearTimeout(entry.timerId);
+        if (entry?.timerId) clearTimeout(entry.timerId);
         scheduleTimer(existing.id, duration);
 
         return prev.map(t =>
@@ -123,7 +131,7 @@ export const useToast = () => {
       if (next.length > MAX_TOASTS) {
         const evicted = next[0];
         const entry = timersRef.current.get(evicted.id);
-        if (entry) clearTimeout(entry.timerId);
+        if (entry?.timerId) clearTimeout(entry.timerId);
         timersRef.current.delete(evicted.id);
         next.shift();
       }
@@ -144,7 +152,7 @@ export const useToast = () => {
    */
   const removeToast = useCallback((id: string) => {
     const entry = timersRef.current.get(id);
-    if (entry) clearTimeout(entry.timerId);
+    if (entry?.timerId) clearTimeout(entry.timerId);
     timersRef.current.delete(id);
     setToasts(prev => prev.filter(t => t.id !== id));
   }, []);
@@ -153,7 +161,11 @@ export const useToast = () => {
    * Clear all toasts
    */
   const clearToasts = useCallback(() => {
-    timersRef.current.forEach(entry => clearTimeout(entry.timerId));
+    timersRef.current.forEach(entry => {
+      if (entry.timerId) {
+        clearTimeout(entry.timerId);
+      }
+    });
     timersRef.current.clear();
     setToasts([]);
   }, []);

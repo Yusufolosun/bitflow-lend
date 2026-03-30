@@ -41,6 +41,13 @@ const safeNumber = (val: unknown): number => {
   return 0;
 };
 
+const getErrorMessage = (error: unknown, fallback: string): string => {
+  if (error instanceof Error && error.message) {
+    return error.message;
+  }
+  return fallback;
+};
+
 /**
  * Custom hook that fetches real-time protocol statistics from the blockchain
  * Uses the get-protocol-stats read-only function on the vault contract
@@ -109,9 +116,9 @@ export const useProtocolStats = (refreshInterval = 30000) => {
         setStats(protocolStats);
         setLastUpdated(new Date());
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       if (!mountedRef.current) return;
-      setError(err.message || 'Failed to fetch protocol stats');
+      setError(getErrorMessage(err, 'Failed to fetch protocol stats'));
     } finally {
       if (mountedRef.current) {
         setIsLoading(false);

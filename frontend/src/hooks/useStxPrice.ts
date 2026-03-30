@@ -14,6 +14,13 @@ interface StxPriceState {
   isStale: boolean;
 }
 
+const getErrorMessage = (error: unknown, fallback: string): string => {
+  if (error instanceof Error && error.message) {
+    return error.message;
+  }
+  return fallback;
+};
+
 /**
  * Fetches the current STX/USD price from CoinGecko on a configurable interval.
  * Falls back to a stale cached price (with a warning flag) when the API is unreachable.
@@ -49,12 +56,12 @@ export function useStxPrice(refreshInterval = DEFAULT_INTERVAL) {
           isStale: false,
         });
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       if (mountedRef.current) {
         setState((prev) => ({
           ...prev,
           isLoading: false,
-          error: err.message || 'Failed to fetch STX price',
+          error: getErrorMessage(err, 'Failed to fetch STX price'),
           isStale: true,
         }));
       }

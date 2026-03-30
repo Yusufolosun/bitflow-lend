@@ -144,7 +144,7 @@ export interface TransactionStatus {
   /** Error message if failed */
   error?: string;
   /** Result data if success */
-  result?: any;
+  result?: unknown;
 }
 
 /**
@@ -192,7 +192,7 @@ export interface WithdrawParams {
 /**
  * Helper type for contract call responses
  */
-export interface ContractCallResponse<T = any> {
+export interface ContractCallResponse<T = unknown> {
   /** Was the call successful */
   success: boolean;
   /** Transaction ID if successful */
