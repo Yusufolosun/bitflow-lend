@@ -25,7 +25,7 @@ export const DepositCard: React.FC = () => {
     if (!address) return;
     const deposit = await vault.getUserDeposit();
     if (deposit) setUserDeposit(deposit.amountSTX);
-  }, [address, vault.getUserDeposit]);
+  }, [address, vault]);
 
   useSmartPolling(fetchDeposit, 60_000, !!address);
 
@@ -84,9 +84,10 @@ export const DepositCard: React.FC = () => {
         setTxStatus('error');
         setErrorMessage(result.error || 'Transaction failed');
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       setTxStatus('error');
-      setErrorMessage(error.message || 'An error occurred');
+      const errorMessage = error instanceof Error ? error.message : 'An error occurred';
+      setErrorMessage(errorMessage);
     }
   };
 
