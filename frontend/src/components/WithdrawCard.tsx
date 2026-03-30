@@ -35,7 +35,7 @@ export const WithdrawCard: React.FC = () => {
     } else {
       setLockedCollateral(0);
     }
-  }, [address, vault.getUserDeposit, vault.getUserLoan]);
+  }, [address, vault]);
 
   useSmartPolling(fetchBalance, 60_000, !!address);
 
@@ -90,9 +90,10 @@ export const WithdrawCard: React.FC = () => {
         setTxStatus('error');
         setErrorMessage(result.error || 'Transaction failed');
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       setTxStatus('error');
-      setErrorMessage(error.message || 'An error occurred');
+      const errorMessage = error instanceof Error ? error.message : 'An error occurred';
+      setErrorMessage(errorMessage);
     }
   };
 
