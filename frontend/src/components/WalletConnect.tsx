@@ -22,16 +22,23 @@ export const WalletConnect: React.FC = () => {
   const [refreshError, setRefreshError] = useState<string | null>(null);
   const toast = useToastContext();
 
+  const getErrorMessage = (error: unknown, fallback: string): string => {
+    if (error instanceof Error && error.message) {
+      return error.message;
+    }
+    return fallback;
+  };
+
   const handleRefresh = async () => {
     setIsRefreshing(true);
     setRefreshError(null);
     try {
       await refreshBalance();
       await new Promise(resolve => setTimeout(resolve, 1500));
-    } catch (error: any) {
-      const message = error?.message || 'Could not refresh balance';
+    } catch (error: unknown) {
+      const message = getErrorMessage(error, 'Could not refresh balance');
       setRefreshError(message);
-      toast.error('Balance refresh failed', message);
+      toast.error('Balance refresh failed', { message });
     } finally {
       setIsRefreshing(false);
     }

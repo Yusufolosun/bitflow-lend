@@ -21,6 +21,7 @@ const ToastContext = createContext<ToastContextValue | null>(null);
 /**
  * Hook to access toast notifications from any component
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export const useToastContext = (): ToastContextValue => {
   const context = useContext(ToastContext);
   if (!context) {

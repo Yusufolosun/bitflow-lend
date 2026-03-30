@@ -106,6 +106,13 @@ const extractAmount = (tx: HiroContractCallTx): number => {
   }
 };
 
+const getErrorMessage = (error: unknown, fallback: string): string => {
+  if (error instanceof Error && error.message) {
+    return error.message;
+  }
+  return fallback;
+};
+
 /**
  * TransactionHistory Component
  * Fetches and displays real transaction history from the Hiro API,
@@ -179,8 +186,8 @@ export const TransactionHistory: React.FC = () => {
         });
 
       setTransactions(vaultTxs);
-    } catch (err: any) {
-      setError(err.message || 'Failed to fetch transactions');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, 'Failed to fetch transactions'));
     } finally {
       setIsLoading(false);
     }
