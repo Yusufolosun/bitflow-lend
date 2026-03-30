@@ -19,6 +19,7 @@ import { useSmartPolling } from '../hooks/useSmartPolling';
 import { useStxPrice } from '../hooks/useStxPrice';
 import { LoadingStats } from './LoadingCard';
 import { ErrorState } from './ErrorState';
+import { UserLoan } from '../types/vault';
 
 /**
  * Dashboard Component
@@ -38,7 +39,7 @@ export const Dashboard: React.FC = () => {
 
   // User portfolio
   const [userDeposit, setUserDeposit] = useState(0);
-  const [userLoan, setUserLoan] = useState<any>(null);
+  const [userLoan, setUserLoan] = useState<UserLoan | null>(null);
   const [userHealthFactor, setUserHealthFactor] = useState<number | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [refreshError, setRefreshError] = useState<string | null>(null);
@@ -64,7 +65,7 @@ export const Dashboard: React.FC = () => {
     } catch {
       // Silently swallow — next poll will retry
     }
-  }, [address, vault.getUserDeposit, vault.getUserLoan, vault.getHealthFactor, stxPrice]);
+  }, [address, vault, stxPrice]);
 
   useSmartPolling(fetchUserData, 60_000, !!address);
 
@@ -97,8 +98,9 @@ export const Dashboard: React.FC = () => {
       } else {
         setUserHealthFactor(null);
       }
-    } catch (error: any) {
-      setRefreshError(error.message || 'Failed to refresh data');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to refresh data';
+      setRefreshError(errorMessage);
     } finally {
       setIsRefreshing(false);
     }
