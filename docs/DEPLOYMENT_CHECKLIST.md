@@ -18,6 +18,7 @@ Pre-deployment verification checklist for BitFlow Lend mainnet releases.
 
 ### Security
 - [ ] No secrets in repository (`.gitignore` reviewed)
+- [ ] Tracked config secret scan passes (`npm run security:scan`)
 - [ ] CSP meta tag configured in `index.html`
 - [ ] `frame-ancestors 'none'` prevents clickjacking
 - [ ] Source maps set to `'hidden'` (not exposed to users)
@@ -48,12 +49,13 @@ Pre-deployment verification checklist for BitFlow Lend mainnet releases.
 
 ### Contract Deployment
 1. [ ] Set deployer wallet with sufficient STX for deployment fees
-2. [ ] Deploy contracts in order: oracle-registry → staking-pool → vault-core-v2
-3. [ ] Call `initialize` on each contract
-4. [ ] Set initial STX price via `set-stx-price`
-5. [ ] Set initial reward rate on staking pool via `set-reward-rate`
-6. [ ] Add oracle reporters via `add-reporter`
-7. [ ] Verify all `get-contract-version` calls return expected values
+2. [ ] Run `bash scripts/pre-deployment-check.sh` and resolve all failures
+3. [ ] Deploy contracts in order: oracle-registry → staking-pool → vault-core-v2
+4. [ ] Call `initialize` on each contract
+5. [ ] Set initial STX price via `set-stx-price`
+6. [ ] Set initial reward rate on staking pool via `set-reward-rate`
+7. [ ] Add oracle reporters via `add-reporter`
+8. [ ] Verify all `get-contract-version` calls return expected values
 
 ### Frontend Deployment
 1. [ ] Build production bundle: `npm run build`
@@ -91,4 +93,4 @@ Pre-deployment verification checklist for BitFlow Lend mainnet releases.
 ---
 
 **Document Version:** 1.0.0
-**Last Updated:** March 14, 2026
+**Last Updated:** March 30, 2026
