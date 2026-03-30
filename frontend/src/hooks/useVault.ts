@@ -88,12 +88,19 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
   const contractAddress = getContractAddress();
   const contractName = getActiveContractVersion().contractName;
 
+  const isValidPositiveNumber = (value: number): boolean => Number.isFinite(value) && value > 0;
+
   /**
    * Deposit STX into the vault
    */
   const deposit = useCallback(async (amountSTX: number): Promise<ContractCallResponse> => {
     if (!userAddress) {
       return { success: false, error: 'Wallet not connected' };
+    }
+    if (!isValidPositiveNumber(amountSTX)) {
+      const message = 'Deposit amount must be greater than 0';
+      setError(message);
+      return { success: false, error: message };
     }
 
     setIsLoading(true);
@@ -140,6 +147,11 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
   const withdraw = useCallback(async (amountSTX: number): Promise<ContractCallResponse> => {
     if (!userAddress) {
       return { success: false, error: 'Wallet not connected' };
+    }
+    if (!isValidPositiveNumber(amountSTX)) {
+      const message = 'Withdrawal amount must be greater than 0';
+      setError(message);
+      return { success: false, error: message };
     }
 
     setIsLoading(true);
@@ -191,13 +203,28 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
     if (!userAddress) {
       return { success: false, error: 'Wallet not connected' };
     }
+    if (!isValidPositiveNumber(amountSTX)) {
+      const message = 'Borrow amount must be greater than 0';
+      setError(message);
+      return { success: false, error: message };
+    }
+    if (!isValidPositiveNumber(interestRatePercent) || interestRatePercent > 100) {
+      const message = 'Interest rate must be greater than 0 and at most 100%';
+      setError(message);
+      return { success: false, error: message };
+    }
+    if (!Number.isInteger(termDays) || termDays <= 0) {
+      const message = 'Loan term must be a positive integer in days';
+      setError(message);
+      return { success: false, error: message };
+    }
 
     setIsLoading(true);
     setError(null);
 
     try {
       const amountMicroSTX = stxToMicroStx(amountSTX);
-      const interestRateBPS = interestRatePercent * 100; // Convert to basis points
+      const interestRateBPS = Math.round(interestRatePercent * 100); // Convert to basis points
 
       // Post-condition: contract sends exactly the borrowed amount to user
       const postConditions = [
@@ -569,6 +596,11 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
   const liquidate = useCallback(async (borrowerAddress: string): Promise<ContractCallResponse> => {
     if (!userAddress) {
       return { success: false, error: 'Wallet not connected' };
+    }
+    if (!borrowerAddress || borrowerAddress.trim().length === 0) {
+      const message = 'Borrower address is required';
+      setError(message);
+      return { success: false, error: message };
     }
 
     setIsLoading(true);
