@@ -139,7 +139,10 @@ jobs:
 
       - name: Scan for hardcoded secrets
         run: |
-          echo "Scanning for potential secrets..."
+          echo "Scanning tracked config/deployment files..."
+          bash scripts/check-tracked-secrets.sh
+
+          echo "Scanning source code for hardcoded secrets..."
           FOUND=0
 
           # Check for private keys
@@ -165,6 +168,9 @@ jobs:
 
           if [ "$FOUND" -eq 0 ]; then
             echo "✅ No hardcoded secrets detected"
+          else
+            echo "❌ Secret scan failed"
+            exit 1
           fi
 
       - name: Check .gitignore coverage
