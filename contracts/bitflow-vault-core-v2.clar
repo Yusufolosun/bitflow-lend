@@ -17,7 +17,6 @@
 
 ;; ===== ERROR CODES =====
 (define-constant ERR-INSUFFICIENT-BALANCE (err u101))
-(define-constant ERR-INVALID-AMOUNT (err u102))
 (define-constant ERR-ALREADY-HAS-LOAN (err u103))
 (define-constant ERR-INSUFFICIENT-COLLATERAL (err u105))
 (define-constant ERR-NO-ACTIVE-LOAN (err u106))
@@ -25,14 +24,12 @@
 (define-constant ERR-LIQUIDATE-OWN-LOAN (err u108))
 (define-constant ERR-INVALID-INTEREST-RATE (err u110))
 (define-constant ERR-INVALID-TERM (err u111))
-(define-constant ERR-PRICE-NOT-SET (err u113))
 (define-constant ERR-PROTOCOL-PAUSED (err u112))
 (define-constant ERR-OWNER-ONLY (err u109))
 (define-constant ERR-STALE-PRICE (err u114))
 (define-constant ERR-MIN-BORROW-AMOUNT (err u115))
 (define-constant ERR-MAX-BORROW-EXCEEDED (err u116))
 (define-constant ERR-INVALID-PRICE (err u117))
-(define-constant ERR-HEALTH-FACTOR-LOW (err u118))
 (define-constant ERR-ZERO-AMOUNT (err u119))
 (define-constant ERR-INVALID-PARAM (err u120))
 (define-constant ERR-INSUFFICIENT-LIQUIDITY (err u121))
@@ -51,7 +48,6 @@
 (define-constant MAX-BORROW-AMOUNT u500000000000) ;; 500K STX maximum
 (define-constant PRICE-STALENESS-THRESHOLD u144) ;; ~1 day blocks
 (define-constant DEPOSIT-LIMIT u10000000000000) ;; 10M STX max per user
-(define-constant PRECISION-MULTIPLIER u1000000) ;; For decimal calculations
 
 ;; ===== DATA STRUCTURES =====
 (define-map user-deposits principal uint)
