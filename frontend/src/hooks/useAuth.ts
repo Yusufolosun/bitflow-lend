@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { AppConfig, UserSession, showConnect } from '@stacks/connect';
-import { StacksMainnet, StacksTestnet } from '@stacks/network';
+import { STACKS_MAINNET, STACKS_TESTNET } from '@stacks/network';
 import { WalletState } from '../types/vault';
 import { ACTIVE_NETWORK } from '../config/contracts';
 
@@ -8,8 +8,8 @@ import { ACTIVE_NETWORK } from '../config/contracts';
 const appConfig = new AppConfig(['store_write', 'publish_data']);
 const sharedUserSession = new UserSession({ appConfig });
 const sharedNetwork = ACTIVE_NETWORK === 'testnet'
-  ? new StacksTestnet()
-  : new StacksMainnet();
+  ? STACKS_TESTNET
+  : STACKS_MAINNET;
 
 /**
  * Custom hook for wallet authentication
@@ -158,6 +158,7 @@ export const useAuth = () => {
           // Balance fetch returned null, keep existing balance
         }
       } catch {
+        console.warn('Failed to refresh wallet balance');
       }
     }
   }, [walletState, fetchBalance]);
