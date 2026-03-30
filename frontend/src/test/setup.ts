@@ -6,7 +6,39 @@
 
 import '@testing-library/jest-dom';
 import { cleanup } from '@testing-library/react';
-import { afterEach } from 'vitest';
+import { afterEach, vi } from 'vitest';
+
+// ---------------------------------------------------------------------------
+// Module mocks - must be hoisted to top level
+// ---------------------------------------------------------------------------
+
+vi.mock('@stacks/connect', () => ({
+  showConnect: vi.fn(),
+  AppConfig: class MockAppConfig {
+    constructor() {}
+  },
+  UserSession: class MockUserSession {
+    constructor() {}
+    isUserSignedIn = () => false;
+    isSignInPending = () => false;
+    loadUserData = () => ({
+      profile: {
+        stxAddress: {
+          testnet: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM',
+          mainnet: 'SP1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRT4DT5E',
+        },
+      },
+    });
+    signUserOut = vi.fn();
+    handlePendingSignIn = vi.fn();
+  },
+  openContractCall: vi.fn(),
+}));
+
+vi.mock('@stacks/network', () => ({
+  STACKS_TESTNET: {},
+  STACKS_MAINNET: {},
+}));
 
 // Ensure DOM cleanup after each test
 afterEach(() => {
@@ -66,52 +98,6 @@ Object.defineProperty(globalThis, 'crypto', {
     subtle: {},
   },
 });
-
-// ---------------------------------------------------------------------------
-// Stacks Connect mock
-// ---------------------------------------------------------------------------
-
-// Provide a default stub for @stacks/connect so tests that import components
-// using showConnect / AppConfig / UserSession don't need to set up their own
-// vi.mock() for every test file.  Individual tests can override via vi.mock()
-// at the file level when they need custom behavior.
-if (typeof vi !== 'undefined') {
-  vi.mock('@stacks/connect', async () => {
-    return {
-      showConnect: vi.fn(),
-      AppConfig: class MockAppConfig {
-        constructor() {}
-      },
-      UserSession: class MockUserSession {
-        constructor() {}
-        isUserSignedIn = () => false;
-        isSignInPending = () => false;
-        loadUserData = () => ({
-          profile: {
-            stxAddress: {
-              testnet: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM',
-              mainnet: 'SP1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRT4DT5E',
-            },
-          },
-        });
-        signUserOut = vi.fn();
-        handlePendingSignIn = vi.fn();
-      },
-      openContractCall: vi.fn(),
-    };
-  });
-
-  vi.mock('@stacks/network', async () => {
-    return {
-      StacksTestnet: class MockStacksTestnet {
-        constructor() {}
-      },
-      StacksMainnet: class MockStacksMainnet {
-        constructor() {}
-      },
-    };
-  });
-}
 
 // ---------------------------------------------------------------------------
 // localStorage mock (jsdom provides one, but guarantee a clean slate)
