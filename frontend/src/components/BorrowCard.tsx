@@ -3,7 +3,7 @@ import { TrendingUp, AlertCircle, CheckCircle, XCircle, ExternalLink } from 'luc
 import { useAuth } from '../hooks/useAuth';
 import { useVault } from '../hooks/useVault';
 import { useSmartPolling } from '../hooks/useSmartPolling';
-import { LOAN_TERMS } from '../types/vault';
+import { LOAN_TERMS, UserLoan } from '../types/vault';
 import { formatSTX } from '../utils/formatters';
 import { PROTOCOL_CONSTANTS, getExplorerUrl } from '../config/contracts';
 import { calculateHealthFactor, getHealthStatus } from '../utils/calculations';
@@ -20,7 +20,7 @@ export const BorrowCard: React.FC = () => {
   const [interestRate, setInterestRate] = useState(10);
   const [loanTerm, setLoanTerm] = useState(30);
   const [userDeposit, setUserDeposit] = useState(0);
-  const [activeLoan, setActiveLoan] = useState<any>(null);
+  const [activeLoan, setActiveLoan] = useState<UserLoan | null>(null);
   const [txStatus, setTxStatus] = useState<'idle' | 'pending' | 'success' | 'error' | 'timeout'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
   const [lastTxId, setLastTxId] = useState<string | null>(null);
@@ -32,7 +32,7 @@ export const BorrowCard: React.FC = () => {
     if (deposit) setUserDeposit(deposit.amountSTX);
     const loan = await vault.getUserLoan();
     setActiveLoan(loan);
-  }, [address, vault.getUserDeposit, vault.getUserLoan]);
+  }, [address, vault]);
 
   useSmartPolling(fetchData, 60_000, !!address);
 
@@ -120,9 +120,10 @@ export const BorrowCard: React.FC = () => {
         setTxStatus('error');
         setErrorMessage(result.error || 'Transaction failed');
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       setTxStatus('error');
-      setErrorMessage(error.message || 'An error occurred');
+      const errorMessage = error instanceof Error ? error.message : 'An error occurred';
+      setErrorMessage(errorMessage);
     }
   };
 
