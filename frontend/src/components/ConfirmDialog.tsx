@@ -28,8 +28,6 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   variant = 'info',
   isLoading = false,
 }) => {
-  if (!isOpen) return null;
-
   const variantStyles = {
     warning: {
       icon: <AlertTriangle className="w-6 h-6" />,
@@ -61,22 +59,26 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
 
   // Handle escape key
   React.useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && !isLoading) {
         onClose();
       }
     };
 
-    if (isOpen) {
-      document.addEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'hidden';
-    }
+    document.addEventListener('keydown', handleEscape);
+    document.body.style.overflow = 'hidden';
 
     return () => {
       document.removeEventListener('keydown', handleEscape);
       document.body.style.overflow = 'unset';
     };
   }, [isOpen, isLoading, onClose]);
+
+  if (!isOpen) return null;
 
   return (
     <div
