@@ -70,18 +70,21 @@ interface UserDeposit {
  *   amount: uint,
  *   interest-rate: uint,
  *   start-block: uint,
- *   term-end: uint
+ *   term-end: uint,
+ *   created-at-price?: uint   // v2 only
  * })
  */
 interface UserLoan {
   /** Loan principal in microSTX */
   amount: MicroSTX;
-  /** Annual interest rate in basis points (max 10000 = 100%) */
+  /** Annual interest-rate parameter value stored on-chain */
   interestRate: BasisPoints;
   /** Block height when loan was created */
   startBlock: BlockHeight;
   /** Block height when term expires */
   termEnd: BlockHeight;
+  /** Oracle price snapshot taken at borrow time (v2 only) */
+  createdAtPrice?: MicroSTX;
 }
 ```
 
@@ -182,15 +185,19 @@ interface ProtocolStats {
 
 /** get-protocol-metrics response */
 interface ProtocolMetrics {
-  protocolAge: BlockHeight;
-  timeSinceLastActivity: BlockHeight;
+  totalDeposits: number;
+  totalWithdrawals: number;
+  totalBorrows: number;
+  totalRepayments: number;
+  totalLiquidations: number;
 }
 
 /** get-volume-metrics response */
 interface VolumeMetrics {
-  totalDeposits: MicroSTX;
-  totalRepaid: MicroSTX;
-  totalLiquidations: MicroSTX;
+  depositVolume: MicroSTX;
+  borrowVolume: MicroSTX;
+  repayVolume: MicroSTX;
+  liquidationVolume: MicroSTX;
 }
 ```
 
@@ -214,6 +221,15 @@ enum ErrorCode {
   ERR_OWNER_ONLY = 109,
   ERR_INVALID_RATE = 110,
   ERR_INVALID_TERM = 111,
+  ERR_PROTOCOL_PAUSED = 112,
+  ERR_PRICE_NOT_SET = 113,
+  ERR_STALE_PRICE = 114,
+  ERR_MIN_BORROW_AMOUNT = 115,
+  ERR_MAX_BORROW_EXCEEDED = 116,
+  ERR_INVALID_PRICE = 117,
+  ERR_ZERO_AMOUNT = 119,
+  ERR_INVALID_PARAM = 120,
+  ERR_INSUFFICIENT_LIQUIDITY = 121,
 }
 
 /** Human-readable error messages */
@@ -226,8 +242,17 @@ const ERROR_MESSAGES: Record<ErrorCode, string> = {
   [ErrorCode.ERR_NOT_LIQUIDATABLE]: 'Position health factor is above liquidation threshold',
   [ErrorCode.ERR_SELF_LIQUIDATION]: 'You cannot liquidate your own position',
   [ErrorCode.ERR_OWNER_ONLY]: 'Only the contract owner can call this function',
-  [ErrorCode.ERR_INVALID_RATE]: 'Interest rate exceeds maximum (10000 BPS = 100%)',
+  [ErrorCode.ERR_INVALID_RATE]: 'Interest rate is outside configured bounds',
   [ErrorCode.ERR_INVALID_TERM]: 'Term must be between 1 and 365 days',
+  [ErrorCode.ERR_PROTOCOL_PAUSED]: 'Protocol is currently paused',
+  [ErrorCode.ERR_PRICE_NOT_SET]: 'Price has not been initialized',
+  [ErrorCode.ERR_STALE_PRICE]: 'Oracle price is stale',
+  [ErrorCode.ERR_MIN_BORROW_AMOUNT]: 'Borrow amount is below minimum',
+  [ErrorCode.ERR_MAX_BORROW_EXCEEDED]: 'Borrow amount exceeds maximum',
+  [ErrorCode.ERR_INVALID_PRICE]: 'Price value is invalid',
+  [ErrorCode.ERR_ZERO_AMOUNT]: 'Amount must be greater than zero',
+  [ErrorCode.ERR_INVALID_PARAM]: 'Invalid protocol parameter value',
+  [ErrorCode.ERR_INSUFFICIENT_LIQUIDITY]: 'Vault has insufficient liquidity',
 };
 
 /** Type guard for contract errors */
@@ -259,7 +284,7 @@ interface WithdrawParams {
 /** Parameters for the borrow function */
 interface BorrowParams {
   amount: MicroSTX;       // (uint) — must be > 0, within collateral limits
-  interestRate: BasisPoints; // (uint) — 1-10000 (0.01% to 100%)
+  interestRate: BasisPoints; // (uint) — contract-native rate value (default bounds: 50-10000)
   termDays: TermDays;       // (uint) — 1-365
 }
 
@@ -291,7 +316,7 @@ const PROTOCOL_CONSTANTS = {
   /** Liquidator bonus: 5% of seized collateral */
   LIQUIDATOR_BONUS: 5,
 
-  /** Maximum interest rate: 10000 BPS (100% APR) */
+  /** Maximum interest-rate parameter value */
   MAX_INTEREST_RATE: 10000,
 
   /** Minimum loan term: 1 day */
