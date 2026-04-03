@@ -41,7 +41,7 @@ Retrieves the current STX deposit balance for a specific user.
 
 **Example Request:**
 ```clarity
-(contract-call? .vault-core get-user-deposit 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM)
+(contract-call? .bitflow-vault-core get-user-deposit 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM)
 ```
 
 **Example Responses:**
@@ -96,7 +96,7 @@ Retrieves detailed information about a user's active loan.
 
 **Example Request:**
 ```clarity
-(contract-call? .vault-core get-user-loan 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM)
+(contract-call? .bitflow-vault-core get-user-loan 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM)
 ```
 
 **Example Responses:**
@@ -132,7 +132,7 @@ none
 **Calculating Time Remaining:**
 ```clarity
 ;; Get loan details
-(match (contract-call? .vault-core get-user-loan tx-sender)
+(match (contract-call? .bitflow-vault-core get-user-loan tx-sender)
   loan
     (let (
       (current-block block-height)
@@ -187,7 +187,7 @@ Calculates the total amount required to repay a user's active loan, including ac
 
 **Example Request:**
 ```clarity
-(contract-call? .vault-core get-repayment-amount 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM)
+(contract-call? .bitflow-vault-core get-repayment-amount 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM)
 ```
 
 **Example Responses:**
@@ -301,7 +301,7 @@ Calculates the health factor for a user's loan position based on current STX pri
 
 **Example Request:**
 ```clarity
-(contract-call? .vault-core calculate-health-factor 
+(contract-call? .bitflow-vault-core calculate-health-factor 
   'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM 
   u100)
 ```
@@ -430,7 +430,7 @@ Determines whether a user's loan position is eligible for liquidation.
 
 **Example Request:**
 ```clarity
-(contract-call? .vault-core is-liquidatable 
+(contract-call? .bitflow-vault-core is-liquidatable 
   'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM 
   u70)
 ```
@@ -566,7 +566,7 @@ Calculates the minimum collateral required to borrow a specific amount.
 
 **Example Request:**
 ```clarity
-(contract-call? .vault-core calculate-required-collateral u1000)
+(contract-call? .bitflow-vault-core calculate-required-collateral u1000)
 ```
 
 **Example Responses:**
@@ -670,7 +670,7 @@ Retrieves the total STX deposited across all users in the vault.
 
 **Example Request:**
 ```clarity
-(contract-call? .vault-core get-total-deposits)
+(contract-call? .bitflow-vault-core get-total-deposits)
 ```
 
 **Example Responses:**
@@ -721,7 +721,7 @@ Retrieves the cumulative amount repaid across all loans (principal + interest).
 
 **Example Request:**
 ```clarity
-(contract-call? .vault-core get-total-repaid)
+(contract-call? .bitflow-vault-core get-total-repaid)
 ```
 
 **Example Responses:**
@@ -772,7 +772,7 @@ Retrieves the total number of liquidation events executed.
 
 **Example Request:**
 ```clarity
-(contract-call? .vault-core get-total-liquidations)
+(contract-call? .bitflow-vault-core get-total-liquidations)
 ```
 
 **Example Responses:**
