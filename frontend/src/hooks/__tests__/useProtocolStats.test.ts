@@ -12,7 +12,7 @@ vi.mock('@stacks/transactions', () => ({
 vi.mock('../../config/contracts', () => ({
   getNetwork: () => 'testnet',
   getContractAddress: () => 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM',
-  VAULT_CONTRACT: { name: 'bitflow-vault-core' },
+  getActiveContractVersion: () => ({ contractName: 'bitflow-vault-core-v2' }),
 }));
 
 import { fetchCallReadOnlyFunction, cvToValue } from '@stacks/transactions';

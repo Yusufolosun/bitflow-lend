@@ -6,7 +6,7 @@ import {
 import {
   getNetwork,
   getContractAddress,
-  VAULT_CONTRACT,
+  getActiveContractVersion,
 } from '../config/contracts';
 
 /**
@@ -67,7 +67,7 @@ export const useProtocolStats = (refreshInterval = 30000) => {
 
   const network = getNetwork();
   const contractAddress = getContractAddress();
-  const contractName = VAULT_CONTRACT.name;
+  const contractName = getActiveContractVersion().contractName;
 
   /**
    * Parse protocol stats from a Clarity tuple value
