@@ -4,7 +4,7 @@ set -euo pipefail
 # Scan tracked deployment/settings files for obvious secret markers.
 # This intentionally skips example templates and documentation-like files.
 
-PATTERN='mnemonic|seed[ _-]?phrase|private[ _-]?key|xprv|BEGIN[[:space:]]+[A-Z ]*PRIVATE KEY'
+PATTERN='mnemonic|encrypted[ _-]?mnemonic|seed[ _-]?phrase|private[ _-]?key|secret[ _-]?key|api[ _-]?key|token|password|xprv|BEGIN[[:space:]]+[A-Z ]*PRIVATE KEY'
 
 mapfile -t FILES < <(git ls-files \
   'settings/*.toml' \
