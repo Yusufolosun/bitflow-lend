@@ -10,6 +10,18 @@ export const NETWORK_CONFIG = {
   mainnet: STACKS_MAINNET,
 };
 
+const resolveEnvContractAddress = (): string | null => {
+  const rawValue = import.meta.env.VITE_CONTRACT_ADDRESS?.trim();
+  if (!rawValue) return null;
+
+  // Backward compatibility: accept either "SP..." or "SP....contract-name" and keep address part.
+  const [address] = rawValue.split('.');
+  return address || null;
+};
+
+const ENV_CONTRACT_ADDRESS = resolveEnvContractAddress();
+const ENV_STACKS_API_URL = import.meta.env.VITE_STACKS_API_URL?.trim() || null;
+
 // Determine active network from environment variable, defaulting to testnet for safety
 export const ACTIVE_NETWORK = (import.meta.env.VITE_NETWORK || 'testnet') as 'testnet' | 'mainnet';
 
@@ -97,6 +109,10 @@ export const getActiveContractVersion = (): ContractVersion => {
 
 // Get the active contract address
 export const getContractAddress = () => {
+  if (ENV_CONTRACT_ADDRESS) {
+    return ENV_CONTRACT_ADDRESS;
+  }
+
   return ACTIVE_NETWORK === 'testnet' 
     ? VAULT_CONTRACT.testnet.address 
     : VAULT_CONTRACT.mainnet.address;
@@ -131,6 +147,10 @@ export const API_ENDPOINTS = {
 };
 
 export const getApiEndpoint = () => {
+  if (ENV_STACKS_API_URL) {
+    return ENV_STACKS_API_URL;
+  }
+
   return ACTIVE_NETWORK === 'testnet' 
     ? API_ENDPOINTS.testnet 
     : API_ENDPOINTS.mainnet;
