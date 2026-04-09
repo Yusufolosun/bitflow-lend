@@ -97,6 +97,8 @@
   .stat-value    { @apply text-2xl font-bold text-gray-900 tracking-tight; }
   .stat-subtitle { @apply text-xs text-gray-500 mt-0.5; }
 
+  .section-title { @apply text-2xl font-bold text-primary-900 tracking-tight; }
+
   /* --- Glass --- */
   .glass      { @apply bg-white/80 backdrop-blur-xl border border-white/20; }
   .glass-dark { @apply bg-gray-900/80 backdrop-blur-xl border border-white/10; }
