@@ -1,6 +1,6 @@
 # Deployment Guide
 
-This guide provides step-by-step instructions for deploying the BitFlow vault-core contract to Stacks testnet and mainnet.
+This guide provides step-by-step instructions for deploying the BitFlow vault contract to Stacks testnet and mainnet.
 
 ## Table of Contents
 
@@ -96,7 +96,7 @@ DEPLOYER_PRIVATE_KEY=your_testnet_private_key_here
 DEPLOYER_ADDRESS=ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
 
 # Contract Configuration
-CONTRACT_NAME=vault-core
+CONTRACT_NAME=bitflow-vault-core
 
 # Oracle (if integrated)
 ORACLE_ADDRESS=ST2...
@@ -115,7 +115,7 @@ DEPLOYER_PRIVATE_KEY=your_mainnet_private_key_here
 DEPLOYER_ADDRESS=SP...
 
 # Contract Configuration
-CONTRACT_NAME=vault-core
+CONTRACT_NAME=bitflow-vault-core
 
 # Oracle (required for mainnet)
 ORACLE_ADDRESS=SP...
@@ -187,7 +187,7 @@ plan:
     - id: 1
       transactions:
         - contract-publish:
-            contract-name: vault-core
+            contract-name: bitflow-vault-core
             expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             cost: 50000
             path: contracts/bitflow-vault-core.clar
@@ -203,7 +203,7 @@ npm install -g @stacks/cli
 
 # Deploy contract
 stx deploy-contract \
-  vault-core \
+  bitflow-vault-core \
   contracts/bitflow-vault-core.clar \
   -t \
   --network testnet \
@@ -217,7 +217,7 @@ stx deploy-contract \
 3. Create New Project → Smart Contract
 4. Copy contents of `contracts/bitflow-vault-core.clar`
 5. Click "Deploy Contract"
-6. Contract name: `vault-core`
+6. Contract name: `bitflow-vault-core`
 7. Clarity version: 2
 8. Confirm transaction in wallet
 9. Wait for confirmation (~10 minutes)
@@ -226,7 +226,7 @@ stx deploy-contract \
 
 ```bash
 # Check contract is deployed
-curl https://api.testnet.hiro.so/v2/contracts/interface/ST1.../vault-core
+curl https://api.testnet.hiro.so/v2/contracts/interface/ST1.../bitflow-vault-core
 
 # Expected response: Contract interface JSON
 ```
@@ -321,7 +321,7 @@ plan:
     - id: 1
       transactions:
         - contract-publish:
-            contract-name: vault-core
+            contract-name: bitflow-vault-core
             expected-sender: SP...  # Your mainnet address
             cost: 500000  # 0.5 STX
             path: contracts/bitflow-vault-core.clar
@@ -374,10 +374,10 @@ curl https://api.hiro.so/extended/v1/tx/0x[transaction-id]
 
 ```bash
 # Get contract interface
-curl https://api.hiro.so/v2/contracts/interface/SP.../vault-core
+curl https://api.hiro.so/v2/contracts/interface/SP.../bitflow-vault-core
 
 # Test read-only functions
-curl -X POST https://api.hiro.so/v2/contracts/call-read/SP.../vault-core/get-total-deposits \
+curl -X POST https://api.hiro.so/v2/contracts/call-read/SP.../bitflow-vault-core/get-total-deposits \
   -H "Content-Type: application/json" \
   -d '{
     "sender": "SP...",
@@ -393,7 +393,7 @@ Create `DEPLOYMENT.json`:
 {
   "network": "mainnet",
   "contractAddress": "SP1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM",
-  "contractName": "vault-core",
+  "contractName": "bitflow-vault-core",
   "deploymentTx": "0x1234...",
   "deploymentBlock": 123456,
   "deploymentDate": "2026-01-25T10:30:00Z",
@@ -410,7 +410,7 @@ Create `DEPLOYMENT.json`:
 // Update frontend config
 export const VAULT_CONTRACT = {
   address: 'SP1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM',
-  name: 'vault-core',
+  name: 'bitflow-vault-core',
   network: 'mainnet'
 };
 ```
@@ -475,7 +475,7 @@ monitor();
 import { callReadOnlyFunction } from '@stacks/transactions';
 
 async function verifyDeployment() {
-  console.log('Verifying vault-core deployment...\n');
+  console.log('Verifying bitflow-vault-core deployment...\n');
   
   // Test 1: Contract exists
   try {
@@ -640,7 +640,7 @@ curl https://api.hiro.so/extended/v1/fee_rate
 2. **Deploy Fixed Version:**
    ```bash
    # Deploy new contract with fix
-   # Example: vault-core-v2
+   # Example: bitflow-vault-core-v2
    
    # Update frontend to point to new contract
    ```
