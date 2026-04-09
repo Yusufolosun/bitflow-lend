@@ -78,7 +78,7 @@ const pollTransactionStatus = async (txId: string, maxAttempts = 60): Promise<Po
 
 /**
  * Custom hook for vault operations
- * Handles all interactions with the vault-core contract
+ * Handles all interactions with the vault contract
  */
 export const useVault = (_userSession: UserSession, userAddress: string | null) => {
   const [isLoading, setIsLoading] = useState(false);
