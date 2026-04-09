@@ -356,10 +356,22 @@ export const Dashboard: React.FC = () => {
               © 2026 BitFlow Lend. Built on Stacks.
             </div>
             <div className="flex gap-6">
-              <a href="#" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Docs</a>
-              <a href="#" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">GitHub</a>
-              <a href="#" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Discord</a>
-              <a href="#" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Twitter</a>
+              <a
+                href="https://github.com/Yusufolosun/bitflow-lend/tree/main/docs"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
+              >
+                Docs
+              </a>
+              <a
+                href="https://github.com/Yusufolosun/bitflow-lend"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
+              >
+                GitHub
+              </a>
             </div>
           </div>
         </div>
