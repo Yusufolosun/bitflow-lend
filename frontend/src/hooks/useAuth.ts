@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { AppConfig, UserSession, showConnect } from '@stacks/connect';
 import { STACKS_MAINNET, STACKS_TESTNET } from '@stacks/network';
 import { WalletState } from '../types/vault';
-import { ACTIVE_NETWORK } from '../config/contracts';
+import { ACTIVE_NETWORK, getApiEndpoint } from '../config/contracts';
 
 // Module-level singletons so identity is stable across renders
 const appConfig = new AppConfig(['store_write', 'publish_data']);
@@ -42,9 +42,7 @@ export const useAuth = () => {
    */
   const fetchBalance = useCallback(async (address: string): Promise<bigint | null> => {
     try {
-      const apiUrl = ACTIVE_NETWORK === 'testnet'
-        ? 'https://api.testnet.hiro.so'
-        : 'https://api.mainnet.hiro.so';
+      const apiUrl = getApiEndpoint();
 
       const response = await fetch(`${apiUrl}/v2/accounts/${address}`, {
         headers: {
