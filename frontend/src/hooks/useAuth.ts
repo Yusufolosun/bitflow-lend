@@ -27,6 +27,16 @@ export const useAuth = () => {
   const userSession = sharedUserSession;
   const network = sharedNetwork;
 
+  const getAddressFromUserData = useCallback((): string | null => {
+    try {
+      const userData = userSession.loadUserData();
+      const stxAddress = userData.profile?.stxAddress as Record<string, string> | undefined;
+      return stxAddress?.[ACTIVE_NETWORK] ?? null;
+    } catch {
+      return null;
+    }
+  }, [userSession]);
+
   /**
    * Fetch STX balance for a given address
    */
@@ -76,8 +86,17 @@ export const useAuth = () => {
    */
   const updateWalletState = useCallback(async () => {
     if (isSignedIn()) {
-      const userData = userSession.loadUserData();
-      const address = userData.profile.stxAddress[ACTIVE_NETWORK];
+      const address = getAddressFromUserData();
+      if (!address) {
+        setWalletState({
+          isConnected: false,
+          address: null,
+          balance: BigInt(0),
+          balanceSTX: 0,
+        });
+        setIsLoading(false);
+        return;
+      }
       const balance = await fetchBalance(address);
       
       // Only update if we successfully fetched a balance
@@ -106,7 +125,7 @@ export const useAuth = () => {
       });
     }
     setIsLoading(false);
-  }, [userSession, fetchBalance, isSignedIn]);
+  }, [fetchBalance, getAddressFromUserData, isSignedIn]);
 
   /**
    * Connect wallet using Stacks Connect
@@ -143,10 +162,10 @@ export const useAuth = () => {
    * Refresh balance
    */
   const refreshBalance = useCallback(async () => {
-    const currentState = walletState;
-    if (currentState.address) {
+    const address = walletState.address;
+    if (address) {
       try {
-        const balance = await fetchBalance(currentState.address);
+        const balance = await fetchBalance(address);
         if (balance !== null) {
           const balanceSTX = Number(balance) / 1_000_000;
           setWalletState(prev => ({
@@ -161,14 +180,23 @@ export const useAuth = () => {
         console.warn('Failed to refresh wallet balance');
       }
     }
-  }, [walletState, fetchBalance]);
+  }, [walletState.address, fetchBalance]);
 
   // Check if user is already signed in on mount
   useEffect(() => {
     const initializeAuth = async () => {
       if (isSignedIn()) {
-        const userData = userSession.loadUserData();
-        const address = userData.profile.stxAddress[ACTIVE_NETWORK];
+        const address = getAddressFromUserData();
+        if (!address) {
+          setWalletState({
+            isConnected: false,
+            address: null,
+            balance: BigInt(0),
+            balanceSTX: 0,
+          });
+          setIsLoading(false);
+          return;
+        }
         
         // Fetch balance first
         const balance = await fetchBalance(address);
@@ -186,7 +214,29 @@ export const useAuth = () => {
     };
     
     initializeAuth();
-  }, [userSession, fetchBalance, isSignedIn]);
+  }, [fetchBalance, getAddressFromUserData, isSignedIn]);
+
+  useEffect(() => {
+    const handleSync = () => {
+      updateWalletState();
+    };
+
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        updateWalletState();
+      }
+    };
+
+    window.addEventListener('focus', handleSync);
+    window.addEventListener('storage', handleSync);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      window.removeEventListener('focus', handleSync);
+      window.removeEventListener('storage', handleSync);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [updateWalletState]);
 
   return {
     // State
