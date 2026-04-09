@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Clock, ArrowDownCircle, ArrowUpCircle, TrendingUp, DollarSign, CheckCircle, XCircle, Loader, ExternalLink, RefreshCw } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { formatSTX, formatTimestamp } from '../utils/formatters';
-import { getApiEndpoint, getExplorerUrl, VAULT_CONTRACT, ACTIVE_NETWORK } from '../config/contracts';
+import { getApiEndpoint, getExplorerUrl, CONTRACT_VERSIONS, ACTIVE_NETWORK } from '../config/contracts';
 
 /**
  * Transaction types mapped from contract function names
@@ -113,6 +113,15 @@ const getErrorMessage = (error: unknown, fallback: string): string => {
   return fallback;
 };
 
+const TRACKED_CONTRACT_IDS = CONTRACT_VERSIONS
+  .filter((version) => !version.deprecated)
+  .map((version) => {
+    const address = ACTIVE_NETWORK === 'testnet'
+      ? version.address.testnet
+      : version.address.mainnet;
+    return `${address}.${version.contractName}`;
+  });
+
 /**
  * TransactionHistory Component
  * Fetches and displays real transaction history from the Hiro API,
@@ -126,10 +135,6 @@ export const TransactionHistory: React.FC = () => {
   const [filter, setFilter] = useState<TransactionType | 'all'>('all');
   const [page, setPage] = useState(0);
   const PAGE_SIZE = 10;
-
-  const contractId = ACTIVE_NETWORK === 'testnet'
-    ? `${VAULT_CONTRACT.testnet.address}.${VAULT_CONTRACT.testnet.contractName}`
-    : `${VAULT_CONTRACT.mainnet.address}.${VAULT_CONTRACT.mainnet.contractName}`;
 
   /**
    * Fetch transactions from Hiro API
@@ -162,7 +167,7 @@ export const TransactionHistory: React.FC = () => {
       const vaultTxs: ChainTransaction[] = results
         .filter((tx: HiroContractCallTx) => {
           if (tx.tx_type !== 'contract_call') return false;
-          return tx.contract_call?.contract_id === contractId;
+          return !!tx.contract_call?.contract_id && TRACKED_CONTRACT_IDS.includes(tx.contract_call.contract_id);
         })
         .map((tx: HiroContractCallTx) => {
           const functionName = tx.contract_call?.function_name || 'unknown';
@@ -191,7 +196,7 @@ export const TransactionHistory: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [address, contractId]);
+  }, [address]);
 
   useEffect(() => {
     fetchTransactions();
