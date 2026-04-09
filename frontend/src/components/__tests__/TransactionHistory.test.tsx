@@ -20,6 +20,18 @@ vi.mock('../../config/contracts', () => ({
     testnet: { address: 'ST1TEST', contractName: 'bitflow-vault-core' },
     mainnet: { address: 'SP1TEST', contractName: 'bitflow-vault-core' },
   },
+  CONTRACT_VERSIONS: [
+    {
+      version: '1.0.0',
+      address: { testnet: 'ST1TEST', mainnet: 'SP1TEST' },
+      contractName: 'bitflow-vault-core',
+    },
+    {
+      version: '2.0.0',
+      address: { testnet: 'ST1TEST', mainnet: 'SP1TEST' },
+      contractName: 'bitflow-vault-core-v2',
+    },
+  ],
   ACTIVE_NETWORK: 'testnet',
   getApiEndpoint: () => 'https://api.testnet.hiro.so',
   getExplorerUrl: (txId?: string) => txId ? `https://explorer.hiro.so/txid/${txId}?chain=testnet` : 'https://explorer.hiro.so?chain=testnet',
