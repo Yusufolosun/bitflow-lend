@@ -35,7 +35,6 @@ export const WalletConnect: React.FC = () => {
     setRefreshError(null);
     try {
       await refreshBalance();
-      await new Promise(resolve => setTimeout(resolve, 1500));
     } catch (error: unknown) {
       const message = getErrorMessage(error, 'Could not refresh balance');
       setRefreshError(message);
