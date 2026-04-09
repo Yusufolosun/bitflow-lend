@@ -323,8 +323,8 @@ The app uses Tailwind CSS with custom design tokens:
 ```
 
 **Color Palette:**
-- Primary: Blue scale (`blue-50` to `blue-900`)
-- Accent: Custom accent colors
+- Primary: Slate scale (`primary-50` to `primary-950`)
+- Accent: Orange scale (`accent-50` to `accent-950`)
 - Status: Emerald (success), Amber (warning), Red (error)
 
 ## Troubleshooting
@@ -461,8 +461,6 @@ npm run build
 type(scope): brief description
 
 Detailed explanation if needed.
-
-Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
 ```
 
 **Types:** feat, fix, docs, style, refactor, test, chore
@@ -478,8 +476,7 @@ Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
 ## Support
 
 - **Issues:** https://github.com/Yusufolosun/bitflow-lend/issues
-- **Discord:** [BitFlow Community]
-- **Twitter:** [@BitFlowFinance]
+- **Security Reports:** See [../SECURITY.md](../SECURITY.md)
 
 ## License
 
