@@ -147,7 +147,7 @@ export const Dashboard: React.FC = () => {
                 </p>
               )}
             </div>
-            <button
+            <button type="button"
               onClick={refreshStats}
               disabled={statsLoading}
               className="btn btn-ghost text-xs px-3 py-1.5 rounded-lg"
@@ -205,7 +205,7 @@ export const Dashboard: React.FC = () => {
           <section className="mb-8">
             <div className="flex justify-between items-center mb-5">
               <h2 className="section-title">Your Portfolio</h2>
-              <button
+              <button type="button"
                 onClick={refreshUserData}
                 disabled={isRefreshing}
                 className="btn btn-primary text-sm px-4 py-2"

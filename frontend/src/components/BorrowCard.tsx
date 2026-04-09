@@ -206,7 +206,7 @@ export const BorrowCard: React.FC = () => {
             className="input"
             disabled={txStatus === 'pending'}
           />
-          <button
+          <button type="button"
             onClick={handleMaxClick}
             className="absolute right-3 top-1/2 -translate-y-1/2 px-3 py-1 bg-emerald-50 text-emerald-600 rounded-lg text-xs font-bold hover:bg-emerald-100 transition-colors border border-emerald-200"
             disabled={txStatus === 'pending'}
@@ -257,7 +257,7 @@ export const BorrowCard: React.FC = () => {
         </label>
         <div className="grid grid-cols-4 gap-2" role="group" aria-labelledby="loan-term-label">
           {LOAN_TERMS.map((term) => (
-            <button
+            <button type="button"
               key={term.days}
               onClick={() => setLoanTerm(term.days)}
               aria-pressed={loanTerm === term.days}
@@ -333,7 +333,7 @@ export const BorrowCard: React.FC = () => {
       )}
 
       {/* Borrow Button */}
-      <button
+      <button type="button"
         onClick={handleBorrow}
         disabled={!address || txStatus === 'pending' || !borrowAmount || userDeposit === 0}
         className="w-full btn btn-success py-3 disabled:opacity-50 disabled:cursor-not-allowed"

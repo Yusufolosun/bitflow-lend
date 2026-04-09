@@ -272,7 +272,7 @@ export const TransactionHistory: React.FC = () => {
           </div>
         </div>
 
-        <button
+        <button type="button"
           onClick={fetchTransactions}
           disabled={isLoading}
           className="p-2 hover:bg-gray-100 rounded-xl transition-colors disabled:opacity-50"
@@ -285,7 +285,7 @@ export const TransactionHistory: React.FC = () => {
       {/* Filter Buttons */}
       <div className="flex gap-2 mb-6 flex-wrap" role="group" aria-label="Filter transactions by type">
         {(['all', 'deposit', 'withdraw', 'borrow', 'repay'] as const).map((type) => (
-          <button
+          <button type="button"
             key={type}
             onClick={() => { setFilter(type); setPage(0); }}
             aria-pressed={filter === type}
@@ -313,7 +313,7 @@ export const TransactionHistory: React.FC = () => {
         <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg mb-4">
           <XCircle size={16} className="text-red-500 flex-shrink-0" />
           <span className="text-sm text-red-700 flex-1">{error}</span>
-          <button
+          <button type="button"
             onClick={fetchTransactions}
             className="text-xs font-medium text-red-600 hover:text-red-800"
           >
@@ -413,7 +413,7 @@ export const TransactionHistory: React.FC = () => {
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100">
-          <button
+          <button type="button"
             onClick={() => setPage(p => Math.max(0, p - 1))}
             disabled={page === 0}
             className="px-3 py-1.5 text-xs font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
@@ -423,7 +423,7 @@ export const TransactionHistory: React.FC = () => {
           <span className="text-xs text-gray-500">
             Page {page + 1} of {totalPages}
           </span>
-          <button
+          <button type="button"
             onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
             disabled={page >= totalPages - 1}
             className="px-3 py-1.5 text-xs font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"

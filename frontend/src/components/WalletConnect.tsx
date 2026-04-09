@@ -66,7 +66,7 @@ export const WalletConnect: React.FC = () => {
 
   if (!isConnected) {
     return (
-      <button
+      <button type="button"
         onClick={connectWallet}
         className="btn btn-primary text-sm"
       >
@@ -91,7 +91,7 @@ export const WalletConnect: React.FC = () => {
             </div>
           )}
         </div>
-        <button
+        <button type="button"
           onClick={handleRefresh}
           className="p-1.5 hover:bg-gray-200/80 rounded-lg transition-colors"
           title="Refresh Balance"
@@ -114,7 +114,7 @@ export const WalletConnect: React.FC = () => {
       </div>
 
       {/* Disconnect Button */}
-      <button
+      <button type="button"
         onClick={disconnectWallet}
         className="flex items-center gap-1.5 px-3 py-2.5 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-colors border border-red-100"
         title="Disconnect Wallet"

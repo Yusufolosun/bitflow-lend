@@ -32,7 +32,7 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
         <AlertTriangle size={16} className="text-red-500 flex-shrink-0" />
         <span className="text-sm text-red-700 flex-1">{message}</span>
         {onRetry && (
-          <button
+          <button type="button"
             onClick={onRetry}
             className="flex items-center gap-1 text-xs font-medium text-red-600 hover:text-red-800 transition-colors"
           >
@@ -54,7 +54,7 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
       <p className="text-sm text-gray-600 mb-6 max-w-md mx-auto">{message}</p>
 
       {onRetry && (
-        <button
+        <button type="button"
           onClick={onRetry}
           className="btn btn-danger text-sm"
         >

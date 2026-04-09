@@ -272,7 +272,7 @@ export const RepayCard: React.FC = () => {
       </div>
 
       {/* Repay Button */}
-      <button
+      <button type="button"
         onClick={handleRepay}
         disabled={
           !address ||

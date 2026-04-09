@@ -134,7 +134,7 @@ export const DepositCard: React.FC = () => {
             disabled={txStatus === 'pending'}
             aria-describedby="deposit-validation"
           />
-          <button
+          <button type="button"
             onClick={handleMaxClick}
             className="absolute right-3 top-1/2 -translate-y-1/2 px-3 py-1 bg-accent-50 text-accent-600 rounded-lg text-xs font-bold hover:bg-accent-100 transition-colors border border-accent-200"
             disabled={txStatus === 'pending'}
@@ -181,7 +181,7 @@ export const DepositCard: React.FC = () => {
       </div>
 
       {/* Deposit Button */}
-      <button
+      <button type="button"
         onClick={handleDeposit}
         disabled={!address || txStatus === 'pending' || !depositAmount || parseFloat(depositAmount) < 0.01}
         className="w-full btn btn-primary py-3 disabled:opacity-50 disabled:cursor-not-allowed"

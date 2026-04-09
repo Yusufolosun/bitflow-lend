@@ -74,7 +74,7 @@ const ToastItem: React.FC<ToastItemProps> = ({ toast, onDismiss }) => {
           )}
         </div>
 
-        <button
+        <button type="button"
           onClick={() => onDismiss(toast.id)}
           className="flex-shrink-0 p-1 hover:bg-white/20 rounded transition-colors"
           aria-label="Dismiss notification"

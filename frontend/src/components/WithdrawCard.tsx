@@ -148,7 +148,7 @@ export const WithdrawCard: React.FC = () => {
             disabled={txStatus === 'pending'}
             aria-describedby="withdraw-validation"
           />
-          <button
+          <button type="button"
             onClick={handleMaxClick}
             className="absolute right-3 top-1/2 -translate-y-1/2 px-3 py-1 bg-purple-50 text-purple-600 rounded-lg text-xs font-bold hover:bg-purple-100 transition-colors border border-purple-200"
             disabled={txStatus === 'pending'}
@@ -174,7 +174,7 @@ export const WithdrawCard: React.FC = () => {
       </div>
 
       {/* Withdraw Button */}
-      <button
+      <button type="button"
         onClick={handleWithdraw}
         disabled={!address || txStatus === 'pending' || !withdrawAmount || parseFloat(withdrawAmount) <= 0 || parseFloat(withdrawAmount) > availableBalance}
         className="w-full btn btn-primary py-3 disabled:opacity-50 disabled:cursor-not-allowed"

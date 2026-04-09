@@ -93,7 +93,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close button */}
-        <button
+        <button type="button"
           onClick={onClose}
           disabled={isLoading}
           className="absolute top-4 right-4 p-1 text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50"
@@ -124,14 +124,14 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
 
           {/* Actions */}
           <div className="flex gap-3">
-            <button
+            <button type="button"
               onClick={onClose}
               disabled={isLoading}
               className="flex-1 px-4 py-2.5 bg-gray-100 text-gray-700 font-semibold rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {cancelText}
             </button>
-            <button
+            <button type="button"
               onClick={onConfirm}
               disabled={isLoading}
               className={`flex-1 px-4 py-2.5 text-white font-semibold rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 ${styles.confirmBtn}`}
