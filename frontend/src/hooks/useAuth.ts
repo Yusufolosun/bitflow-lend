@@ -10,6 +10,7 @@ const sharedUserSession = new UserSession({ appConfig });
 const sharedNetwork = ACTIVE_NETWORK === 'testnet'
   ? STACKS_TESTNET
   : STACKS_MAINNET;
+const AUTH_SYNC_EVENT = 'bitflow-auth-sync';
 
 /**
  * Custom hook for wallet authentication
@@ -138,6 +139,7 @@ export const useAuth = () => {
       onFinish: async () => {
         // Update state and fetch balance after connect
         await updateWalletState();
+        window.dispatchEvent(new Event(AUTH_SYNC_EVENT));
       },
       userSession,
     });
@@ -154,6 +156,7 @@ export const useAuth = () => {
       balance: BigInt(0),
       balanceSTX: 0,
     });
+    window.dispatchEvent(new Event(AUTH_SYNC_EVENT));
   }, [userSession]);
 
   /**
@@ -227,11 +230,13 @@ export const useAuth = () => {
 
     window.addEventListener('focus', handleSync);
     window.addEventListener('storage', handleSync);
+    window.addEventListener(AUTH_SYNC_EVENT, handleSync);
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
       window.removeEventListener('focus', handleSync);
       window.removeEventListener('storage', handleSync);
+      window.removeEventListener(AUTH_SYNC_EVENT, handleSync);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, [updateWalletState]);
