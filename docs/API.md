@@ -65,7 +65,7 @@ u0
 // Using @stacks/transactions
 const result = await callReadOnlyFunction({
   contractAddress: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM',
-  contractName: 'vault-core',
+  contractName: 'bitflow-vault-core',
   functionName: 'get-user-deposit',
   functionArgs: [principalCV('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM')],
   network: new StacksMainnet(),
@@ -150,7 +150,7 @@ none
 ```typescript
 const result = await callReadOnlyFunction({
   contractAddress: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM',
-  contractName: 'vault-core',
+  contractName: 'bitflow-vault-core',
   functionName: 'get-user-loan',
   functionArgs: [principalCV('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM')],
   network: new StacksMainnet(),
@@ -262,7 +262,7 @@ Where:
 ```typescript
 const result = await callReadOnlyFunction({
   contractAddress: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM',
-  contractName: 'vault-core',
+  contractName: 'bitflow-vault-core',
   functionName: 'get-repayment-amount',
   functionArgs: [principalCV('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM')],
   network: new StacksMainnet(),
@@ -384,7 +384,7 @@ Example:
 ```typescript
 const result = await callReadOnlyFunction({
   contractAddress: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM',
-  contractName: 'vault-core',
+  contractName: 'bitflow-vault-core',
   functionName: 'calculate-health-factor',
   functionArgs: [
     principalCV('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM'),
@@ -513,7 +513,7 @@ Example:
 async function checkLiquidatable(userAddress: string, stxPrice: number) {
   const result = await callReadOnlyFunction({
     contractAddress: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM',
-    contractName: 'vault-core',
+    contractName: 'bitflow-vault-core',
     functionName: 'is-liquidatable',
     functionArgs: [
       principalCV(userAddress),
@@ -620,7 +620,7 @@ Example:
 ```typescript
 const result = await callReadOnlyFunction({
   contractAddress: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM',
-  contractName: 'vault-core',
+  contractName: 'bitflow-vault-core',
   functionName: 'calculate-required-collateral',
   functionArgs: [uintCV(1000)],
   network: new StacksMainnet(),
@@ -634,7 +634,7 @@ console.log(`To borrow 1000 STX, you need ${required} STX collateral`);
 async function calculateMaxBorrow(userAddress: string) {
   const depositResult = await callReadOnlyFunction({
     contractAddress: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM',
-    contractName: 'vault-core',
+    contractName: 'bitflow-vault-core',
     functionName: 'get-user-deposit',
     functionArgs: [principalCV(userAddress)],
     network: new StacksMainnet(),
@@ -693,7 +693,7 @@ u0
 ```typescript
 const result = await callReadOnlyFunction({
   contractAddress: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM',
-  contractName: 'vault-core',
+  contractName: 'bitflow-vault-core',
   functionName: 'get-total-deposits',
   functionArgs: [],
   network: new StacksMainnet(),
@@ -744,7 +744,7 @@ u0
 ```typescript
 const result = await callReadOnlyFunction({
   contractAddress: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM',
-  contractName: 'vault-core',
+  contractName: 'bitflow-vault-core',
   functionName: 'get-total-repaid',
   functionArgs: [],
   network: new StacksMainnet(),
@@ -795,7 +795,7 @@ u0
 ```typescript
 const result = await callReadOnlyFunction({
   contractAddress: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM',
-  contractName: 'vault-core',
+  contractName: 'bitflow-vault-core',
   functionName: 'get-total-liquidations',
   functionArgs: [],
   network: new StacksMainnet(),
