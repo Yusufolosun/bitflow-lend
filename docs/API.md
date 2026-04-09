@@ -1,6 +1,6 @@
 # Vault Core Read-Only API Reference
 
-This document provides detailed API documentation for all read-only functions in the `vault-core` contract. Read-only functions can be called without consuming gas and do not modify contract state.
+This document provides detailed API documentation for all read-only functions in the `bitflow-vault-core` contract. Read-only functions can be called without consuming gas and do not modify contract state.
 
 ## Table of Contents
 
