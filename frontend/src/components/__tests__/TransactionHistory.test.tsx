@@ -3,7 +3,7 @@
  * Covers: empty states, filter buttons, header, loading state, error state
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { TransactionHistory } from '../TransactionHistory';
 
@@ -126,5 +126,56 @@ describe('TransactionHistory Component', () => {
     render(<TransactionHistory />);
     await screen.findByText('API error: 500');
     expect(screen.getByText('Retry')).toBeInTheDocument();
+  });
+
+  it('filters visible transactions using search query', async () => {
+    const user = userEvent.setup();
+    mockAddress.current = 'ST1TESTUSER';
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({
+        results: [
+          {
+            tx_id: '0xabc12345ffff',
+            tx_type: 'contract_call',
+            tx_status: 'success',
+            block_height: 100,
+            burn_block_time: 1710000000,
+            contract_call: {
+              contract_id: 'ST1TEST.bitflow-vault-core',
+              function_name: 'deposit',
+              function_args: [{ hex: '0x01', repr: 'u1000000', name: 'amount', type: 'uint' }],
+            },
+          },
+          {
+            tx_id: '0xdef67890ffff',
+            tx_type: 'contract_call',
+            tx_status: 'success',
+            block_height: 101,
+            burn_block_time: 1710000100,
+            contract_call: {
+              contract_id: 'ST1TEST.bitflow-vault-core',
+              function_name: 'borrow',
+              function_args: [{ hex: '0x02', repr: 'u2000000', name: 'amount', type: 'uint' }],
+            },
+          },
+        ],
+      }),
+    });
+
+    render(<TransactionHistory />);
+    await screen.findByText('Block #100');
+    await screen.findByText('Block #101');
+
+    await user.type(screen.getByLabelText('Search transactions'), 'abc12345');
+
+    expect(screen.getByText('0xabc12345...45ffff')).toBeInTheDocument();
+    expect(screen.queryByText('0xdef67890...90ffff')).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Clear' }));
+
+    await waitFor(() => {
+      expect(screen.getByText('0xdef67890...90ffff')).toBeInTheDocument();
+    });
   });
 });

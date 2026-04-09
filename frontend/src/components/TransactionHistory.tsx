@@ -133,6 +133,7 @@ export const TransactionHistory: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<TransactionType | 'all'>('all');
+  const [searchQuery, setSearchQuery] = useState('');
   const [page, setPage] = useState(0);
   const PAGE_SIZE = 10;
 
@@ -202,10 +203,23 @@ export const TransactionHistory: React.FC = () => {
     fetchTransactions();
   }, [fetchTransactions]);
 
+  useEffect(() => {
+    setPage(0);
+  }, [filter, searchQuery]);
+
   // Filter
-  const filteredTransactions = filter === 'all'
+  const filteredByType = filter === 'all'
     ? transactions
     : transactions.filter(tx => tx.type === filter);
+
+  const normalizedSearch = searchQuery.trim().toLowerCase();
+  const filteredTransactions = normalizedSearch
+    ? filteredByType.filter((tx) =>
+        tx.txId.toLowerCase().includes(normalizedSearch) ||
+        tx.functionName.toLowerCase().includes(normalizedSearch) ||
+        tx.status.toLowerCase().includes(normalizedSearch)
+      )
+    : filteredByType;
 
   // Pagination
   const totalPages = Math.ceil(filteredTransactions.length / PAGE_SIZE);
@@ -287,7 +301,7 @@ export const TransactionHistory: React.FC = () => {
         {(['all', 'deposit', 'withdraw', 'borrow', 'repay'] as const).map((type) => (
           <button type="button"
             key={type}
-            onClick={() => { setFilter(type); setPage(0); }}
+            onClick={() => { setFilter(type); }}
             aria-pressed={filter === type}
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors capitalize ${
               filter === type
@@ -298,6 +312,31 @@ export const TransactionHistory: React.FC = () => {
             {type}
           </button>
         ))}
+      </div>
+
+      {/* Search */}
+      <div className="mb-6">
+        <label htmlFor="tx-search" className="sr-only">Search transactions</label>
+        <div className="relative">
+          <input
+            id="tx-search"
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search by tx id, function, or status"
+            className="input pr-16"
+            aria-label="Search transactions"
+          />
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={() => setSearchQuery('')}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-gray-500 hover:text-gray-700"
+            >
+              Clear
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Loading State */}
@@ -337,7 +376,9 @@ export const TransactionHistory: React.FC = () => {
           <Clock className="mx-auto text-gray-400 mb-4" size={48} />
           <p className="text-gray-600 mb-1 font-medium">No Transactions</p>
           <p className="text-sm text-gray-500">
-            {filter === 'all'
+            {normalizedSearch
+              ? `No transactions match "${searchQuery}"`
+              : filter === 'all'
               ? 'No vault interactions found for your address'
               : `No ${filter} transactions found`}
           </p>
