@@ -51,7 +51,7 @@ npm run dev
 # Testnet
 clarinet deployments apply -p deployments/default.testnet-plan.yaml
 
-# Mainnet (with pre-flight checks)
+# Mainnet
 clarinet deployments apply -p deployments/default.mainnet-plan.yaml
 ```
 
