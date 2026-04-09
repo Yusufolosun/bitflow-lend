@@ -16,6 +16,9 @@ export const NetworkIndicator: React.FC = () => {
           ? 'bg-green-100 text-green-800 border border-green-300'
           : 'bg-yellow-100 text-yellow-800 border border-yellow-300'
       }`}
+      role="status"
+      aria-live="polite"
+      aria-label={`Network: Stacks ${isMainnet ? 'Mainnet' : 'Testnet'}`}
       title={`Connected to Stacks ${isMainnet ? 'Mainnet' : 'Testnet'}`}
     >
       <span

@@ -33,4 +33,10 @@ describe('NetworkIndicator Component (testnet)', () => {
     render(<NetworkIndicator />);
     expect(screen.getByTitle('Connected to Stacks Testnet')).toBeInTheDocument();
   });
+
+  it('exposes a status role for accessibility', async () => {
+    const { NetworkIndicator } = await import('../NetworkIndicator');
+    render(<NetworkIndicator />);
+    expect(screen.getByRole('status')).toBeInTheDocument();
+  });
 });
