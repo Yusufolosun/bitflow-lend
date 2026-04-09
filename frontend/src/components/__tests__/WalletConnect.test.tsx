@@ -11,8 +11,11 @@ import { WalletConnect } from '../WalletConnect';
 const mockConnectWallet = vi.fn();
 const mockDisconnectWallet = vi.fn();
 const mockRefreshBalance = vi.fn();
+const mockCopyToClipboard = vi.fn();
 
 const mockUseAuth = vi.fn();
+const mockToastSuccess = vi.fn();
+const mockToastError = vi.fn();
 
 vi.mock('../../hooks/useAuth', () => ({
   useAuth: () => mockUseAuth(),
@@ -21,8 +24,8 @@ vi.mock('../../hooks/useAuth', () => ({
 // Mock ToastProvider (WalletConnect uses useToastContext)
 vi.mock('../ToastProvider', () => ({
   useToastContext: () => ({
-    success: vi.fn(),
-    error: vi.fn(),
+    success: mockToastSuccess,
+    error: mockToastError,
     info: vi.fn(),
     warning: vi.fn(),
   }),
@@ -33,12 +36,20 @@ vi.mock('lucide-react', () => ({
   Wallet: () => <span data-testid="wallet-icon">Wallet</span>,
   LogOut: () => <span data-testid="logout-icon">LogOut</span>,
   RefreshCw: () => <span data-testid="refresh-icon">RefreshCw</span>,
+  Copy: () => <span data-testid="copy-icon">Copy</span>,
+  Check: () => <span data-testid="check-icon">Check</span>,
 }));
 
 describe('WalletConnect Component', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockRefreshBalance.mockResolvedValue(undefined);
+    mockCopyToClipboard.mockResolvedValue(undefined);
+    Object.defineProperty(globalThis.navigator, 'clipboard', {
+      value: { writeText: mockCopyToClipboard },
+      configurable: true,
+      writable: true,
+    });
   });
 
   describe('Loading State', () => {
@@ -153,6 +164,15 @@ describe('WalletConnect Component', () => {
     it('shows disconnect button', () => {
       render(<WalletConnect />);
       expect(screen.getByText('Disconnect')).toBeInTheDocument();
+    });
+
+    it('provides user feedback when copy address is clicked', async () => {
+      const user = userEvent.setup();
+      render(<WalletConnect />);
+
+      await user.click(screen.getByLabelText('Copy wallet address'));
+
+      expect(mockToastSuccess.mock.calls.length + mockToastError.mock.calls.length).toBeGreaterThan(0);
     });
 
     it('calls disconnectWallet when disconnect is clicked', async () => {

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Wallet, LogOut, RefreshCw } from 'lucide-react';
+import { Wallet, LogOut, RefreshCw, Copy, Check } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useToastContext } from './ToastProvider';
 
@@ -20,6 +20,7 @@ export const WalletConnect: React.FC = () => {
 
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [refreshError, setRefreshError] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
   const toast = useToastContext();
 
   const getErrorMessage = (error: unknown, fallback: string): string => {
@@ -53,6 +54,19 @@ export const WalletConnect: React.FC = () => {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     });
+  };
+
+  const handleCopyAddress = async () => {
+    if (!address) return;
+
+    try {
+      await navigator.clipboard.writeText(address);
+      setCopied(true);
+      toast.success('Address copied');
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      toast.error('Could not copy address');
+    }
   };
 
   if (isLoading) {
@@ -108,8 +122,19 @@ export const WalletConnect: React.FC = () => {
       {/* Address Display */}
       <div className="px-3 py-1.5 bg-accent-50/80 rounded-xl border border-accent-100">
         <div className="text-[10px] text-accent-500 font-medium uppercase tracking-wider">Connected</div>
-        <div className="text-sm font-mono font-bold text-accent-900">
-          {address && formatAddress(address)}
+        <div className="flex items-center gap-1.5">
+          <div className="text-sm font-mono font-bold text-accent-900">
+            {address && formatAddress(address)}
+          </div>
+          <button
+            type="button"
+            onClick={handleCopyAddress}
+            className="p-1 rounded hover:bg-accent-100 transition-colors"
+            title={copied ? 'Address copied' : 'Copy wallet address'}
+            aria-label="Copy wallet address"
+          >
+            {copied ? <Check size={14} className="text-emerald-600" /> : <Copy size={14} className="text-accent-700" />}
+          </button>
         </div>
       </div>
 
