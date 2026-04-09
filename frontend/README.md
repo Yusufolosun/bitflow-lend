@@ -29,7 +29,7 @@ npm install
 cp .env.example .env
 
 # Configure your contract address in .env
-# VITE_CONTRACT_ADDRESS=ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.bitflow-vault-core
+# VITE_CONTRACT_ADDRESS=ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0
 
 # Start development server
 npm run dev
@@ -45,7 +45,7 @@ All environment variables must be prefixed with `VITE_` to be accessible in the 
 
 | Variable | Description | Example |
 |----------|-------------|---------|
-| `VITE_CONTRACT_ADDRESS` | Deployed vault contract address | `ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.bitflow-vault-core` |
+| `VITE_CONTRACT_ADDRESS` | Deployed vault contract address | `ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0` |
 
 ### Optional
 
