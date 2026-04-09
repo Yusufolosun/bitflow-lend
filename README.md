@@ -52,7 +52,7 @@ npm run dev
 clarinet deployments apply -p deployments/default.testnet-plan.yaml
 
 # Mainnet (with pre-flight checks)
-./scripts/deploy-mainnet-safe.sh
+clarinet deployments apply -p deployments/default.mainnet-plan.yaml
 ```
 
 ## Contract Functions
