@@ -35,7 +35,7 @@ export const Dashboard: React.FC = () => {
   const totalValueLocked = protocolStats?.totalDeposits ?? 0;
   const totalBorrowed = protocolStats?.totalBorrowed ?? 0;
   const totalRepaid = protocolStats?.totalRepaid ?? 0;
-  const activeUsers = protocolStats?.activeLoans ?? 0;
+  const totalLiquidations = protocolStats?.totalLiquidations ?? 0;
 
   // User portfolio
   const [userDeposit, setUserDeposit] = useState(0);
@@ -192,8 +192,8 @@ export const Dashboard: React.FC = () => {
             />
             <StatsCard
               icon={<Users size={22} />}
-              label="Active Loans"
-              value={activeUsers.toString()}
+              label="Total Liquidations"
+              value={totalLiquidations.toString()}
               color="orange"
             />
           </div>
