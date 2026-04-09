@@ -159,7 +159,7 @@ npm test
 Review contract constants:
 
 ```clarity
-;; contracts/vault-core.clar
+;; contracts/bitflow-vault-core.clar
 
 ;; Ensure these values are correct
 (define-constant MIN-COLLATERAL-RATIO u150)
@@ -170,10 +170,10 @@ Review contract constants:
 
 ```bash
 # Deploy to testnet using Clarinet
-clarinet deployments apply --manifest-path deployments/testnet-deployment-plan.yaml
+clarinet deployments apply --manifest-path deployments/default.testnet-plan.yaml
 ```
 
-**deployments/testnet-deployment-plan.yaml:**
+**deployments/default.testnet-plan.yaml:**
 
 ```yaml
 ---
@@ -190,7 +190,7 @@ plan:
             contract-name: vault-core
             expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             cost: 50000
-            path: contracts/vault-core.clar
+            path: contracts/bitflow-vault-core.clar
             clarity-version: 2
             anchor-block-only: true
 ```
@@ -204,7 +204,7 @@ npm install -g @stacks/cli
 # Deploy contract
 stx deploy-contract \
   vault-core \
-  contracts/vault-core.clar \
+  contracts/bitflow-vault-core.clar \
   -t \
   --network testnet \
   -k your_private_key
@@ -215,7 +215,7 @@ stx deploy-contract \
 1. Go to [Hiro Platform](https://platform.hiro.so/)
 2. Connect Hiro Wallet (Testnet mode)
 3. Create New Project → Smart Contract
-4. Copy contents of `contracts/vault-core.clar`
+4. Copy contents of `contracts/bitflow-vault-core.clar`
 5. Click "Deploy Contract"
 6. Contract name: `vault-core`
 7. Clarity version: 2
@@ -292,7 +292,7 @@ Complete ALL items before mainnet deployment:
 npm test
 
 # Deploy to testnet one final time
-clarinet deployments apply --manifest-path deployments/testnet-deployment-plan.yaml
+clarinet deployments apply --manifest-path deployments/default.testnet-plan.yaml
 
 # Perform manual integration testing
 # - Deposit test
@@ -307,7 +307,7 @@ clarinet deployments apply --manifest-path deployments/testnet-deployment-plan.y
 
 Update deployment manifest:
 
-**deployments/mainnet-deployment-plan.yaml:**
+**deployments/default.mainnet-plan.yaml:**
 
 ```yaml
 ---
@@ -324,7 +324,7 @@ plan:
             contract-name: vault-core
             expected-sender: SP...  # Your mainnet address
             cost: 500000  # 0.5 STX
-            path: contracts/vault-core.clar
+            path: contracts/bitflow-vault-core.clar
             clarity-version: 2
             anchor-block-only: true
 ```
@@ -336,7 +336,7 @@ plan:
 echo $NETWORK  # Should output: mainnet
 
 # Deploy
-clarinet deployments apply --manifest-path deployments/mainnet-deployment-plan.yaml
+clarinet deployments apply --manifest-path deployments/default.mainnet-plan.yaml
 
 # Confirm transaction details carefully!
 # Double-check:
@@ -592,7 +592,7 @@ echo $STACKS_API_URL
 clarinet check --verbose
 
 # Common fixes:
-# - Fix syntax errors in contracts/vault-core.clar
+# - Fix syntax errors in contracts/bitflow-vault-core.clar
 # - Ensure Clarity version 2
 # - Check for unclosed parentheses
 ```
