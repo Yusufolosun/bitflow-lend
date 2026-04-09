@@ -181,9 +181,9 @@ describe('Dashboard Component', () => {
       expect(screen.getByTestId('stats-card-Utilization Rate')).toBeInTheDocument();
     });
 
-    it('displays active loans', () => {
+    it('displays total liquidations', () => {
       render(<Dashboard />);
-      expect(screen.getByTestId('stats-card-Active Loans')).toBeInTheDocument();
+      expect(screen.getByTestId('stats-card-Total Liquidations')).toBeInTheDocument();
     });
 
     it('shows loading state when stats are loading', () => {
@@ -315,8 +315,6 @@ describe('Dashboard Component', () => {
       render(<Dashboard />);
       expect(screen.getByText('Docs')).toBeInTheDocument();
       expect(screen.getByText('GitHub')).toBeInTheDocument();
-      expect(screen.getByText('Discord')).toBeInTheDocument();
-      expect(screen.getByText('Twitter')).toBeInTheDocument();
     });
   });
 

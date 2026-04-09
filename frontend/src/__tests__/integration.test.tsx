@@ -72,6 +72,24 @@ vi.mock('../config/contracts', () => ({
   getExplorerUrl: (txId?: string) => `https://explorer.hiro.so/txid/${txId}`,
   getNetwork: vi.fn(),
   getContractAddress: () => 'ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0',
+  CONTRACT_VERSIONS: [
+    {
+      version: '1.0.0',
+      address: {
+        testnet: 'ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0',
+        mainnet: 'SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193',
+      },
+      contractName: 'bitflow-vault-core',
+    },
+    {
+      version: '2.0.0',
+      address: {
+        testnet: 'ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0',
+        mainnet: 'SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193',
+      },
+      contractName: 'bitflow-vault-core-v2',
+    },
+  ],
     VAULT_CONTRACT: {
       name: 'bitflow-vault-core',
       testnet: {
@@ -116,6 +134,8 @@ vi.mock('lucide-react', () => ({
   Clock: () => <span>Clock</span>,
   Shield: () => <span>Shield</span>,
   Heart: () => <span>Heart</span>,
+  Copy: () => <span>Copy</span>,
+  Check: () => <span>Check</span>,
   Wifi: () => <span>Wifi</span>,
   WifiOff: () => <span>WifiOff</span>,
   BarChart3: () => <span>BarChart</span>,
