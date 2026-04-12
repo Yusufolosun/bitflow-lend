@@ -59,16 +59,15 @@ jobs:
             exit 1
           fi
       
-      - name: Make deployment script executable
+      - name: Make testnet deployment script executable
+        if: github.event.inputs.environment == 'testnet'
         run: chmod +x scripts/deploy-${{ github.event.inputs.environment }}.sh
       
       - name: Deploy to ${{ github.event.inputs.environment }}
         run: |
           if [ "${{ github.event.inputs.environment }}" = "mainnet" ]; then
             echo "Deploying to MAINNET..."
-            # For mainnet, we might need additional confirmation or manual steps
-            echo "⚠️ Manual deployment recommended for mainnet"
-            echo "Run: ./scripts/deploy-mainnet.sh"
+            clarinet deployments apply -p deployments/default.mainnet-plan.yaml
           else
             echo "Deploying to testnet..."
             ./scripts/deploy-testnet.sh
