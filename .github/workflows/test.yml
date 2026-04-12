@@ -136,3 +136,7 @@ jobs:
 
           if [ "${{ needs.frontend-tests.result }}" != "success" ]; then
             echo "❌ Frontend tests failed"
+            exit 1
+          fi
+
+          echo "✅ All tests passed"
