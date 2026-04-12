@@ -102,7 +102,12 @@ jobs:
         run: npm ci
 
       - name: Clarinet check
-        run: npx @stacks/clarinet-sdk clarinet check || echo "Clarinet check not available in SDK mode, skipping"
+        run: |
+          if command -v clarinet >/dev/null 2>&1; then
+            clarinet check
+          else
+            npx @stacks/clarinet-sdk clarinet check
+          fi
 
       - name: Install frontend dependencies
         run: cd frontend && npm ci

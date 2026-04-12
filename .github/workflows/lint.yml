@@ -25,7 +25,12 @@ jobs:
         run: npm ci
       
       - name: Check Clarity contracts
-        run: npx @stacks/clarinet-sdk clarinet check || echo "⚠️ Clarinet check not available, skipping"
+        run: |
+          if command -v clarinet >/dev/null 2>&1; then
+            clarinet check
+          else
+            npx @stacks/clarinet-sdk clarinet check
+          fi
       
       - name: Run contract linter
         run: |

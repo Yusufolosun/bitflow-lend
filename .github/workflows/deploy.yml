@@ -44,7 +44,11 @@ jobs:
       - name: Run pre-deployment checks
         run: |
           echo "📋 Running contract checks..."
-          echo "⚠️ Clarinet check not available in SDK mode"
+          if command -v clarinet >/dev/null 2>&1; then
+            clarinet check
+          else
+            npx @stacks/clarinet-sdk clarinet check
+          fi
 
           echo "🧪 Running tests..."
           npm test
