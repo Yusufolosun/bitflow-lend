@@ -32,7 +32,7 @@ BitFlow Lend enables users to lend and borrow STX with predictable, fixed intere
 
 ```bash
 git clone https://github.com/Yusufolosun/bitflow-lend
-cd bitflow-lend/bitflow-core
+cd bitflow-lend
 npm install
 npm test
 ```
