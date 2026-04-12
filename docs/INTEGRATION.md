@@ -1,6 +1,6 @@
 # BitFlow Vault Integration Guide
 
-This guide provides step-by-step instructions for integrating with the BitFlow vault-core contract. Whether you're building a DApp, bot, or backend service, this document covers all the essentials.
+This guide provides step-by-step instructions for integrating with the BitFlow `bitflow-vault-core` contract. Whether you're building a DApp, bot, or backend service, this document covers all the essentials.
 
 ## Table of Contents
 
@@ -42,13 +42,13 @@ npm install --save-dev @stacks/clarinet-sdk vitest
 ```json
 {
   "dependencies": {
-    "@stacks/transactions": "^6.13.0",
-    "@stacks/network": "^6.13.0",
+    "@stacks/transactions": "^7.3.1",
+    "@stacks/network": "^7.3.1",
     "@stacks/connect": "^7.8.0"
   },
   "devDependencies": {
-    "@stacks/clarinet-sdk": "^2.0.0",
-    "vitest": "^4.0.0"
+    "@stacks/clarinet-sdk": "^3.9.0",
+    "vitest": "^4.0.18"
   }
 }
 ```
@@ -81,8 +81,8 @@ export const network = process.env.NETWORK === 'mainnet'
 
 ```typescript
 export const VAULT_CONTRACT = {
-  address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM', // Update with actual
-  name: 'vault-core'
+  address: 'ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0', // Testnet deploy
+  name: 'bitflow-vault-core'
 };
 
 export const contractAddress = VAULT_CONTRACT.address;
@@ -94,8 +94,7 @@ export const contractName = VAULT_CONTRACT.name;
 ```bash
 # .env
 VITE_NETWORK=testnet
-VITE_CONTRACT_ADDRESS=ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-VITE_CONTRACT_NAME=vault-core
+VITE_CONTRACT_ADDRESS=ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0
 ```
 
 ---
@@ -1739,7 +1738,7 @@ if (userSession.isUserSignedIn()) {
 
 For integration support:
 - **Discord:** [Join our Discord](https://discord.gg/bitflow)
-- **GitHub Issues:** [Open an issue](https://github.com/bitflow/vault-core/issues)
+- **GitHub Issues:** [Open an issue](https://github.com/Yusufolosun/bitflow-lend/issues)
 - **Email:** developers@bitflow.finance
 
 ---
