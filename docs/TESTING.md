@@ -797,7 +797,7 @@ Current test suite metrics:
 **Last Updated:** March 14, 2026
 
 For testing support:
-- **GitHub Issues:** [Report test issues](https://github.com/bitflow/vault-core/issues)
+- **GitHub Issues:** [Report test issues](https://github.com/Yusufolosun/bitflow-lend/issues)
 - **Discord:** #testing channel
 
 ---
