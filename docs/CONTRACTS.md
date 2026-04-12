@@ -701,7 +701,7 @@ interest = 59.18 ≈ 59 STX
 
 ## Testing
 
-All contract functions are comprehensively tested. See [bitflow-vault-core.test.ts](../tests/bitflow-vault-core.test.ts) for:
+All contract functions are comprehensively tested. See [vault-core.test.ts](../tests/vault-core.test.ts) for:
 - 18 test cases covering all functions
 - Edge case validation
 - Error condition testing
