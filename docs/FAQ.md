@@ -382,7 +382,7 @@ Stacks has 99.9%+ uptime historically.
 ### Can I view the source code?
 
 Yes! The contract is open-source:
-- **GitHub:** [github.com/bitflow/vault-core](https://github.com/bitflow/vault-core)
+- **GitHub:** [github.com/Yusufolosun/bitflow-lend](https://github.com/Yusufolosun/bitflow-lend)
 - **Explorer:** View on [Stacks Explorer](https://explorer.stacks.co)
 
 ### Is the contract upgradeable?
@@ -572,12 +572,12 @@ Utilization = Total Borrowed ÷ Total Deposits
 1. Read [INTEGRATION.md](./INTEGRATION.md)
 2. Check [API_EXAMPLES.md](./API_EXAMPLES.md)
 3. Ask on [Discord](https://discord.gg/bitflow)
-4. Open [GitHub Issue](https://github.com/bitflow/vault-core/issues)
+4. Open [GitHub Issue](https://github.com/Yusufolosun/bitflow-lend/issues)
 
 ### Where can I report bugs?
 
 1. **Security bugs:** security@bitflow.finance (PGP key available)
-2. **Other bugs:** [GitHub Issues](https://github.com/bitflow/vault-core/issues)
+2. **Other bugs:** [GitHub Issues](https://github.com/Yusufolosun/bitflow-lend/issues)
 3. **General questions:** [Discord](https://discord.gg/bitflow)
 
 ---
