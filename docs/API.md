@@ -994,7 +994,7 @@ if (liquidatable) {
 ## Additional Resources
 
 - [Contract Functions Documentation](./CONTRACTS.md) - Full contract reference
-- [Test Suite](../tests/vault-core.test.ts) - Example usage in tests
+- [Test Suite](../tests/bitflow-vault-core.test.ts) - Example usage in tests
 - [Stacks Documentation](https://docs.stacks.co/) - Stacks blockchain docs
 - [@stacks/transactions](https://github.com/hirosystems/stacks.js/tree/main/packages/transactions) - Transaction library
 
