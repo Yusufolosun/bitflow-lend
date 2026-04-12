@@ -5,6 +5,7 @@ import {
   ORACLE_CONTRACT,
   PROTOCOL_CONSTANTS,
   CONTRACT_VERSIONS,
+  resolveActiveNetwork,
   getActiveContractVersion,
   getContractAddress,
   getContractId,
@@ -92,6 +93,19 @@ describe('Contract Configuration', () => {
     it('returns the latest non-deprecated version', () => {
       const active = getActiveContractVersion();
       expect(active.version).toBe('2.0.0');
+    });
+  });
+
+  // ── resolveActiveNetwork ───────────────────────────────────────
+  describe('resolveActiveNetwork', () => {
+    it('returns mainnet only for explicit mainnet value', () => {
+      expect(resolveActiveNetwork('mainnet')).toBe('mainnet');
+    });
+
+    it('defaults to testnet for invalid values', () => {
+      expect(resolveActiveNetwork('devnet')).toBe('testnet');
+      expect(resolveActiveNetwork('')).toBe('testnet');
+      expect(resolveActiveNetwork(undefined)).toBe('testnet');
     });
   });
 

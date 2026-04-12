@@ -22,8 +22,12 @@ const resolveEnvContractAddress = (): string | null => {
 const ENV_CONTRACT_ADDRESS = resolveEnvContractAddress();
 const ENV_STACKS_API_URL = import.meta.env.VITE_STACKS_API_URL?.trim() || null;
 
+export const resolveActiveNetwork = (value: string | undefined): 'testnet' | 'mainnet' => {
+  return value === 'mainnet' ? 'mainnet' : 'testnet';
+};
+
 // Determine active network from environment variable, defaulting to testnet for safety
-export const ACTIVE_NETWORK = (import.meta.env.VITE_NETWORK || 'testnet') as 'testnet' | 'mainnet';
+export const ACTIVE_NETWORK = resolveActiveNetwork(import.meta.env.VITE_NETWORK);
 
 // Get the active network instance
 export const getNetwork = () => NETWORK_CONFIG[ACTIVE_NETWORK];
