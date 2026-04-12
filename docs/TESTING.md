@@ -125,7 +125,7 @@ $ npm test
 ```
 File                     | % Stmts | % Branch | % Funcs | % Lines
 -------------------------|---------|----------|---------|--------
-contracts/vault-core.clar| 100     | 95       | 100     | 100
+contracts/bitflow-vault-core.clar| 100     | 95       | 100     | 100
 All files                | 100     | 95       | 100     | 100
 ```
 
