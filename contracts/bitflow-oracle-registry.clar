@@ -18,6 +18,7 @@
 (define-constant ERR-MIN-REPORTERS (err u308))
 (define-constant ERR-PAUSED (err u309))
 (define-constant ERR-INVALID-PARAM (err u310))
+(define-constant ERR-THRESHOLD-NOT-MET (err u400))
 
 ;; ===== CONSTANTS =====
 (define-constant MAX-REPORTERS u10)
@@ -31,7 +32,7 @@
 ;; ===== STATE =====
 (define-data-var is-paused bool false)
 (define-data-var reporter-count uint u0)
-(define-data-var min-reporters-required uint u1)
+(define-data-var min-reporters uint u2)
 (define-data-var max-price-age uint MAX-PRICE-AGE)
 (define-data-var max-deviation uint MAX-DEVIATION-BPS)
 
@@ -48,6 +49,7 @@
 (define-map reporters principal bool)
 (define-map reporter-prices principal { price: uint, block: uint })
 (define-map reporter-submission-count principal uint)
+(define-data-var current-reporters (list 10 principal) (list))
 
 ;; ===== PRIVATE FUNCTIONS =====
 
@@ -132,7 +134,7 @@
 
 (define-read-only (get-oracle-params)
   {
-    min-reporters-required: (var-get min-reporters-required),
+    min-reporters-required: (var-get min-reporters),
     max-price-age: (var-get max-price-age),
     max-deviation-bps: (var-get max-deviation),
     reporter-count: (var-get reporter-count),
@@ -174,6 +176,8 @@
     (asserts! (< (var-get reporter-count) MAX-REPORTERS) ERR-INVALID-PARAM)
     (map-set reporters reporter true)
     (var-set reporter-count (+ (var-get reporter-count) u1))
+    (var-set current-reporters
+      (unwrap-panic (as-max-len? (append (var-get current-reporters) reporter) u10)))
     (print { event: "reporter-added", reporter: reporter })
     (ok true)
   )
@@ -183,7 +187,7 @@
   (begin
     (asserts! (is-eq tx-sender contract-owner) ERR-OWNER-ONLY)
     (asserts! (is-reporter reporter) ERR-REPORTER-NOT-FOUND)
-    (asserts! (> (var-get reporter-count) (var-get min-reporters-required)) ERR-MIN-REPORTERS)
+    (asserts! (> (var-get reporter-count) (var-get min-reporters)) ERR-MIN-REPORTERS)
     (map-delete reporters reporter)
     (map-delete reporter-prices reporter)
     (var-set reporter-count (- (var-get reporter-count) u1))
@@ -199,7 +203,7 @@
     (asserts! (<= new-min MAX-REPORTERS) ERR-INVALID-PARAM)
     ;; Prevent setting min above current reporter count (would lock submissions)
     (asserts! (<= new-min (var-get reporter-count)) ERR-INVALID-PARAM)
-    (var-set min-reporters-required new-min)
+    (var-set min-reporters new-min)
     (print { event: "min-reporters-updated", value: new-min })
     (ok true)
   )
@@ -281,6 +285,7 @@
         ;; Update the aggregate (using latest reporter submission as price)
         ;; In production a median across all fresh reporter prices would be ideal,
         ;; but Clarity lacks sorting. We use the latest valid submission.
+        (asserts! (>= (len (var-get current-reporters)) (var-get min-reporters)) ERR-THRESHOLD-NOT-MET)
         (var-set aggregated-price price)
         (var-set aggregated-block block-height)
         (var-set total-submissions (+ (var-get total-submissions) u1))
@@ -307,7 +312,7 @@
       (- block-height (var-get aggregated-block))
       u0),
     reporter-count: (var-get reporter-count),
-    min-reporters-required: (var-get min-reporters-required),
+    min-reporters-required: (var-get min-reporters),
     max-deviation-bps: (var-get max-deviation),
     max-price-age: (var-get max-price-age),
     total-submissions: (var-get total-submissions),
