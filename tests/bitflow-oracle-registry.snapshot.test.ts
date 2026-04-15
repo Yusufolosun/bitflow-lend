@@ -7,6 +7,7 @@ describe("bitflow-oracle-registry dashboard snapshot tests", () => {
   const getAccounts = () => simnet.getAccounts();
   const deployer = () => getAccounts().get("deployer")!;
   const reporter1 = () => getAccounts().get("wallet_1")!;
+  const reporter2 = () => getAccounts().get("wallet_2")!;
 
   const initOracle = () =>
     simnet.callPublicFn(CONTRACT, "initialize-oracle", [], deployer());
@@ -20,13 +21,14 @@ describe("bitflow-oracle-registry dashboard snapshot tests", () => {
   const setup = () => {
     initOracle();
     addReporter(reporter1());
+    addReporter(reporter2());
   };
 
   it("returns all expected fields on fresh oracle", () => {
     setup();
     const { result } = getSnapshot();
     expect(result).toHaveTupleProperty("aggregated-price", Cl.uint(0));
-    expect(result).toHaveTupleProperty("reporter-count", Cl.uint(1));
+    expect(result).toHaveTupleProperty("reporter-count", Cl.uint(2));
     expect(result).toHaveTupleProperty("total-submissions", Cl.uint(0));
     expect(result).toHaveTupleProperty("total-rejections", Cl.uint(0));
     expect(result).toHaveTupleProperty("is-paused", Cl.bool(false));
@@ -45,7 +47,7 @@ describe("bitflow-oracle-registry dashboard snapshot tests", () => {
   it("includes oracle configuration", () => {
     setup();
     const { result } = getSnapshot();
-    expect(result).toHaveTupleProperty("min-reporters-required", Cl.uint(1));
+    expect(result).toHaveTupleProperty("min-reporters-required", Cl.uint(2));
     expect(result).toHaveTupleProperty("max-deviation-bps", Cl.uint(2000));
     expect(result).toHaveTupleProperty("max-price-age", Cl.uint(288));
   });
