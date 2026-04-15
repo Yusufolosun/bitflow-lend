@@ -79,6 +79,7 @@ describe("bitflow-oracle-registry admin guard tests", () => {
 
     it("can remove reporter when above min", () => {
       setup(); // 2 reporters, min=1
+      setMinReporters(1);
       const { result } = removeReporter(wallet1());
       expect(result).toBeOk(Cl.bool(true));
     });
