@@ -49,6 +49,7 @@ describe("bitflow-oracle-registry state tests", () => {
   const setup = () => {
     initOracle();
     addReporter(wallet1());
+    addReporter(wallet2());
   };
 
   // ── Reporter management state ────────────────────────────────────
@@ -227,7 +228,7 @@ describe("bitflow-oracle-registry state tests", () => {
       initOracle();
 
       const { result } = getOracleParams();
-      expect(result).toHaveTupleProperty("min-reporters-required", Cl.uint(1));
+      expect(result).toHaveTupleProperty("min-reporters-required", Cl.uint(2));
       expect(result).toHaveTupleProperty("max-price-age", Cl.uint(288));
       expect(result).toHaveTupleProperty("max-deviation-bps", Cl.uint(2000));
       expect(result).toHaveTupleProperty("is-paused", Cl.bool(false));
@@ -322,7 +323,7 @@ describe("bitflow-oracle-registry state tests", () => {
       expect(result).toHaveTupleProperty("aggregated-price", Cl.uint(1_000_000));
       expect(result).toHaveTupleProperty("total-submissions", Cl.uint(1));
       expect(result).toHaveTupleProperty("total-rejections", Cl.uint(0));
-      expect(result).toHaveTupleProperty("reporter-count", Cl.uint(1));
+      expect(result).toHaveTupleProperty("reporter-count", Cl.uint(2));
       expect(result).toHaveTupleProperty("is-fresh", Cl.bool(true));
     });
   });
