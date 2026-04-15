@@ -60,6 +60,7 @@ Clarity uses unsigned 128-bit integers. The v2 contract uses safe arithmetic hel
 - **V1:** Uses a single admin-set price. Risk: admin compromise allows manipulating liquidations
 - **V2:** Enforces a staleness check (`MAX-PRICE-AGE = 1008 blocks`) — borrows and liquidations revert if price is stale
 - **Oracle registry:** Multi-reporter system with deviation guards, staleness checks, and emergency admin override
+- **Submission threshold:** `submit-price` reverts with `u400` unless configured reporter list length meets `min-reporters` (default `u2`)
 
 ### Known Limitations
 
