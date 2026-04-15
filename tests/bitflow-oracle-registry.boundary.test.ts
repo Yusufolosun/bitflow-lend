@@ -28,6 +28,7 @@ describe("bitflow-oracle-registry boundary tests", () => {
   const setup = () => {
     initOracle();
     addReporter(wallet1());
+    addReporter(wallet2());
   };
 
   // ── Price validation ────────────────────────────────────────────
@@ -62,7 +63,7 @@ describe("bitflow-oracle-registry boundary tests", () => {
   describe("reporter authorization", () => {
     it("rejects submission from non-reporter", () => {
       setup();
-      const { result } = submitPrice(100_000_000, wallet2());
+      const { result } = submitPrice(100_000_000, wallet3());
       expect(result).toBeErr(Cl.uint(302)); // ERR-NOT-REPORTER
     });
 
@@ -74,7 +75,7 @@ describe("bitflow-oracle-registry boundary tests", () => {
 
     it("rejects removing non-existent reporter", () => {
       setup();
-      const { result } = removeReporter(wallet2());
+      const { result } = removeReporter(wallet3());
       expect(result).toBeErr(Cl.uint(307)); // ERR-REPORTER-NOT-FOUND
     });
 
@@ -87,7 +88,7 @@ describe("bitflow-oracle-registry boundary tests", () => {
 
     it("allows removal when above minimum count", () => {
       setup();
-      addReporter(wallet2());
+      simnet.callPublicFn(CONTRACT, "set-min-reporters", [Cl.uint(1)], deployer());
       // Now 2 reporters, min is 1, can remove one
       const { result } = removeReporter(wallet1());
       expect(result).toBeOk(Cl.bool(true));
@@ -147,7 +148,7 @@ describe("bitflow-oracle-registry boundary tests", () => {
 
       // Add 9 more reporters (total 10) so set-min-reporters(10) is valid
       const accounts = simnet.getAccounts();
-      for (let i = 2; i <= 8; i++) {
+      for (let i = 3; i <= 8; i++) {
         addReporter(accounts.get(`wallet_${i}`)!);
       }
       addReporter(deployer());
