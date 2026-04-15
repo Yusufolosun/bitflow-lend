@@ -77,7 +77,7 @@ The v1 protocol does not use an external price oracle. The new `bitflow-oracle-r
 
 The oracle registry updates the aggregated price to the latest valid reporter submission rather than computing a median across all fresh reporter prices. Clarity lacks sorting primitives, so a true median is non-trivial.
 
-**Mitigation**: The deviation guard rejects outlier submissions, keeping the aggregate close to the true value.
+**Mitigation**: The deviation guard rejects outlier submissions, and `submit-price` now also enforces a minimum reporter threshold before aggregate updates.
 
 ---
 
