@@ -7,10 +7,12 @@ describe("oracle deviation rejection returns error", () => {
   const accounts = () => simnet.getAccounts();
   const deployer = () => accounts().get("deployer")!;
   const wallet1 = () => accounts().get("wallet_1")!;
+  const wallet2 = () => accounts().get("wallet_2")!;
 
   it("returns ERR-DEVIATION-TOO-HIGH when price exceeds deviation band", () => {
     simnet.callPublicFn(CONTRACT, "initialize-oracle", [], deployer());
     simnet.callPublicFn(CONTRACT, "add-reporter", [Cl.principal(wallet1())], deployer());
+    simnet.callPublicFn(CONTRACT, "add-reporter", [Cl.principal(wallet2())], deployer());
 
     // Set initial price via admin
     simnet.callPublicFn(CONTRACT, "admin-set-price", [Cl.uint(1000000)], deployer());
@@ -31,6 +33,7 @@ describe("oracle deviation rejection returns error", () => {
   it("accepts price within deviation band", () => {
     simnet.callPublicFn(CONTRACT, "initialize-oracle", [], deployer());
     simnet.callPublicFn(CONTRACT, "add-reporter", [Cl.principal(wallet1())], deployer());
+    simnet.callPublicFn(CONTRACT, "add-reporter", [Cl.principal(wallet2())], deployer());
 
     // Set initial price
     simnet.callPublicFn(CONTRACT, "admin-set-price", [Cl.uint(1000000)], deployer());
@@ -51,6 +54,7 @@ describe("oracle deviation rejection returns error", () => {
   it("rejects price below deviation band with error", () => {
     simnet.callPublicFn(CONTRACT, "initialize-oracle", [], deployer());
     simnet.callPublicFn(CONTRACT, "add-reporter", [Cl.principal(wallet1())], deployer());
+    simnet.callPublicFn(CONTRACT, "add-reporter", [Cl.principal(wallet2())], deployer());
 
     simnet.callPublicFn(CONTRACT, "admin-set-price", [Cl.uint(1000000)], deployer());
     simnet.callPublicFn(CONTRACT, "set-max-deviation", [Cl.uint(500)], deployer());
