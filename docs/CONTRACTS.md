@@ -889,7 +889,7 @@ Multi-source price oracle for STX/USD feeds. Aggregates price submissions from w
 - **Admin override**: Emergency price setting for bootstrapping or reporter failure
 - **Submission tracking**: Per-reporter submission counts and rejection metrics
 
-### Error Codes (u301–u311)
+### Error Codes (u301–u400)
 
 | Code | Constant | Description |
 |------|----------|-------------|
@@ -904,6 +904,7 @@ Multi-source price oracle for STX/USD feeds. Aggregates price submissions from w
 | u309 | `ERR-PAUSED` | Oracle is paused |
 | u310 | `ERR-INVALID-PARAM` | Parameter out of valid range |
 | u311 | `ERR-NO-PRICES` | No price data available |
+| u400 | `ERR-THRESHOLD-NOT-MET` | Reporter list size is below `min-reporters` |
 
 ### Reporter Functions
 
@@ -918,7 +919,7 @@ Multi-source price oracle for STX/USD feeds. Aggregates price submissions from w
 | `initialize-oracle` | One-time oracle initialization |
 | `add-reporter (reporter)` | Whitelist a new price reporter |
 | `remove-reporter (reporter)` | Remove a reporter from whitelist |
-| `set-min-reporters (n)` | Set minimum required reporters (1–10) |
+| `set-min-reporters (n)` | Set minimum required reporters (1–10, default 2) |
 | `set-max-deviation (bps)` | Set max deviation threshold (0–5000 bps) |
 | `set-max-price-age (blocks)` | Set staleness threshold (72–2016 blocks) |
 | `admin-set-price (price)` | Emergency admin price override |
