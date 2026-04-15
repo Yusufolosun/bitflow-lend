@@ -176,6 +176,7 @@ tests/
 ├── bitflow-oracle-registry.test.ts         # Oracle registry tests
 ├── bitflow-oracle-registry.boundary.test.ts # Oracle boundary tests
 ├── bitflow-oracle-registry.state.test.ts   # Oracle state management
+├── bitflow-oracle-registry.min-reporters.test.ts # Oracle min reporter threshold regression
 └── vitest-env.d.ts                         # Type declarations
 
 frontend/src/
