@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Oracle registry now rejects `submit-price` updates when reporter count is below configured `min-reporters`
+
+### Security
+- Added reporter-threshold enforcement error path (`u400`) to prevent under-quorum aggregate updates
+
 ### Planned
 - Multi-collateral support (sBTC, USDA)
 - Variable interest rates based on utilization
