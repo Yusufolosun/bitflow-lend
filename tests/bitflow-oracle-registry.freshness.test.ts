@@ -7,6 +7,7 @@ describe("bitflow-oracle-registry price freshness lifecycle", () => {
   const getAccounts = () => simnet.getAccounts();
   const deployer = () => getAccounts().get("deployer")!;
   const reporter1 = () => getAccounts().get("wallet_1")!;
+  const reporter2 = () => getAccounts().get("wallet_2")!;
 
   const initOracle = () =>
     simnet.callPublicFn(CONTRACT, "initialize-oracle", [], deployer());
@@ -26,6 +27,7 @@ describe("bitflow-oracle-registry price freshness lifecycle", () => {
   const setup = () => {
     initOracle();
     addReporter(reporter1());
+    addReporter(reporter2());
   };
 
   // ── No price is stale ───────────────────────────────────────────
