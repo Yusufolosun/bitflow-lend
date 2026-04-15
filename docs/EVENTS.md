@@ -74,3 +74,5 @@ All emitted events across BitFlow smart contracts, organized by contract for ind
 | `admin-price-override` | `admin-set-price` | `price`, `block` |
 | `price-submitted` | `submit-price` | `reporter`, `price`, `block` |
 | `price-rejected-deviation` | `submit-price` | `reporter`, `price` |
+
+Threshold rejections in `submit-price` return `u400` (`ERR-THRESHOLD-NOT-MET`) and do not emit a submission event.
