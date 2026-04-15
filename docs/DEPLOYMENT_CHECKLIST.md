@@ -55,7 +55,8 @@ Pre-deployment verification checklist for BitFlow Lend mainnet releases.
 5. [ ] Set initial STX price via `set-stx-price`
 6. [ ] Set initial reward rate on staking pool via `set-reward-rate`
 7. [ ] Add oracle reporters via `add-reporter`
-8. [ ] Verify all `get-contract-version` calls return expected values
+8. [ ] Configure oracle minimum reporters via `set-min-reporters`
+9. [ ] Verify all `get-contract-version` calls return expected values
 
 ### Frontend Deployment
 1. [ ] Build production bundle: `npm run build`
