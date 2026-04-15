@@ -131,6 +131,7 @@ describe("bitflow-oracle-registry", () => {
       initOracle();
       addReporter(wallet1());
       addReporter(wallet2());
+      setMinReporters(1);
       const { result } = removeReporter(wallet1());
       expect(result).toBeOk(Cl.bool(true));
     });
@@ -139,6 +140,7 @@ describe("bitflow-oracle-registry", () => {
       initOracle();
       addReporter(wallet1());
       addReporter(wallet2());
+      setMinReporters(1);
       removeReporter(wallet1());
       const { result } = getReporterCount();
       expect(result).toBeUint(1);
@@ -148,6 +150,7 @@ describe("bitflow-oracle-registry", () => {
       initOracle();
       addReporter(wallet1());
       addReporter(wallet2());
+      setMinReporters(1);
       removeReporter(wallet1());
       const { result } = isActiveReporter(wallet1());
       expect(result).toBeBool(false);
@@ -183,6 +186,7 @@ describe("bitflow-oracle-registry", () => {
     it("allows reporter to submit a price", () => {
       initOracle();
       addReporter(wallet1());
+      addReporter(wallet2());
       const { result } = submitPrice(50000000, wallet1());
       expect(result).toBeOk(Cl.bool(true));
     });
@@ -190,6 +194,7 @@ describe("bitflow-oracle-registry", () => {
     it("updates aggregated price after submission", () => {
       initOracle();
       addReporter(wallet1());
+      addReporter(wallet2());
       submitPrice(50000000, wallet1());
       const { result } = getPrice();
       expect(result).toBeUint(50000000);
@@ -198,6 +203,7 @@ describe("bitflow-oracle-registry", () => {
     it("stores reporter-specific price", () => {
       initOracle();
       addReporter(wallet1());
+      addReporter(wallet2());
       submitPrice(50000000, wallet1());
       const { result } = getReporterPrice(wallet1());
       const data = result as any;
@@ -207,6 +213,7 @@ describe("bitflow-oracle-registry", () => {
     it("increments reporter submission count", () => {
       initOracle();
       addReporter(wallet1());
+      addReporter(wallet2());
       submitPrice(50000000, wallet1());
       submitPrice(50000000, wallet1());
       const { result } = getReporterSubmissions(wallet1());
@@ -278,6 +285,7 @@ describe("bitflow-oracle-registry", () => {
     it("accepts first price without deviation check", () => {
       initOracle();
       addReporter(wallet1());
+      addReporter(wallet2());
       // No existing aggregate, so any valid price should be accepted
       const { result } = submitPrice(99999999, wallet1());
       expect(result).toBeOk(Cl.bool(true));
@@ -438,6 +446,7 @@ describe("bitflow-oracle-registry", () => {
     it("returns aggregated price with freshness", () => {
       initOracle();
       addReporter(wallet1());
+      addReporter(wallet2());
       submitPrice(50000000, wallet1());
       const { result } = getAggregatedPrice();
       const data = result as any;
@@ -454,6 +463,7 @@ describe("bitflow-oracle-registry", () => {
     it("returns correct price age after blocks", () => {
       initOracle();
       addReporter(wallet1());
+      addReporter(wallet2());
       submitPrice(50000000, wallet1());
       simnet.mineEmptyBlocks(10);
       const { result } = getPriceAge();
@@ -464,7 +474,7 @@ describe("bitflow-oracle-registry", () => {
       initOracle();
       const { result } = getOracleParams();
       expect(result).toBeTuple({
-        "min-reporters-required": Cl.uint(1),
+        "min-reporters-required": Cl.uint(2),
         "max-price-age": Cl.uint(288),
         "max-deviation-bps": Cl.uint(2000),
         "reporter-count": Cl.uint(0),
@@ -475,13 +485,14 @@ describe("bitflow-oracle-registry", () => {
     it("returns oracle stats with submission counts", () => {
       initOracle();
       addReporter(wallet1());
+      addReporter(wallet2());
       submitPrice(50000000, wallet1());
       submitPrice(50100000, wallet1());
       const { result } = getOracleStats();
       const data = result as any;
       expect(data.value["total-submissions"]).toBeUint(2);
       expect(data.value["total-rejections"]).toBeUint(0);
-      expect(data.value["reporter-count"]).toBeUint(1);
+      expect(data.value["reporter-count"]).toBeUint(2);
     });
 
     it("returns zero for non-reporter submissions", () => {
@@ -509,6 +520,7 @@ describe("bitflow-oracle-registry", () => {
     it("reporter can update their own price", () => {
       initOracle();
       addReporter(wallet1());
+      addReporter(wallet2());
       submitPrice(50000000, wallet1());
       submitPrice(51000000, wallet1());
       const { result } = getReporterPrice(wallet1());
@@ -520,6 +532,7 @@ describe("bitflow-oracle-registry", () => {
       initOracle();
       addReporter(wallet1());
       addReporter(wallet2());
+      setMinReporters(1);
       removeReporter(wallet1());
       const { result } = submitPrice(50000000, wallet1());
       expect(result).toBeErr(Cl.uint(302));
@@ -528,6 +541,7 @@ describe("bitflow-oracle-registry", () => {
     it("submissions resume after unpause", () => {
       initOracle();
       addReporter(wallet1());
+      addReporter(wallet2());
       pauseOracle();
       unpauseOracle();
       const { result } = submitPrice(50000000, wallet1());
@@ -537,6 +551,7 @@ describe("bitflow-oracle-registry", () => {
     it("admin price bypasses deviation check", () => {
       initOracle();
       addReporter(wallet1());
+      addReporter(wallet2());
       submitPrice(50000000, wallet1());
       // Admin can set price far from aggregate
       const { result } = adminSetPrice(100000000);
@@ -588,6 +603,7 @@ describe("bitflow-oracle-registry", () => {
     it("boundary: price just under max sanity is accepted", () => {
       initOracle();
       addReporter(wallet1());
+      addReporter(wallet2());
       const { result } = submitPrice(999999999999, wallet1());
       expect(result).toBeOk(Cl.bool(true));
     });
