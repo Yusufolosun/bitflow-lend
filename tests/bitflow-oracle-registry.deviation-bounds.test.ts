@@ -7,10 +7,12 @@ describe("oracle deviation bounds manipulation", () => {
   const accounts = () => simnet.getAccounts();
   const deployer = () => accounts().get("deployer")!;
   const wallet1 = () => accounts().get("wallet_1")!;
+  const wallet2 = () => accounts().get("wallet_2")!;
 
   const setup = () => {
     simnet.callPublicFn(CONTRACT, "initialize-oracle", [], deployer());
     simnet.callPublicFn(CONTRACT, "add-reporter", [Cl.principal(wallet1())], deployer());
+    simnet.callPublicFn(CONTRACT, "add-reporter", [Cl.principal(wallet2())], deployer());
   };
 
   it("rejects price beyond 20% default deviation with err u305", () => {
