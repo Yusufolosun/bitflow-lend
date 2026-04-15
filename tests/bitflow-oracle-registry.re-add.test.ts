@@ -13,6 +13,7 @@ describe("oracle re-add removed reporter", () => {
     simnet.callPublicFn(CONTRACT, "initialize-oracle", [], deployer());
     simnet.callPublicFn(CONTRACT, "add-reporter", [Cl.principal(wallet1())], deployer());
     simnet.callPublicFn(CONTRACT, "add-reporter", [Cl.principal(wallet2())], deployer());
+    simnet.callPublicFn(CONTRACT, "set-min-reporters", [Cl.uint(1)], deployer());
 
     // Remove wallet1
     simnet.callPublicFn(CONTRACT, "remove-reporter", [Cl.principal(wallet1())], deployer());
@@ -40,6 +41,7 @@ describe("oracle re-add removed reporter", () => {
     simnet.callPublicFn(CONTRACT, "initialize-oracle", [], deployer());
     simnet.callPublicFn(CONTRACT, "add-reporter", [Cl.principal(wallet1())], deployer());
     simnet.callPublicFn(CONTRACT, "add-reporter", [Cl.principal(wallet2())], deployer());
+    simnet.callPublicFn(CONTRACT, "set-min-reporters", [Cl.uint(1)], deployer());
     simnet.callPublicFn(CONTRACT, "remove-reporter", [Cl.principal(wallet1())], deployer());
     simnet.callPublicFn(CONTRACT, "add-reporter", [Cl.principal(wallet1())], deployer());
 
