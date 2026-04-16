@@ -55,23 +55,26 @@ describe("bitflow-vault-core-v2 debt parity", () => {
     };
   };
 
+  const expectedHealthFactor = (depositAmount: number, stxPrice: number, debt: bigint) => {
+    const collateralValue = (BigInt(depositAmount) * BigInt(stxPrice)) / 100n;
+    return (collateralValue * 100n) / debt;
+  };
+
   it("uses the same debt basis for health factor and repayment amount", () => {
     init();
     setPrice(100);
 
     const depositAmount = 10_000_000;
     const borrowAmount = 1_000_000;
+    const stxPrice = 100;
 
     deposit(depositAmount, wallet1());
     borrow(borrowAmount, 500, 30, wallet1());
 
-    const healthFactor = readHealthFactor(wallet1(), 100);
+    const healthFactor = readHealthFactor(wallet1(), stxPrice);
     const repayment = readRepaymentDebt(wallet1());
 
-    const collateralValue = (BigInt(depositAmount) * 100n) / 100n;
-    const expectedHealthFactor = (collateralValue * 100n) / repayment.outstandingDebt;
-
-    expect(healthFactor).toBe(expectedHealthFactor);
+    expect(healthFactor).toBe(expectedHealthFactor(depositAmount, stxPrice, repayment.outstandingDebt));
     expect(repayment.total).toBe(repayment.outstandingDebt + repayment.penalty);
   });
 });
