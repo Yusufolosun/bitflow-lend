@@ -172,6 +172,8 @@ if (loanData !== null) {
 
 Calculates the total amount required to repay a user's active loan, including accrued interest.
 
+This function derives debt from `calculate-outstanding-debt` so UI quotes match the same debt basis used by health-factor and repay logic.
+
 **Function Signature:**
 ```clarity
 (define-read-only (get-repayment-amount (user principal)))
@@ -281,6 +283,29 @@ if (repayment !== null) {
 
 ## Risk & Liquidation Queries
 
+### calculate-outstanding-debt
+
+Computes principal plus accrued interest for a given principal, rate, and elapsed blocks.
+
+**Function Signature:**
+```clarity
+(define-read-only (calculate-outstanding-debt (principal uint) (rate uint) (elapsed-blocks uint)))
+```
+
+**Parameters:**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `principal` | uint | Original loan amount |
+| `rate` | uint | Annual rate in basis points |
+| `elapsed-blocks` | uint | Blocks elapsed since loan start |
+
+**Return Type:** `uint`
+
+**Notes:**
+- Returns `principal + accrued-interest`
+- Serves as the single debt source for `calculate-health-factor` and `get-repayment-amount`
+
 ### calculate-health-factor
 
 Calculates the health factor for a user's loan position based on current STX price.
@@ -325,7 +350,8 @@ none
 **Health Factor Calculation:**
 ```clarity
 collateral-value = (deposit × stx-price) / 100
-health-factor = (collateral-value × 100) / loan-amount
+outstanding-debt = calculate-outstanding-debt(principal, rate, elapsed-blocks)
+health-factor = (collateral-value × 100) / outstanding-debt
 
 Example:
 - Deposit: 1500 STX
