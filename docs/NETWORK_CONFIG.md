@@ -22,7 +22,7 @@
 ```typescript
 const MAINNET = {
   contractAddress: 'SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193',
-  contractName: 'bitflow-vault-core',
+  contractName: 'bitflow-vault-core-v2',
   apiUrl: 'https://api.mainnet.hiro.so',
   explorerUrl: 'https://explorer.hiro.so',
 };
@@ -33,7 +33,7 @@ const MAINNET = {
 ```typescript
 const TESTNET = {
   contractAddress: 'ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0',
-  contractName: 'bitflow-vault-core',
+  contractName: 'bitflow-vault-core-v2',
   apiUrl: 'https://api.testnet.hiro.so',
   explorerUrl: 'https://explorer.hiro.so/?chain=testnet',
 };
@@ -44,7 +44,7 @@ const TESTNET = {
 ```typescript
 const DEVNET = {
   contractAddress: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM',
-  contractName: 'bitflow-vault-core',
+  contractName: 'bitflow-vault-core-v2',
   apiUrl: 'http://localhost:3999',
   explorerUrl: 'http://localhost:8000',
 };
@@ -72,21 +72,21 @@ interface NetworkConfig {
 const CONFIGS: Record<NetworkId, NetworkConfig> = {
   mainnet: {
     contractAddress: 'SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193',
-    contractName: 'bitflow-vault-core',
+    contractName: 'bitflow-vault-core-v2',
     apiUrl: 'https://api.mainnet.hiro.so',
     explorerUrl: 'https://explorer.hiro.so',
     isProduction: true,
   },
   testnet: {
     contractAddress: 'ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0',
-    contractName: 'bitflow-vault-core',
+    contractName: 'bitflow-vault-core-v2',
     apiUrl: 'https://api.testnet.hiro.so',
     explorerUrl: 'https://explorer.hiro.so/?chain=testnet',
     isProduction: false,
   },
   devnet: {
     contractAddress: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM',
-    contractName: 'bitflow-vault-core',
+    contractName: 'bitflow-vault-core-v2',
     apiUrl: 'http://localhost:3999',
     explorerUrl: 'http://localhost:8000',
     isProduction: false,
@@ -258,10 +258,10 @@ docker-compose up -d
 
 ```bash
 # Check if contract is deployed (local)
-curl http://localhost:3999/v2/contracts/source/ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM/bitflow-vault-core
+curl http://localhost:3999/v2/contracts/source/ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM/bitflow-vault-core-v2
 
 # Check if contract is deployed (testnet)
-curl https://stacks-node-api.testnet.stacks.co/v2/contracts/source/ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0/bitflow-vault-core
+curl https://stacks-node-api.testnet.stacks.co/v2/contracts/source/ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0/bitflow-vault-core-v2
 ```
 
 ---

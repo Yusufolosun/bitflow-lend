@@ -23,9 +23,9 @@ BitFlow is a decentralized lending protocol built on the Stacks blockchain that 
 - **Blockchain:** Stacks (Layer 2 on Bitcoin)
 - **Language:** Clarity (smart contract)
 - **Collateral:** STX tokens
-- **Contracts:** 4 (vault-core v1, vault-core v2, staking pool, oracle registry)
+- **Contracts:** 3 (vault-core v2, staking pool, oracle registry)
 - **Governance:** Admin-gated (owner-controlled parameters, no DAO yet)
-- **Upgradability:** Versioned contracts with migration support (v1 → v2)
+- **Upgradability:** Versioned contracts with migration support
 
 ---
 
@@ -134,7 +134,6 @@ BitFlow is a decentralized lending protocol built on the Stacks blockchain that 
 
 | Contract | File | Purpose |
 |----------|------|---------|
-| vault-core v1 | `contracts/bitflow-vault-core.clar` | Original lending protocol |
 | vault-core v2 | `contracts/bitflow-vault-core-v2.clar` | Enhanced v2 with per-function toggles, safe arithmetic, price snapshots |
 | staking-pool | `contracts/bitflow-staking-pool.clar` | STX staking with checkpoint rewards and cooldown |
 | oracle-registry | `contracts/bitflow-oracle-registry.clar` | Multi-reporter price oracle with deviation guards |
@@ -149,7 +148,7 @@ BitFlow is a decentralized lending protocol built on the Stacks blockchain that 
             ┌─────────────────┼──────────────────┐
             ▼                 ▼                   ▼
   ┌──────────────────┐ ┌──────────────┐ ┌──────────────────┐
-  │ vault-core v1/v2 │ │ staking-pool │ │ oracle-registry  │
+  │  vault-core v2   │ │ staking-pool │ │ oracle-registry  │
   │                  │ │              │ │                  │
   │ deposit/withdraw │ │ stake/unstake│ │ submit-price     │
   │ borrow/repay     │ │ claim-rewards│ │ admin-set-price  │
@@ -794,7 +793,7 @@ Key architectural strengths:
 
 **Document Version:** 1.0.0  
 **Last Updated:** January 25, 2026  
-**Contract Version:** vault-core v1.0.0
+**Contract Version:** vault-core v2.0.0
 
 For more information:
 - [Contract Documentation](./CONTRACTS.md)

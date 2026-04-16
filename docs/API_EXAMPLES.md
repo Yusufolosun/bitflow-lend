@@ -2,7 +2,7 @@
 
 > **Working code examples for every contract function in BitFlow Lend.**
 
-All examples use `@stacks/transactions@6.13.0` and target the mainnet contract at `SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.bitflow-vault-core`.
+All examples use `@stacks/transactions@6.13.0` and target the mainnet contract at `SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.bitflow-vault-core-v2`.
 
 ---
 
@@ -22,7 +22,7 @@ import {
 } from '@stacks/transactions';
 
 const CONTRACT_ADDRESS = 'SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193';
-const CONTRACT_NAME = 'bitflow-vault-core';
+const CONTRACT_NAME = 'bitflow-vault-core-v2';
 const MICRO_STX = 1_000_000;
 const NETWORK = 'mainnet';
 ```

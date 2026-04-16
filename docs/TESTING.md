@@ -125,7 +125,7 @@ $ npm test
 ```
 File                     | % Stmts | % Branch | % Funcs | % Lines
 -------------------------|---------|----------|---------|--------
-contracts/bitflow-vault-core.clar| 100     | 95       | 100     | 100
+contracts/bitflow-vault-core-v2.clar| 100     | 95       | 100     | 100
 All files                | 100     | 95       | 100     | 100
 ```
 
@@ -156,51 +156,18 @@ start coverage/index.html  # Windows
 
 ```
 tests/
-├── vault-core.test.ts                      # V1 vault core tests
-├── bitflow-vault-core.comprehensive.test.ts # V1 comprehensive tests
-├── bitflow-vault-core.boundary.test.ts     # V1 boundary/edge case tests
-├── bitflow-vault-core.concurrent.test.ts   # V1 concurrent operation tests
-├── bitflow-vault-core.state.test.ts        # V1 state management tests
-├── bitflow-vault-core.liquidation.test.ts  # V1 liquidation tests
-├── bitflow-vault-core.errors.test.ts       # V1 error condition tests
-├── bitflow-vault-core.gas.test.ts          # V1 gas optimization tests
-├── bitflow-vault-core.security.test.ts     # V1 security tests
-├── bitflow-vault-core.time.test.ts         # V1 time-dependent tests
-├── bitflow-vault-core.precision.test.ts    # V1 precision tests
-├── bitflow-vault-core-v2.test.ts           # V2 vault core tests
-├── bitflow-vault-core-v2.boundary.test.ts  # V2 boundary tests
-├── bitflow-vault-core-v2.liquidation.test.ts # V2 liquidation security
-├── bitflow-staking-pool.test.ts            # Staking pool tests
-├── bitflow-staking-pool.boundary.test.ts   # Staking boundary tests
-├── bitflow-staking-pool.state.test.ts      # Staking state management
-├── bitflow-oracle-registry.test.ts         # Oracle registry tests
-├── bitflow-oracle-registry.boundary.test.ts # Oracle boundary tests
-├── bitflow-oracle-registry.state.test.ts   # Oracle state management
-├── bitflow-oracle-registry.min-reporters.test.ts # Oracle min reporter threshold regression
+├── bitflow-vault-core-v2.*.test.ts         # 23 vault v2 tests (admin, arithmetic, liquidation, toggles, snapshot, etc.)
+├── bitflow-staking-pool.*.test.ts          # 14 staking pool tests
+├── bitflow-oracle-registry.*.test.ts       # 13 oracle registry tests
+├── contract-version-consistency.test.ts    # cross-contract version sanity checks
+├── contract-versions.test.ts               # contract-reported version checks
 └── vitest-env.d.ts                         # Type declarations
 
 frontend/src/
-├── components/__tests__/
-│   ├── DepositCard.test.tsx
-│   ├── BorrowCard.test.tsx
-│   ├── RepayCard.test.tsx
-│   ├── Dashboard.test.tsx
-│   ├── WalletConnect.test.tsx
-│   ├── StatsCard.test.tsx
-│   ├── ErrorState.test.tsx
-│   ├── LoadingCard.test.tsx
-│   ├── NetworkIndicator.test.tsx
-│   ├── Toast.test.tsx
-│   ├── HealthMonitor.test.tsx
-│   ├── LiquidationList.test.tsx
-│   └── TransactionHistory.test.tsx
-├── hooks/__tests__/
-│   ├── useToast.test.ts
-│   ├── useSmartPolling.test.ts
-│   └── useStxPrice.test.ts
-└── utils/__tests__/
-    ├── calculations.test.ts
-    └── formatters.test.ts
+├── components/__tests__/                  # UI component test suites
+├── hooks/__tests__/                       # custom hook test suites
+├── utils/__tests__/                       # utility/validation test suites
+└── config/__tests__/                      # contract config tests
 ```
 
 ### Test Suite Structure
@@ -765,15 +732,11 @@ Current test suite metrics:
 
 | Category | Test Files | Description |
 |----------|-----------|-------------|
-| V1 Vault Core | 13 files | Comprehensive, boundary, state, liquidation, security, time, precision, gas, errors, concurrent, hardening, migration, position |
-| V2 Vault Core | 9 files | Core, boundary, liquidation, toggles, interest, repay, snapshot, migration, multi-user, admin |
-| Staking Pool | 8 files | Core, boundary, state, rewards, APY, cooldown, emergency, snapshot, stake-bounds |
-| Oracle Registry | 6 files | Core, boundary, state, deviation, admin, snapshot |
-| Frontend Components | 14 files | All main UI components + ErrorBoundary |
-| Frontend Hooks | 4 files | useToast, useSmartPolling, useStxPrice, useProtocolStats |
-| Frontend Utils | 2 files | calculations, formatters |
-| Frontend Config | 1 file | contracts config |
-| **Total** | **57+ files** | |
+| Vault Core V2 | 23 files | Core lifecycle, liquidation, toggles, arithmetic, migration exports, snapshots, and admin bounds |
+| Staking Pool | 14 files | Core flows, bounds, rewards, APY, cooldown, emergency, and snapshots |
+| Oracle Registry | 13 files | Core behavior, bounds, deviation handling, freshness, consensus, and snapshots |
+| Version Consistency | 2 files | Cross-contract reported version checks |
+| **Total (root contract suite)** | **52 files** | Matches current `npm test` execution |
 
 ---
 

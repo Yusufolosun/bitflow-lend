@@ -14,7 +14,7 @@ set -e
 NETWORK="mainnet"
 VERBOSE=false
 JSON_OUTPUT=false
-CONTRACT_NAME="bitflow-vault-core"
+CONTRACT_NAME="bitflow-vault-core-v2"
 DEPLOYER_ADDRESS=""
 
 # Stacks API endpoints

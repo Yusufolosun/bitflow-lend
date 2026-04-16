@@ -2,25 +2,6 @@
 
 All emitted events across BitFlow smart contracts, organized by contract for indexer and frontend integration.
 
-## bitflow-vault-core (v1)
-
-| Event | Emitted By | Fields |
-|-------|-----------|--------|
-| `protocol-initialized` | `initialize` | `block` |
-| `set-stx-price` | `set-stx-price` | `price` |
-| `set-min-collateral-ratio` | `set-min-collateral-ratio` | `value` |
-| `set-liquidation-threshold` | `set-liquidation-threshold` | `value` |
-| `set-interest-rate-bounds` | `set-interest-rate-bounds` | `min`, `max` |
-| `set-term-limits` | `set-term-limits` | `min`, `max` |
-| `set-late-penalty-rate` | `set-late-penalty-rate` | `value` |
-| `pause` | `pause` | — |
-| `unpause` | `unpause` | — |
-| `deposit` | `deposit` | `user`, `amount` |
-| `withdraw` | `withdraw` | `user`, `amount` |
-| `borrow` | `borrow` | `user`, `amount`, `rate`, `term` |
-| `repay` | `repay` | `user`, `principal`, `interest`, `penalty`, `total` |
-| `liquidation` | `liquidate` | `liquidator`, `borrower`, `seized`, `paid` |
-
 ## bitflow-vault-core-v2
 
 | Event | Emitted By | Fields |

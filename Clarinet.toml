@@ -5,11 +5,6 @@ authors = []
 telemetry = false
 cache_dir = "./.cache"
 
-[contracts.bitflow-vault-core]
-path = "contracts/bitflow-vault-core.clar"
-clarity_version = 2
-epoch = 2.5
-
 [contracts.bitflow-vault-core-v2]
 path = "contracts/bitflow-vault-core-v2.clar"
 clarity_version = 2

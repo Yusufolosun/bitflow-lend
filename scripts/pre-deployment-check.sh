@@ -43,7 +43,7 @@ fi
 
 # ── 4. Contract size ─────────────────────────────────────────────────
 echo "[4/7] Checking contract size..."
-CONTRACT_SIZE=$(wc -c < contracts/bitflow-vault-core.clar | tr -d ' ')
+CONTRACT_SIZE=$(wc -c < contracts/bitflow-vault-core-v2.clar | tr -d ' ')
 echo "  Size: $CONTRACT_SIZE bytes (limit: $MAX_CONTRACT_BYTES)"
 if [ "$CONTRACT_SIZE" -gt "$MAX_CONTRACT_BYTES" ]; then
     fail "contract exceeds ${MAX_CONTRACT_BYTES} byte limit"
@@ -69,7 +69,7 @@ fi
 
 # ── 7. Contract hash verification ────────────────────────────────────
 echo "[7/7] Generating contract hash..."
-CONTRACT_HASH=$(sha256sum contracts/bitflow-vault-core.clar | cut -d' ' -f1)
+CONTRACT_HASH=$(sha256sum contracts/bitflow-vault-core-v2.clar | cut -d' ' -f1)
 echo "  SHA-256: $CONTRACT_HASH"
 echo "  Verify this matches the audited contract before proceeding."
 

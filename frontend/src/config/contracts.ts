@@ -34,18 +34,18 @@ export const getNetwork = () => NETWORK_CONFIG[ACTIVE_NETWORK];
 
 // Contract Details
 export const VAULT_CONTRACT = {
-  name: 'bitflow-vault-core',
+  name: 'bitflow-vault-core-v2',
 
   // Testnet deployment address (UPDATED: February 10, 2026)
   testnet: {
     address: 'ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0',
-    contractName: 'bitflow-vault-core',
+    contractName: 'bitflow-vault-core-v2',
   },
 
   // Mainnet deployment address (DEPLOYED: February 10, 2026)
   mainnet: {
     address: 'SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193',
-    contractName: 'bitflow-vault-core',
+    contractName: 'bitflow-vault-core-v2',
   },
 };
 
@@ -75,10 +75,7 @@ export const ORACLE_CONTRACT = {
   },
 };
 
-// Contract version registry — supports viewing/managing positions across
-// contract upgrades. The "active" entry is the current deployment; older
-// entries are kept so users can still interact with legacy positions during
-// migration windows.
+// Contract version registry.
 export interface ContractVersion {
   version: string;
   address: { testnet: string; mainnet: string };
@@ -87,14 +84,6 @@ export interface ContractVersion {
 }
 
 export const CONTRACT_VERSIONS: ContractVersion[] = [
-  {
-    version: '1.0.0',
-    address: {
-      testnet: VAULT_CONTRACT.testnet.address,
-      mainnet: VAULT_CONTRACT.mainnet.address,
-    },
-    contractName: 'bitflow-vault-core',
-  },
   {
     version: '2.0.0',
     address: {
@@ -133,9 +122,9 @@ export const getContractId = () => {
 };
 
 // Protocol Constants — canonical source, matches the Clarity contract definitions:
-//   MIN-COLLATERAL-RATIO  u150  (contracts/bitflow-vault-core.clar:25)
-//   LIQUIDATION-THRESHOLD u110  (contracts/bitflow-vault-core.clar:26)
-//   LATE-PENALTY-RATE     u500  (contracts/bitflow-vault-core.clar:31) = 5% penalty
+//   MIN-COLLATERAL-RATIO  u150  (contracts/bitflow-vault-core-v2.clar)
+//   LIQUIDATION-THRESHOLD u110  (contracts/bitflow-vault-core-v2.clar)
+//   LATE-PENALTY-RATE     u500  (contracts/bitflow-vault-core-v2.clar) = 5% penalty
 export const PROTOCOL_CONSTANTS = {
   MIN_COLLATERAL_RATIO: 150, // 150% — minimum collateral-to-loan ratio
   LIQUIDATION_THRESHOLD: 110, // 110% — positions below this are liquidatable

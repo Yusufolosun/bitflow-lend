@@ -74,11 +74,6 @@ plan:
             path: contracts/bitflow-staking-pool.clar
             clarity-version: 2
         - emulated-contract-publish:
-            contract-name: bitflow-vault-core
-            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/bitflow-vault-core.clar
-            clarity-version: 2
-        - emulated-contract-publish:
             contract-name: bitflow-vault-core-v2
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             path: contracts/bitflow-vault-core-v2.clar

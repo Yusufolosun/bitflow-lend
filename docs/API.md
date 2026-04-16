@@ -1,6 +1,6 @@
 # Bitflow Vault Read-Only API Reference
 
-This document provides detailed API documentation for all read-only functions in the `bitflow-vault-core` contract. Read-only functions can be called without consuming gas and do not modify contract state.
+This document provides detailed API documentation for all read-only functions in the `bitflow-vault-core-v2` contract. Read-only functions can be called without consuming gas and do not modify contract state.
 
 ## Table of Contents
 
@@ -41,7 +41,7 @@ Retrieves the current STX deposit balance for a specific user.
 
 **Example Request:**
 ```clarity
-(contract-call? .bitflow-vault-core get-user-deposit 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM)
+(contract-call? .bitflow-vault-core-v2 get-user-deposit 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM)
 ```
 
 **Example Responses:**
@@ -65,7 +65,7 @@ u0
 // Using @stacks/transactions
 const result = await callReadOnlyFunction({
   contractAddress: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM',
-  contractName: 'bitflow-vault-core',
+  contractName: 'bitflow-vault-core-v2',
   functionName: 'get-user-deposit',
   functionArgs: [principalCV('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM')],
   network: new StacksMainnet(),
@@ -96,7 +96,7 @@ Retrieves detailed information about a user's active loan.
 
 **Example Request:**
 ```clarity
-(contract-call? .bitflow-vault-core get-user-loan 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM)
+(contract-call? .bitflow-vault-core-v2 get-user-loan 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM)
 ```
 
 **Example Responses:**
@@ -132,7 +132,7 @@ none
 **Calculating Time Remaining:**
 ```clarity
 ;; Get loan details
-(match (contract-call? .bitflow-vault-core get-user-loan tx-sender)
+(match (contract-call? .bitflow-vault-core-v2 get-user-loan tx-sender)
   loan
     (let (
       (current-block block-height)
@@ -150,7 +150,7 @@ none
 ```typescript
 const result = await callReadOnlyFunction({
   contractAddress: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM',
-  contractName: 'bitflow-vault-core',
+  contractName: 'bitflow-vault-core-v2',
   functionName: 'get-user-loan',
   functionArgs: [principalCV('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM')],
   network: new StacksMainnet(),
@@ -187,7 +187,7 @@ Calculates the total amount required to repay a user's active loan, including ac
 
 **Example Request:**
 ```clarity
-(contract-call? .bitflow-vault-core get-repayment-amount 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM)
+(contract-call? .bitflow-vault-core-v2 get-repayment-amount 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM)
 ```
 
 **Example Responses:**
@@ -262,7 +262,7 @@ Where:
 ```typescript
 const result = await callReadOnlyFunction({
   contractAddress: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM',
-  contractName: 'bitflow-vault-core',
+  contractName: 'bitflow-vault-core-v2',
   functionName: 'get-repayment-amount',
   functionArgs: [principalCV('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM')],
   network: new StacksMainnet(),
@@ -301,7 +301,7 @@ Calculates the health factor for a user's loan position based on current STX pri
 
 **Example Request:**
 ```clarity
-(contract-call? .bitflow-vault-core calculate-health-factor 
+(contract-call? .bitflow-vault-core-v2 calculate-health-factor 
   'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM 
   u100)
 ```
@@ -384,7 +384,7 @@ Example:
 ```typescript
 const result = await callReadOnlyFunction({
   contractAddress: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM',
-  contractName: 'bitflow-vault-core',
+  contractName: 'bitflow-vault-core-v2',
   functionName: 'calculate-health-factor',
   functionArgs: [
     principalCV('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM'),
@@ -430,7 +430,7 @@ Determines whether a user's loan position is eligible for liquidation.
 
 **Example Request:**
 ```clarity
-(contract-call? .bitflow-vault-core is-liquidatable 
+(contract-call? .bitflow-vault-core-v2 is-liquidatable 
   'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM 
   u70)
 ```
@@ -513,7 +513,7 @@ Example:
 async function checkLiquidatable(userAddress: string, stxPrice: number) {
   const result = await callReadOnlyFunction({
     contractAddress: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM',
-    contractName: 'bitflow-vault-core',
+    contractName: 'bitflow-vault-core-v2',
     functionName: 'is-liquidatable',
     functionArgs: [
       principalCV(userAddress),
@@ -566,7 +566,7 @@ Calculates the minimum collateral required to borrow a specific amount.
 
 **Example Request:**
 ```clarity
-(contract-call? .bitflow-vault-core calculate-required-collateral u1000)
+(contract-call? .bitflow-vault-core-v2 calculate-required-collateral u1000)
 ```
 
 **Example Responses:**
@@ -620,7 +620,7 @@ Example:
 ```typescript
 const result = await callReadOnlyFunction({
   contractAddress: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM',
-  contractName: 'bitflow-vault-core',
+  contractName: 'bitflow-vault-core-v2',
   functionName: 'calculate-required-collateral',
   functionArgs: [uintCV(1000)],
   network: new StacksMainnet(),
@@ -634,7 +634,7 @@ console.log(`To borrow 1000 STX, you need ${required} STX collateral`);
 async function calculateMaxBorrow(userAddress: string) {
   const depositResult = await callReadOnlyFunction({
     contractAddress: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM',
-    contractName: 'bitflow-vault-core',
+    contractName: 'bitflow-vault-core-v2',
     functionName: 'get-user-deposit',
     functionArgs: [principalCV(userAddress)],
     network: new StacksMainnet(),
@@ -670,7 +670,7 @@ Retrieves the total STX deposited across all users in the vault.
 
 **Example Request:**
 ```clarity
-(contract-call? .bitflow-vault-core get-total-deposits)
+(contract-call? .bitflow-vault-core-v2 get-total-deposits)
 ```
 
 **Example Responses:**
@@ -693,7 +693,7 @@ u0
 ```typescript
 const result = await callReadOnlyFunction({
   contractAddress: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM',
-  contractName: 'bitflow-vault-core',
+  contractName: 'bitflow-vault-core-v2',
   functionName: 'get-total-deposits',
   functionArgs: [],
   network: new StacksMainnet(),
@@ -721,7 +721,7 @@ Retrieves the cumulative amount repaid across all loans (principal + interest).
 
 **Example Request:**
 ```clarity
-(contract-call? .bitflow-vault-core get-total-repaid)
+(contract-call? .bitflow-vault-core-v2 get-total-repaid)
 ```
 
 **Example Responses:**
@@ -744,7 +744,7 @@ u0
 ```typescript
 const result = await callReadOnlyFunction({
   contractAddress: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM',
-  contractName: 'bitflow-vault-core',
+  contractName: 'bitflow-vault-core-v2',
   functionName: 'get-total-repaid',
   functionArgs: [],
   network: new StacksMainnet(),
@@ -772,7 +772,7 @@ Retrieves the total number of liquidation events executed.
 
 **Example Request:**
 ```clarity
-(contract-call? .bitflow-vault-core get-total-liquidations)
+(contract-call? .bitflow-vault-core-v2 get-total-liquidations)
 ```
 
 **Example Responses:**
@@ -795,7 +795,7 @@ u0
 ```typescript
 const result = await callReadOnlyFunction({
   contractAddress: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM',
-  contractName: 'bitflow-vault-core',
+  contractName: 'bitflow-vault-core-v2',
   functionName: 'get-total-liquidations',
   functionArgs: [],
   network: new StacksMainnet(),

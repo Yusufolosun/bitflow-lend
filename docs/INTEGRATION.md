@@ -1,6 +1,6 @@
 # BitFlow Vault Integration Guide
 
-This guide provides step-by-step instructions for integrating with the BitFlow `bitflow-vault-core` contract. Whether you're building a DApp, bot, or backend service, this document covers all the essentials.
+This guide provides step-by-step instructions for integrating with the BitFlow `bitflow-vault-core-v2` contract. Whether you're building a DApp, bot, or backend service, this document covers all the essentials.
 
 ## Table of Contents
 
@@ -82,7 +82,7 @@ export const network = process.env.NETWORK === 'mainnet'
 ```typescript
 export const VAULT_CONTRACT = {
   address: 'ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0', // Testnet deploy
-  name: 'bitflow-vault-core'
+  name: 'bitflow-vault-core-v2'
 };
 
 export const contractAddress = VAULT_CONTRACT.address;
@@ -1326,7 +1326,7 @@ import {
 } from '@stacks/transactions';
 
 const CONTRACT_ADDRESS = 'SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193';
-const CONTRACT_NAME = 'bitflow-vault-core';
+const CONTRACT_NAME = 'bitflow-vault-core-v2';
 const MICRO_STX = 1_000_000;
 
 export function useBitFlowVault(userAddress: string) {
@@ -1542,7 +1542,7 @@ import { callReadOnlyFunction, uintCV, principalCV, cvToValue } from '@stacks/tr
 
 const CONTRACT = {
   address: 'SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193',
-  name: 'bitflow-vault-core',
+  name: 'bitflow-vault-core-v2',
 };
 
 export function useVault(userAddress: () => string | null) {
@@ -1657,7 +1657,7 @@ Integrate BitFlow without any framework — pure JavaScript.
 ```javascript
 // app.js
 const CONTRACT_ADDRESS = 'SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193';
-const CONTRACT_NAME = 'bitflow-vault-core';
+const CONTRACT_NAME = 'bitflow-vault-core-v2';
 const MICRO_STX = 1000000;
 
 const { showConnect, UserSession, AppConfig } = window.StacksConnect;

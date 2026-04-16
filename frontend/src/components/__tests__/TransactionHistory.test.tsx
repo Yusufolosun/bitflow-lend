@@ -17,15 +17,10 @@ vi.mock('../../hooks/useAuth', () => ({
 
 vi.mock('../../config/contracts', () => ({
   VAULT_CONTRACT: {
-    testnet: { address: 'ST1TEST', contractName: 'bitflow-vault-core' },
-    mainnet: { address: 'SP1TEST', contractName: 'bitflow-vault-core' },
+    testnet: { address: 'ST1TEST', contractName: 'bitflow-vault-core-v2' },
+    mainnet: { address: 'SP1TEST', contractName: 'bitflow-vault-core-v2' },
   },
   CONTRACT_VERSIONS: [
-    {
-      version: '1.0.0',
-      address: { testnet: 'ST1TEST', mainnet: 'SP1TEST' },
-      contractName: 'bitflow-vault-core',
-    },
     {
       version: '2.0.0',
       address: { testnet: 'ST1TEST', mainnet: 'SP1TEST' },
@@ -142,7 +137,7 @@ describe('TransactionHistory Component', () => {
             block_height: 100,
             burn_block_time: 1710000000,
             contract_call: {
-              contract_id: 'ST1TEST.bitflow-vault-core',
+              contract_id: 'ST1TEST.bitflow-vault-core-v2',
               function_name: 'deposit',
               function_args: [{ hex: '0x01', repr: 'u1000000', name: 'amount', type: 'uint' }],
             },
@@ -154,7 +149,7 @@ describe('TransactionHistory Component', () => {
             block_height: 101,
             burn_block_time: 1710000100,
             contract_call: {
-              contract_id: 'ST1TEST.bitflow-vault-core',
+              contract_id: 'ST1TEST.bitflow-vault-core-v2',
               function_name: 'borrow',
               function_args: [{ hex: '0x02', repr: 'u2000000', name: 'amount', type: 'uint' }],
             },

@@ -74,14 +74,6 @@ vi.mock('../config/contracts', () => ({
   getContractAddress: () => 'ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0',
   CONTRACT_VERSIONS: [
     {
-      version: '1.0.0',
-      address: {
-        testnet: 'ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0',
-        mainnet: 'SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193',
-      },
-      contractName: 'bitflow-vault-core',
-    },
-    {
       version: '2.0.0',
       address: {
         testnet: 'ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0',
@@ -91,18 +83,18 @@ vi.mock('../config/contracts', () => ({
     },
   ],
     VAULT_CONTRACT: {
-      name: 'bitflow-vault-core',
+      name: 'bitflow-vault-core-v2',
       testnet: {
         address: 'ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0',
-        contractName: 'bitflow-vault-core',
+        contractName: 'bitflow-vault-core-v2',
       },
       mainnet: {
         address: 'SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193',
-        contractName: 'bitflow-vault-core',
+        contractName: 'bitflow-vault-core-v2',
       },
     },
   getApiEndpoint: () => 'https://api.testnet.hiro.so',
-  getContractId: () => 'ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.bitflow-vault-core',
+  getContractId: () => 'ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.bitflow-vault-core-v2',
 }));
 
 vi.mock('../types/vault', () => ({

@@ -74,7 +74,7 @@ jobs:
 
       - name: Check for dangerous patterns
         run: |
-          CONTRACTS="contracts/bitflow-vault-core.clar contracts/bitflow-vault-core-v2.clar contracts/bitflow-staking-pool.clar contracts/bitflow-oracle-registry.clar"
+          CONTRACTS="contracts/bitflow-vault-core-v2.clar contracts/bitflow-staking-pool.clar contracts/bitflow-oracle-registry.clar"
           echo "## Contract Security Analysis" > contract-security.txt
           echo "" >> contract-security.txt
           ISSUES=0

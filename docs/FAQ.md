@@ -717,7 +717,7 @@ Technical questions for developers and power users.
 
 ### Can the contract be upgraded?
 
-No. Clarity smart contracts on Stacks are **immutable** once deployed. The contract at `SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.bitflow-vault-core` cannot be modified.
+No. Clarity smart contracts on Stacks are **immutable** once deployed. The contract at `SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.bitflow-vault-core-v2` cannot be modified.
 
 To introduce new features, a new contract version would be deployed with a migration path:
 

@@ -5,7 +5,7 @@
 [![Tests](https://github.com/Yusufolosun/bitflow-lend/actions/workflows/test.yml/badge.svg)](https://github.com/Yusufolosun/bitflow-lend/actions/workflows/test.yml)
 [![Clarity](https://img.shields.io/badge/language-Clarity-blue.svg)]()
 [![Stacks](https://img.shields.io/badge/blockchain-Stacks-purple.svg)]()
-[![Mainnet](https://img.shields.io/badge/mainnet-deployed-success.svg)](https://explorer.hiro.so/address/SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.bitflow-vault-core?chain=mainnet)
+[![Mainnet](https://img.shields.io/badge/mainnet-deployed-success.svg)](https://explorer.hiro.so/address/SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.bitflow-vault-core-v2?chain=mainnet)
 
 Bitcoin-native fixed-rate lending protocol built on Stacks blockchain.
 
@@ -24,8 +24,8 @@ BitFlow Lend enables users to lend and borrow STX with predictable, fixed intere
 
 | | |
 |---|---|
-| **Contract** | `SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.bitflow-vault-core` |
-| **Explorer** | [View on Hiro Explorer](https://explorer.hiro.so/address/SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.bitflow-vault-core?chain=mainnet) |
+| **Contract** | `SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.bitflow-vault-core-v2` |
+| **Explorer** | [View on Hiro Explorer](https://explorer.hiro.so/address/SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.bitflow-vault-core-v2?chain=mainnet) |
 | **Deployed** | February 10, 2026 |
 
 ## Quick Start

@@ -10,7 +10,7 @@ import fetch from 'node-fetch';
 
 // Configuration
 const CONTRACT_ADDRESS = 'ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0';
-const CONTRACT_NAME = 'bitflow-vault-core';
+const CONTRACT_NAME = 'bitflow-vault-core-v2';
 const API_URL = 'https://api.testnet.hiro.so';
 
 console.log('\n============================================================');

@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `bitflow-vault-core` contract is a DeFi lending protocol that enables users to deposit STX, borrow against their collateral, repay loans with interest, and participate in liquidations of undercollateralized positions.
+The `bitflow-vault-core-v2` contract is a DeFi lending protocol that enables users to deposit STX, borrow against their collateral, repay loans with interest, and participate in liquidations of undercollateralized positions.
 
 ## Protocol Parameters
 
@@ -60,7 +60,7 @@ Deposits STX into the vault, adding to the user's collateral balance.
 **Usage Example:**
 ```clarity
 ;; Deposit 1000 STX
-(contract-call? .bitflow-vault-core deposit u1000)
+(contract-call? .bitflow-vault-core-v2 deposit u1000)
 ;; Returns: (ok true)
 ```
 
@@ -94,7 +94,7 @@ Withdraws STX from the vault, reducing the user's collateral balance.
 **Usage Example:**
 ```clarity
 ;; Withdraw 500 STX
-(contract-call? .bitflow-vault-core withdraw u500)
+(contract-call? .bitflow-vault-core-v2 withdraw u500)
 ;; Returns: (ok true)
 ```
 
@@ -135,7 +135,7 @@ Borrows STX against deposited collateral with specified interest rate and term.
 ```clarity
 ;; Borrow 1000 STX at 5% annual interest for 30 days
 ;; Requires 1500 STX deposited as collateral (150%)
-(contract-call? .bitflow-vault-core borrow u1000 u500 u30)
+(contract-call? .bitflow-vault-core-v2 borrow u1000 u500 u30)
 ;; Returns: (ok true)
 ```
 
@@ -181,7 +181,7 @@ None
 **Usage Example:**
 ```clarity
 ;; Repay active loan
-(contract-call? .bitflow-vault-core repay)
+(contract-call? .bitflow-vault-core-v2 repay)
 ;; Returns: (ok { principal: u1000, interest: u12, total: u1012 })
 ```
 
@@ -237,7 +237,7 @@ Liquidates an undercollateralized loan position, seizing collateral in exchange 
 ;; Liquidate undercollateralized position
 ;; If borrower has 1500 STX collateral and 1000 STX loan
 ;; and STX price drops to $0.70 (u70)
-(contract-call? .bitflow-vault-core liquidate 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM)
+(contract-call? .bitflow-vault-core-v2 liquidate 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM)
 ;; Returns: (ok { seized-collateral: u1500, paid: u1050, bonus: u50 })
 ```
 
@@ -291,7 +291,7 @@ Retrieves the STX deposit balance for a user.
 
 **Usage Example:**
 ```clarity
-(contract-call? .bitflow-vault-core get-user-deposit 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM)
+(contract-call? .bitflow-vault-core-v2 get-user-deposit 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM)
 ;; Returns: u1500
 ```
 
@@ -316,7 +316,7 @@ None
 
 **Usage Example:**
 ```clarity
-(contract-call? .bitflow-vault-core get-total-deposits)
+(contract-call? .bitflow-vault-core-v2 get-total-deposits)
 ;; Returns: u5000
 ```
 
@@ -347,7 +347,7 @@ Retrieves loan details for a user.
 
 **Usage Example:**
 ```clarity
-(contract-call? .bitflow-vault-core get-user-loan 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM)
+(contract-call? .bitflow-vault-core-v2 get-user-loan 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM)
 ;; Returns: (some { amount: u1000, interest-rate: u50, start-block: u100, term-end: u4420 })
 ```
 
@@ -372,7 +372,7 @@ Calculates the minimum collateral required for a given borrow amount.
 
 **Usage Example:**
 ```clarity
-(contract-call? .bitflow-vault-core calculate-required-collateral u1000)
+(contract-call? .bitflow-vault-core-v2 calculate-required-collateral u1000)
 ;; Returns: u1500 (150% of 1000)
 ```
 
@@ -402,7 +402,7 @@ None
 
 **Usage Example:**
 ```clarity
-(contract-call? .bitflow-vault-core get-total-repaid)
+(contract-call? .bitflow-vault-core-v2 get-total-repaid)
 ;; Returns: u2050
 ```
 
@@ -427,7 +427,7 @@ None
 
 **Usage Example:**
 ```clarity
-(contract-call? .bitflow-vault-core get-total-liquidations)
+(contract-call? .bitflow-vault-core-v2 get-total-liquidations)
 ;; Returns: u3
 ```
 
@@ -456,7 +456,7 @@ Calculates the health factor for a user's loan position.
 **Usage Example:**
 ```clarity
 ;; Check health factor with STX at $1.00
-(contract-call? .bitflow-vault-core calculate-health-factor 
+(contract-call? .bitflow-vault-core-v2 calculate-health-factor 
   'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM 
   u100)
 ;; Returns: (some u150) - Position is 150% collateralized
@@ -504,7 +504,7 @@ Checks if a user's loan position is eligible for liquidation.
 **Usage Example:**
 ```clarity
 ;; Check if position is liquidatable at $0.70
-(contract-call? .bitflow-vault-core is-liquidatable 
+(contract-call? .bitflow-vault-core-v2 is-liquidatable 
   'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM 
   u70)
 ;; Returns: true (health factor < 110%)
@@ -540,7 +540,7 @@ Calculates the total repayment amount for a user's active loan.
 
 **Usage Example:**
 ```clarity
-(contract-call? .bitflow-vault-core get-repayment-amount 
+(contract-call? .bitflow-vault-core-v2 get-repayment-amount 
   'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM)
 ;; Returns: (some { principal: u1000, interest: u12, total: u1012 })
 ```
@@ -558,17 +558,17 @@ Calculates the total repayment amount for a user's active loan.
 
 ```clarity
 ;; 1. Deposit 2000 STX
-(contract-call? .bitflow-vault-core deposit u2000)
+(contract-call? .bitflow-vault-core-v2 deposit u2000)
 
 ;; 2. Check balance
-(contract-call? .bitflow-vault-core get-user-deposit tx-sender)
+(contract-call? .bitflow-vault-core-v2 get-user-deposit tx-sender)
 ;; Returns: u2000
 
 ;; 3. Withdraw 500 STX
-(contract-call? .bitflow-vault-core withdraw u500)
+(contract-call? .bitflow-vault-core-v2 withdraw u500)
 
 ;; 4. Check updated balance
-(contract-call? .bitflow-vault-core get-user-deposit tx-sender)
+(contract-call? .bitflow-vault-core-v2 get-user-deposit tx-sender)
 ;; Returns: u1500
 ```
 
@@ -576,25 +576,25 @@ Calculates the total repayment amount for a user's active loan.
 
 ```clarity
 ;; 1. Deposit collateral (1500 STX)
-(contract-call? .bitflow-vault-core deposit u1500)
+(contract-call? .bitflow-vault-core-v2 deposit u1500)
 
 ;; 2. Calculate required collateral for 1000 STX loan
-(contract-call? .bitflow-vault-core calculate-required-collateral u1000)
+(contract-call? .bitflow-vault-core-v2 calculate-required-collateral u1000)
 ;; Returns: u1500 ✓ (user has enough)
 
 ;; 3. Borrow 1000 STX at 50% for 30 days
-(contract-call? .bitflow-vault-core borrow u1000 u50 u30)
+(contract-call? .bitflow-vault-core-v2 borrow u1000 u50 u30)
 
 ;; 4. Check loan details
-(contract-call? .bitflow-vault-core get-user-loan tx-sender)
+(contract-call? .bitflow-vault-core-v2 get-user-loan tx-sender)
 ;; Returns: (some { amount: u1000, interest-rate: u50, start-block: u100, term-end: u4420 })
 
 ;; 5. Preview repayment amount (after some time)
-(contract-call? .bitflow-vault-core get-repayment-amount tx-sender)
+(contract-call? .bitflow-vault-core-v2 get-repayment-amount tx-sender)
 ;; Returns: (some { principal: u1000, interest: u15, total: u1015 })
 
 ;; 6. Repay loan
-(contract-call? .bitflow-vault-core repay)
+(contract-call? .bitflow-vault-core-v2 repay)
 ;; Returns: (ok { principal: u1000, interest: u15, total: u1015 })
 ```
 
@@ -604,19 +604,19 @@ Calculates the total repayment amount for a user's active loan.
 ;; Scenario: Borrower's position becomes undercollateralized
 
 ;; 1. Check borrower's health factor
-(contract-call? .bitflow-vault-core calculate-health-factor 
+(contract-call? .bitflow-vault-core-v2 calculate-health-factor 
   'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM 
   u70)
 ;; Returns: (some u105) - Below 110% threshold
 
 ;; 2. Verify position is liquidatable
-(contract-call? .bitflow-vault-core is-liquidatable 
+(contract-call? .bitflow-vault-core-v2 is-liquidatable 
   'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM 
   u70)
 ;; Returns: true
 
 ;; 3. Execute liquidation
-(contract-call? .bitflow-vault-core liquidate 
+(contract-call? .bitflow-vault-core-v2 liquidate 
   'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM)
 ;; Returns: (ok { seized-collateral: u1500, paid: u1050, bonus: u50 })
 ;; Liquidator pays 1050 STX (1000 loan + 50 bonus)
@@ -749,10 +749,10 @@ The most common usage: deposit collateral, then borrow against it.
 
 ```clarity
 ;; Step 1: Deposit 15 STX as collateral
-(contract-call? .bitflow-vault-core deposit u15000000)
+(contract-call? .bitflow-vault-core-v2 deposit u15000000)
 
 ;; Step 2: Borrow up to 66.67% of deposit
-(contract-call? .bitflow-vault-core borrow u10000000 u500 u30)
+(contract-call? .bitflow-vault-core-v2 borrow u10000000 u500 u30)
 ```
 
 **Important**: Both calls must come from the same `tx-sender`. You cannot deposit from one wallet and borrow from another.
@@ -763,10 +763,10 @@ Always check available collateral before borrowing:
 
 ```clarity
 ;; Read-only: check max borrow amount
-(contract-call? .bitflow-vault-core get-max-borrow-amount tx-sender)
+(contract-call? .bitflow-vault-core-v2 get-max-borrow-amount tx-sender)
 
 ;; Read-only: check required collateral for a desired borrow
-(contract-call? .bitflow-vault-core calculate-required-collateral u5000000)
+(contract-call? .bitflow-vault-core-v2 calculate-required-collateral u5000000)
 ```
 
 ### Monitor → Repay Flow
@@ -775,10 +775,10 @@ Check loan status before repaying:
 
 ```clarity
 ;; Read-only: check current repayment obligation
-(contract-call? .bitflow-vault-core get-repayment-amount tx-sender)
+(contract-call? .bitflow-vault-core-v2 get-repayment-amount tx-sender)
 
 ;; If satisfied, repay (no args — reads loan from map)
-(contract-call? .bitflow-vault-core repay)
+(contract-call? .bitflow-vault-core-v2 repay)
 ```
 
 ### Liquidation Pattern
@@ -787,10 +787,10 @@ Liquidators scan for undercollateralized positions:
 
 ```clarity
 ;; Read-only: check if a borrower is liquidatable
-(contract-call? .bitflow-vault-core is-liquidatable 'SP_BORROWER)
+(contract-call? .bitflow-vault-core-v2 is-liquidatable 'SP_BORROWER)
 
 ;; If true, execute liquidation
-(contract-call? .bitflow-vault-core liquidate 'SP_BORROWER)
+(contract-call? .bitflow-vault-core-v2 liquidate 'SP_BORROWER)
 ```
 
 **Liquidator economics**: You pay the borrower's debt and receive their collateral + 5% bonus.
@@ -800,9 +800,9 @@ Liquidators scan for undercollateralized positions:
 Users can deposit multiple times. Deposits are additive:
 
 ```clarity
-(contract-call? .bitflow-vault-core deposit u5000000)  ;; Balance: 5 STX
-(contract-call? .bitflow-vault-core deposit u5000000)  ;; Balance: 10 STX
-(contract-call? .bitflow-vault-core deposit u5000000)  ;; Balance: 15 STX
+(contract-call? .bitflow-vault-core-v2 deposit u5000000)  ;; Balance: 5 STX
+(contract-call? .bitflow-vault-core-v2 deposit u5000000)  ;; Balance: 10 STX
+(contract-call? .bitflow-vault-core-v2 deposit u5000000)  ;; Balance: 15 STX
 ```
 
 ---

@@ -4,7 +4,7 @@
 
 BitFlow Lend is a decentralized lending protocol on the Stacks blockchain. You deposit STX as collateral, borrow against it, and repay with interest — all without intermediaries.
 
-**Mainnet Contract:** `SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.bitflow-vault-core`
+**Mainnet Contract:** `SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.bitflow-vault-core-v2`
 
 ---
 
@@ -49,7 +49,7 @@ Before you start, you need:
 3. Click **"Deposit STX"**
 4. Review the transaction in your wallet popup:
    - **Amount:** 5.000000 STX
-   - **Contract:** `bitflow-vault-core`
+   - **Contract:** `bitflow-vault-core-v2`
    - **Function:** `deposit`
 5. Click **"Confirm"** in your wallet
 6. Wait for the transaction to confirm (~10 minutes, 1 block)

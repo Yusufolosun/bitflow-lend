@@ -15,7 +15,7 @@ set -e
 NETWORK="mainnet"
 WATCH_MODE=false
 INTERVAL=60
-CONTRACT_NAME="bitflow-vault-core"
+CONTRACT_NAME="bitflow-vault-core-v2"
 DEPLOYER_ADDRESS=""  # Set after deployment
 LOG_DIR="logs"
 LOG_FILE="$LOG_DIR/monitor-$(date +%Y%m%d).log"

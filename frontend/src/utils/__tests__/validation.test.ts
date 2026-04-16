@@ -127,7 +127,7 @@ describe('validateContractId', () => {
   });
 
   it('accepts valid contract ID', () => {
-    const result = validateContractId('ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.bitflow-vault-core');
+    const result = validateContractId('ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.bitflow-vault-core-v2');
     expect(result.isValid).toBe(true);
   });
 

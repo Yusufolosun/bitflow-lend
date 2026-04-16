@@ -123,7 +123,7 @@ import { callReadOnlyFunction, uintCV, principalCV } from '@stacks/transactions'
 
 const healthFactor = await callReadOnlyFunction({
   contractAddress: 'SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193',
-  contractName: 'bitflow-vault-core',
+  contractName: 'bitflow-vault-core-v2',
   functionName: 'calculate-health-factor',
   functionArgs: [
     principalCV('SP...YOUR_ADDRESS'),

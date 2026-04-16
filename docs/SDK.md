@@ -42,12 +42,12 @@ const testnet = new StacksTestnet();
 const CONTRACT_CONFIG = {
   mainnet: {
     address: 'SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193',
-    name: 'bitflow-vault-core',
+    name: 'bitflow-vault-core-v2',
     network: new StacksMainnet(),
   },
   testnet: {
     address: 'ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0',
-    name: 'bitflow-vault-core',
+    name: 'bitflow-vault-core-v2',
     network: new StacksTestnet(),
   },
 };
@@ -432,7 +432,7 @@ import { StacksMainnet } from '@stacks/network';
 
 const client = new BitFlowClient({
   contractAddress: 'SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193',
-  contractName: 'bitflow-vault-core',
+  contractName: 'bitflow-vault-core-v2',
   network: new StacksMainnet(),
 });
 

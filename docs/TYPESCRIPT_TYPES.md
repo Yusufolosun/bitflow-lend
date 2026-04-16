@@ -19,11 +19,11 @@ type ContractId = `${StacksAddress}.${string}`;
 
 /** BitFlow mainnet contract */
 const BITFLOW_CONTRACT: ContractId =
-  'SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.bitflow-vault-core';
+  'SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.bitflow-vault-core-v2';
 
 /** BitFlow testnet contract */
 const BITFLOW_TESTNET_CONTRACT: ContractId =
-  'ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.bitflow-vault-core';
+  'ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.bitflow-vault-core-v2';
 ```
 
 ### Amounts

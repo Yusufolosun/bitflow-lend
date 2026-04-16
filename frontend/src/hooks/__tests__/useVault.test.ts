@@ -31,7 +31,7 @@ vi.mock('@stacks/transactions', () => ({
 vi.mock('../../config/contracts', () => ({
   getNetwork: () => 'testnet',
   getContractAddress: () => 'ST1TESTADDRESS',
-  getActiveContractVersion: () => ({ contractName: 'bitflow-vault-core' }),
+  getActiveContractVersion: () => ({ contractName: 'bitflow-vault-core-v2' }),
   PROTOCOL_CONSTANTS: { MIN_COLLATERAL_RATIO: 150 },
   getApiEndpoint: () => 'https://api.testnet.hiro.so',
 }));

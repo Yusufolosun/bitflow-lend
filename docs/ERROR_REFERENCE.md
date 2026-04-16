@@ -2,7 +2,7 @@
 
 > **Complete reference for all error codes in the BitFlow Lend protocol.**
 
-Contract: `SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.bitflow-vault-core`
+Contract: `SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.bitflow-vault-core-v2`
 
 ---
 
@@ -246,7 +246,7 @@ function handleContractError(errorCode: number): string {
 ```clarity
 ;; Errors are returned as (err uint)
 ;; Check with match:
-(match (contract-call? .bitflow-vault-core deposit u1000000)
+(match (contract-call? .bitflow-vault-core-v2 deposit u1000000)
   ok-val (print "success")
   err-val (print err-val))
 ```

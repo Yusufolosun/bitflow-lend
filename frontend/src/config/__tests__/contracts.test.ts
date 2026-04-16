@@ -22,8 +22,8 @@ describe('Contract Configuration', () => {
     });
 
     it('uses correct contract name', () => {
-      expect(VAULT_CONTRACT.testnet.contractName).toBe('bitflow-vault-core');
-      expect(VAULT_CONTRACT.mainnet.contractName).toBe('bitflow-vault-core');
+      expect(VAULT_CONTRACT.testnet.contractName).toBe('bitflow-vault-core-v2');
+      expect(VAULT_CONTRACT.mainnet.contractName).toBe('bitflow-vault-core-v2');
     });
 
     it('testnet uses ST prefix', () => {
@@ -78,13 +78,12 @@ describe('Contract Configuration', () => {
 
   // ── CONTRACT_VERSIONS ───────────────────────────────────────────
   describe('CONTRACT_VERSIONS', () => {
-    it('contains at least v1 and v2', () => {
-      expect(CONTRACT_VERSIONS.length).toBeGreaterThanOrEqual(2);
+    it('contains only the active v2 contract', () => {
+      expect(CONTRACT_VERSIONS.length).toBe(1);
     });
 
-    it('versions are in order', () => {
-      expect(CONTRACT_VERSIONS[0].version).toBe('1.0.0');
-      expect(CONTRACT_VERSIONS[1].version).toBe('2.0.0');
+    it('contains version 2.0.0', () => {
+      expect(CONTRACT_VERSIONS[0].version).toBe('2.0.0');
     });
   });
 
@@ -123,7 +122,7 @@ describe('Contract Configuration', () => {
     it('returns address.contractName format', () => {
       const id = getContractId();
       expect(id).toContain('.');
-      expect(id).toContain('bitflow-vault-core');
+      expect(id).toContain('bitflow-vault-core-v2');
     });
   });
 

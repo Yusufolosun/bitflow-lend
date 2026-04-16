@@ -2,7 +2,7 @@
 
 > **Complete reference for all on-chain data structures in the BitFlow Lend protocol.**
 
-Contract: `SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.bitflow-vault-core`
+Contract: `SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.bitflow-vault-core-v2`
 
 ---
 
