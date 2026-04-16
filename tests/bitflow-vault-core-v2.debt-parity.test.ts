@@ -151,4 +151,15 @@ describe("bitflow-vault-core-v2 debt parity", () => {
     const outstandingDebt = readOutstandingDebt(principal, rate, elapsedBlocks);
     expect(outstandingDebt).toBe(principal);
   });
+
+  it("increases outstanding debt as elapsed blocks grow", () => {
+    const principal = 1_500_000n;
+    const rate = 500n;
+
+    const debtAt10 = readOutstandingDebt(principal, rate, 10n);
+    const debtAt100 = readOutstandingDebt(principal, rate, 100n);
+
+    expect(debtAt100).toBeGreaterThan(debtAt10);
+    expect(debtAt10).toBeGreaterThanOrEqual(principal);
+  });
 });
