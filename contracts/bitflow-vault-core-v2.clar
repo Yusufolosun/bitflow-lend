@@ -252,14 +252,16 @@
   (match (map-get? user-loans user)
     loan
       (let (
+        (principal (get amount loan))
         (blocks-elapsed (safe-sub block-height (get start-block loan)))
-        (interest (calculate-interest-precise (get amount loan) (get interest-rate loan) blocks-elapsed))
+        (outstanding-debt (calculate-outstanding-debt principal (get interest-rate loan) blocks-elapsed))
+        (interest (safe-sub outstanding-debt principal))
         (penalty (if (> block-height (get term-end loan))
-          (/ (* (get amount loan) (var-get late-penalty-rate)) u10000)
+          (/ (* principal (var-get late-penalty-rate)) u10000)
           u0))
-        (total (safe-add (safe-add (get amount loan) interest) penalty))
+        (total (safe-add outstanding-debt penalty))
       )
-        (some { principal: (get amount loan), interest: interest, penalty: penalty, total: total })
+        (some { principal: principal, interest: interest, penalty: penalty, total: total })
       )
     none
   )
