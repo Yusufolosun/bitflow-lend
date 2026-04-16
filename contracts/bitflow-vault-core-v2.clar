@@ -171,6 +171,14 @@
   (/ (* borrow-amount (var-get min-collateral-ratio)) u100)
 )
 
+(define-read-only (calculate-outstanding-debt (principal uint) (rate uint) (elapsed-blocks uint))
+  (let (
+    (interest (calculate-interest-precise principal rate elapsed-blocks))
+  )
+    (safe-add principal interest)
+  )
+)
+
 (define-read-only (get-total-repaid)
   (var-get total-repaid)
 )
