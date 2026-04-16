@@ -55,6 +55,33 @@ describe("bitflow-vault-core-v2 debt parity", () => {
     };
   };
 
+  const readLoanSnapshot = (user: string) => {
+    const response = simnet.callReadOnlyFn(
+      CONTRACT,
+      "get-user-loan",
+      [Cl.principal(user)],
+      deployer()
+    );
+    const tuple = (response.result as any).value?.value;
+
+    return {
+      principal: BigInt(tuple.amount.value),
+      rate: BigInt(tuple["interest-rate"].value),
+      startBlock: BigInt(tuple["start-block"].value),
+    };
+  };
+
+  const readOutstandingDebt = (principal: bigint, rate: bigint, elapsedBlocks: bigint) => {
+    const response = simnet.callReadOnlyFn(
+      CONTRACT,
+      "calculate-outstanding-debt",
+      [Cl.uint(principal), Cl.uint(rate), Cl.uint(elapsedBlocks)],
+      deployer()
+    );
+
+    return BigInt((response.result as any).value?.value);
+  };
+
   const expectedHealthFactor = (depositAmount: number, stxPrice: number, debt: bigint) => {
     const collateralValue = (BigInt(depositAmount) * BigInt(stxPrice)) / 100n;
     return (collateralValue * 100n) / debt;
@@ -96,5 +123,23 @@ describe("bitflow-vault-core-v2 debt parity", () => {
     expect(repayment.penalty).toBeGreaterThan(0n);
     expect(healthFactor).toBe(expectedHealthFactor(depositAmount, stxPrice, repayment.outstandingDebt));
     expect(repayment.total).toBe(repayment.outstandingDebt + repayment.penalty);
+  });
+
+  it("matches calculate-outstanding-debt with repayment principal plus interest", () => {
+    init();
+    setPrice(100);
+
+    deposit(10_000_000, wallet1());
+    borrow(1_000_000, 500, 30, wallet1());
+    simnet.mineEmptyBlocks(25);
+
+    const loan = readLoanSnapshot(wallet1());
+    const currentBlock = BigInt(simnet.blockHeight);
+    const elapsedBlocks = currentBlock - loan.startBlock;
+
+    const outstandingDebt = readOutstandingDebt(loan.principal, loan.rate, elapsedBlocks);
+    const repayment = readRepaymentDebt(wallet1());
+
+    expect(outstandingDebt).toBe(repayment.outstandingDebt);
   });
 });
