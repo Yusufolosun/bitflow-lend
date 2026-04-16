@@ -77,4 +77,24 @@ describe("bitflow-vault-core-v2 debt parity", () => {
     expect(healthFactor).toBe(expectedHealthFactor(depositAmount, stxPrice, repayment.outstandingDebt));
     expect(repayment.total).toBe(repayment.outstandingDebt + repayment.penalty);
   });
+
+  it("keeps debt parity after interest accrual and late penalty", () => {
+    init();
+    setPrice(100);
+
+    const depositAmount = 20_000_000;
+    const borrowAmount = 2_000_000;
+    const stxPrice = 100;
+
+    deposit(depositAmount, wallet1());
+    borrow(borrowAmount, 500, 1, wallet1());
+    simnet.mineEmptyBlocks(200);
+
+    const healthFactor = readHealthFactor(wallet1(), stxPrice);
+    const repayment = readRepaymentDebt(wallet1());
+
+    expect(repayment.penalty).toBeGreaterThan(0n);
+    expect(healthFactor).toBe(expectedHealthFactor(depositAmount, stxPrice, repayment.outstandingDebt));
+    expect(repayment.total).toBe(repayment.outstandingDebt + repayment.penalty);
+  });
 });
