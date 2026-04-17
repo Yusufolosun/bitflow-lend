@@ -81,10 +81,9 @@ describe("bitflow-vault-core-v2 boundary tests", () => {
       expect(result).toBeOk(Cl.bool(true));
     });
 
-    it("rejects deposit exceeding per-user limit", () => {
+    it("rejects deposit one unit above DEPOSIT-LIMIT", () => {
       setup();
-      // DEPOSIT-LIMIT is 10M STX = 10_000_000_000_000 microSTX
-      const { result } = deposit(10_000_000_000_001, wallet1());
+      const { result } = deposit(DEPOSIT_LIMIT + 1, wallet1());
       expect(result).toBeErr(Cl.uint(401)); // ERR-DEPOSIT-CAP-EXCEEDED
     });
   });
