@@ -2,6 +2,7 @@ import { Cl } from "@stacks/transactions";
 import { describe, expect, it } from "vitest";
 
 const CONTRACT = "bitflow-vault-core-v2";
+const DEPOSIT_LIMIT = 10_000_000_000_000;
 
 /**
  * Verifies v2 deposit-limit enforcement: per-user caps, zero-amount
