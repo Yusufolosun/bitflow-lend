@@ -171,6 +171,14 @@
   (/ (* borrow-amount (var-get min-collateral-ratio)) u100)
 )
 
+(define-read-only (calculate-outstanding-debt (principal uint) (rate uint) (elapsed-blocks uint))
+  (let (
+    (interest (calculate-interest-precise principal rate elapsed-blocks))
+  )
+    (safe-add principal interest)
+  )
+)
+
 (define-read-only (get-total-repaid)
   (var-get total-repaid)
 )
@@ -211,10 +219,11 @@
       loan
         (let (
           (user-deposit (default-to u0 (map-get? user-deposits user)))
-          (loan-amount (get amount loan))
+          (blocks-elapsed (safe-sub block-height (get start-block loan)))
+          (outstanding-debt (calculate-outstanding-debt (get amount loan) (get interest-rate loan) blocks-elapsed))
           (collateral-value (/ (* user-deposit stx-price) u100))
-          (health-factor (if (> loan-amount u0)
-            (/ (* collateral-value u100) loan-amount)
+          (health-factor (if (> outstanding-debt u0)
+            (/ (* collateral-value u100) outstanding-debt)
             u200))
         )
           (some health-factor)
@@ -243,14 +252,16 @@
   (match (map-get? user-loans user)
     loan
       (let (
+        (principal (get amount loan))
         (blocks-elapsed (safe-sub block-height (get start-block loan)))
-        (interest (calculate-interest-precise (get amount loan) (get interest-rate loan) blocks-elapsed))
+        (outstanding-debt (calculate-outstanding-debt principal (get interest-rate loan) blocks-elapsed))
+        (interest (safe-sub outstanding-debt principal))
         (penalty (if (> block-height (get term-end loan))
-          (/ (* (get amount loan) (var-get late-penalty-rate)) u10000)
+          (/ (* principal (var-get late-penalty-rate)) u10000)
           u0))
-        (total (safe-add (safe-add (get amount loan) interest) penalty))
+        (total (safe-add outstanding-debt penalty))
       )
-        (some { principal: (get amount loan), interest: interest, penalty: penalty, total: total })
+        (some { principal: principal, interest: interest, penalty: penalty, total: total })
       )
     none
   )
@@ -604,11 +615,12 @@
       (loan (unwrap! (map-get? user-loans tx-sender) ERR-NO-ACTIVE-LOAN))
       (loan-amount (get amount loan))
       (blocks-elapsed (safe-sub block-height (get start-block loan)))
-      (interest (calculate-interest-precise loan-amount (get interest-rate loan) blocks-elapsed))
+      (outstanding-debt (calculate-outstanding-debt loan-amount (get interest-rate loan) blocks-elapsed))
+      (interest (safe-sub outstanding-debt loan-amount))
       (penalty (if (> block-height (get term-end loan))
         (/ (* loan-amount (var-get late-penalty-rate)) u10000)
         u0))
-      (total-repayment (safe-add (safe-add loan-amount interest) penalty))
+      (total-repayment (safe-add outstanding-debt penalty))
     )
       ;; Transfer repayment from user to contract
       (try! (stx-transfer? total-repayment tx-sender (as-contract tx-sender)))

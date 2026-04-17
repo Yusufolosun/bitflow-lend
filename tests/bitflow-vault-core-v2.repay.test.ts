@@ -63,6 +63,22 @@ describe("bitflow-vault-core-v2 repay lifecycle tests", () => {
 
       expect(total).toBe(principal + interest + penalty);
     });
+
+    it("never repays less than quoted total", () => {
+      setup();
+      deposit(10_000_000, wallet1());
+      borrow(1_000_000, 500, 30, wallet1());
+      simnet.mineEmptyBlocks(120);
+
+      const quote = getRepayment(wallet1());
+      const quotedTotal = Number((quote.result as any).value?.value?.total?.value);
+
+      const { result } = repay(wallet1());
+      const executedTotal = Number((result as any).value?.value?.total?.value);
+
+      expect(executedTotal).toBeGreaterThanOrEqual(quotedTotal);
+      expect(executedTotal - quotedTotal).toBeLessThanOrEqual(100);
+    });
   });
 
   // ── Repay clears loan ───────────────────────────────────────────

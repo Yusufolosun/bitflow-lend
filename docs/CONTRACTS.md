@@ -465,7 +465,8 @@ Calculates the health factor for a user's loan position.
 **Formula:**
 ```
 collateral-value = (user-deposit × stx-price) / 100
-health-factor = (collateral-value × 100) / loan-amount
+outstanding-debt = calculate-outstanding-debt(principal, rate, elapsed-blocks)
+health-factor = (collateral-value × 100) / outstanding-debt
 
 Example:
 - Deposit: 1500 STX
@@ -479,6 +480,29 @@ Example:
 - 150%+ : Healthy position
 - 110-149% : Warning zone
 - <110% : Liquidatable
+
+---
+
+### calculate-outstanding-debt
+
+Computes principal plus accrued interest for a given principal, rate, and elapsed blocks.
+
+**Signature:**
+```clarity
+(define-read-only (calculate-outstanding-debt (principal uint) (rate uint) (elapsed-blocks uint)))
+```
+
+**Parameters:**
+- `principal` (uint): Original loan amount
+- `rate` (uint): Annual interest rate in basis points
+- `elapsed-blocks` (uint): Blocks elapsed since loan start
+
+**Returns:**
+- `uint`: Outstanding debt (`principal + accrued-interest`)
+
+**Notes:**
+- Shared debt source used by both `calculate-health-factor` and `get-repayment-amount`
+- Prevents debt drift between risk display and repayment demand
 
 ---
 
@@ -549,6 +573,7 @@ Calculates the total repayment amount for a user's active loan.
 - Interest calculated based on blocks elapsed since loan creation
 - Useful for previewing repayment before calling `repay`
 - Interest continues accruing each block
+- Uses the same `calculate-outstanding-debt` path as health-factor calculations
 
 ---
 

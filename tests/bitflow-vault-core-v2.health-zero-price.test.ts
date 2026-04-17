@@ -44,4 +44,36 @@ describe("v2 health-factor zero-price handling", () => {
     const data = result as any;
     expect(data.value).toBeUint(100000);
   });
+
+  it("decreases health factor after debt accrues", () => {
+    simnet.callPublicFn(CONTRACT, "initialize", [], deployer());
+    simnet.callPublicFn(CONTRACT, "set-stx-price", [Cl.uint(10000)], deployer());
+    simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(10000000)], wallet1());
+    simnet.callPublicFn(
+      CONTRACT,
+      "borrow",
+      [Cl.uint(1000000), Cl.uint(500), Cl.uint(30)],
+      wallet1()
+    );
+
+    const immediate = simnet.callReadOnlyFn(
+      CONTRACT,
+      "calculate-health-factor",
+      [Cl.principal(wallet1()), Cl.uint(10000)],
+      deployer()
+    );
+    const immediateHealth = BigInt((immediate.result as any).value?.value);
+
+    simnet.mineEmptyBlocks(250);
+
+    const later = simnet.callReadOnlyFn(
+      CONTRACT,
+      "calculate-health-factor",
+      [Cl.principal(wallet1()), Cl.uint(10000)],
+      deployer()
+    );
+    const laterHealth = BigInt((later.result as any).value?.value);
+
+    expect(laterHealth).toBeLessThan(immediateHealth);
+  });
 });

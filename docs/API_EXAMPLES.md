@@ -319,6 +319,34 @@ async function getRepaymentAmount(userAddress: string): Promise<RepaymentInfo | 
 }
 ```
 
+### calculate-outstanding-debt
+
+```typescript
+async function calculateOutstandingDebt(
+  principalMicroStx: number,
+  rateBps: number,
+  elapsedBlocks: number
+): Promise<number> {
+  const result = await callReadOnlyFunction({
+    contractAddress: CONTRACT_ADDRESS,
+    contractName: CONTRACT_NAME,
+    functionName: 'calculate-outstanding-debt',
+    functionArgs: [
+      uintCV(principalMicroStx),
+      uintCV(rateBps),
+      uintCV(elapsedBlocks),
+    ],
+    senderAddress: CONTRACT_ADDRESS,
+    network: NETWORK,
+  });
+
+  const value = cvToValue(result);
+  return Number(value?.value || value) / MICRO_STX;
+}
+```
+
+Use this helper when reproducing backend calculations in off-chain jobs. It is the same debt source used by both `calculate-health-factor` and `get-repayment-amount`.
+
 ### calculate-health-factor
 
 ```typescript
