@@ -68,12 +68,10 @@ describe("bitflow-vault-core-v2 deposit limit enforcement", () => {
   // ── Per-user cap rejects oversized single deposit ─────────────
   it("rejects single deposit exceeding DEPOSIT-LIMIT", () => {
     init();
-    // DEPOSIT-LIMIT = 10_000_000_000_000 (10M STX in microSTX)
     const { result } = simnet.callPublicFn(
-      CONTRACT, "deposit", [Cl.uint(10_000_000_000_001)], wallet1()
+      CONTRACT, "deposit", [Cl.uint(DEPOSIT_LIMIT + 1)], wallet1()
     );
-    // Should fail: amount >= DEPOSIT-LIMIT
-    expect(result).toBeErr(expect.anything());
+    expect(result).toBeErr(Cl.uint(401));
   });
 
   // ── Per-user cap rejects accumulated deposits over limit ──────
