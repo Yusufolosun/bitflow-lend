@@ -494,7 +494,7 @@
     (asserts! (not (var-get is-paused)) ERR-PROTOCOL-PAUSED)
     (asserts! (var-get deposits-enabled) ERR-PROTOCOL-PAUSED)
     (asserts! (> amount u0) ERR-ZERO-AMOUNT)
-    (asserts! (< amount DEPOSIT-LIMIT) ERR-INSUFFICIENT-BALANCE)
+    (asserts! (<= amount DEPOSIT-LIMIT) ERR-INSUFFICIENT-BALANCE)
     
     (let (
       (current-deposit (default-to u0 (map-get? user-deposits tx-sender)))
