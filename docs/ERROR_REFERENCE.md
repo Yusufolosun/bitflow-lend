@@ -20,6 +20,7 @@ Contract: `SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.bitflow-vault-core-v2`
 | `u109` | `ERR-OWNER-ONLY` | `initialize` | Caller is not the contract owner |
 | `u110` | `ERR-INVALID-RATE` | `borrow` | Interest rate exceeds 10000 BPS (100%) |
 | `u111` | `ERR-INVALID-TERM` | `borrow` | Term is less than 1 day or more than 365 days |
+| `u401` | `ERR-DEPOSIT-CAP-EXCEEDED` | `deposit` | Deposit would exceed per-user cap (10M STX) |
 
 > **Note**: Error code `u104` is not used in the current contract version.
 
@@ -218,6 +219,23 @@ Result: (err u105) — need 2 more STX
 
 ---
 
+### u401 — ERR-DEPOSIT-CAP-EXCEEDED
+
+**Function**: `deposit`
+
+**Cause**: The resulting user deposit would exceed `DEPOSIT-LIMIT` (`u10_000_000_000_000`).
+
+**Clarity source**:
+```clarity
+(asserts! (<= new-deposit DEPOSIT-LIMIT) (err u401))
+```
+
+**Resolution**:
+1. Reduce the deposit amount so `current-deposit + amount <= DEPOSIT-LIMIT`
+2. Use `get-user-deposit` to calculate remaining capacity before submitting
+
+---
+
 ## Error Handling in Code
 
 ### TypeScript
@@ -257,7 +275,7 @@ function handleContractError(errorCode: number): string {
 
 | Function | Possible Errors |
 |----------|----------------|
-| `deposit` | u102 |
+| `deposit` | u102, u401 |
 | `withdraw` | u101, u102 |
 | `borrow` | u102, u103, u105, u110, u111 |
 | `repay` | u106 |
