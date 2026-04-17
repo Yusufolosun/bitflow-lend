@@ -500,7 +500,7 @@
       (current-deposit (default-to u0 (map-get? user-deposits tx-sender)))
       (new-deposit (safe-add current-deposit amount))
     )
-      (asserts! (<= new-deposit DEPOSIT-LIMIT) ERR-INSUFFICIENT-BALANCE)
+      (asserts! (<= new-deposit DEPOSIT-LIMIT) ERR-DEPOSIT-CAP-EXCEEDED)
       
       ;; Transfer STX from user to contract
       (try! (stx-transfer? amount tx-sender (as-contract tx-sender)))
