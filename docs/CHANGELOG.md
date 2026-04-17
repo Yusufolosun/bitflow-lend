@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Oracle registry now rejects `submit-price` updates when reporter count is below configured `min-reporters`
 - Vault v2 now uses a shared `calculate-outstanding-debt` path for health-factor, repayment quotes, and repay execution to eliminate debt drift
+- Vault v2 deposit cap enforcement now treats `DEPOSIT-LIMIT` as an inclusive upper bound and returns `u401` only when a deposit exceeds the cap
 
 ### Security
 - Added reporter-threshold enforcement error path (`u400`) to prevent under-quorum aggregate updates

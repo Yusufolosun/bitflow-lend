@@ -21,7 +21,7 @@ describe("v2 deposit validation", () => {
     const { result } = simnet.callPublicFn(
       CONTRACT, "deposit", [Cl.uint(10000000000001)], wallet1()
     );
-    expect(result).toBeErr(Cl.uint(101));
+    expect(result).toBeErr(Cl.uint(401));
   });
 
   it("accepts a valid deposit", () => {

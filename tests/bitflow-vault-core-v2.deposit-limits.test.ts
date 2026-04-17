@@ -2,6 +2,7 @@ import { Cl } from "@stacks/transactions";
 import { describe, expect, it } from "vitest";
 
 const CONTRACT = "bitflow-vault-core-v2";
+const DEPOSIT_LIMIT = 10_000_000_000_000;
 
 /**
  * Verifies v2 deposit-limit enforcement: per-user caps, zero-amount
@@ -35,6 +36,31 @@ describe("bitflow-vault-core-v2 deposit limit enforcement", () => {
     expect(result).toBeOk(Cl.bool(true));
   });
 
+  it("accepts deposit exactly at DEPOSIT-LIMIT", () => {
+    init();
+    const { result } = simnet.callPublicFn(
+      CONTRACT, "deposit", [Cl.uint(DEPOSIT_LIMIT)], wallet1()
+    );
+    expect(result).toBeOk(Cl.bool(true));
+  });
+
+  it("accepts deposit one unit below DEPOSIT-LIMIT", () => {
+    init();
+    const { result } = simnet.callPublicFn(
+      CONTRACT, "deposit", [Cl.uint(DEPOSIT_LIMIT - 1)], wallet1()
+    );
+    expect(result).toBeOk(Cl.bool(true));
+  });
+
+  it("accepts cumulative deposits that reach DEPOSIT-LIMIT", () => {
+    init();
+    simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(DEPOSIT_LIMIT - 1)], wallet1());
+    const { result } = simnet.callPublicFn(
+      CONTRACT, "deposit", [Cl.uint(1)], wallet1()
+    );
+    expect(result).toBeOk(Cl.bool(true));
+  });
+
   // ── Multiple deposits accumulate ──────────────────────────────
   it("accumulates multiple deposits for same user", () => {
     init();
@@ -51,25 +77,20 @@ describe("bitflow-vault-core-v2 deposit limit enforcement", () => {
   // ── Per-user cap rejects oversized single deposit ─────────────
   it("rejects single deposit exceeding DEPOSIT-LIMIT", () => {
     init();
-    // DEPOSIT-LIMIT = 10_000_000_000_000 (10M STX in microSTX)
     const { result } = simnet.callPublicFn(
-      CONTRACT, "deposit", [Cl.uint(10_000_000_000_001)], wallet1()
+      CONTRACT, "deposit", [Cl.uint(DEPOSIT_LIMIT + 1)], wallet1()
     );
-    // Should fail: amount >= DEPOSIT-LIMIT
-    expect(result).toBeErr(expect.anything());
+    expect(result).toBeErr(Cl.uint(401));
   });
 
   // ── Per-user cap rejects accumulated deposits over limit ──────
   it("rejects cumulative deposit exceeding DEPOSIT-LIMIT", () => {
     init();
-    // Deposit just under the limit
-    simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(9_999_999_999_990)], wallet1());
-    // Second deposit pushes over
+    simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(DEPOSIT_LIMIT)], wallet1());
     const { result } = simnet.callPublicFn(
-      CONTRACT, "deposit", [Cl.uint(20)], wallet1()
+      CONTRACT, "deposit", [Cl.uint(1)], wallet1()
     );
-    // new-deposit = 10_000_000_000_010 > DEPOSIT-LIMIT
-    expect(result).toBeErr(expect.anything());
+    expect(result).toBeErr(Cl.uint(401));
   });
 
   // ── Different users have independent caps ─────────────────────

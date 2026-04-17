@@ -2,6 +2,7 @@ import { Cl } from "@stacks/transactions";
 import { describe, expect, it } from "vitest";
 
 const CONTRACT = "bitflow-vault-core-v2";
+const DEPOSIT_LIMIT = 10_000_000_000_000;
 
 describe("bitflow-vault-core-v2 boundary tests", () => {
   const getAccounts = () => simnet.getAccounts();
@@ -68,11 +69,22 @@ describe("bitflow-vault-core-v2 boundary tests", () => {
       expect(result).toBeOk(Cl.bool(true));
     });
 
-    it("rejects deposit exceeding per-user limit", () => {
+    it("accepts deposit exactly at DEPOSIT-LIMIT", () => {
       setup();
-      // DEPOSIT-LIMIT is 10M STX = 10_000_000_000_000 microSTX
-      const { result } = deposit(10_000_000_000_001, wallet1());
-      expect(result).toBeErr(Cl.uint(101)); // ERR-INSUFFICIENT-BALANCE
+      const { result } = deposit(DEPOSIT_LIMIT, wallet1());
+      expect(result).toBeOk(Cl.bool(true));
+    });
+
+    it("accepts deposit one unit below DEPOSIT-LIMIT", () => {
+      setup();
+      const { result } = deposit(DEPOSIT_LIMIT - 1, wallet1());
+      expect(result).toBeOk(Cl.bool(true));
+    });
+
+    it("rejects deposit one unit above DEPOSIT-LIMIT", () => {
+      setup();
+      const { result } = deposit(DEPOSIT_LIMIT + 1, wallet1());
+      expect(result).toBeErr(Cl.uint(401)); // ERR-DEPOSIT-CAP-EXCEEDED
     });
   });
 

@@ -33,6 +33,7 @@
 (define-constant ERR-ZERO-AMOUNT (err u119))
 (define-constant ERR-INVALID-PARAM (err u120))
 (define-constant ERR-INSUFFICIENT-LIQUIDITY (err u121))
+(define-constant ERR-DEPOSIT-CAP-EXCEEDED (err u401))
 
 ;; ===== TUNABLE PROTOCOL PARAMETERS =====
 (define-data-var min-collateral-ratio uint u150)
@@ -493,13 +494,13 @@
     (asserts! (not (var-get is-paused)) ERR-PROTOCOL-PAUSED)
     (asserts! (var-get deposits-enabled) ERR-PROTOCOL-PAUSED)
     (asserts! (> amount u0) ERR-ZERO-AMOUNT)
-    (asserts! (< amount DEPOSIT-LIMIT) ERR-INSUFFICIENT-BALANCE)
+    (asserts! (<= amount DEPOSIT-LIMIT) ERR-DEPOSIT-CAP-EXCEEDED)
     
     (let (
       (current-deposit (default-to u0 (map-get? user-deposits tx-sender)))
       (new-deposit (safe-add current-deposit amount))
     )
-      (asserts! (<= new-deposit DEPOSIT-LIMIT) ERR-INSUFFICIENT-BALANCE)
+      (asserts! (<= new-deposit DEPOSIT-LIMIT) ERR-DEPOSIT-CAP-EXCEEDED)
       
       ;; Transfer STX from user to contract
       (try! (stx-transfer? amount tx-sender (as-contract tx-sender)))
