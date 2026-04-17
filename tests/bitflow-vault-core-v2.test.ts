@@ -58,6 +58,14 @@ describe("bitflow-vault-core-v2", () => {
   const getRepaymentAmount = (user: string) =>
     simnet.callReadOnlyFn(CONTRACT, "get-repayment-amount", [Cl.principal(user)], deployer());
 
+  const getOutstandingDebt = (principal: number, rate: number, elapsedBlocks: number) =>
+    simnet.callReadOnlyFn(
+      CONTRACT,
+      "calculate-outstanding-debt",
+      [Cl.uint(principal), Cl.uint(rate), Cl.uint(elapsedBlocks)],
+      deployer()
+    );
+
   const getUtilizationRatio = () =>
     simnet.callReadOnlyFn(CONTRACT, "get-utilization-ratio", [], deployer());
 
@@ -669,6 +677,26 @@ describe("bitflow-vault-core-v2", () => {
       const { result } = getRepaymentAmount(wallet1());
       const data = result as any;
       expect(data.value.value.principal).toBeUint(1000000);
+    });
+
+    it("uses same debt helper output as repayment principal plus interest", () => {
+      setup(10000);
+      deposit(10000000, wallet1());
+      borrow(1000000, 500, 30, wallet1());
+      simnet.mineEmptyBlocks(50);
+
+      const repayment = getRepaymentAmount(wallet1());
+      const repaymentTuple = (repayment.result as any).value?.value;
+
+      const principal = Number(repaymentTuple.principal.value);
+      const interest = Number(repaymentTuple.interest.value);
+
+      const loan = getUserLoan(wallet1());
+      const startBlock = Number((loan.result as any).value?.value?.["start-block"]?.value);
+      const elapsedBlocks = simnet.blockHeight - startBlock;
+
+      const helperDebt = getOutstandingDebt(principal, 500, elapsedBlocks);
+      expect(helperDebt.result).toBeUint(principal + interest);
     });
 
     it("returns none repayment for non-borrower", () => {
