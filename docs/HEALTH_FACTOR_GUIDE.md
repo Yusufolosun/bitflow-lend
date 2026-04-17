@@ -195,7 +195,7 @@ Step-by-step examples for calculating your health factor by hand.
 ```
                     deposit (microSTX) × price × 100
 Health Factor = ──────────────────────────────────────
-                         loan amount (microSTX)
+                    outstanding debt (microSTX)
 ```
 
 In the contract, price is a scaling factor. When price = 100 (1:1 ratio), the formula simplifies to:
@@ -203,8 +203,10 @@ In the contract, price is a scaling factor. When price = 100 (1:1 ratio), the fo
 ```
                     deposit × 100
 Health Factor = ─────────────────
-                   loan amount
+                  outstanding debt
 ```
+
+`outstanding debt` is principal plus accrued interest. In the vault contract, this value is produced by the shared `calculate-outstanding-debt` read-only function, which is also used by `get-repayment-amount`.
 
 ### Example 1: Basic Calculation
 
