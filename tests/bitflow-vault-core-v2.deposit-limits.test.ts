@@ -52,6 +52,15 @@ describe("bitflow-vault-core-v2 deposit limit enforcement", () => {
     expect(result).toBeOk(Cl.bool(true));
   });
 
+  it("accepts cumulative deposits that reach DEPOSIT-LIMIT", () => {
+    init();
+    simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(DEPOSIT_LIMIT - 1)], wallet1());
+    const { result } = simnet.callPublicFn(
+      CONTRACT, "deposit", [Cl.uint(1)], wallet1()
+    );
+    expect(result).toBeOk(Cl.bool(true));
+  });
+
   // ── Multiple deposits accumulate ──────────────────────────────
   it("accumulates multiple deposits for same user", () => {
     init();
