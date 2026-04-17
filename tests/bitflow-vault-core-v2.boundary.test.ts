@@ -72,7 +72,7 @@ describe("bitflow-vault-core-v2 boundary tests", () => {
       setup();
       // DEPOSIT-LIMIT is 10M STX = 10_000_000_000_000 microSTX
       const { result } = deposit(10_000_000_000_001, wallet1());
-      expect(result).toBeErr(Cl.uint(101)); // ERR-INSUFFICIENT-BALANCE
+      expect(result).toBeErr(Cl.uint(401)); // ERR-DEPOSIT-CAP-EXCEEDED
     });
   });
 
