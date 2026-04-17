@@ -79,7 +79,8 @@ describe("bitflow-vault-core-v2 debt parity", () => {
       deployer()
     );
 
-    return BigInt((response.result as any).value?.value);
+    const rawValue = (response.result as any).value;
+    return BigInt(rawValue?.value ?? rawValue);
   };
 
   const expectedHealthFactor = (depositAmount: number, stxPrice: number, debt: bigint) => {

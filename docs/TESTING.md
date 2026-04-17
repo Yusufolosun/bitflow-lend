@@ -156,7 +156,8 @@ start coverage/index.html  # Windows
 
 ```
 tests/
-├── bitflow-vault-core-v2.*.test.ts         # 23 vault v2 tests (admin, arithmetic, liquidation, toggles, snapshot, etc.)
+├── bitflow-vault-core-v2.*.test.ts         # 24 vault v2 tests (admin, arithmetic, liquidation, toggles, snapshot, debt parity, etc.)
+├── bitflow-vault-core-v2.debt-parity.test.ts # shared debt source parity checks
 ├── bitflow-staking-pool.*.test.ts          # 14 staking pool tests
 ├── bitflow-oracle-registry.*.test.ts       # 13 oracle registry tests
 ├── contract-version-consistency.test.ts    # cross-contract version sanity checks
