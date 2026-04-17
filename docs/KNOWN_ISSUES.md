@@ -129,6 +129,7 @@ Some wallet extensions require re-authentication after a page refresh.
 | v1 deposit no cap | v2.0.0 | Added per-user deposit cap (10M STX) to v1 deposit function |
 | Oracle min-reporters lock | v2.0.0 | Prevented setting min-reporters above current reporter count |
 | Collateral withdrawal lock | v2.0.0 | v2 allows partial withdrawal of excess collateral |
+| v2 deposit cap boundary off-by-one | v2.0.1 | Exact-cap deposits are accepted; only above-cap deposits return `u401` |
 
 ---
 
