@@ -86,14 +86,11 @@ describe("bitflow-vault-core-v2 deposit limit enforcement", () => {
   // ── Per-user cap rejects accumulated deposits over limit ──────
   it("rejects cumulative deposit exceeding DEPOSIT-LIMIT", () => {
     init();
-    // Deposit just under the limit
-    simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(9_999_999_999_990)], wallet1());
-    // Second deposit pushes over
+    simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(DEPOSIT_LIMIT)], wallet1());
     const { result } = simnet.callPublicFn(
-      CONTRACT, "deposit", [Cl.uint(20)], wallet1()
+      CONTRACT, "deposit", [Cl.uint(1)], wallet1()
     );
-    // new-deposit = 10_000_000_000_010 > DEPOSIT-LIMIT
-    expect(result).toBeErr(expect.anything());
+    expect(result).toBeErr(Cl.uint(401));
   });
 
   // ── Different users have independent caps ─────────────────────
