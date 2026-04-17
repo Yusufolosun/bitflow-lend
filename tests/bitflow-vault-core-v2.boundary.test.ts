@@ -69,6 +69,12 @@ describe("bitflow-vault-core-v2 boundary tests", () => {
       expect(result).toBeOk(Cl.bool(true));
     });
 
+    it("accepts deposit exactly at DEPOSIT-LIMIT", () => {
+      setup();
+      const { result } = deposit(DEPOSIT_LIMIT, wallet1());
+      expect(result).toBeOk(Cl.bool(true));
+    });
+
     it("rejects deposit exceeding per-user limit", () => {
       setup();
       // DEPOSIT-LIMIT is 10M STX = 10_000_000_000_000 microSTX
