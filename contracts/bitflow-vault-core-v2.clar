@@ -33,6 +33,7 @@
 (define-constant ERR-ZERO-AMOUNT (err u119))
 (define-constant ERR-INVALID-PARAM (err u120))
 (define-constant ERR-INSUFFICIENT-LIQUIDITY (err u121))
+(define-constant ERR-DEPOSIT-CAP-EXCEEDED (err u401))
 
 ;; ===== TUNABLE PROTOCOL PARAMETERS =====
 (define-data-var min-collateral-ratio uint u150)
