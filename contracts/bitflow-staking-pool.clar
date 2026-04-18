@@ -218,6 +218,7 @@
   (begin
     (asserts! (is-eq tx-sender contract-owner) ERR-OWNER-ONLY)
     (asserts! (> amount u0) ERR-ZERO-AMOUNT)
+    (print { event: "admin-action", function-name: "fund-rewards", caller: tx-sender })
     (try! (stx-transfer? amount tx-sender (as-contract tx-sender)))
     (print { event: "rewards-funded", amount: amount, block: block-height })
     (ok true)
@@ -228,6 +229,7 @@
   (begin
     (asserts! (is-eq tx-sender contract-owner) ERR-OWNER-ONLY)
     (asserts! (is-eq (var-get protocol-start-block) u0) ERR-OWNER-ONLY)
+    (print { event: "admin-action", function-name: "initialize-pool", caller: tx-sender })
     (var-set protocol-start-block block-height)
     (var-set last-reward-block block-height)
     (print { event: "pool-initialized", block: block-height })
