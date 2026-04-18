@@ -104,4 +104,45 @@ describe('executeLiquidationSwap', () => {
       })
     );
   });
+
+  it('throws when the quote does not include a best route', async () => {
+    const quoteWithoutRoute: QuoteResult = {
+      bestRoute: null,
+      allRoutes: [],
+      inputData: {
+        tokenX: 'token-stx',
+        tokenY: 'token-usda',
+        amountInput: 75,
+      },
+    };
+
+    mockGetQuoteForRoute.mockResolvedValue(quoteWithoutRoute);
+
+    await expect(
+      executeLiquidationSwap(
+        'ST1A2B3C4D5E6F7G8H9I0J1K2L3M4N5P6Q7R8S9T',
+        75,
+        0.5
+      )
+    ).rejects.toThrow('No swap route available for liquidation collateral.');
+
+    expect(mockGetSwapParams).not.toHaveBeenCalled();
+  });
+
+  it('rejects invalid sender or amounts before calling SDK', async () => {
+    await expect(executeLiquidationSwap('   ', 75, 0.5)).rejects.toThrow(
+      'senderAddress is required.'
+    );
+
+    await expect(
+      executeLiquidationSwap('ST1A2B3C4D5E6F7G8H9I0J1K2L3M4N5P6Q7R8S9T', 0, 0.5)
+    ).rejects.toThrow('collateralAmount must be a positive number.');
+
+    await expect(
+      executeLiquidationSwap('ST1A2B3C4D5E6F7G8H9I0J1K2L3M4N5P6Q7R8S9T', 75, 0)
+    ).rejects.toThrow('slippage must be a positive number.');
+
+    expect(mockGetQuoteForRoute).not.toHaveBeenCalled();
+    expect(mockGetSwapParams).not.toHaveBeenCalled();
+  });
 });
