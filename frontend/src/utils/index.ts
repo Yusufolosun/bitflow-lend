@@ -13,3 +13,14 @@ export {
 	RateLimiter,
 	validateHealthFactor,
 } from './validation';
+export {
+	LIQUIDATION_COLLATERAL_TOKEN,
+	LIQUIDATION_DEBT_TOKEN,
+	executeLiquidationSwap,
+	mapQuoteToSwapExecutionData,
+} from './liquidation-swap';
+export type {
+	LiquidationQuoteResult,
+	LiquidationSwapExecutionData,
+	LiquidationSwapParams,
+} from './liquidation-swap';
