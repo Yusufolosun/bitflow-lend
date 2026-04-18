@@ -365,6 +365,7 @@
 (define-public (pause-protocol)
   (begin
     (asserts! (is-eq tx-sender contract-owner) ERR-OWNER-ONLY)
+    (print { event: "admin-action", function-name: "pause-protocol", caller: tx-sender })
     (var-set is-paused true)
     (print { event: "protocol-paused", block: block-height })
     (ok true)
@@ -374,6 +375,7 @@
 (define-public (unpause-protocol)
   (begin
     (asserts! (is-eq tx-sender contract-owner) ERR-OWNER-ONLY)
+    (print { event: "admin-action", function-name: "unpause-protocol", caller: tx-sender })
     (var-set is-paused false)
     (print { event: "protocol-unpaused", block: block-height })
     (ok true)
@@ -385,6 +387,7 @@
     (asserts! (is-eq tx-sender contract-owner) ERR-OWNER-ONLY)
     (asserts! (> price u0) ERR-INVALID-PRICE)
     (asserts! (< price u100000000) ERR-INVALID-PRICE) ;; Sanity check: price < 100M microSTX
+    (print { event: "admin-action", function-name: "set-stx-price", caller: tx-sender })
     (var-set admin-stx-price price)
     (var-set price-update-block block-height)
     (print { event: "price-updated", price: price, block: block-height })
