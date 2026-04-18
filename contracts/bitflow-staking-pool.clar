@@ -104,6 +104,10 @@
   "1.0.0"
 )
 
+(define-read-only (get-admin)
+  contract-owner
+)
+
 (define-read-only (get-staker-balance (staker principal))
   (default-to u0 (map-get? staker-balances staker))
 )
