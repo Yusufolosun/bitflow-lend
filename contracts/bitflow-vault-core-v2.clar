@@ -705,6 +705,7 @@
   (begin
     (asserts! (is-eq tx-sender contract-owner) ERR-OWNER-ONLY)
     (asserts! (is-eq (var-get protocol-start-block) u0) ERR-OWNER-ONLY)
+    (print { event: "admin-action", function-name: "initialize", caller: tx-sender })
     (var-set protocol-start-block block-height)
     (var-set last-activity-block block-height)
     (var-set price-update-block block-height)
