@@ -14,6 +14,14 @@ export type LiquidationSwapParams = Awaited<
   ReturnType<BitflowSDK['getSwapParams']>
 >;
 
+const bitflow = new BitflowSDK();
+
+const assertPositiveNumber = (value: number, label: string): void => {
+  if (!Number.isFinite(value) || value <= 0) {
+    throw new Error(`${label} must be a positive number.`);
+  }
+};
+
 export const mapQuoteToSwapExecutionData = (
   quote: LiquidationQuoteResult,
   collateralAmount: number
@@ -30,4 +38,27 @@ export const mapQuoteToSwapExecutionData = (
     tokenXDecimals: bestRoute.tokenXDecimals,
     tokenYDecimals: bestRoute.tokenYDecimals,
   };
+};
+
+export const executeLiquidationSwap = async (
+  senderAddress: string,
+  collateralAmount: number,
+  slippage: number
+): Promise<LiquidationSwapParams> => {
+  if (!senderAddress.trim()) {
+    throw new Error('senderAddress is required.');
+  }
+
+  assertPositiveNumber(collateralAmount, 'collateralAmount');
+  assertPositiveNumber(slippage, 'slippage');
+
+  const quote = await bitflow.getQuoteForRoute(
+    LIQUIDATION_COLLATERAL_TOKEN,
+    LIQUIDATION_DEBT_TOKEN,
+    collateralAmount
+  );
+
+  const swapExecutionData = mapQuoteToSwapExecutionData(quote, collateralAmount);
+
+  return bitflow.getSwapParams(swapExecutionData, senderAddress, slippage);
 };
