@@ -156,6 +156,10 @@
   "2.0.0"
 )
 
+(define-read-only (get-admin)
+  contract-owner
+)
+
 (define-read-only (get-user-deposit (user principal))
   (default-to u0 (map-get? user-deposits user))
 )
