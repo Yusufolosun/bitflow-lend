@@ -398,6 +398,7 @@
 (define-public (toggle-deposits-enabled (enabled bool))
   (begin
     (asserts! (is-eq tx-sender contract-owner) ERR-OWNER-ONLY)
+    (print { event: "admin-action", function-name: "toggle-deposits-enabled", caller: tx-sender })
     (var-set deposits-enabled enabled)
     (print { event: "deposits-toggled", enabled: enabled })
     (ok true)
@@ -407,6 +408,7 @@
 (define-public (toggle-withdrawals-enabled (enabled bool))
   (begin
     (asserts! (is-eq tx-sender contract-owner) ERR-OWNER-ONLY)
+    (print { event: "admin-action", function-name: "toggle-withdrawals-enabled", caller: tx-sender })
     (var-set withdrawals-enabled enabled)
     (print { event: "withdrawals-toggled", enabled: enabled })
     (ok true)
@@ -416,6 +418,7 @@
 (define-public (toggle-borrows-enabled (enabled bool))
   (begin
     (asserts! (is-eq tx-sender contract-owner) ERR-OWNER-ONLY)
+    (print { event: "admin-action", function-name: "toggle-borrows-enabled", caller: tx-sender })
     (var-set borrows-enabled enabled)
     (print { event: "borrows-toggled", enabled: enabled })
     (ok true)
@@ -425,6 +428,7 @@
 (define-public (toggle-liquidations-enabled (enabled bool))
   (begin
     (asserts! (is-eq tx-sender contract-owner) ERR-OWNER-ONLY)
+    (print { event: "admin-action", function-name: "toggle-liquidations-enabled", caller: tx-sender })
     (var-set liquidations-enabled enabled)
     (print { event: "liquidations-toggled", enabled: enabled })
     (ok true)
