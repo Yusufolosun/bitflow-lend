@@ -604,17 +604,17 @@ Liquidatable when: (collateral-value / loan-amount) < 1.10
 
 **Trade-off:** Less flexibility, but users can use multiple addresses
 
-### Why No Admin Functions?
+### Why Keep Admin Controls?
 
-**Chosen:** Fully permissionless, no owner
+**Chosen:** Admin-governed controls with on-chain transparency
 
 **Rationale:**
-- **Decentralization:** No central point of failure
-- **Trust Minimization:** Users trust code, not admin
-- **Immutability:** Cannot be paused or changed
-- **No Rug Pull:** Admin cannot steal funds
+- **Operational Safety:** Admin can pause protocol paths during incidents
+- **Risk Management:** Admin can tune collateral, liquidation, and term parameters
+- **Oracle Continuity:** Admin can update price inputs when needed
+- **Auditability:** Owner-only actions are visible via on-chain `admin-action` events
 
-**Trade-off:** Cannot pause in emergency, cannot fix bugs
+**Trade-off:** Users must trust admin key management and governance process
 
 ### Why Simple Interest?
 
@@ -784,7 +784,7 @@ The BitFlow vault architecture prioritizes simplicity, security, and decentraliz
 
 Key architectural strengths:
 - **Security-first design** with multiple validation layers
-- **Immutable and permissionless** for maximum decentralization
+- **Immutable code with admin-governed controls** and transparent on-chain admin activity
 - **Simple and auditable** contract logic
 - **Efficient state management** with maps and counters
 - **Clear interaction patterns** for developers

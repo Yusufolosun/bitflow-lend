@@ -36,8 +36,9 @@ BitFlow is a decentralized lending protocol built on the Stacks blockchain. It a
 ### Is BitFlow decentralized?
 
 **Currently:** Partially decentralized (Phase 1)
-- Smart contracts are immutable and permissionless
-- No admin keys or centralized control
+- Smart contracts are immutable after deployment
+- Protocol operations include owner-only admin controls
+- Admin actions are transparently emitted on-chain via `admin-action` events
 - Oracle price feeds are semi-centralized
 
 **Future:** Full decentralization (Phase 4)
@@ -337,17 +338,16 @@ Until audited, consider this **experimental software**.
 
 ### What if there's a bug in the contract?
 
-**Phase 1:** Contracts are immutable; bugs cannot be fixed  
+**Phase 1:** Contracts are immutable; fixes require new deployments and user migration  
 **Phase 4:** Insurance fund will cover verified exploits
 
 **Best Practice:** Start with small amounts until protocol is battle-tested.
 
 ### Can the team steal my funds?
 
-**No.** The contract has:
-- No admin keys
-- No upgrade mechanism
-- No withdrawal functions for the contract owner
+The contract does not include a direct admin sweep function for user balances, but the admin can still change critical runtime settings (for example price input, pause states, and risk parameters).
+
+Treat admin key custody and governance quality as part of protocol risk.
 
 All code is verifiable on-chain.
 
@@ -390,7 +390,9 @@ Yes! The contract is open-source:
 **No.** Contracts on Stacks/Clarity are immutable once deployed. This ensures:
 - No rug pulls
 - Predictable behavior
-- Trustless operation
+- Transparent runtime behavior
+
+Note: Runtime parameters are still admin-governed via owner-only functions.
 
 ### How do you handle price feeds?
 
@@ -690,7 +692,7 @@ Interest accrues every block (~10 minutes) but you pay it all at once when you r
 BitFlow uses several security measures:
 
 - **Smart contract** — Code is open source and auditable
-- **No admin keys** — Nobody can steal funds or change rules after deployment
+- **On-chain admin transparency** — Owner-only changes emit `admin-action` events
 - **Overcollateralization** — Loans are always backed by more collateral than borrowed
 - **Immutable** — The contract code cannot be changed once deployed
 - **Bitcoin-secured** — Stacks blockchain settles on Bitcoin
