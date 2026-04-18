@@ -21,3 +21,13 @@ Use this file to evaluate governance and key-management risk before using the pr
 | `pause-oracle` | Pauses reporter submissions that refresh aggregate price | Freeze price updates and make downstream integrations rely on stale data |
 | `unpause-oracle` | Resumes oracle submissions | Resume only when favorable to a manipulated market condition |
 | `admin-set-price` | Directly overrides the aggregated price value | Set arbitrary price to force liquidations, block borrows, or misprice collateral |
+
+## Contract: bitflow-staking-pool.clar
+
+| Function | What it controls | What a malicious admin could do |
+|---|---|---|
+| `set-reward-rate` | Sets per-block reward emission rate | Over-inflate emissions to drain reward treasury or set near-zero rewards for stakers |
+| `pause-pool` | Pauses staking, unstaking flow, and reward claiming | Freeze user operations and trap users until admin chooses to unpause |
+| `unpause-pool` | Resumes normal pool operations | Resume operations only under conditions favorable to admin strategy |
+| `fund-rewards` | Moves admin-owned STX into reward pool | Perform deceptive low-value funding to signal false safety/liquidity confidence |
+| `initialize-pool` | Sets protocol start state and reward accounting start block | Delay activation or initialize at a strategic time that benefits insider positioning |
