@@ -185,6 +185,7 @@
     (asserts! (is-eq tx-sender contract-owner) ERR-OWNER-ONLY)
     (asserts! (<= new-rate u100000000) ERR-INVALID-PARAM)
     ;; Checkpoint current rewards before changing rate
+    (print { event: "admin-action", function-name: "set-reward-rate", caller: tx-sender })
     (var-set reward-per-token-stored (reward-per-token))
     (var-set last-reward-block block-height)
     (var-set reward-rate new-rate)
@@ -196,6 +197,7 @@
 (define-public (pause-pool)
   (begin
     (asserts! (is-eq tx-sender contract-owner) ERR-OWNER-ONLY)
+    (print { event: "admin-action", function-name: "pause-pool", caller: tx-sender })
     (var-set is-paused true)
     (print { event: "pool-paused", block: block-height })
     (ok true)
@@ -205,6 +207,7 @@
 (define-public (unpause-pool)
   (begin
     (asserts! (is-eq tx-sender contract-owner) ERR-OWNER-ONLY)
+    (print { event: "admin-action", function-name: "unpause-pool", caller: tx-sender })
     (var-set is-paused false)
     (print { event: "pool-unpaused", block: block-height })
     (ok true)
