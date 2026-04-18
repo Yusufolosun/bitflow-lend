@@ -37,6 +37,7 @@
 |----------|-------------|
 | [Architecture](ARCHITECTURE.md) | System design, flow diagrams, and components |
 | [Contracts Guide](CONTRACTS.md) | Full contract documentation with gas costs |
+| [Privileged Functions](../PRIVILEGED_FUNCTIONS.md) | Admin-only functions, controls, and trust implications |
 | [Data Model](DATA_MODEL.md) | Data maps, variables, and state transitions |
 | [Error Reference](ERROR_REFERENCE.md) | All error codes with causes and solutions |
 

@@ -18,7 +18,15 @@ BitFlow Lend enables users to lend and borrow STX with predictable, fixed intere
 - 150% collateralization requirement
 - Automated liquidation at 110% health factor
 - Simple interest — transparent and predictable
-- Immutable, permissionless smart contract
+- Immutable contract code with admin-governed protocol controls
+
+## Trust Model
+
+BitFlow contract code is immutable once deployed, but protocol operations are admin-governed through owner-only functions (for example: price updates, pause switches, and risk-parameter setters).
+
+Admin activity is transparently logged on-chain through `admin-action` print events in every owner-only public function.
+
+Review all privileged capabilities and abuse scenarios in [PRIVILEGED_FUNCTIONS.md](./PRIVILEGED_FUNCTIONS.md).
 
 ## Mainnet Deployment
 
@@ -87,6 +95,7 @@ clarinet deployments apply -p deployments/default.mainnet-plan.yaml
 - [API Reference](./docs/API.md) / [Examples](./docs/API_EXAMPLES.md)
 - [Architecture](./docs/ARCHITECTURE.md)
 - [Contracts Guide](./docs/CONTRACTS.md)
+- [Privileged Functions and Trust Model](./PRIVILEGED_FUNCTIONS.md)
 - [Deployment Guide](./docs/DEPLOYMENT.md)
 - [Full Documentation Index](./docs/INDEX.md)
 

@@ -156,6 +156,10 @@
   "2.0.0"
 )
 
+(define-read-only (get-admin)
+  contract-owner
+)
+
 (define-read-only (get-user-deposit (user principal))
   (default-to u0 (map-get? user-deposits user))
 )
@@ -363,6 +367,7 @@
     (asserts! (is-eq tx-sender contract-owner) ERR-OWNER-ONLY)
     (var-set is-paused true)
     (print { event: "protocol-paused", block: block-height })
+    (print { event: "admin-action", function-name: "pause-protocol", caller: tx-sender })
     (ok true)
   )
 )
@@ -372,6 +377,7 @@
     (asserts! (is-eq tx-sender contract-owner) ERR-OWNER-ONLY)
     (var-set is-paused false)
     (print { event: "protocol-unpaused", block: block-height })
+    (print { event: "admin-action", function-name: "unpause-protocol", caller: tx-sender })
     (ok true)
   )
 )
@@ -384,6 +390,7 @@
     (var-set admin-stx-price price)
     (var-set price-update-block block-height)
     (print { event: "price-updated", price: price, block: block-height })
+    (print { event: "admin-action", function-name: "set-stx-price", caller: tx-sender })
     (ok true)
   )
 )
@@ -393,6 +400,7 @@
     (asserts! (is-eq tx-sender contract-owner) ERR-OWNER-ONLY)
     (var-set deposits-enabled enabled)
     (print { event: "deposits-toggled", enabled: enabled })
+    (print { event: "admin-action", function-name: "toggle-deposits-enabled", caller: tx-sender })
     (ok true)
   )
 )
@@ -402,6 +410,7 @@
     (asserts! (is-eq tx-sender contract-owner) ERR-OWNER-ONLY)
     (var-set withdrawals-enabled enabled)
     (print { event: "withdrawals-toggled", enabled: enabled })
+    (print { event: "admin-action", function-name: "toggle-withdrawals-enabled", caller: tx-sender })
     (ok true)
   )
 )
@@ -411,6 +420,7 @@
     (asserts! (is-eq tx-sender contract-owner) ERR-OWNER-ONLY)
     (var-set borrows-enabled enabled)
     (print { event: "borrows-toggled", enabled: enabled })
+    (print { event: "admin-action", function-name: "toggle-borrows-enabled", caller: tx-sender })
     (ok true)
   )
 )
@@ -420,6 +430,7 @@
     (asserts! (is-eq tx-sender contract-owner) ERR-OWNER-ONLY)
     (var-set liquidations-enabled enabled)
     (print { event: "liquidations-toggled", enabled: enabled })
+    (print { event: "admin-action", function-name: "toggle-liquidations-enabled", caller: tx-sender })
     (ok true)
   )
 )
@@ -434,6 +445,7 @@
     (asserts! (<= new-ratio u500) ERR-INVALID-PARAM)
     (var-set min-collateral-ratio new-ratio)
     (print { event: "set-min-collateral-ratio", value: new-ratio })
+    (print { event: "admin-action", function-name: "set-min-collateral-ratio", caller: tx-sender })
     (ok true)))
 
 (define-public (set-liquidation-threshold (new-threshold uint))
@@ -443,6 +455,7 @@
     (asserts! (< new-threshold (var-get min-collateral-ratio)) ERR-INVALID-PARAM)
     (var-set liquidation-threshold new-threshold)
     (print { event: "set-liquidation-threshold", value: new-threshold })
+    (print { event: "admin-action", function-name: "set-liquidation-threshold", caller: tx-sender })
     (ok true)))
 
 (define-public (set-interest-rate-bounds (new-min uint) (new-max uint))
@@ -454,6 +467,7 @@
     (var-set min-interest-rate new-min)
     (var-set max-interest-rate new-max)
     (print { event: "set-interest-rate-bounds", min: new-min, max: new-max })
+    (print { event: "admin-action", function-name: "set-interest-rate-bounds", caller: tx-sender })
     (ok true)))
 
 (define-public (set-term-limits (new-min uint) (new-max uint))
@@ -465,6 +479,7 @@
     (var-set min-term-days new-min)
     (var-set max-term-days new-max)
     (print { event: "set-term-limits", min: new-min, max: new-max })
+    (print { event: "admin-action", function-name: "set-term-limits", caller: tx-sender })
     (ok true)))
 
 (define-public (set-late-penalty-rate (new-rate uint))
@@ -474,6 +489,7 @@
     (asserts! (<= new-rate u2000) ERR-INVALID-PARAM)
     (var-set late-penalty-rate new-rate)
     (print { event: "set-late-penalty-rate", value: new-rate })
+    (print { event: "admin-action", function-name: "set-late-penalty-rate", caller: tx-sender })
     (ok true)))
 
 (define-read-only (get-protocol-parameters)
@@ -693,6 +709,7 @@
     (var-set last-activity-block block-height)
     (var-set price-update-block block-height)
     (print { event: "protocol-initialized", block: block-height })
+    (print { event: "admin-action", function-name: "initialize", caller: tx-sender })
     (ok true)
   )
 )
