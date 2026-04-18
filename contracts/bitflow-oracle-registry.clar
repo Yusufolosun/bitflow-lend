@@ -210,6 +210,7 @@
     (asserts! (<= new-min MAX-REPORTERS) ERR-INVALID-PARAM)
     ;; Prevent setting min above current reporter count (would lock submissions)
     (asserts! (<= new-min (var-get reporter-count)) ERR-INVALID-PARAM)
+    (print { event: "admin-action", function-name: "set-min-reporters", caller: tx-sender })
     (var-set min-reporters new-min)
     (print { event: "min-reporters-updated", value: new-min })
     (ok true)
@@ -221,6 +222,7 @@
     (asserts! (is-eq tx-sender contract-owner) ERR-OWNER-ONLY)
     (asserts! (> new-deviation u0) ERR-INVALID-PARAM)
     (asserts! (<= new-deviation u5000) ERR-INVALID-PARAM)  ;; max 50%
+    (print { event: "admin-action", function-name: "set-max-deviation", caller: tx-sender })
     (var-set max-deviation new-deviation)
     (print { event: "max-deviation-updated", value: new-deviation })
     (ok true)
@@ -232,6 +234,7 @@
     (asserts! (is-eq tx-sender contract-owner) ERR-OWNER-ONLY)
     (asserts! (>= new-age u72) ERR-INVALID-PARAM)    ;; min ~12 hours
     (asserts! (<= new-age u2016) ERR-INVALID-PARAM)   ;; max ~14 days
+    (print { event: "admin-action", function-name: "set-max-price-age", caller: tx-sender })
     (var-set max-price-age new-age)
     (print { event: "max-price-age-updated", value: new-age })
     (ok true)
@@ -241,6 +244,7 @@
 (define-public (pause-oracle)
   (begin
     (asserts! (is-eq tx-sender contract-owner) ERR-OWNER-ONLY)
+    (print { event: "admin-action", function-name: "pause-oracle", caller: tx-sender })
     (var-set is-paused true)
     (print { event: "oracle-paused", block: block-height })
     (ok true)
@@ -250,6 +254,7 @@
 (define-public (unpause-oracle)
   (begin
     (asserts! (is-eq tx-sender contract-owner) ERR-OWNER-ONLY)
+    (print { event: "admin-action", function-name: "unpause-oracle", caller: tx-sender })
     (var-set is-paused false)
     (print { event: "oracle-unpaused", block: block-height })
     (ok true)
