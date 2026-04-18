@@ -6,10 +6,10 @@ const mockGetQuoteForRoute = vi.hoisted(() => vi.fn());
 const mockGetSwapParams = vi.hoisted(() => vi.fn());
 
 vi.mock('@bitflowlabs/core-sdk', () => ({
-  BitflowSDK: vi.fn().mockImplementation(() => ({
-    getQuoteForRoute: mockGetQuoteForRoute,
-    getSwapParams: mockGetSwapParams,
-  })),
+  BitflowSDK: class {
+    getQuoteForRoute = mockGetQuoteForRoute;
+    getSwapParams = mockGetSwapParams;
+  },
 }));
 
 type QuoteResult = Awaited<ReturnType<BitflowSDK['getQuoteForRoute']>>;
