@@ -267,6 +267,7 @@
     (asserts! (is-eq tx-sender contract-owner) ERR-OWNER-ONLY)
     (asserts! (> price u0) ERR-INVALID-PRICE)
     (asserts! (< price MAX-SANE-PRICE) ERR-INVALID-PRICE)
+    (print { event: "admin-action", function-name: "admin-set-price", caller: tx-sender })
     (var-set aggregated-price price)
     (var-set aggregated-block block-height)
     (print { event: "admin-price-override", price: price, block: block-height })
