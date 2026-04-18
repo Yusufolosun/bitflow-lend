@@ -97,6 +97,10 @@
   "1.0.0"
 )
 
+(define-read-only (get-admin)
+  contract-owner
+)
+
 (define-read-only (get-aggregated-price)
   {
     price: (var-get aggregated-price),
