@@ -86,6 +86,18 @@ describe('RepayCard Component', () => {
       render(<RepayCard />);
       expect(screen.getByText('Repay Loan')).toBeInTheDocument();
     });
+
+    it('shows the oracle sanity warning banner when the price diverges', () => {
+      mockOracleSanityState.current = {
+        warning: true,
+        deviation: 0.1,
+      };
+
+      render(<RepayCard />);
+
+      expect(screen.getByText('Oracle Price Sanity Warning')).toBeInTheDocument();
+      expect(screen.getByText(/10.0%/)).toBeInTheDocument();
+    });
   });
 
   describe('Active Loan Display', () => {
