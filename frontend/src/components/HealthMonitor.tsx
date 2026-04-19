@@ -4,6 +4,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useVault } from '../hooks/useVault';
 import { useSmartPolling } from '../hooks/useSmartPolling';
 import { useStxPrice } from '../hooks/useStxPrice';
+import { useOracleSanityCheck } from '../hooks/useOracleSanityCheck';
 import { formatSTX } from '../utils/formatters';
 import { PROTOCOL_CONSTANTS } from '../config/contracts';
 import { getHealthStatus } from '../utils/calculations';
@@ -23,6 +24,7 @@ export const HealthMonitor: React.FC = () => {
   const { address, userSession } = useAuth();
   const vault = useVault(userSession, address);
   const { price: stxPrice, lastUpdated: priceUpdated, isStale: priceIsStale } = useStxPrice();
+  const oracleSanity = useOracleSanityCheck(stxPrice, 'token-stx');
 
   const [healthFactor, setHealthFactor] = useState<HealthFactorData | null>(null);
   const [userDeposit, setUserDeposit] = useState<UserDeposit | null>(null);
@@ -70,6 +72,20 @@ export const HealthMonitor: React.FC = () => {
   };
 
   const distanceToLiquidation = getDistanceToLiquidation();
+  const oracleWarningBanner = oracleSanity.warning ? (
+    <div className="flex items-start gap-3 p-4 bg-amber-50 border border-amber-200 rounded-lg" role="alert">
+      <AlertTriangle className="text-amber-600 flex-shrink-0 mt-0.5" size={20} />
+      <div className="flex-1">
+        <h4 className="text-sm font-semibold text-amber-900 mb-1">
+          Oracle Price Sanity Warning
+        </h4>
+        <p className="text-xs text-amber-800">
+          The oracle price is diverging from Bitflow&apos;s live STX/USDA quote by{' '}
+          {(oracleSanity.deviation * 100).toFixed(1)}%. Verify the price before borrowing or repaying.
+        </p>
+      </div>
+    </div>
+  ) : null;
 
   // No active loan
   if (!activeLoan) {
@@ -84,6 +100,8 @@ export const HealthMonitor: React.FC = () => {
             <p className="text-sm text-gray-500">Your position is healthy</p>
           </div>
         </div>
+
+        {oracleWarningBanner}
 
         <div className="bg-emerald-50/80 rounded-xl p-6 text-center border border-emerald-100">
           <CheckCircle className="mx-auto text-emerald-600 mb-3" size={48} />
@@ -126,6 +144,8 @@ export const HealthMonitor: React.FC = () => {
           <p className="text-sm text-gray-500">Track your position health</p>
         </div>
       </div>
+
+      {oracleWarningBanner}
 
       {/* Health Factor Display */}
       {healthFactor && (
