@@ -135,6 +135,18 @@ describe('BorrowCard Component', () => {
       render(<BorrowCard />);
       expect(screen.getByText(/150% collateralization required/)).toBeInTheDocument();
     });
+
+    it('shows the oracle sanity warning banner when the price diverges', () => {
+      mockOracleSanityState.current = {
+        warning: true,
+        deviation: 0.08,
+      };
+
+      render(<BorrowCard />);
+
+      expect(screen.getByText('Oracle Price Sanity Warning')).toBeInTheDocument();
+      expect(screen.getByText(/8.0%/)).toBeInTheDocument();
+    });
   });
 
   describe('Active Loan State', () => {
