@@ -6,6 +6,10 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { HealthMonitor } from '../HealthMonitor';
 
+const { mockOracleSanityState } = vi.hoisted(() => ({
+  mockOracleSanityState: { current: { warning: false, deviation: 0 } },
+}));
+
 // Mock useAuth
 vi.mock('../../hooks/useAuth', () => ({
   useAuth: () => ({
@@ -33,6 +37,10 @@ vi.mock('../../hooks/useStxPrice', () => ({
     lastUpdated: new Date(),
     isStale: false,
   }),
+}));
+
+vi.mock('../../hooks/useOracleSanityCheck', () => ({
+  useOracleSanityCheck: () => mockOracleSanityState.current,
 }));
 
 vi.mock('../../utils/formatters', () => ({
