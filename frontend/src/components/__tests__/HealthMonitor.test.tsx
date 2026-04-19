@@ -99,4 +99,16 @@ describe('HealthMonitor Component', () => {
     render(<HealthMonitor />);
     expect(screen.getAllByTestId('check-icon').length).toBeGreaterThan(0);
   });
+
+  it('shows the oracle sanity warning banner when the price diverges', () => {
+    mockOracleSanityState.current = {
+      warning: true,
+      deviation: 0.12,
+    };
+
+    render(<HealthMonitor />);
+
+    expect(screen.getByText('Oracle Price Sanity Warning')).toBeInTheDocument();
+    expect(screen.getByText(/12.0%/)).toBeInTheDocument();
+  });
 });
