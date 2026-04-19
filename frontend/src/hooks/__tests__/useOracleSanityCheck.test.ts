@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { renderHook, waitFor } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import type { BitflowSDK } from '@bitflowlabs/core-sdk';
 import { useOracleSanityCheck } from '../useOracleSanityCheck';
 
@@ -128,5 +128,72 @@ describe('useOracleSanityCheck', () => {
       expect(result.current.warning).toBe(false);
       expect(result.current.deviation).toBeCloseTo(0.03, 2);
     });
+  });
+
+  it('refreshes the Bitflow quote on the polling interval', async () => {
+    vi.useFakeTimers();
+
+    const quote: QuoteResult = {
+      bestRoute: {
+        route: {
+          dex_path: ['alex'],
+          token_path: ['token-stx', 'token-usda'],
+          postConditions: {},
+          quoteData: {
+            contract: 'SP000.mock-router',
+            function: 'quote',
+            parameters: {},
+          },
+          swapData: {
+            contract: 'SP000.mock-router',
+            function: 'swap',
+            parameters: {},
+          },
+          tokenXDecimals: 6,
+          tokenYDecimals: 6,
+        },
+        quote: 1.0,
+        params: {},
+        quoteData: {
+          contract: 'SP000.mock-router',
+          function: 'quote',
+          parameters: {},
+        },
+        swapData: {
+          contract: 'SP000.mock-router',
+          function: 'swap',
+          parameters: {},
+        },
+        dexPath: ['alex'],
+        tokenPath: ['token-stx', 'token-usda'],
+        tokenXDecimals: 6,
+        tokenYDecimals: 6,
+      },
+      allRoutes: [],
+      inputData: {
+        tokenX: 'token-stx',
+        tokenY: 'token-usda',
+        amountInput: 1,
+      },
+    };
+
+    mockGetQuoteForRoute.mockResolvedValue(quote);
+
+    const { result } = renderHook(() => useOracleSanityCheck(1.0, 'token-stx'));
+
+    await waitFor(() => {
+      expect(mockGetQuoteForRoute).toHaveBeenCalledTimes(1);
+      expect(result.current.warning).toBe(false);
+    });
+
+    act(() => {
+      vi.advanceTimersByTime(30_000);
+    });
+
+    await waitFor(() => {
+      expect(mockGetQuoteForRoute).toHaveBeenCalledTimes(2);
+    });
+
+    vi.useRealTimers();
   });
 });
