@@ -3,6 +3,8 @@ import { TrendingUp, AlertCircle, CheckCircle, XCircle, ExternalLink } from 'luc
 import { useAuth } from '../hooks/useAuth';
 import { useVault } from '../hooks/useVault';
 import { useSmartPolling } from '../hooks/useSmartPolling';
+import { useStxPrice } from '../hooks/useStxPrice';
+import { useOracleSanityCheck } from '../hooks/useOracleSanityCheck';
 import { LOAN_TERMS, UserLoan } from '../types/vault';
 import { formatSTX } from '../utils/formatters';
 import { PROTOCOL_CONSTANTS, getExplorerUrl } from '../config/contracts';
@@ -15,6 +17,8 @@ import { calculateHealthFactor, getHealthStatus } from '../utils/calculations';
 export const BorrowCard: React.FC = () => {
   const { address, userSession, refreshBalance } = useAuth();
   const vault = useVault(userSession, address);
+  const { price: stxPrice } = useStxPrice();
+  const oracleSanity = useOracleSanityCheck(stxPrice, 'token-stx');
 
   const [borrowAmount, setBorrowAmount] = useState('');
   const [interestRate, setInterestRate] = useState(10);
@@ -46,6 +50,18 @@ export const BorrowCard: React.FC = () => {
   // Calculate estimated interest
   const estimatedInterest = (amount * (interestRate / 100) * (loanTerm / 365));
   const totalRepayment = amount + estimatedInterest;
+  const oracleWarningBanner = oracleSanity.warning ? (
+    <div className="flex items-start gap-3 p-4 bg-amber-50 border border-amber-200 rounded-lg" role="alert">
+      <AlertCircle className="text-amber-600 flex-shrink-0 mt-0.5" size={20} />
+      <div className="flex-1">
+        <h4 className="text-sm font-semibold text-amber-900 mb-1">Oracle Price Sanity Warning</h4>
+        <p className="text-xs text-amber-800">
+          The oracle price differs from Bitflow&apos;s live STX/USDA quote by{' '}
+          {(oracleSanity.deviation * 100).toFixed(1)}%. Review the market price before borrowing.
+        </p>
+      </div>
+    </div>
+  ) : null;
 
   const handleBorrow = async () => {
     // Validation
@@ -145,6 +161,8 @@ export const BorrowCard: React.FC = () => {
           </div>
         </div>
 
+        {oracleWarningBanner}
+
         <div className="bg-amber-50/80 rounded-xl p-4 space-y-2 border border-amber-100">
           <div className="flex justify-between">
             <span className="text-sm text-gray-600">Loan Amount:</span>
@@ -179,6 +197,8 @@ export const BorrowCard: React.FC = () => {
           <p className="text-sm text-gray-500">Borrow against your collateral</p>
         </div>
       </div>
+
+      {oracleWarningBanner}
 
       {/* Available Collateral */}
       <div className="bg-gray-50/80 rounded-xl p-4 border border-gray-100">
