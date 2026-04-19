@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { act, renderHook, waitFor } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { act, renderHook } from '@testing-library/react';
 import type { BitflowSDK } from '@bitflowlabs/core-sdk';
 import { useOracleSanityCheck } from '../useOracleSanityCheck';
 
@@ -17,6 +17,16 @@ describe('useOracleSanityCheck', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  const flushPromises = async () => {
+    await act(async () => {
+      await Promise.resolve();
+    });
+  };
 
   it('returns a warning when the oracle diverges by more than 5 percent', async () => {
     const quote: QuoteResult = {
@@ -67,10 +77,10 @@ describe('useOracleSanityCheck', () => {
 
     const { result } = renderHook(() => useOracleSanityCheck(1.0, 'token-stx'));
 
-    await waitFor(() => {
-      expect(result.current.warning).toBe(true);
-      expect(result.current.deviation).toBeCloseTo(0.25, 2);
-    });
+    await flushPromises();
+
+    expect(result.current.warning).toBe(true);
+    expect(result.current.deviation).toBeCloseTo(0.25, 2);
 
     expect(mockGetQuoteForRoute).toHaveBeenCalledWith('token-stx', 'token-usda', 1);
   });
@@ -124,10 +134,10 @@ describe('useOracleSanityCheck', () => {
 
     const { result } = renderHook(() => useOracleSanityCheck(1.0, 'token-stx'));
 
-    await waitFor(() => {
-      expect(result.current.warning).toBe(false);
-      expect(result.current.deviation).toBeCloseTo(0.03, 2);
-    });
+    await flushPromises();
+
+    expect(result.current.warning).toBe(false);
+    expect(result.current.deviation).toBeCloseTo(0.03, 2);
   });
 
   it('refreshes the Bitflow quote on the polling interval', async () => {
@@ -181,29 +191,27 @@ describe('useOracleSanityCheck', () => {
 
     const { result } = renderHook(() => useOracleSanityCheck(1.0, 'token-stx'));
 
-    await waitFor(() => {
-      expect(mockGetQuoteForRoute).toHaveBeenCalledTimes(1);
-      expect(result.current.warning).toBe(false);
-    });
+    await flushPromises();
+
+    expect(mockGetQuoteForRoute).toHaveBeenCalledTimes(1);
+    expect(result.current.warning).toBe(false);
 
     act(() => {
       vi.advanceTimersByTime(30_000);
     });
 
-    await waitFor(() => {
-      expect(mockGetQuoteForRoute).toHaveBeenCalledTimes(2);
-    });
+    await flushPromises();
 
-    vi.useRealTimers();
+    expect(mockGetQuoteForRoute).toHaveBeenCalledTimes(2);
   });
 
   it('fails closed when the oracle price is invalid', async () => {
     const { result } = renderHook(() => useOracleSanityCheck(0, 'token-stx'));
 
-    await waitFor(() => {
-      expect(result.current.warning).toBe(false);
-      expect(result.current.deviation).toBe(0);
-    });
+    await flushPromises();
+
+    expect(result.current.warning).toBe(false);
+    expect(result.current.deviation).toBe(0);
 
     expect(mockGetQuoteForRoute).not.toHaveBeenCalled();
   });
@@ -213,9 +221,9 @@ describe('useOracleSanityCheck', () => {
 
     const { result } = renderHook(() => useOracleSanityCheck(1.0, 'token-stx'));
 
-    await waitFor(() => {
-      expect(result.current.warning).toBe(false);
-      expect(result.current.deviation).toBe(0);
-    });
+    await flushPromises();
+
+    expect(result.current.warning).toBe(false);
+    expect(result.current.deviation).toBe(0);
   });
 });

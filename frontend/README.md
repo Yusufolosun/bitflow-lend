@@ -165,6 +165,7 @@ frontend/
 - **Transactions:** Deposit, borrow, repay, and withdraw with post-conditions
 - **Transaction Polling:** Monitor pending transactions until confirmed
 - **Error Handling:** Clear error messages for all failure scenarios
+- **Oracle Sanity Checks:** Warn before borrowing or repaying when the oracle price diverges more than 5% from Bitflow's live STX/USDA quote
 
 ### Performance
 - **Code Splitting:** Separate chunks for React and Stacks libraries

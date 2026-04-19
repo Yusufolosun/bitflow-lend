@@ -28,15 +28,17 @@ export function useOracleSanityCheck(oraclePrice: number, tokenId: string): Orac
   useEffect(() => {
     let cancelled = false;
 
+    const isInputValid = tokenId.trim().length > 0 && Number.isFinite(oraclePrice) && oraclePrice > 0;
+
+    if (!isInputValid) {
+      setState(DEFAULT_RESULT);
+      return () => {
+        cancelled = true;
+      };
+    }
+
     const refreshQuote = async () => {
       try {
-        if (!tokenId.trim() || !Number.isFinite(oraclePrice) || oraclePrice <= 0) {
-          if (!cancelled) {
-            setState(DEFAULT_RESULT);
-          }
-          return;
-        }
-
         const quote = await bitflow.getQuoteForRoute(ORACLE_TOKEN_IN, ORACLE_TOKEN_OUT, 1);
         const marketRate = Number(quote?.bestRoute?.quote ?? 0);
 
