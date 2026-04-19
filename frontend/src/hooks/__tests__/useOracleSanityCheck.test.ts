@@ -196,4 +196,26 @@ describe('useOracleSanityCheck', () => {
 
     vi.useRealTimers();
   });
+
+  it('fails closed when the oracle price is invalid', async () => {
+    const { result } = renderHook(() => useOracleSanityCheck(0, 'token-stx'));
+
+    await waitFor(() => {
+      expect(result.current.warning).toBe(false);
+      expect(result.current.deviation).toBe(0);
+    });
+
+    expect(mockGetQuoteForRoute).not.toHaveBeenCalled();
+  });
+
+  it('fails closed when the Bitflow quote request rejects', async () => {
+    mockGetQuoteForRoute.mockRejectedValue(new Error('Bitflow unavailable'));
+
+    const { result } = renderHook(() => useOracleSanityCheck(1.0, 'token-stx'));
+
+    await waitFor(() => {
+      expect(result.current.warning).toBe(false);
+      expect(result.current.deviation).toBe(0);
+    });
+  });
 });
