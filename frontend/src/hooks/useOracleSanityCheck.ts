@@ -22,7 +22,7 @@ const bitflow = new BitflowSDK();
  * Compares the current oracle price to the Bitflow market quote.
  * The fetch logic is added in a later commit so the hook API can be adopted safely.
  */
-export function useOracleSanityCheck(_oraclePrice: number, tokenId: string): OracleSanityCheckResult {
+export function useOracleSanityCheck(oraclePrice: number, tokenId: string): OracleSanityCheckResult {
   const [state, setState] = useState<OracleSanityCheckResult>(DEFAULT_RESULT);
 
   useEffect(() => {
@@ -30,7 +30,7 @@ export function useOracleSanityCheck(_oraclePrice: number, tokenId: string): Ora
 
     const refreshQuote = async () => {
       try {
-        if (!tokenId.trim() || !Number.isFinite(_oraclePrice) || _oraclePrice <= 0) {
+        if (!tokenId.trim() || !Number.isFinite(oraclePrice) || oraclePrice <= 0) {
           if (!cancelled) {
             setState(DEFAULT_RESULT);
           }
@@ -39,11 +39,19 @@ export function useOracleSanityCheck(_oraclePrice: number, tokenId: string): Ora
 
         const quote = await bitflow.getQuoteForRoute(ORACLE_TOKEN_IN, ORACLE_TOKEN_OUT, 1);
         const marketRate = Number(quote?.bestRoute?.quote ?? 0);
-        const deviation = Math.abs(_oraclePrice - marketRate) / _oraclePrice;
+
+        if (!Number.isFinite(marketRate) || marketRate <= 0) {
+          if (!cancelled) {
+            setState(DEFAULT_RESULT);
+          }
+          return;
+        }
+
+        const deviation = Math.abs(oraclePrice - marketRate) / oraclePrice;
 
         if (!cancelled) {
           setState({
-            warning: false,
+            warning: deviation > ORACLE_SANITY_THRESHOLD,
             deviation,
           });
         }
@@ -62,7 +70,7 @@ export function useOracleSanityCheck(_oraclePrice: number, tokenId: string): Ora
       cancelled = true;
       clearInterval(intervalId);
     };
-  }, [_oraclePrice, tokenId]);
+  }, [oraclePrice, tokenId]);
 
   return state;
 }
