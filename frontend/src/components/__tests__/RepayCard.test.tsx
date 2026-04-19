@@ -7,6 +7,10 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { RepayCard } from '../RepayCard';
 
+const { mockOracleSanityState } = vi.hoisted(() => ({
+  mockOracleSanityState: { current: { warning: false, deviation: 0 } },
+}));
+
 // Mock hooks
 const mockRepay = vi.fn();
 const mockGetUserLoan = vi.fn();
@@ -28,6 +32,18 @@ vi.mock('../../hooks/useVault', () => ({
     getRepaymentAmount: mockGetRepaymentAmount,
     pollTransactionStatus: mockPollTransactionStatus,
   }),
+}));
+
+vi.mock('../../hooks/useStxPrice', () => ({
+  useStxPrice: () => ({
+    price: 1.5,
+    lastUpdated: new Date(),
+    isStale: false,
+  }),
+}));
+
+vi.mock('../../hooks/useOracleSanityCheck', () => ({
+  useOracleSanityCheck: () => mockOracleSanityState.current,
 }));
 
 vi.mock('../../types/vault', () => ({
@@ -69,6 +85,18 @@ describe('RepayCard Component', () => {
     it('shows repay loan heading', () => {
       render(<RepayCard />);
       expect(screen.getByText('Repay Loan')).toBeInTheDocument();
+    });
+
+    it('shows the oracle sanity warning banner when the price diverges', () => {
+      mockOracleSanityState.current = {
+        warning: true,
+        deviation: 0.1,
+      };
+
+      render(<RepayCard />);
+
+      expect(screen.getByText('Oracle Price Sanity Warning')).toBeInTheDocument();
+      expect(screen.getByText(/10.0%/)).toBeInTheDocument();
     });
   });
 

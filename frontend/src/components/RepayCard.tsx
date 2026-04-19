@@ -3,6 +3,8 @@ import { DollarSign, AlertCircle, CheckCircle, XCircle, Clock, ExternalLink } fr
 import { useAuth } from '../hooks/useAuth';
 import { useVault } from '../hooks/useVault';
 import { useSmartPolling } from '../hooks/useSmartPolling';
+import { useStxPrice } from '../hooks/useStxPrice';
+import { useOracleSanityCheck } from '../hooks/useOracleSanityCheck';
 import { formatSTX } from '../utils/formatters';
 import { getExplorerUrl } from '../config/contracts';
 import { RepaymentAmount, UserLoan } from '../types/vault';
@@ -14,6 +16,8 @@ import { RepaymentAmount, UserLoan } from '../types/vault';
 export const RepayCard: React.FC = () => {
   const { address, balanceSTX, userSession } = useAuth();
   const vault = useVault(userSession, address);
+  const { price: stxPrice } = useStxPrice();
+  const oracleSanity = useOracleSanityCheck(stxPrice, 'token-stx');
 
   const [activeLoan, setActiveLoan] = useState<UserLoan | null>(null);
   const [repaymentAmount, setRepaymentAmount] = useState<RepaymentAmount | null>(null);
@@ -21,6 +25,18 @@ export const RepayCard: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [timeElapsed, setTimeElapsed] = useState('');
   const [lastTxId, setLastTxId] = useState<string | null>(null);
+  const oracleWarningBanner = oracleSanity.warning ? (
+    <div className="flex items-start gap-3 p-4 bg-amber-50 border border-amber-200 rounded-lg" role="alert">
+      <AlertCircle className="text-amber-600 flex-shrink-0 mt-0.5" size={20} />
+      <div className="flex-1">
+        <h4 className="text-sm font-semibold text-amber-900 mb-1">Oracle Price Sanity Warning</h4>
+        <p className="text-xs text-amber-800">
+          The oracle price differs from Bitflow&apos;s live STX/USDA quote by{' '}
+          {(oracleSanity.deviation * 100).toFixed(1)}%. Review the market price before repaying.
+        </p>
+      </div>
+    </div>
+  ) : null;
 
   // Fetch active loan and repayment amount on a 60s smart interval
   const fetchData = useCallback(async () => {
@@ -125,6 +141,8 @@ export const RepayCard: React.FC = () => {
           </div>
         </div>
 
+        {oracleWarningBanner}
+
         <div className="bg-gray-50/80 rounded-xl p-6 text-center border border-gray-100">
           <AlertCircle className="mx-auto text-gray-400 mb-3" size={48} aria-hidden="true" />
           <p className="text-gray-600 mb-1 font-medium">No Active Loan</p>
@@ -151,6 +169,8 @@ export const RepayCard: React.FC = () => {
           <p className="text-sm text-gray-500">Pay back your active loan</p>
         </div>
       </div>
+
+      {oracleWarningBanner}
 
       {/* Loan Progress Bar */}
       <div className="space-y-2">

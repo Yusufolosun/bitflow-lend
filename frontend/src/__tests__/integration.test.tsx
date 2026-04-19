@@ -5,12 +5,17 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import React from 'react';
+import { Dashboard } from '../components/Dashboard';
 
 // Hoisted mutable state - accessible from vi.mock factories
 const { mockAuthState, mockVaultState, mockProtocolStatsState } = vi.hoisted(() => ({
   mockAuthState: { current: {} as Record<string, unknown> },
   mockVaultState: { current: {} as Record<string, unknown> },
   mockProtocolStatsState: { current: {} as Record<string, unknown> },
+}));
+
+const { mockOracleSanityState } = vi.hoisted(() => ({
+  mockOracleSanityState: { current: { warning: false, deviation: 0 } },
 }));
 
 // Mocks at module scope (hoisted)
@@ -54,6 +59,10 @@ vi.mock('../hooks/useStxPrice', () => ({
     lastUpdated: new Date(),
     refresh: vi.fn(),
   }),
+}));
+
+vi.mock('../hooks/useOracleSanityCheck', () => ({
+  useOracleSanityCheck: () => mockOracleSanityState.current,
 }));
 
 vi.mock('../hooks/useSmartPolling', () => ({
@@ -186,8 +195,7 @@ describe('App Integration', () => {
   });
 
   describe('User Flow: New User Landing', () => {
-    it('shows welcome page with connect prompt', async () => {
-      const { Dashboard } = await import('../components/Dashboard');
+    it('shows welcome page with connect prompt', () => {
       render(<Dashboard />);
 
       expect(screen.getByAltText('BitFlow Lend')).toBeInTheDocument();
@@ -195,15 +203,13 @@ describe('App Integration', () => {
       expect(screen.getByText(/Connect your wallet/)).toBeInTheDocument();
     });
 
-    it('shows protocol stats even when disconnected', async () => {
-      const { Dashboard } = await import('../components/Dashboard');
+    it('shows protocol stats even when disconnected', () => {
       render(<Dashboard />);
 
       expect(screen.getAllByText('Protocol Overview').length).toBeGreaterThan(0);
     });
 
-    it('does not show action cards when disconnected', async () => {
-      const { Dashboard } = await import('../components/Dashboard');
+    it('does not show action cards when disconnected', () => {
       render(<Dashboard />);
 
       expect(screen.queryByText('Your Portfolio')).not.toBeInTheDocument();
@@ -222,23 +228,20 @@ describe('App Integration', () => {
       };
     });
 
-    it('shows portfolio and action cards when connected', async () => {
-      const { Dashboard } = await import('../components/Dashboard');
+    it('shows portfolio and action cards when connected', () => {
       render(<Dashboard />);
 
       expect(screen.getByText('Your Portfolio')).toBeInTheDocument();
       expect(screen.getByText('Actions')).toBeInTheDocument();
     });
 
-    it('shows deposit, borrow, and repay cards', async () => {
-      const { Dashboard } = await import('../components/Dashboard');
+    it('shows deposit, borrow, and repay cards', () => {
       render(<Dashboard />);
 
       expect(screen.getByText('Deposit to earn and borrow')).toBeInTheDocument();
     });
 
-    it('shows user portfolio with zero initial values', async () => {
-      const { Dashboard } = await import('../components/Dashboard');
+    it('shows user portfolio with zero initial values', () => {
       render(<Dashboard />);
 
       expect(screen.getByText('Total Deposited')).toBeInTheDocument();
@@ -248,7 +251,7 @@ describe('App Integration', () => {
   });
 
   describe('User Flow: Protocol Stats Loading', () => {
-    it('shows loading state then data', async () => {
+    it('shows loading state then data', () => {
       mockProtocolStatsState.current = {
         stats: null,
         isLoading: true,
@@ -257,13 +260,12 @@ describe('App Integration', () => {
         refresh: vi.fn(),
       };
 
-      const { Dashboard } = await import('../components/Dashboard');
       render(<Dashboard />);
 
       expect(screen.getAllByText('Protocol Overview').length).toBeGreaterThan(0);
     });
 
-    it('shows error state when stats fail', async () => {
+    it('shows error state when stats fail', () => {
       mockProtocolStatsState.current = {
         stats: null,
         isLoading: false,
@@ -272,7 +274,6 @@ describe('App Integration', () => {
         refresh: vi.fn(),
       };
 
-      const { Dashboard } = await import('../components/Dashboard');
       render(<Dashboard />);
 
       expect(screen.getByText('Failed to Load Protocol Stats')).toBeInTheDocument();

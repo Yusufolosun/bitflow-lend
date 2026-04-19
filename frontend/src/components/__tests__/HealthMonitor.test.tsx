@@ -6,6 +6,10 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { HealthMonitor } from '../HealthMonitor';
 
+const { mockOracleSanityState } = vi.hoisted(() => ({
+  mockOracleSanityState: { current: { warning: false, deviation: 0 } },
+}));
+
 // Mock useAuth
 vi.mock('../../hooks/useAuth', () => ({
   useAuth: () => ({
@@ -33,6 +37,10 @@ vi.mock('../../hooks/useStxPrice', () => ({
     lastUpdated: new Date(),
     isStale: false,
   }),
+}));
+
+vi.mock('../../hooks/useOracleSanityCheck', () => ({
+  useOracleSanityCheck: () => mockOracleSanityState.current,
 }));
 
 vi.mock('../../utils/formatters', () => ({
@@ -90,5 +98,17 @@ describe('HealthMonitor Component', () => {
   it('shows check icon for healthy state', () => {
     render(<HealthMonitor />);
     expect(screen.getAllByTestId('check-icon').length).toBeGreaterThan(0);
+  });
+
+  it('shows the oracle sanity warning banner when the price diverges', () => {
+    mockOracleSanityState.current = {
+      warning: true,
+      deviation: 0.12,
+    };
+
+    render(<HealthMonitor />);
+
+    expect(screen.getByText('Oracle Price Sanity Warning')).toBeInTheDocument();
+    expect(screen.getByText(/12.0%/)).toBeInTheDocument();
   });
 });
