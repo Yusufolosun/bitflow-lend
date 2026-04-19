@@ -13,6 +13,10 @@ const { mockAuthState, mockVaultState, mockProtocolStatsState } = vi.hoisted(() 
   mockProtocolStatsState: { current: {} as Record<string, unknown> },
 }));
 
+const { mockOracleSanityState } = vi.hoisted(() => ({
+  mockOracleSanityState: { current: { warning: false, deviation: 0 } },
+}));
+
 // Mocks at module scope (hoisted)
 vi.mock('../hooks/useAuth', () => ({
   useAuth: () => mockAuthState.current,
@@ -54,6 +58,10 @@ vi.mock('../hooks/useStxPrice', () => ({
     lastUpdated: new Date(),
     refresh: vi.fn(),
   }),
+}));
+
+vi.mock('../hooks/useOracleSanityCheck', () => ({
+  useOracleSanityCheck: () => mockOracleSanityState.current,
 }));
 
 vi.mock('../hooks/useSmartPolling', () => ({
