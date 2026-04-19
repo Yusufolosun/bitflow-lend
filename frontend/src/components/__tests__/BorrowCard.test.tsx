@@ -7,6 +7,10 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BorrowCard } from '../BorrowCard';
 
+const { mockOracleSanityState } = vi.hoisted(() => ({
+  mockOracleSanityState: { current: { warning: false, deviation: 0 } },
+}));
+
 // Mock hooks
 const mockBorrow = vi.fn();
 const mockGetUserDeposit = vi.fn();
@@ -29,6 +33,18 @@ vi.mock('../../hooks/useVault', () => ({
     getUserLoan: mockGetUserLoan,
     pollTransactionStatus: mockPollTransactionStatus,
   }),
+}));
+
+vi.mock('../../hooks/useStxPrice', () => ({
+  useStxPrice: () => ({
+    price: 1.5,
+    lastUpdated: new Date(),
+    isStale: false,
+  }),
+}));
+
+vi.mock('../../hooks/useOracleSanityCheck', () => ({
+  useOracleSanityCheck: () => mockOracleSanityState.current,
 }));
 
 vi.mock('../../types/vault', () => ({
