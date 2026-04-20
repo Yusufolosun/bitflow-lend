@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ArrowRight, AlertTriangle, Coins, RefreshCw } from 'lucide-react';
+import { BitflowSDK } from '@bitflowlabs/core-sdk';
 import { formatSTX, formatUSD } from '../utils/formatters';
 import {
   extractEstimatedOutput,
@@ -57,7 +58,7 @@ export const CollateralPreview: React.FC<CollateralPreviewProps> = ({ stxAmount,
         const bestRoute = quoteResult.bestRoute as PreviewRoute | null;
         const estimatedOutput = extractEstimatedOutput(bestRoute);
 
-        if (!bestRoute || quoteResult.allRoutes.length === 0) {
+        if (!bestRoute) {
           throw new Error('No live Bitflow route is available for this amount right now.');
         }
 
