@@ -58,8 +58,12 @@ export const CollateralPreview: React.FC<CollateralPreviewProps> = ({ stxAmount,
         const bestRoute = quoteResult.bestRoute as PreviewRoute | null;
         const estimatedOutput = extractEstimatedOutput(bestRoute);
 
-        if (!bestRoute || estimatedOutput === null) {
-          throw new Error('Bitflow did not return a live route for this amount.');
+        if (!bestRoute || quoteResult.allRoutes.length === 0) {
+          throw new Error('No live Bitflow route is available for this amount right now.');
+        }
+
+        if (estimatedOutput === null) {
+          throw new Error('Bitflow returned a route without an output amount.');
         }
 
         if (!active) {
