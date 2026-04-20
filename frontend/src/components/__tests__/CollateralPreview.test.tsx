@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi, afterEach } from 'vitest';
-import { act, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import type { BitflowSDK } from '@bitflowlabs/core-sdk';
 import { CollateralPreview } from '../CollateralPreview';
 
@@ -141,5 +141,38 @@ describe('CollateralPreview', () => {
     await flushPromises();
 
     expect(mockGetQuoteForRoute).toHaveBeenCalledWith('token-stx', 'token-usda', 11);
+  });
+
+  it('shows an error fallback and retries after the user asks again', async () => {
+    vi.useFakeTimers();
+
+    mockGetQuoteForRoute
+      .mockRejectedValueOnce(new Error('Bitflow unavailable'))
+      .mockResolvedValue(createQuote());
+
+    render(<CollateralPreview stxAmount={12.3} />);
+
+    act(() => {
+      vi.advanceTimersByTime(500);
+    });
+
+    await flushPromises();
+
+    expect(screen.getByText(/Preview unavailable/i)).toBeInTheDocument();
+    expect(screen.getByText(/Bitflow unavailable/i)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /Try again/i }));
+
+    act(() => {
+      vi.advanceTimersByTime(500);
+    });
+
+    await flushPromises();
+
+    await waitFor(() => {
+      expect(screen.getByText('$18.42')).toBeInTheDocument();
+    });
+
+    expect(mockGetQuoteForRoute).toHaveBeenCalledTimes(2);
   });
 });
