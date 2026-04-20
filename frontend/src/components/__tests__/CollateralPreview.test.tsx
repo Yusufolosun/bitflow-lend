@@ -143,6 +143,26 @@ describe('CollateralPreview', () => {
     expect(mockGetQuoteForRoute).toHaveBeenCalledWith('token-stx', 'token-usda', 11);
   });
 
+  it('uses tokenYAmount from the live route when it is available', async () => {
+    vi.useFakeTimers();
+
+    mockGetQuoteForRoute.mockResolvedValue(createQuote({ quote: 11.11, tokenYAmount: 23.45 }));
+
+    render(<CollateralPreview stxAmount={12.3} />);
+
+    act(() => {
+      vi.advanceTimersByTime(500);
+    });
+
+    await flushPromises();
+
+    await waitFor(() => {
+      expect(screen.getByText('$23.45')).toBeInTheDocument();
+    });
+
+    expect(screen.queryByText('$11.11')).not.toBeInTheDocument();
+  });
+
   it('shows an error fallback and retries after the user asks again', async () => {
     vi.useFakeTimers();
 
