@@ -5,6 +5,7 @@ import { useVault } from '../hooks/useVault';
 import { useSmartPolling } from '../hooks/useSmartPolling';
 import { formatSTX } from '../utils/formatters';
 import { PROTOCOL_CONSTANTS, getExplorerUrl } from '../config/contracts';
+import { CollateralPreview } from './CollateralPreview';
 
 /**
  * DepositCard Component
@@ -97,6 +98,8 @@ export const DepositCard: React.FC = () => {
     setDepositAmount(maxAmount.toString());
   };
 
+  const collateralPreviewAmount = parseFloat(depositAmount);
+
   return (
     <div className="card-elevated space-y-6">
       {/* Header */}
@@ -151,6 +154,8 @@ export const DepositCard: React.FC = () => {
             </span>
           )}
         </div>
+
+        <CollateralPreview stxAmount={collateralPreviewAmount} />
 
         {/* Inline Validation Warnings */}
         <div id="deposit-validation">
