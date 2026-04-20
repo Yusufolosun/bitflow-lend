@@ -112,4 +112,34 @@ describe('CollateralPreview', () => {
     expect(screen.getByText(/Price impact 1.23%/i)).toBeInTheDocument();
     expect(mockGetQuoteForRoute).toHaveBeenCalledWith('token-stx', 'token-usda', 12.3);
   });
+
+  it('debounces rapid collateral changes before calling Bitflow', async () => {
+    vi.useFakeTimers();
+
+    mockGetQuoteForRoute.mockResolvedValue(createQuote());
+
+    const { rerender } = render(<CollateralPreview stxAmount={10} />);
+
+    act(() => {
+      vi.advanceTimersByTime(250);
+    });
+
+    rerender(<CollateralPreview stxAmount={11} />);
+
+    act(() => {
+      vi.advanceTimersByTime(249);
+    });
+
+    await flushPromises();
+
+    expect(mockGetQuoteForRoute).not.toHaveBeenCalled();
+
+    act(() => {
+      vi.advanceTimersByTime(1);
+    });
+
+    await flushPromises();
+
+    expect(mockGetQuoteForRoute).toHaveBeenCalledWith('token-stx', 'token-usda', 11);
+  });
 });
