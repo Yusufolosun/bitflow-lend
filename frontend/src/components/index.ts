@@ -3,6 +3,7 @@
  */
 export { WalletConnect } from './WalletConnect';
 export { DepositCard } from './DepositCard';
+export { CollateralPreview } from './CollateralPreview';
 export { WithdrawCard } from './WithdrawCard';
 export { BorrowCard } from './BorrowCard';
 export { RepayCard } from './RepayCard';
