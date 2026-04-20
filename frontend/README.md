@@ -23,6 +23,7 @@ Modern, responsive dashboard for depositing STX, borrowing against collateral, a
 
 ```bash
 # Install dependencies
+The deposit flow now includes a live Bitflow collateral preview so users can see the USDA value and route estimate before submitting STX.
 npm install
 
 # Copy environment configuration
@@ -37,6 +38,7 @@ npm run dev
 
 The app will be available at `http://localhost:5173`
 
+│   │   ├── CollateralPreview.tsx # Live Bitflow collateral preview
 ## Environment Variables
 
 All environment variables must be prefixed with `VITE_` to be accessible in the browser.
@@ -69,11 +71,7 @@ All environment variables must be prefixed with `VITE_` to be accessible in the 
 
 Never commit `.env` files with real values to version control.
 
-## Available Scripts
-
-### Development
-
-```bash
+- **Collateral Preview:** Live Bitflow STX to USDA estimate appears while entering deposit amounts
 npm run dev          # Start dev server with hot reload
 npm run build        # Production build (TypeScript + Vite)
 npm run preview      # Preview production build locally

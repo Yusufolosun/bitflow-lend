@@ -41,6 +41,12 @@ vi.mock('../../config/contracts', () => ({
   getExplorerUrl: (txId: string) => `https://explorer.hiro.so/txid/${txId}`,
 }));
 
+vi.mock('../CollateralPreview', () => ({
+  CollateralPreview: ({ stxAmount }: { stxAmount: number }) => (
+    <div data-testid="collateral-preview">{Number.isFinite(stxAmount) ? stxAmount : 'invalid'}</div>
+  ),
+}));
+
 // Mock lucide-react icons
 vi.mock('lucide-react', () => ({
   ArrowDownCircle: () => <span>ArrowDownCircle</span>,
@@ -82,6 +88,11 @@ describe('DepositCard Component', () => {
     it('shows available balance', () => {
       render(<DepositCard />);
       expect(screen.getByText(/Available:/)).toBeInTheDocument();
+    });
+
+    it('renders the collateral preview block', () => {
+      render(<DepositCard />);
+      expect(screen.getByTestId('collateral-preview')).toBeInTheDocument();
     });
 
     it('shows deposit button', () => {
@@ -135,6 +146,16 @@ describe('DepositCard Component', () => {
       await user.type(input, '10');
       
       expect(screen.getByText(/Max borrow after deposit/)).toBeInTheDocument();
+    });
+
+    it('passes the typed collateral amount to the preview', async () => {
+      const user = userEvent.setup();
+      render(<DepositCard />);
+
+      const input = screen.getByPlaceholderText('0.00');
+      await user.type(input, '10');
+
+      expect(screen.getByTestId('collateral-preview')).toHaveTextContent('10');
     });
   });
 
