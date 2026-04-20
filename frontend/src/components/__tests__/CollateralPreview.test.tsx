@@ -155,6 +155,28 @@ describe('CollateralPreview', () => {
     expect(screen.queryByText('$11.11')).not.toBeInTheDocument();
   });
 
+  it('shows a clear error when Bitflow has no route for the amount', async () => {
+    vi.useFakeTimers();
+
+    mockGetQuoteForRoute.mockResolvedValue({
+      bestRoute: null,
+      allRoutes: [],
+      inputData: {
+        tokenX: 'token-stx',
+        tokenY: 'token-usda',
+        amountInput: 12.3,
+      },
+    });
+
+    render(<CollateralPreview stxAmount={12.3} />);
+
+    await advanceTimersBy(500);
+
+    await flushPromises();
+
+    expect(screen.getByText(/No live Bitflow route is available for this amount right now/i)).toBeInTheDocument();
+  });
+
   it('shows an error fallback and retries after the user asks again', async () => {
     vi.useFakeTimers();
 
