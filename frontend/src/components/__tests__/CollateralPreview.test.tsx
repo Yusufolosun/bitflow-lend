@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi, afterEach } from 'vitest';
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import type { BitflowSDK } from '@bitflowlabs/core-sdk';
 import { CollateralPreview } from '../CollateralPreview';
 
@@ -73,6 +73,12 @@ const flushPromises = async () => {
   });
 };
 
+const advanceTimersBy = async (milliseconds: number) => {
+  await act(async () => {
+    await vi.advanceTimersByTimeAsync(milliseconds);
+  });
+};
+
 describe('CollateralPreview', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -98,15 +104,11 @@ describe('CollateralPreview', () => {
 
     expect(screen.getByLabelText(/Loading collateral preview/i)).toBeInTheDocument();
 
-    act(() => {
-      vi.advanceTimersByTime(500);
-    });
+    await advanceTimersBy(500);
 
     await flushPromises();
 
-    await waitFor(() => {
-      expect(screen.getByText('$18.42')).toBeInTheDocument();
-    });
+    expect(screen.getByText('$18.42')).toBeInTheDocument();
 
     expect(screen.getByText(/STX → USDA via ALEX/i)).toBeInTheDocument();
     expect(screen.getByText(/Price impact 1.23%/i)).toBeInTheDocument();
@@ -120,23 +122,17 @@ describe('CollateralPreview', () => {
 
     const { rerender } = render(<CollateralPreview stxAmount={10} />);
 
-    act(() => {
-      vi.advanceTimersByTime(250);
-    });
+    await advanceTimersBy(250);
 
     rerender(<CollateralPreview stxAmount={11} />);
 
-    act(() => {
-      vi.advanceTimersByTime(249);
-    });
+    await advanceTimersBy(249);
 
     await flushPromises();
 
     expect(mockGetQuoteForRoute).not.toHaveBeenCalled();
 
-    act(() => {
-      vi.advanceTimersByTime(1);
-    });
+    await advanceTimersBy(1);
 
     await flushPromises();
 
@@ -150,15 +146,11 @@ describe('CollateralPreview', () => {
 
     render(<CollateralPreview stxAmount={12.3} />);
 
-    act(() => {
-      vi.advanceTimersByTime(500);
-    });
+    await advanceTimersBy(500);
 
     await flushPromises();
 
-    await waitFor(() => {
-      expect(screen.getByText('$23.45')).toBeInTheDocument();
-    });
+    expect(screen.getByText('$23.45')).toBeInTheDocument();
 
     expect(screen.queryByText('$11.11')).not.toBeInTheDocument();
   });
@@ -172,9 +164,7 @@ describe('CollateralPreview', () => {
 
     render(<CollateralPreview stxAmount={12.3} />);
 
-    act(() => {
-      vi.advanceTimersByTime(500);
-    });
+    await advanceTimersBy(500);
 
     await flushPromises();
 
@@ -183,15 +173,11 @@ describe('CollateralPreview', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /Try again/i }));
 
-    act(() => {
-      vi.advanceTimersByTime(500);
-    });
+    await advanceTimersBy(500);
 
     await flushPromises();
 
-    await waitFor(() => {
-      expect(screen.getByText('$18.42')).toBeInTheDocument();
-    });
+    expect(screen.getByText('$18.42')).toBeInTheDocument();
 
     expect(mockGetQuoteForRoute).toHaveBeenCalledTimes(2);
   });
