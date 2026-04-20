@@ -126,7 +126,7 @@ describe('CollateralPreview', () => {
 
     rerender(<CollateralPreview stxAmount={11} />);
 
-    await advanceTimersBy(249);
+    await advanceTimersBy(499);
 
     await flushPromises();
 
