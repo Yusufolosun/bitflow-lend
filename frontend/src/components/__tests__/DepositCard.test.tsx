@@ -41,6 +41,12 @@ vi.mock('../../config/contracts', () => ({
   getExplorerUrl: (txId: string) => `https://explorer.hiro.so/txid/${txId}`,
 }));
 
+vi.mock('../CollateralPreview', () => ({
+  CollateralPreview: ({ stxAmount }: { stxAmount: number }) => (
+    <div data-testid="collateral-preview">{Number.isFinite(stxAmount) ? stxAmount : 'invalid'}</div>
+  ),
+}));
+
 // Mock lucide-react icons
 vi.mock('lucide-react', () => ({
   ArrowDownCircle: () => <span>ArrowDownCircle</span>,
