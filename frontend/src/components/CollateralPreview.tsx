@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { ArrowRight, AlertTriangle, Coins, RefreshCw } from 'lucide-react';
-import { BitflowSDK } from '@bitflowlabs/core-sdk';
 import { formatSTX, formatUSD } from '../utils/formatters';
 import {
   extractEstimatedOutput,
