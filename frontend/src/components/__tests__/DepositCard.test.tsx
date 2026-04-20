@@ -90,6 +90,11 @@ describe('DepositCard Component', () => {
       expect(screen.getByText(/Available:/)).toBeInTheDocument();
     });
 
+    it('renders the collateral preview block', () => {
+      render(<DepositCard />);
+      expect(screen.getByTestId('collateral-preview')).toBeInTheDocument();
+    });
+
     it('shows deposit button', () => {
       render(<DepositCard />);
       const btn = screen.getByRole('button', { name: /Deposit STX/i });
@@ -141,6 +146,16 @@ describe('DepositCard Component', () => {
       await user.type(input, '10');
       
       expect(screen.getByText(/Max borrow after deposit/)).toBeInTheDocument();
+    });
+
+    it('passes the typed collateral amount to the preview', async () => {
+      const user = userEvent.setup();
+      render(<DepositCard />);
+
+      const input = screen.getByPlaceholderText('0.00');
+      await user.type(input, '10');
+
+      expect(screen.getByTestId('collateral-preview')).toHaveTextContent('10');
     });
   });
 
