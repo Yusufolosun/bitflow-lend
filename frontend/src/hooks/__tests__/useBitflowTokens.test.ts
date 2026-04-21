@@ -31,6 +31,7 @@ describe('useBitflowTokens', () => {
       createToken('token-wstx', 'wSTX'),
       createToken('token-stxbtc', 'STXBTC'),
       createToken('token-stxusd', 'STXUSD'),
+      createToken('token-stxusd', 'STXUSD duplicate'),
       createToken('token-stxflow', 'STXFLOW'),
       createToken('token-btc', 'BTC'),
     ]);
