@@ -6,6 +6,8 @@ React-based web interface for the BitFlow Lend protocol on Stacks blockchain.
 
 Modern, responsive dashboard for depositing STX, borrowing against collateral, and managing loans with real-time protocol statistics and health monitoring.
 
+The dashboard also includes a live Bitflow token ticker at the top of the page so users can see current STX-adjacent swap rates without leaving the app.
+
 **Tech Stack:**
 - React 18 with TypeScript
 - Vite for fast development and optimized builds
@@ -155,6 +157,7 @@ frontend/
 - **Responsive Design:** Mobile-first, works on all screen sizes
 - **Wallet Integration:** Seamless connection with Hiro Wallet
 - **Real-time Updates:** Auto-refresh protocol stats every 30s
+- **Live Token Ticker:** Shows STX-adjacent Bitflow swap rates at the top of the dashboard and refreshes every 60 seconds
 - **Smart Polling:** Background updates pause when tab is hidden
 - **Accessibility:** WCAG-compliant with keyboard navigation
 
@@ -182,6 +185,7 @@ App
         └── Dashboard
             ├── WalletConnect
             ├── NetworkIndicator
+      ├── TokenRateTicker
             ├── StatsCard (x4)
             ├── DepositCard
             ├── BorrowCard

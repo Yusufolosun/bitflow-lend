@@ -18,6 +18,13 @@ const { mockOracleSanityState } = vi.hoisted(() => ({
   mockOracleSanityState: { current: { warning: false, deviation: 0 } },
 }));
 
+vi.mock('@bitflowlabs/core-sdk', () => ({
+  BitflowSDK: class {
+    getQuoteForRoute = vi.fn();
+    getAvailableTokens = vi.fn();
+  },
+}));
+
 // Mocks at module scope (hoisted)
 vi.mock('../hooks/useAuth', () => ({
   useAuth: () => mockAuthState.current,
@@ -67,6 +74,10 @@ vi.mock('../hooks/useOracleSanityCheck', () => ({
 
 vi.mock('../hooks/useSmartPolling', () => ({
   useSmartPolling: vi.fn(),
+}));
+
+vi.mock('../components/TokenRateTicker', () => ({
+  TokenRateTicker: () => <div data-testid="token-rate-ticker">TokenRateTicker</div>,
 }));
 
 vi.mock('../config/contracts', () => ({
@@ -128,6 +139,7 @@ vi.mock('lucide-react', () => ({
   ArrowDownCircle: () => <span>ArrowDown</span>,
   CheckCircle: () => <span>Check</span>,
   XCircle: () => <span>XCircle</span>,
+  Coins: () => <span>Coins</span>,
   ExternalLink: () => <span>ExtLink</span>,
   ArrowUpCircle: () => <span>ArrowUpCircle</span>,
   AlertTriangle: () => <span>Alert</span>,
@@ -207,6 +219,21 @@ describe('App Integration', () => {
       render(<Dashboard />);
 
       expect(screen.getAllByText('Protocol Overview').length).toBeGreaterThan(0);
+    });
+
+    it('shows the live token ticker on the dashboard', () => {
+      render(<Dashboard />);
+
+      expect(screen.getByTestId('token-rate-ticker')).toBeInTheDocument();
+    });
+
+    it('places the live token ticker above the protocol overview section', () => {
+      render(<Dashboard />);
+
+      const ticker = screen.getByTestId('token-rate-ticker');
+      const protocolOverview = screen.getByText('Protocol Overview');
+
+      expect(ticker.compareDocumentPosition(protocolOverview) & Node.DOCUMENT_POSITION_FOLLOWING).not.toBe(0);
     });
 
     it('does not show action cards when disconnected', () => {

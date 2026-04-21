@@ -41,6 +41,10 @@ vi.mock('../NetworkIndicator', () => ({
   NetworkIndicator: () => <div data-testid="network-indicator">Network</div>,
 }));
 
+vi.mock('../TokenRateTicker', () => ({
+  TokenRateTicker: () => <div data-testid="token-rate-ticker">TokenRateTicker</div>,
+}));
+
 vi.mock('../LoadingCard', () => ({
   LoadingStats: () => <div data-testid="loading-stats">Loading...</div>,
 }));
@@ -157,6 +161,20 @@ describe('Dashboard Component', () => {
     it('renders the network indicator', () => {
       render(<Dashboard />);
       expect(screen.getByTestId('network-indicator')).toBeInTheDocument();
+    });
+
+    it('renders the token rate ticker', () => {
+      render(<Dashboard />);
+      expect(screen.getByTestId('token-rate-ticker')).toBeInTheDocument();
+    });
+
+    it('renders the token rate ticker before the protocol overview section', () => {
+      render(<Dashboard />);
+
+      const ticker = screen.getByTestId('token-rate-ticker');
+      const protocolOverview = screen.getByText('Protocol Overview');
+
+      expect(ticker.compareDocumentPosition(protocolOverview) & Node.DOCUMENT_POSITION_FOLLOWING).not.toBe(0);
     });
   });
 
