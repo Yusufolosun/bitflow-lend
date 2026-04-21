@@ -16,6 +16,10 @@ interface TokenRateState {
   error: string | null;
 }
 
+interface TokenRateCardProps {
+  rate: TokenRateState;
+}
+
 const bitflow = new BitflowSDK();
 const STX_TOKEN_ID = 'token-stx';
 const REFRESH_INTERVAL_MS = 60_000;
@@ -52,6 +56,31 @@ const TickerSkeleton = () => (
         <div className="mt-2 h-3 w-5/6 rounded-full bg-white/10" />
       </div>
     ))}
+  </div>
+);
+
+const TokenRateCard: React.FC<TokenRateCardProps> = ({ rate }) => (
+  <div className="min-w-[12rem] shrink-0 rounded-2xl border border-white/10 bg-white/5 px-4 py-4 shadow-sm shadow-black/10">
+    <div className="flex items-center justify-between gap-3">
+      <span className="text-sm font-semibold text-white">{rate.name}</span>
+      <span className="rounded-full bg-emerald-500/15 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-emerald-300">
+        STX
+      </span>
+    </div>
+
+    <p className="mt-3 text-2xl font-semibold tracking-tight text-white">
+      {rate.rate !== null ? `${formatSTX(rate.rate, 4)} STX` : 'Unavailable'}
+    </p>
+
+    <p className="mt-2 text-xs text-slate-300">
+      {rate.rate !== null
+        ? `1 ${rate.name} ≈ ${formatSTX(rate.rate, 4)} STX`
+        : rate.error ?? 'Live route unavailable'}
+    </p>
+
+    <p className="mt-2 truncate text-[11px] leading-relaxed text-slate-400">
+      {rate.routeLabel}
+    </p>
   </div>
 );
 
@@ -182,31 +211,7 @@ export const TokenRateTicker: React.FC = () => {
           ) : (
             <div className="flex gap-3 overflow-x-auto pb-1 scrollbar-thin" aria-live="polite">
               {rates.map((rate) => (
-                <div
-                  key={rate.tokenId}
-                  className="min-w-[12rem] shrink-0 rounded-2xl border border-white/10 bg-white/5 px-4 py-4 shadow-sm shadow-black/10"
-                >
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="text-sm font-semibold text-white">{rate.name}</span>
-                    <span className="rounded-full bg-emerald-500/15 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-emerald-300">
-                      STX
-                    </span>
-                  </div>
-
-                  <p className="mt-3 text-2xl font-semibold tracking-tight text-white">
-                    {rate.rate !== null ? `${formatSTX(rate.rate, 4)} STX` : 'Unavailable'}
-                  </p>
-
-                  <p className="mt-2 text-xs text-slate-300">
-                    {rate.rate !== null
-                      ? `1 ${rate.name} ≈ ${formatSTX(rate.rate, 4)} STX`
-                      : rate.error ?? 'Live route unavailable'}
-                  </p>
-
-                  <p className="mt-2 truncate text-[11px] leading-relaxed text-slate-400">
-                    {rate.routeLabel}
-                  </p>
-                </div>
+                <TokenRateCard key={rate.tokenId} rate={rate} />
               ))}
             </div>
           )}
