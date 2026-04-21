@@ -45,10 +45,10 @@ describe('useBitflowTokens', () => {
     expect(result.current.error).toBeNull();
     expect(result.current.tokens.map((token) => token.tokenId)).toEqual([
       'token-stx',
-      'token-usda',
-      'token-wstx',
       'token-stxbtc',
+      'token-stxflow',
       'token-stxusd',
+      'token-usda',
     ]);
     expect(mockGetAvailableTokens).toHaveBeenCalledTimes(1);
   });
