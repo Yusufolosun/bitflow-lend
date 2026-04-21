@@ -40,10 +40,19 @@ export function useBitflowTokens(): UseBitflowTokensResult {
           return;
         }
 
+        const seenTokenIds = new Set<string>();
         const filteredTokens = availableTokens
           .filter((token) => {
             const tokenId = typeof token.tokenId === 'string' ? token.tokenId.toLowerCase() : '';
             return tokenId.includes('stx') || tokenId.includes('usda');
+          })
+          .filter((token) => {
+            if (seenTokenIds.has(token.tokenId)) {
+              return false;
+            }
+
+            seenTokenIds.add(token.tokenId);
+            return true;
           })
           .slice(0, MAX_TOKENS);
 
