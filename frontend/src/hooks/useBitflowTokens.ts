@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { BitflowSDK } from '@bitflowlabs/core-sdk';
+import { formatBitflowTokenLabel } from '../utils/bitflowTokens';
 
 export type BitflowToken = Awaited<ReturnType<BitflowSDK['getAvailableTokens']>>[number];
 
@@ -11,11 +12,6 @@ interface UseBitflowTokensResult {
 
 const bitflow = new BitflowSDK();
 const MAX_TOKENS = 5;
-
-const getTokenLabel = (name: string | undefined, tokenId: string): string => {
-  const trimmedName = typeof name === 'string' && name.trim().length > 0 ? name.trim() : '';
-  return trimmedName || tokenId;
-};
 
 const getErrorMessage = (error: unknown, fallback: string): string => {
   if (error instanceof Error && error.message) {
@@ -60,8 +56,8 @@ export function useBitflowTokens(): UseBitflowTokensResult {
             return true;
           })
           .sort((left, right) => {
-            const leftLabel = getTokenLabel(left.name, left.tokenId);
-            const rightLabel = getTokenLabel(right.name, right.tokenId);
+            const leftLabel = formatBitflowTokenLabel(left.name, left.tokenId);
+            const rightLabel = formatBitflowTokenLabel(right.name, right.tokenId);
 
             return leftLabel.localeCompare(rightLabel);
           })

@@ -3,6 +3,7 @@ import { BitflowSDK } from '@bitflowlabs/core-sdk';
 import { Activity, RefreshCw, AlertTriangle } from 'lucide-react';
 import { useBitflowTokens } from '../hooks/useBitflowTokens';
 import { useSmartPolling } from '../hooks/useSmartPolling';
+import { formatBitflowTokenLabel } from '../utils/bitflowTokens';
 import { formatSTX } from '../utils/formatters';
 import { extractEstimatedOutput, getRouteLabel, type PreviewRoute } from './collateralPreviewUtils';
 
@@ -36,11 +37,6 @@ const getErrorMessage = (error: unknown, fallback: string): string => {
 const extractQuoteRate = (quoteResult: QuoteResult): number | null => {
   const bestRoute = quoteResult.bestRoute as PreviewRoute | null;
   return extractEstimatedOutput(bestRoute);
-};
-
-const getTokenLabel = (name: string | undefined, tokenId: string): string => {
-  const trimmedName = typeof name === 'string' && name.trim().length > 0 ? name.trim() : '';
-  return trimmedName || tokenId;
 };
 
 const TickerSkeleton = () => (
@@ -123,7 +119,7 @@ export const TokenRateTicker: React.FC = () => {
 
           return {
             tokenId: token.tokenId,
-            name: getTokenLabel(token.name, token.tokenId),
+            name: formatBitflowTokenLabel(token.name, token.tokenId),
             rate,
             routeLabel: getRouteLabel(quoteResult.bestRoute as PreviewRoute | null),
             error: null,
@@ -140,7 +136,7 @@ export const TokenRateTicker: React.FC = () => {
 
         return {
           tokenId: token.tokenId,
-          name: getTokenLabel(token.name, token.tokenId),
+          name: formatBitflowTokenLabel(token.name, token.tokenId),
           rate: null,
           routeLabel: 'Bitflow live route unavailable',
           error: getErrorMessage(result.reason, 'Unable to load live Bitflow rate.'),
