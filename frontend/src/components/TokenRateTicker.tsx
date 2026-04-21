@@ -206,7 +206,7 @@ export const TokenRateTicker: React.FC = () => {
             </div>
           ) : !hasRates ? (
             <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-4 text-sm text-slate-300">
-              No STX-adjacent Bitflow tokens are available right now.
+              Bitflow did not return any STX-adjacent tokens for quoting right now.
             </div>
           ) : (
             <div className="flex gap-3 overflow-x-auto pb-1 scrollbar-thin" aria-live="polite">
