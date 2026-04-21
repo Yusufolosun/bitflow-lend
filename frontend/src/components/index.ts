@@ -13,6 +13,7 @@ export { StatsCard } from './StatsCard';
 export { TransactionHistory } from './TransactionHistory';
 export { LiquidationList } from './LiquidationList';
 export { NetworkIndicator } from './NetworkIndicator';
+export { TokenRateTicker } from './TokenRateTicker';
 export { ToastProvider, useToastContext } from './ToastProvider';
 export { ToastContainer } from './Toast';
 export { LoadingCard, LoadingStats } from './LoadingCard';
