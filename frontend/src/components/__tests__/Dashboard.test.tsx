@@ -167,6 +167,15 @@ describe('Dashboard Component', () => {
       render(<Dashboard />);
       expect(screen.getByTestId('token-rate-ticker')).toBeInTheDocument();
     });
+
+    it('renders the token rate ticker before the protocol overview section', () => {
+      render(<Dashboard />);
+
+      const ticker = screen.getByTestId('token-rate-ticker');
+      const protocolOverview = screen.getByText('Protocol Overview');
+
+      expect(ticker.compareDocumentPosition(protocolOverview) & Node.DOCUMENT_POSITION_FOLLOWING).not.toBe(0);
+    });
   });
 
   describe('Protocol Stats (disconnected)', () => {
