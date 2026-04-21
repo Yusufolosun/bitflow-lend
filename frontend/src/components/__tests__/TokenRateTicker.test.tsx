@@ -145,6 +145,36 @@ describe('TokenRateTicker', () => {
     expect(screen.getByText('0.0048 STX')).toBeInTheDocument();
   });
 
+  it('shows a refreshing badge while the first live quote batch is still pending', async () => {
+    mockUseBitflowTokens.mockReturnValue({
+      tokens: [
+        { tokenId: 'token-usda', name: 'USDA', decimals: 6 },
+      ],
+      loading: false,
+      error: null,
+    });
+
+    let resolveQuote: ((value: QuoteResult) => void) | null = null;
+    const pendingQuote = new Promise<QuoteResult>((resolve) => {
+      resolveQuote = resolve;
+    });
+
+    mockGetQuoteForRoute.mockReturnValue(pendingQuote);
+
+    render(<TokenRateTicker />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Refreshing')).toBeInTheDocument();
+    });
+
+    resolveQuote?.(createQuote(1.02, ['token-usda', 'token-stx']));
+
+    await flushPromises();
+
+    expect(screen.getByText('Live')).toBeInTheDocument();
+    expect(screen.getByText('1.0200 STX')).toBeInTheDocument();
+  });
+
   it('shows a readable error when Bitflow token discovery fails', () => {
     mockUseBitflowTokens.mockReturnValue({
       tokens: [],
