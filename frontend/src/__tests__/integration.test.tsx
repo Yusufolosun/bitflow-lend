@@ -219,6 +219,15 @@ describe('App Integration', () => {
       expect(screen.getByTestId('token-rate-ticker')).toBeInTheDocument();
     });
 
+    it('places the live token ticker above the protocol overview section', () => {
+      render(<Dashboard />);
+
+      const ticker = screen.getByTestId('token-rate-ticker');
+      const protocolOverview = screen.getByText('Protocol Overview');
+
+      expect(ticker.compareDocumentPosition(protocolOverview) & Node.DOCUMENT_POSITION_FOLLOWING).not.toBe(0);
+    });
+
     it('does not show action cards when disconnected', () => {
       render(<Dashboard />);
 
