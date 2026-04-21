@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { BitflowSDK } from '@bitflowlabs/core-sdk';
 import { Activity, RefreshCw, AlertTriangle } from 'lucide-react';
 import { useBitflowTokens } from '../hooks/useBitflowTokens';
@@ -63,55 +63,72 @@ export const TokenRateTicker: React.FC = () => {
   const [rates, setRates] = useState<TokenRateState[]>([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const refreshInFlightRef = useRef(false);
 
   const refreshRates = useCallback(async () => {
+    if (refreshInFlightRef.current) {
+      return;
+    }
+
+    refreshInFlightRef.current = true;
+
     if (tokens.length === 0) {
       setRates([]);
       setLastUpdated(null);
       setIsRefreshing(false);
+      refreshInFlightRef.current = false;
       return;
     }
 
     setIsRefreshing(true);
 
-    const settledRates = await Promise.allSettled(
-      tokens.map(async (token) => {
-        const quoteResult = await bitflow.getQuoteForRoute(token.tokenId, STX_TOKEN_ID, QUOTE_AMOUNT);
-        const rate = extractQuoteRate(quoteResult);
+    try {
+      const settledRates = await Promise.allSettled(
+        tokens.map(async (token) => {
+          const quoteResult = await bitflow.getQuoteForRoute(token.tokenId, STX_TOKEN_ID, QUOTE_AMOUNT);
+          const rate = extractQuoteRate(quoteResult);
 
-        if (rate === null) {
-          throw new Error('No live route is available right now.');
+          if (rate === null) {
+            throw new Error('No live route is available right now.');
+          }
+
+          return {
+            tokenId: token.tokenId,
+            name: getTokenLabel(token.name, token.tokenId),
+            rate,
+            routeLabel: getRouteLabel(quoteResult.bestRoute as PreviewRoute | null),
+            error: null,
+          } satisfies TokenRateState;
+        })
+      );
+
+      const nextRates = settledRates.map((result, index) => {
+        const token = tokens[index];
+
+        if (result.status === 'fulfilled') {
+          return result.value;
         }
 
         return {
           tokenId: token.tokenId,
           name: getTokenLabel(token.name, token.tokenId),
-          rate,
-          routeLabel: getRouteLabel(quoteResult.bestRoute as PreviewRoute | null),
-          error: null,
+          rate: null,
+          routeLabel: 'Bitflow live route unavailable',
+          error: getErrorMessage(result.reason, 'Unable to load live Bitflow rate.'),
         } satisfies TokenRateState;
-      })
-    );
+      });
 
-    const nextRates = settledRates.map((result, index) => {
-      const token = tokens[index];
+      const hasSuccessfulRate = nextRates.some((rate) => rate.rate !== null);
 
-      if (result.status === 'fulfilled') {
-        return result.value;
+      setRates(nextRates);
+
+      if (hasSuccessfulRate) {
+        setLastUpdated(new Date());
       }
-
-      return {
-        tokenId: token.tokenId,
-        name: getTokenLabel(token.name, token.tokenId),
-        rate: null,
-        routeLabel: 'Bitflow live route unavailable',
-        error: getErrorMessage(result.reason, 'Unable to load live Bitflow rate.'),
-      } satisfies TokenRateState;
-    });
-
-    setRates(nextRates);
-    setLastUpdated(new Date());
-    setIsRefreshing(false);
+    } finally {
+      setIsRefreshing(false);
+      refreshInFlightRef.current = false;
+    }
   }, [tokens]);
 
   useSmartPolling(refreshRates, REFRESH_INTERVAL_MS, tokens.length > 0 && !error);
@@ -126,6 +143,7 @@ export const TokenRateTicker: React.FC = () => {
     setIsRefreshing(false);
   }, [error]);
 
+  const isQuoteLoading = tokens.length > 0 && rates.length === 0;
   const hasRates = rates.length > 0;
 
   return (
@@ -150,7 +168,7 @@ export const TokenRateTicker: React.FC = () => {
         </div>
 
         <div className="border-t border-white/10 px-5 py-4">
-          {loading ? (
+          {loading || isQuoteLoading ? (
             <TickerSkeleton />
           ) : error ? (
             <div className="flex items-center gap-3 rounded-2xl border border-amber-400/20 bg-amber-400/10 px-4 py-4 text-sm text-amber-100">
