@@ -11,6 +11,7 @@ import { RepayCard } from './RepayCard';
 import { HealthMonitor } from './HealthMonitor';
 import { TransactionHistory } from './TransactionHistory';
 import { NetworkIndicator } from './NetworkIndicator';
+import { TokenRateTicker } from './TokenRateTicker';
 import { formatSTX } from '../utils/formatters';
 import { ACTIVE_NETWORK } from '../config/contracts';
 import { getHealthStatus } from '../utils/calculations';
@@ -136,6 +137,8 @@ export const Dashboard: React.FC = () => {
 
       {/* Main Content */}
       <main id="main-content" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <TokenRateTicker />
+
         {/* Protocol Stats */}
         <section className="mb-8">
           <div className="flex items-center justify-between mb-5">
