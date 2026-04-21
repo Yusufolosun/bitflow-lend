@@ -16,8 +16,7 @@ type AvailableToken = Awaited<ReturnType<BitflowSDK['getAvailableTokens']>>[numb
 const createToken = (tokenId: string, name: string): AvailableToken => ({
   tokenId,
   name,
-  decimals: 6,
-});
+} as AvailableToken);
 
 describe('useBitflowTokens', () => {
   beforeEach(() => {

@@ -44,7 +44,6 @@ const createQuote = (quote: number, tokenPath: string[]): QuoteResult => ({
       tokenYDecimals: 6,
     },
     quote,
-    tokenYAmount: quote,
     params: {},
     quoteData: {
       contract: 'SP000.mock-router',
@@ -79,7 +78,7 @@ const flushPromises = async () => {
 describe('TokenRateTicker', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.useFakeTimers();
+    vi.useRealTimers();
 
     Object.defineProperty(document, 'visibilityState', {
       writable: true,
@@ -106,10 +105,12 @@ describe('TokenRateTicker', () => {
   });
 
   it('renders live quotes and refreshes them on the polling interval', async () => {
+    vi.useFakeTimers();
+
     mockUseBitflowTokens.mockReturnValue({
       tokens: [
-        { tokenId: 'token-usda', name: 'USDA', decimals: 6 },
-        { tokenId: 'token-stxbtc', name: 'STXBTC', decimals: 6 },
+        { tokenId: 'token-usda', name: 'USDA' },
+        { tokenId: 'token-stxbtc', name: 'STXBTC' },
       ],
       loading: false,
       error: null,
@@ -117,15 +118,15 @@ describe('TokenRateTicker', () => {
 
     mockGetQuoteForRoute
       .mockResolvedValueOnce(createQuote(1.02, ['token-usda', 'token-stx']))
-      .mockResolvedValueOnce(createQuote(0.0045, ['token-stxbtc', 'token-stx']))
+      .mockResolvedValueOnce(createQuote(0.0145, ['token-stxbtc', 'token-stx']))
       .mockResolvedValueOnce(createQuote(1.01, ['token-usda', 'token-stx']))
-      .mockResolvedValueOnce(createQuote(0.0048, ['token-stxbtc', 'token-stx']));
+      .mockResolvedValueOnce(createQuote(0.0148, ['token-stxbtc', 'token-stx']));
 
     render(<TokenRateTicker />);
 
-    await waitFor(() => {
-      expect(screen.getByText('1.0200 STX')).toBeInTheDocument();
-    });
+    await flushPromises();
+
+    expect(screen.getByText('1.0200 STX')).toBeInTheDocument();
 
     expect(screen.getByText('USDA')).toBeInTheDocument();
     expect(screen.getByText('STXBTC')).toBeInTheDocument();
@@ -142,19 +143,19 @@ describe('TokenRateTicker', () => {
 
     expect(mockGetQuoteForRoute).toHaveBeenCalledTimes(4);
     expect(screen.getByText('1.0100 STX')).toBeInTheDocument();
-    expect(screen.getByText('0.0048 STX')).toBeInTheDocument();
+    expect(screen.getByText('0.0148 STX')).toBeInTheDocument();
   });
 
   it('shows a refreshing badge while the first live quote batch is still pending', async () => {
     mockUseBitflowTokens.mockReturnValue({
       tokens: [
-        { tokenId: 'token-usda', name: 'USDA', decimals: 6 },
+        { tokenId: 'token-usda', name: 'USDA' },
       ],
       loading: false,
       error: null,
     });
 
-    let resolveQuote: ((value: QuoteResult) => void) | null = null;
+    let resolveQuote: (value: QuoteResult) => void = () => undefined;
     const pendingQuote = new Promise<QuoteResult>((resolve) => {
       resolveQuote = resolve;
     });
@@ -167,7 +168,7 @@ describe('TokenRateTicker', () => {
       expect(screen.getByText('Refreshing')).toBeInTheDocument();
     });
 
-    resolveQuote?.(createQuote(1.02, ['token-usda', 'token-stx']));
+    resolveQuote(createQuote(1.02, ['token-usda', 'token-stx']));
 
     await flushPromises();
 
@@ -188,6 +189,26 @@ describe('TokenRateTicker', () => {
     expect(mockGetQuoteForRoute).not.toHaveBeenCalled();
   });
 
+  it('formats missing token names into a readable fallback label', async () => {
+    mockUseBitflowTokens.mockReturnValue({
+      tokens: [
+        { tokenId: 'token-stxflow', name: '' },
+      ],
+      loading: false,
+      error: null,
+    });
+
+    mockGetQuoteForRoute.mockResolvedValue(createQuote(0.5555, ['token-stxflow', 'token-stx']));
+
+    render(<TokenRateTicker />);
+
+    await waitFor(() => {
+      expect(screen.getByText('STXFLOW')).toBeInTheDocument();
+    });
+
+    expect(screen.getByText('0.5555 STX')).toBeInTheDocument();
+  });
+
   it('shows a helpful empty state when Bitflow returns no STX-adjacent tokens', () => {
     mockUseBitflowTokens.mockReturnValue({
       tokens: [],
@@ -204,7 +225,7 @@ describe('TokenRateTicker', () => {
   it('keeps the timestamp blank when every quote request fails', async () => {
     mockUseBitflowTokens.mockReturnValue({
       tokens: [
-        { tokenId: 'token-usda', name: 'USDA', decimals: 6 },
+        { tokenId: 'token-usda', name: 'USDA' },
       ],
       loading: false,
       error: null,

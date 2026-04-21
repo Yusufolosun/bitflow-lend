@@ -18,6 +18,13 @@ const { mockOracleSanityState } = vi.hoisted(() => ({
   mockOracleSanityState: { current: { warning: false, deviation: 0 } },
 }));
 
+vi.mock('@bitflowlabs/core-sdk', () => ({
+  BitflowSDK: class {
+    getQuoteForRoute = vi.fn();
+    getAvailableTokens = vi.fn();
+  },
+}));
+
 // Mocks at module scope (hoisted)
 vi.mock('../hooks/useAuth', () => ({
   useAuth: () => mockAuthState.current,
@@ -132,6 +139,7 @@ vi.mock('lucide-react', () => ({
   ArrowDownCircle: () => <span>ArrowDown</span>,
   CheckCircle: () => <span>Check</span>,
   XCircle: () => <span>XCircle</span>,
+  Coins: () => <span>Coins</span>,
   ExternalLink: () => <span>ExtLink</span>,
   ArrowUpCircle: () => <span>ArrowUpCircle</span>,
   AlertTriangle: () => <span>Alert</span>,
