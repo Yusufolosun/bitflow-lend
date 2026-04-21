@@ -69,6 +69,10 @@ vi.mock('../hooks/useSmartPolling', () => ({
   useSmartPolling: vi.fn(),
 }));
 
+vi.mock('../components/TokenRateTicker', () => ({
+  TokenRateTicker: () => <div data-testid="token-rate-ticker">TokenRateTicker</div>,
+}));
+
 vi.mock('../config/contracts', () => ({
   ACTIVE_NETWORK: 'testnet',
   PROTOCOL_CONSTANTS: {
@@ -207,6 +211,12 @@ describe('App Integration', () => {
       render(<Dashboard />);
 
       expect(screen.getAllByText('Protocol Overview').length).toBeGreaterThan(0);
+    });
+
+    it('shows the live token ticker on the dashboard', () => {
+      render(<Dashboard />);
+
+      expect(screen.getByTestId('token-rate-ticker')).toBeInTheDocument();
     });
 
     it('does not show action cards when disconnected', () => {
