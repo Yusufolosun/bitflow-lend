@@ -188,6 +188,19 @@ describe('TokenRateTicker', () => {
     expect(mockGetQuoteForRoute).not.toHaveBeenCalled();
   });
 
+  it('shows a helpful empty state when Bitflow returns no STX-adjacent tokens', () => {
+    mockUseBitflowTokens.mockReturnValue({
+      tokens: [],
+      loading: false,
+      error: null,
+    });
+
+    render(<TokenRateTicker />);
+
+    expect(screen.getByText('Bitflow did not return any STX-adjacent tokens for quoting right now.')).toBeInTheDocument();
+    expect(mockGetQuoteForRoute).not.toHaveBeenCalled();
+  });
+
   it('keeps the timestamp blank when every quote request fails', async () => {
     mockUseBitflowTokens.mockReturnValue({
       tokens: [
