@@ -157,4 +157,25 @@ describe('TokenRateTicker', () => {
     expect(screen.getByText('Bitflow unavailable')).toBeInTheDocument();
     expect(mockGetQuoteForRoute).not.toHaveBeenCalled();
   });
+
+  it('keeps the timestamp blank when every quote request fails', async () => {
+    mockUseBitflowTokens.mockReturnValue({
+      tokens: [
+        { tokenId: 'token-usda', name: 'USDA', decimals: 6 },
+      ],
+      loading: false,
+      error: null,
+    });
+
+    mockGetQuoteForRoute.mockRejectedValue(new Error('No route available'));
+
+    render(<TokenRateTicker />);
+
+    await waitFor(() => {
+      expect(screen.getByText('No route available')).toBeInTheDocument();
+    });
+
+    expect(screen.getByText('Unavailable')).toBeInTheDocument();
+    expect(screen.queryByText(/Updated /i)).not.toBeInTheDocument();
+  });
 });
