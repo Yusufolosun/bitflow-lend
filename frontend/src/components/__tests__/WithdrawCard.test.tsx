@@ -6,12 +6,28 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { WithdrawCard } from '../WithdrawCard';
+import type { StacksTxStatusSnapshot } from '../../types/txStatus';
 
 // Mock hooks
 const mockWithdraw = vi.fn();
 const mockGetUserDeposit = vi.fn();
 const mockGetUserLoan = vi.fn();
-const mockPollTransactionStatus = vi.fn();
+const mockUseStacksTxStatus = vi.fn();
+
+const buildTxSnapshot = (overrides: Partial<StacksTxStatusSnapshot> = {}): StacksTxStatusSnapshot => ({
+  state: 'idle',
+  txStatusRaw: null,
+  message: '',
+  txId: null,
+  elapsedMs: 0,
+  estimatedMs: 600000,
+  remainingMs: 600000,
+  progressPercent: 0,
+  microblockAnchorTime: null,
+  hasTerminalError: false,
+  isPolling: false,
+  ...overrides,
+});
 
 vi.mock('../../hooks/useAuth', () => ({
   useAuth: () => ({
@@ -26,8 +42,11 @@ vi.mock('../../hooks/useVault', () => ({
     withdraw: mockWithdraw,
     getUserDeposit: mockGetUserDeposit,
     getUserLoan: mockGetUserLoan,
-    pollTransactionStatus: mockPollTransactionStatus,
   }),
+}));
+
+vi.mock('../../hooks/useStacksTxStatus', () => ({
+  useStacksTxStatus: (txId: string) => mockUseStacksTxStatus(txId),
 }));
 
 vi.mock('../../config/contracts', () => ({
@@ -53,7 +72,7 @@ describe('WithdrawCard Component', () => {
     mockGetUserDeposit.mockResolvedValue({ amountSTX: 50 });
     mockGetUserLoan.mockResolvedValue(null);
     mockWithdraw.mockResolvedValue({ success: true, txId: '0x456' });
-    mockPollTransactionStatus.mockResolvedValue('confirmed');
+    mockUseStacksTxStatus.mockReturnValue(buildTxSnapshot());
   });
 
   describe('Rendering', () => {
@@ -112,7 +131,12 @@ describe('WithdrawCard Component', () => {
 
     it('shows success message after confirmed withdrawal', async () => {
       mockWithdraw.mockResolvedValue({ success: true, txId: '0xabc' });
-      mockPollTransactionStatus.mockResolvedValue('confirmed');
+      mockUseStacksTxStatus.mockReturnValue(buildTxSnapshot({
+        state: 'success',
+        txStatusRaw: 'success',
+        message: 'Confirmed',
+        txId: '0xabc',
+      }));
 
       const user = userEvent.setup();
       render(<WithdrawCard />);
