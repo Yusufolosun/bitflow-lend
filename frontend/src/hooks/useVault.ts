@@ -22,6 +22,7 @@ import {
   getContractAddress,
   getActiveContractVersion,
   PROTOCOL_CONSTANTS,
+  getApiEndpoint,
 } from '../config/contracts';
 import { UserSession } from '@stacks/connect';
 
@@ -360,8 +361,39 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
       }
 
       return null;
-       * Removed legacy transaction polling logic
-       */
+    } catch {
+      return null;
+    }
+  }, [userAddress, network, contractAddress, contractName]);
+
+  /**
+   * Get user's active loan
+   */
+  const getUserLoan = useCallback(async (): Promise<UserLoan | null> => {
+    if (!userAddress) return null;
+
+    try {
+      const result = await callReadOnlyFunction({
+        network,
+        contractAddress,
+        contractName,
+        functionName: 'get-user-loan',
+        functionArgs: [principalCV(userAddress)],
+        senderAddress: userAddress,
+      });
+
+      // Handle optional some (loan exists)
+      if (result.type === ClarityType.OptionalSome && result.value) {
+        const loanData = cvToValue(result.value);
+
+        const amount = BigInt(loanData.amount);
+        const interestRate = Number(loanData['interest-rate']);
+        const startBlock = Number(loanData['start-block']);
+        const termEnd = Number(loanData['term-end']);
+
+        const amountSTX = microStxToStx(amount);
+        const interestRatePercent = interestRate / 100;
+        const durationDays = Math.floor((termEnd - startBlock) / 144); // Approx blocks per day
 
         // Calculate required collateral
         const collateralAmount = (amount * BigInt(PROTOCOL_CONSTANTS.MIN_COLLATERAL_RATIO)) / BigInt(100);

@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
-import { getApiEndpoint, PROTOCOL_CONSTANTS } from '../config/contracts';
 import { HiroTxResponse, StacksTxStatusSnapshot, StacksTxStatusState } from '../types/txStatus';
 
 const POLL_INTERVAL_MS = 30_000;
 const NOT_FOUND_GRACE_MS = 60 * 60 * 1000;
+const DEFAULT_BLOCK_TIME_MINUTES = 10;
+const DEFAULT_API_ENDPOINT = 'https://api.testnet.hiro.so';
 
 const DEFAULT_MESSAGE = 'Transaction in Stacks mempool — confirming with Bitcoin...';
 
@@ -13,8 +14,8 @@ const INITIAL_SNAPSHOT: StacksTxStatusSnapshot = {
   message: '',
   txId: null,
   elapsedMs: 0,
-  estimatedMs: PROTOCOL_CONSTANTS.BLOCK_TIME_MINUTES * 60 * 1000,
-  remainingMs: PROTOCOL_CONSTANTS.BLOCK_TIME_MINUTES * 60 * 1000,
+  estimatedMs: DEFAULT_BLOCK_TIME_MINUTES * 60 * 1000,
+  remainingMs: DEFAULT_BLOCK_TIME_MINUTES * 60 * 1000,
   progressPercent: 0,
   microblockAnchorTime: null,
   hasTerminalError: false,
@@ -72,9 +73,10 @@ export const useStacksTxStatus = (txId: string): StacksTxStatusSnapshot => {
     }
 
     let cancelled = false;
-    const apiEndpoint = getApiEndpoint();
+    const apiEndpoint = import.meta.env.VITE_STACKS_API_URL || DEFAULT_API_ENDPOINT;
     const startedAt = Date.now();
-    const estimatedMs = PROTOCOL_CONSTANTS.BLOCK_TIME_MINUTES * 60 * 1000;
+    const estimatedMs = DEFAULT_BLOCK_TIME_MINUTES * 60 * 1000;
+    let intervalId: number | null = null;
 
     const updateSnapshot = (
       state: StacksTxStatusState,
@@ -88,7 +90,7 @@ export const useStacksTxStatus = (txId: string): StacksTxStatusSnapshot => {
         return;
       }
 
-      setSnapshot({
+      const nextSnapshot: StacksTxStatusSnapshot = {
         state,
         txStatusRaw,
         txId: normalizedTxId,
@@ -100,7 +102,14 @@ export const useStacksTxStatus = (txId: string): StacksTxStatusSnapshot => {
         microblockAnchorTime: microblockAnchorTime ?? null,
         hasTerminalError: state === 'abort_by_response' || state === 'not_found',
         isPolling: state === 'pending',
-      });
+      };
+
+      setSnapshot(nextSnapshot);
+
+      if (intervalId !== null && state !== 'pending') {
+        window.clearInterval(intervalId);
+        intervalId = null;
+      }
     };
 
     updateSnapshot('pending', 'pending');
@@ -134,39 +143,15 @@ export const useStacksTxStatus = (txId: string): StacksTxStatusSnapshot => {
       }
     };
 
-    const run = async () => {
-      await poll();
-
-      const intervalId = window.setInterval(async () => {
-        await poll();
-      }, POLL_INTERVAL_MS);
-
-      const stopIfTerminal = window.setInterval(() => {
-        setSnapshot((current) => {
-          if (current.state === 'success' || current.state === 'abort_by_response' || current.state === 'not_found') {
-            window.clearInterval(intervalId);
-            window.clearInterval(stopIfTerminal);
-            return { ...current, isPolling: false };
-          }
-          return current;
-        });
-      }, 250);
-
-      return () => {
-        window.clearInterval(intervalId);
-        window.clearInterval(stopIfTerminal);
-      };
-    };
-
-    let cleanup: (() => void) | undefined;
-    run().then((fn) => {
-      cleanup = fn;
-    });
+    void poll();
+    intervalId = window.setInterval(() => {
+      void poll();
+    }, POLL_INTERVAL_MS);
 
     return () => {
       cancelled = true;
-      if (cleanup) {
-        cleanup();
+      if (intervalId !== null) {
+        window.clearInterval(intervalId);
       }
     };
   }, [normalizedTxId]);
