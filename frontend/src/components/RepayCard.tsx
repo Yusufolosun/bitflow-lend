@@ -1,13 +1,14 @@
-import React, { useState, useCallback } from 'react';
-import { DollarSign, AlertCircle, CheckCircle, XCircle, Clock, ExternalLink } from 'lucide-react';
+import React, { useState, useCallback, useEffect } from 'react';
+import { DollarSign, AlertCircle, CheckCircle, XCircle, Clock } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useVault } from '../hooks/useVault';
 import { useSmartPolling } from '../hooks/useSmartPolling';
+import { useStacksTxStatus } from '../hooks/useStacksTxStatus';
 import { useStxPrice } from '../hooks/useStxPrice';
 import { useOracleSanityCheck } from '../hooks/useOracleSanityCheck';
 import { formatSTX } from '../utils/formatters';
-import { getExplorerUrl } from '../config/contracts';
 import { RepaymentAmount, UserLoan } from '../types/vault';
+import { StacksTxStatusPanel } from './StacksTxStatusPanel';
 
 /**
  * RepayCard Component
@@ -21,10 +22,11 @@ export const RepayCard: React.FC = () => {
 
   const [activeLoan, setActiveLoan] = useState<UserLoan | null>(null);
   const [repaymentAmount, setRepaymentAmount] = useState<RepaymentAmount | null>(null);
-  const [txStatus, setTxStatus] = useState<'idle' | 'pending' | 'success' | 'error' | 'timeout'>('idle');
+  const [txStatus, setTxStatus] = useState<'idle' | 'pending' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
   const [timeElapsed, setTimeElapsed] = useState('');
   const [lastTxId, setLastTxId] = useState<string | null>(null);
+  const txSnapshot = useStacksTxStatus(lastTxId ?? '');
   const oracleWarningBanner = oracleSanity.warning ? (
     <div className="flex items-start gap-3 p-4 bg-amber-50 border border-amber-200 rounded-lg" role="alert">
       <AlertCircle className="text-amber-600 flex-shrink-0 mt-0.5" size={20} />
@@ -66,6 +68,30 @@ export const RepayCard: React.FC = () => {
 
   useSmartPolling(fetchData, 60_000, !!address);
 
+  useEffect(() => {
+    if (!lastTxId || txStatus !== 'pending') {
+      return;
+    }
+
+    if (txSnapshot.state === 'success') {
+      setTxStatus('success');
+
+      setTimeout(async () => {
+        const loan = await vault.getUserLoan();
+        setActiveLoan(loan);
+        setRepaymentAmount(null);
+        setTxStatus('idle');
+      }, 5000);
+
+      return;
+    }
+
+    if (txSnapshot.hasTerminalError) {
+      setTxStatus('error');
+      setErrorMessage(txSnapshot.message);
+    }
+  }, [lastTxId, txStatus, txSnapshot, vault]);
+
   const handleRepay = async () => {
     if (!repaymentAmount) {
       setErrorMessage('Unable to calculate repayment amount');
@@ -89,24 +115,6 @@ export const RepayCard: React.FC = () => {
 
       if (result.success && result.txId) {
         setLastTxId(result.txId);
-
-        const pollResult = await vault.pollTransactionStatus(result.txId);
-
-        if (pollResult === 'confirmed') {
-          setTxStatus('success');
-          setTimeout(async () => {
-            const loan = await vault.getUserLoan();
-            setActiveLoan(loan);
-            setRepaymentAmount(null);
-            setTxStatus('idle');
-          }, 5000);
-        } else if (pollResult === 'failed') {
-          setTxStatus('error');
-          setErrorMessage('Transaction was rejected on-chain. Check the explorer for details.');
-        } else {
-          setTxStatus('timeout');
-          setErrorMessage('');
-        }
       } else {
         setTxStatus('error');
         setErrorMessage(result.error || 'Transaction failed');
@@ -321,17 +329,6 @@ export const RepayCard: React.FC = () => {
               Loan repaid successfully! Collateral released.
             </span>
           </div>
-          {lastTxId && (
-            <a
-              href={getExplorerUrl(lastTxId)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1 text-xs text-emerald-600 hover:text-emerald-700 hover:underline"
-            >
-              View transaction
-              <ExternalLink size={12} />
-            </a>
-          )}
         </div>
       )}
 
@@ -341,41 +338,14 @@ export const RepayCard: React.FC = () => {
             <XCircle className="text-red-600" size={20} />
             <span className="text-sm text-red-700 font-medium">{errorMessage}</span>
           </div>
-          {lastTxId && (
-            <a
-              href={getExplorerUrl(lastTxId)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1 text-xs text-red-600 hover:text-red-700 hover:underline"
-            >
-              View transaction
-              <ExternalLink size={12} />
-            </a>
+          {lastTxId && txSnapshot.hasTerminalError && (
+            <p className="text-xs text-red-600">See transaction details below.</p>
           )}
         </div>
       )}
 
-      {txStatus === 'timeout' && lastTxId && (
-        <div className="p-3 bg-amber-50 rounded-xl border border-amber-200 space-y-2" role="alert">
-          <div className="flex items-center gap-2">
-            <AlertCircle className="text-amber-600" size={20} />
-            <span className="text-sm text-amber-700 font-medium">
-              Transaction still processing
-            </span>
-          </div>
-          <p className="text-xs text-amber-700">
-            Your repayment may still go through. Do not retry — check the explorer for the latest status.
-          </p>
-          <a
-            href={getExplorerUrl(lastTxId)}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1 text-xs text-amber-700 hover:text-amber-800 hover:underline font-medium"
-          >
-            Check transaction status
-            <ExternalLink size={12} />
-          </a>
-        </div>
+      {lastTxId && (txStatus === 'pending' || (txStatus === 'error' && txSnapshot.hasTerminalError)) && (
+        <StacksTxStatusPanel snapshot={txSnapshot} />
       )}
 
       {/* Info */}
