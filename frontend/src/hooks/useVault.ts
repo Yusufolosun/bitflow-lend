@@ -22,14 +22,8 @@ import {
   getContractAddress,
   getActiveContractVersion,
   PROTOCOL_CONSTANTS,
-  getApiEndpoint,
 } from '../config/contracts';
 import { UserSession } from '@stacks/connect';
-
-/**
- * Possible results from polling a transaction's on-chain status
- */
-export type PollResult = 'confirmed' | 'failed' | 'timeout';
 
 // Alias to keep the existing call sites readable while using the current API.
 const callReadOnlyFunction = fetchCallReadOnlyFunction;
@@ -41,40 +35,6 @@ const getErrorMessage = (error: unknown, fallback: string): string => {
   return fallback;
 };
 
-/**
- * Poll transaction status until confirmed, explicitly failed, or timed out.
- * Returns a three-state result so callers can show the right message.
- */
-const pollTransactionStatus = async (txId: string, maxAttempts = 60): Promise<PollResult> => {
-  const apiUrl = getApiEndpoint();
-
-  for (let i = 0; i < maxAttempts; i++) {
-    try {
-      const response = await fetch(`${apiUrl}/extended/v1/tx/${txId}`);
-
-      if (!response.ok) {
-        await new Promise(resolve => setTimeout(resolve, 3000));
-        continue;
-      }
-
-      const data = await response.json();
-
-      if (data.tx_status === 'success') {
-        return 'confirmed';
-      }
-
-      if (data.tx_status === 'abort_by_response' || data.tx_status === 'abort_by_post_condition') {
-        return 'failed';
-      }
-
-      await new Promise(resolve => setTimeout(resolve, 3000));
-    } catch {
-      await new Promise(resolve => setTimeout(resolve, 3000));
-    }
-  }
-
-  return 'timeout';
-};
 
 /**
  * Custom hook for vault operations
@@ -400,39 +360,8 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
       }
 
       return null;
-    } catch {
-      return null;
-    }
-  }, [userAddress, network, contractAddress, contractName]);
-
-  /**
-   * Get user's active loan
-   */
-  const getUserLoan = useCallback(async (): Promise<UserLoan | null> => {
-    if (!userAddress) return null;
-
-    try {
-      const result = await callReadOnlyFunction({
-        network,
-        contractAddress,
-        contractName,
-        functionName: 'get-user-loan',
-        functionArgs: [principalCV(userAddress)],
-        senderAddress: userAddress,
-      });
-
-      // Handle optional some (loan exists)
-      if (result.type === ClarityType.OptionalSome && result.value) {
-        const loanData = cvToValue(result.value);
-
-        const amount = BigInt(loanData.amount);
-        const interestRate = Number(loanData['interest-rate']);
-        const startBlock = Number(loanData['start-block']);
-        const termEnd = Number(loanData['term-end']);
-
-        const amountSTX = microStxToStx(amount);
-        const interestRatePercent = interestRate / 100;
-        const durationDays = Math.floor((termEnd - startBlock) / 144); // Approx blocks per day
+       * Removed legacy transaction polling logic
+       */
 
         // Calculate required collateral
         const collateralAmount = (amount * BigInt(PROTOCOL_CONSTANTS.MIN_COLLATERAL_RATIO)) / BigInt(100);
@@ -684,9 +613,6 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
     getUserLoan,
     getRepaymentAmount,
     getHealthFactor,
-
-    // Utilities
-    pollTransactionStatus: (txId: string) => pollTransactionStatus(txId),
   };
 };
 
