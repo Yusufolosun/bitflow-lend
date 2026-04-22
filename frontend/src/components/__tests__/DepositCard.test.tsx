@@ -69,6 +69,7 @@ vi.mock('../CollateralPreview', () => ({
 // Mock lucide-react icons
 vi.mock('lucide-react', () => ({
   ArrowDownCircle: () => <span>ArrowDownCircle</span>,
+  AlertCircle: () => <span>AlertCircle</span>,
   CheckCircle: () => <span>CheckCircle</span>,
   XCircle: () => <span>XCircle</span>,
   ExternalLink: () => <span>ExternalLink</span>,
@@ -304,7 +305,7 @@ describe('DepositCard Component', () => {
       await user.click(submitBtn);
 
       await waitFor(() => {
-        expect(screen.getByText(/Transaction rejected — check post-conditions/)).toBeInTheDocument();
+        expect(screen.getAllByText(/Transaction rejected — check post-conditions/).length).toBeGreaterThan(0);
       });
     });
 

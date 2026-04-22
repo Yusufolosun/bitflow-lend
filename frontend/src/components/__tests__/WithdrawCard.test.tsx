@@ -60,6 +60,7 @@ vi.mock('../../config/contracts', () => ({
 
 vi.mock('lucide-react', () => ({
   ArrowUpCircle: () => <span>ArrowUpCircle</span>,
+  AlertCircle: () => <span>AlertCircle</span>,
   CheckCircle: () => <span>CheckCircle</span>,
   XCircle: () => <span>XCircle</span>,
   ExternalLink: () => <span>ExternalLink</span>,

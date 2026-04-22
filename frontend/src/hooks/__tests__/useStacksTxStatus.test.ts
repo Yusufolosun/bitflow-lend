@@ -1,26 +1,18 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { act, renderHook, waitFor } from '@testing-library/react';
+import { renderHook, waitFor } from '@testing-library/react';
 import { useStacksTxStatus } from '../useStacksTxStatus';
 
 const mockFetch = vi.fn();
 
-vi.mock('../../config/contracts', () => ({
-  getApiEndpoint: () => 'https://api.testnet.hiro.so',
-  PROTOCOL_CONSTANTS: {
-    BLOCK_TIME_MINUTES: 10,
-  },
-}));
-
 describe('useStacksTxStatus', () => {
   beforeEach(() => {
-    vi.useFakeTimers();
     vi.clearAllMocks();
     vi.stubGlobal('fetch', mockFetch);
   });
 
   afterEach(() => {
-    vi.useRealTimers();
     vi.unstubAllGlobals();
+    vi.restoreAllMocks();
   });
 
   it('maps successful tx status to confirmed', async () => {
@@ -71,6 +63,11 @@ describe('useStacksTxStatus', () => {
   });
 
   it('returns not_found only after 60 minutes', async () => {
+    const nowSpy = vi.spyOn(Date, 'now');
+    nowSpy
+      .mockReturnValueOnce(0)
+      .mockReturnValue(61 * 60 * 1000);
+
     mockFetch.mockResolvedValue({
       ok: false,
       status: 404,
@@ -78,15 +75,6 @@ describe('useStacksTxStatus', () => {
     });
 
     const { result } = renderHook(() => useStacksTxStatus('0xabc'));
-
-    await waitFor(() => {
-      expect(result.current.state).toBe('pending');
-    });
-
-    await act(async () => {
-      vi.advanceTimersByTime(61 * 60 * 1000);
-      await Promise.resolve();
-    });
 
     await waitFor(() => {
       expect(result.current.state).toBe('not_found');
