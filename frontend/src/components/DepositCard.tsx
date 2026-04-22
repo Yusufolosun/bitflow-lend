@@ -1,11 +1,13 @@
-import React, { useState, useCallback } from 'react';
-import { ArrowDownCircle, CheckCircle, XCircle, ExternalLink, AlertTriangle } from 'lucide-react';
+import React, { useState, useCallback, useEffect } from 'react';
+import { ArrowDownCircle, CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useVault } from '../hooks/useVault';
 import { useSmartPolling } from '../hooks/useSmartPolling';
+import { useStacksTxStatus } from '../hooks/useStacksTxStatus';
 import { formatSTX } from '../utils/formatters';
-import { PROTOCOL_CONSTANTS, getExplorerUrl } from '../config/contracts';
+import { PROTOCOL_CONSTANTS } from '../config/contracts';
 import { CollateralPreview } from './CollateralPreview';
+import { StacksTxStatusPanel } from './StacksTxStatusPanel';
 
 /**
  * DepositCard Component
@@ -17,9 +19,10 @@ export const DepositCard: React.FC = () => {
 
   const [depositAmount, setDepositAmount] = useState('');
   const [userDeposit, setUserDeposit] = useState(0);
-  const [txStatus, setTxStatus] = useState<'idle' | 'pending' | 'success' | 'error' | 'timeout'>('idle');
+  const [txStatus, setTxStatus] = useState<'idle' | 'pending' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
   const [lastTxId, setLastTxId] = useState<string | null>(null);
+  const txSnapshot = useStacksTxStatus(lastTxId ?? '');
 
   // Fetch user's current deposit on a 60s smart interval
   const fetchDeposit = useCallback(async () => {
@@ -29,6 +32,35 @@ export const DepositCard: React.FC = () => {
   }, [address, vault]);
 
   useSmartPolling(fetchDeposit, 60_000, !!address);
+
+  useEffect(() => {
+    if (!lastTxId || txStatus !== 'pending') {
+      return;
+    }
+
+    if (txSnapshot.state === 'success') {
+      setTxStatus('success');
+      setDepositAmount('');
+
+      void (async () => {
+        const deposit = await vault.getUserDeposit();
+        if (deposit) {
+          setUserDeposit(deposit.amountSTX);
+        }
+
+        setTimeout(() => {
+          setTxStatus('idle');
+          setErrorMessage('');
+        }, 5000);
+      })();
+      return;
+    }
+
+    if (txSnapshot.hasTerminalError) {
+      setTxStatus('error');
+      setErrorMessage(txSnapshot.message);
+    }
+  }, [lastTxId, txStatus, txSnapshot, vault]);
 
   const handleDeposit = async () => {
     const amount = parseFloat(depositAmount);
@@ -48,39 +80,13 @@ export const DepositCard: React.FC = () => {
 
     setTxStatus('pending');
     setErrorMessage('');
+    setLastTxId(null);
 
     try {
       const result = await vault.deposit(amount);
 
       if (result.success && result.txId) {
         setLastTxId(result.txId);
-        setErrorMessage(`Transaction submitted. Waiting for confirmation...`);
-        
-        // Wait for transaction confirmation
-        const result2 = await vault.pollTransactionStatus(result.txId);
-
-        if (result2 === 'confirmed') {
-          setTxStatus('success');
-          setDepositAmount('');
-
-          // Refresh deposit immediately after confirmation
-          const deposit = await vault.getUserDeposit();
-          if (deposit) {
-            setUserDeposit(deposit.amountSTX);
-          }
-
-          // Reset status after showing success message
-          setTimeout(() => {
-            setTxStatus('idle');
-            setErrorMessage('');
-          }, 5000);
-        } else if (result2 === 'failed') {
-          setTxStatus('error');
-          setErrorMessage('Transaction was rejected on-chain. Check the explorer for details.');
-        } else {
-          setTxStatus('timeout');
-          setErrorMessage('');
-        }
       } else {
         setTxStatus('error');
         setErrorMessage(result.error || 'Transaction failed');
@@ -209,17 +215,6 @@ export const DepositCard: React.FC = () => {
           <p className="text-xs text-emerald-600">
             Tip: Click &quot;Refresh Data&quot; on Dashboard to update your total deposit view.
           </p>
-          {lastTxId && (
-            <a
-              href={getExplorerUrl(lastTxId)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1 text-xs text-emerald-600 hover:text-emerald-700 hover:underline"
-            >
-              View transaction
-              <ExternalLink size={12} />
-            </a>
-          )}
         </div>
       )}
 
@@ -229,41 +224,14 @@ export const DepositCard: React.FC = () => {
             <XCircle className="text-red-600" size={20} />
             <span className="text-sm text-red-700 font-medium">{errorMessage}</span>
           </div>
-          {lastTxId && (
-            <a
-              href={getExplorerUrl(lastTxId)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1 text-xs text-red-600 hover:text-red-700 hover:underline"
-            >
-              View transaction
-              <ExternalLink size={12} />
-            </a>
+          {lastTxId && txSnapshot.hasTerminalError && (
+            <p className="text-xs text-red-600">See transaction details below.</p>
           )}
         </div>
       )}
 
-      {txStatus === 'timeout' && lastTxId && (
-        <div className="p-3 bg-amber-50 rounded-xl border border-amber-200 space-y-2" role="alert">
-          <div className="flex items-center gap-2">
-            <AlertTriangle className="text-amber-600" size={20} />
-            <span className="text-sm text-amber-700 font-medium">
-              Transaction still processing
-            </span>
-          </div>
-          <p className="text-xs text-amber-700">
-            Your deposit may still go through. Do not retry — check the explorer for the latest status.
-          </p>
-          <a
-            href={getExplorerUrl(lastTxId)}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1 text-xs text-amber-700 hover:text-amber-800 hover:underline font-medium"
-          >
-            Check transaction status
-            <ExternalLink size={12} />
-          </a>
-        </div>
+      {lastTxId && (txStatus === 'pending' || (txStatus === 'error' && txSnapshot.hasTerminalError)) && (
+        <StacksTxStatusPanel snapshot={txSnapshot} />
       )}
 
       {/* Info */}
