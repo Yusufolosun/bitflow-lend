@@ -25,6 +25,10 @@ vi.mock('../BorrowCard', () => ({
   BorrowCard: () => <div data-testid="borrow-card">BorrowCard</div>,
 }));
 
+vi.mock('../WithdrawCard', () => ({
+  WithdrawCard: () => <div data-testid="withdraw-card">WithdrawCard</div>,
+}));
+
 vi.mock('../RepayCard', () => ({
   RepayCard: () => <div data-testid="repay-card">RepayCard</div>,
 }));
@@ -97,6 +101,10 @@ vi.mock('../../utils/formatters', () => ({
 
 vi.mock('../../config/contracts', () => ({
   ACTIVE_NETWORK: 'testnet',
+  getExplorerUrl: () => 'https://explorer.hiro.so',
+  PROTOCOL_CONSTANTS: {
+    BLOCK_TIME_MINUTES: 10,
+  },
 }));
 
 // Mock lucide-react icons

@@ -6,11 +6,27 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DepositCard } from '../DepositCard';
+import type { StacksTxStatusSnapshot } from '../../types/txStatus';
 
 // Mock hooks
 const mockDeposit = vi.fn();
 const mockGetUserDeposit = vi.fn();
-const mockPollTransactionStatus = vi.fn();
+const mockUseStacksTxStatus = vi.fn();
+
+const buildTxSnapshot = (overrides: Partial<StacksTxStatusSnapshot> = {}): StacksTxStatusSnapshot => ({
+  state: 'idle',
+  txStatusRaw: null,
+  message: '',
+  txId: null,
+  elapsedMs: 0,
+  estimatedMs: 600000,
+  remainingMs: 600000,
+  progressPercent: 0,
+  microblockAnchorTime: null,
+  hasTerminalError: false,
+  isPolling: false,
+  ...overrides,
+});
 
 vi.mock('../../hooks/useAuth', () => ({
   useAuth: () => ({
@@ -24,8 +40,11 @@ vi.mock('../../hooks/useVault', () => ({
   useVault: () => ({
     deposit: mockDeposit,
     getUserDeposit: mockGetUserDeposit,
-    pollTransactionStatus: mockPollTransactionStatus,
   }),
+}));
+
+vi.mock('../../hooks/useStacksTxStatus', () => ({
+  useStacksTxStatus: (txId: string) => mockUseStacksTxStatus(txId),
 }));
 
 vi.mock('../../types/vault', () => ({
@@ -50,6 +69,7 @@ vi.mock('../CollateralPreview', () => ({
 // Mock lucide-react icons
 vi.mock('lucide-react', () => ({
   ArrowDownCircle: () => <span>ArrowDownCircle</span>,
+  AlertCircle: () => <span>AlertCircle</span>,
   CheckCircle: () => <span>CheckCircle</span>,
   XCircle: () => <span>XCircle</span>,
   ExternalLink: () => <span>ExternalLink</span>,
@@ -61,7 +81,7 @@ describe('DepositCard Component', () => {
     vi.clearAllMocks();
     mockGetUserDeposit.mockResolvedValue({ amountSTX: 50 });
     mockDeposit.mockResolvedValue({ success: true, txId: '0x123' });
-    mockPollTransactionStatus.mockResolvedValue('confirmed');
+    mockUseStacksTxStatus.mockReturnValue(buildTxSnapshot());
   });
 
   describe('Rendering', () => {
@@ -226,7 +246,12 @@ describe('DepositCard Component', () => {
 
     it('shows success message after confirmed deposit', async () => {
       mockDeposit.mockResolvedValue({ success: true, txId: '0xabc123' });
-      mockPollTransactionStatus.mockResolvedValue('confirmed');
+      mockUseStacksTxStatus.mockReturnValue(buildTxSnapshot({
+        state: 'success',
+        txStatusRaw: 'success',
+        message: 'Confirmed',
+        txId: '0xabc123',
+      }));
       mockGetUserDeposit.mockResolvedValue({ amountSTX: 60 });
 
       const user = userEvent.setup();
@@ -260,9 +285,15 @@ describe('DepositCard Component', () => {
       });
     });
 
-    it('shows warning when transaction times out', async () => {
+    it('shows rejection message when tx status is abort_by_response', async () => {
       mockDeposit.mockResolvedValue({ success: true, txId: '0xabc' });
-      mockPollTransactionStatus.mockResolvedValue('timeout');
+      mockUseStacksTxStatus.mockReturnValue(buildTxSnapshot({
+        state: 'abort_by_response',
+        txStatusRaw: 'abort_by_response',
+        message: 'Transaction rejected — check post-conditions',
+        txId: '0xabc',
+        hasTerminalError: true,
+      }));
 
       const user = userEvent.setup();
       render(<DepositCard />);
@@ -274,7 +305,7 @@ describe('DepositCard Component', () => {
       await user.click(submitBtn);
 
       await waitFor(() => {
-        expect(screen.getByText(/Transaction still processing/)).toBeInTheDocument();
+        expect(screen.getAllByText(/Transaction rejected — check post-conditions/).length).toBeGreaterThan(0);
       });
     });
 

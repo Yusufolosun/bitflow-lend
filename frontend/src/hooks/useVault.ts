@@ -26,11 +26,6 @@ import {
 } from '../config/contracts';
 import { UserSession } from '@stacks/connect';
 
-/**
- * Possible results from polling a transaction's on-chain status
- */
-export type PollResult = 'confirmed' | 'failed' | 'timeout';
-
 // Alias to keep the existing call sites readable while using the current API.
 const callReadOnlyFunction = fetchCallReadOnlyFunction;
 
@@ -41,40 +36,6 @@ const getErrorMessage = (error: unknown, fallback: string): string => {
   return fallback;
 };
 
-/**
- * Poll transaction status until confirmed, explicitly failed, or timed out.
- * Returns a three-state result so callers can show the right message.
- */
-const pollTransactionStatus = async (txId: string, maxAttempts = 60): Promise<PollResult> => {
-  const apiUrl = getApiEndpoint();
-
-  for (let i = 0; i < maxAttempts; i++) {
-    try {
-      const response = await fetch(`${apiUrl}/extended/v1/tx/${txId}`);
-
-      if (!response.ok) {
-        await new Promise(resolve => setTimeout(resolve, 3000));
-        continue;
-      }
-
-      const data = await response.json();
-
-      if (data.tx_status === 'success') {
-        return 'confirmed';
-      }
-
-      if (data.tx_status === 'abort_by_response' || data.tx_status === 'abort_by_post_condition') {
-        return 'failed';
-      }
-
-      await new Promise(resolve => setTimeout(resolve, 3000));
-    } catch {
-      await new Promise(resolve => setTimeout(resolve, 3000));
-    }
-  }
-
-  return 'timeout';
-};
 
 /**
  * Custom hook for vault operations
@@ -684,9 +645,6 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
     getUserLoan,
     getRepaymentAmount,
     getHealthFactor,
-
-    // Utilities
-    pollTransactionStatus: (txId: string) => pollTransactionStatus(txId),
   };
 };
 

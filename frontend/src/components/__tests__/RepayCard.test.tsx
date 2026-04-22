@@ -6,6 +6,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { RepayCard } from '../RepayCard';
+import type { StacksTxStatusSnapshot } from '../../types/txStatus';
 
 const { mockOracleSanityState } = vi.hoisted(() => ({
   mockOracleSanityState: { current: { warning: false, deviation: 0 } },
@@ -15,7 +16,22 @@ const { mockOracleSanityState } = vi.hoisted(() => ({
 const mockRepay = vi.fn();
 const mockGetUserLoan = vi.fn();
 const mockGetRepaymentAmount = vi.fn();
-const mockPollTransactionStatus = vi.fn();
+const mockUseStacksTxStatus = vi.fn();
+
+const buildTxSnapshot = (overrides: Partial<StacksTxStatusSnapshot> = {}): StacksTxStatusSnapshot => ({
+  state: 'idle',
+  txStatusRaw: null,
+  message: '',
+  txId: null,
+  elapsedMs: 0,
+  estimatedMs: 600000,
+  remainingMs: 600000,
+  progressPercent: 0,
+  microblockAnchorTime: null,
+  hasTerminalError: false,
+  isPolling: false,
+  ...overrides,
+});
 
 vi.mock('../../hooks/useAuth', () => ({
   useAuth: () => ({
@@ -30,8 +46,11 @@ vi.mock('../../hooks/useVault', () => ({
     repay: mockRepay,
     getUserLoan: mockGetUserLoan,
     getRepaymentAmount: mockGetRepaymentAmount,
-    pollTransactionStatus: mockPollTransactionStatus,
   }),
+}));
+
+vi.mock('../../hooks/useStacksTxStatus', () => ({
+  useStacksTxStatus: (txId: string) => mockUseStacksTxStatus(txId),
 }));
 
 vi.mock('../../hooks/useStxPrice', () => ({
@@ -237,11 +256,11 @@ describe('RepayCard Component', () => {
         interestSTX: 0.14,
         totalSTX: 50.14,
       });
+      mockUseStacksTxStatus.mockReturnValue(buildTxSnapshot());
     });
 
     it('calls repay on button click', async () => {
       mockRepay.mockResolvedValue({ success: true, txId: '0xabc' });
-      mockPollTransactionStatus.mockResolvedValue('confirmed');
       const user = userEvent.setup();
       render(<RepayCard />);
 
@@ -255,7 +274,12 @@ describe('RepayCard Component', () => {
 
     it('shows success message after repayment', async () => {
       mockRepay.mockResolvedValue({ success: true, txId: '0xabc' });
-      mockPollTransactionStatus.mockResolvedValue('confirmed');
+      mockUseStacksTxStatus.mockReturnValue(buildTxSnapshot({
+        state: 'success',
+        txStatusRaw: 'success',
+        message: 'Confirmed',
+        txId: '0xabc',
+      }));
       const user = userEvent.setup();
       render(<RepayCard />);
 

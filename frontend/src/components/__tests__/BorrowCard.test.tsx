@@ -6,6 +6,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BorrowCard } from '../BorrowCard';
+import type { StacksTxStatusSnapshot } from '../../types/txStatus';
 
 const { mockOracleSanityState } = vi.hoisted(() => ({
   mockOracleSanityState: { current: { warning: false, deviation: 0 } },
@@ -15,8 +16,23 @@ const { mockOracleSanityState } = vi.hoisted(() => ({
 const mockBorrow = vi.fn();
 const mockGetUserDeposit = vi.fn();
 const mockGetUserLoan = vi.fn();
-const mockPollTransactionStatus = vi.fn();
 const mockRefreshBalance = vi.fn();
+const mockUseStacksTxStatus = vi.fn();
+
+const buildTxSnapshot = (overrides: Partial<StacksTxStatusSnapshot> = {}): StacksTxStatusSnapshot => ({
+  state: 'idle',
+  txStatusRaw: null,
+  message: '',
+  txId: null,
+  elapsedMs: 0,
+  estimatedMs: 600000,
+  remainingMs: 600000,
+  progressPercent: 0,
+  microblockAnchorTime: null,
+  hasTerminalError: false,
+  isPolling: false,
+  ...overrides,
+});
 
 vi.mock('../../hooks/useAuth', () => ({
   useAuth: () => ({
@@ -31,8 +47,11 @@ vi.mock('../../hooks/useVault', () => ({
     borrow: mockBorrow,
     getUserDeposit: mockGetUserDeposit,
     getUserLoan: mockGetUserLoan,
-    pollTransactionStatus: mockPollTransactionStatus,
   }),
+}));
+
+vi.mock('../../hooks/useStacksTxStatus', () => ({
+  useStacksTxStatus: (txId: string) => mockUseStacksTxStatus(txId),
 }));
 
 vi.mock('../../hooks/useStxPrice', () => ({
@@ -81,7 +100,7 @@ describe('BorrowCard Component', () => {
     mockGetUserDeposit.mockResolvedValue({ amountSTX: 150 });
     mockGetUserLoan.mockResolvedValue(null); // No active loan
     mockBorrow.mockResolvedValue({ success: true, txId: '0x123' });
-    mockPollTransactionStatus.mockResolvedValue('confirmed');
+    mockUseStacksTxStatus.mockReturnValue(buildTxSnapshot());
   });
 
   describe('Rendering (no active loan)', () => {
@@ -294,7 +313,12 @@ describe('BorrowCard Component', () => {
 
     it('shows success message after confirmed borrow', async () => {
       mockBorrow.mockResolvedValue({ success: true, txId: '0xabc' });
-      mockPollTransactionStatus.mockResolvedValue('confirmed');
+      mockUseStacksTxStatus.mockReturnValue(buildTxSnapshot({
+        state: 'success',
+        txStatusRaw: 'success',
+        message: 'Confirmed',
+        txId: '0xabc',
+      }));
 
       const user = userEvent.setup();
       render(<BorrowCard />);
