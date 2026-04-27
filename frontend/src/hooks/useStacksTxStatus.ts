@@ -109,6 +109,7 @@ export const useStacksTxStatus = (txId: string): StacksTxStatusSnapshot => {
     const apiEndpoint = import.meta.env.VITE_STACKS_API_URL || DEFAULT_API_ENDPOINT;
     const startedAt = Date.now();
     const estimatedMs = DEFAULT_BLOCK_TIME_MINUTES * 60 * 1000;
+    let lastObservedTxStatus: string | null = 'pending';
     let intervalId: number | null = null;
 
     const updateSnapshot = (
@@ -154,7 +155,7 @@ export const useStacksTxStatus = (txId: string): StacksTxStatusSnapshot => {
       }
     };
 
-    updateSnapshot('pending', 'pending');
+    updateSnapshot('pending', lastObservedTxStatus);
 
     const poll = async () => {
       try {
@@ -167,21 +168,23 @@ export const useStacksTxStatus = (txId: string): StacksTxStatusSnapshot => {
             return;
           }
 
+          lastObservedTxStatus = 'not_found';
           updateSnapshot('pending', 'not_found');
           return;
         }
 
         if (!response.ok) {
-          updateSnapshot('pending', 'pending');
+          updateSnapshot('pending', lastObservedTxStatus);
           return;
         }
 
         const data = (await response.json()) as HiroTxResponse;
         const nextState = getMappedState(data.tx_status);
+        lastObservedTxStatus = data.tx_status;
 
         updateSnapshot(nextState, data.tx_status, data.microblock_anchor_time);
       } catch {
-        updateSnapshot('pending', 'pending');
+        updateSnapshot('pending', lastObservedTxStatus);
       }
     };
 
