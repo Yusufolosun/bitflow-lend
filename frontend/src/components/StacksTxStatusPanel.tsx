@@ -75,6 +75,12 @@ export const StacksTxStatusPanel: React.FC<StacksTxStatusPanelProps> = ({ snapsh
         </div>
       )}
 
+      {snapshot.state === 'not_found' && (
+        <div className={`text-xs ${variant.text}`}>
+          We kept polling for {formatDurationMinutes(snapshot.elapsedMs)} before marking this as not found.
+        </div>
+      )}
+
       {anchorLabel && (
         <div className={`text-xs ${variant.text}`}>
           Microblock anchor time: {anchorLabel}
