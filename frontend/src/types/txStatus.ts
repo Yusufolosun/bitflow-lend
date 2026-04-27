@@ -1,5 +1,7 @@
 export type StacksTxStatusState = 'idle' | 'pending' | 'success' | 'abort_by_response' | 'not_found';
 
+export type StacksPendingPhase = 'mempool' | 'propagation';
+
 export interface StacksTxStatusSnapshot {
   state: StacksTxStatusState;
   txStatusRaw: string | null;
@@ -12,6 +14,9 @@ export interface StacksTxStatusSnapshot {
   microblockAnchorTime?: number | null;
   hasTerminalError: boolean;
   isPolling: boolean;
+  pendingPhase?: StacksPendingPhase;
+  notFoundGraceRemainingMs?: number | null;
+  averageBlockTimeMinutes?: number;
 }
 
 export interface HiroTxResponse {

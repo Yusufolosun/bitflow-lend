@@ -310,6 +310,56 @@ describe('RepayCard Component', () => {
       });
     });
 
+    it('keeps pending state for temporary not_found responses', async () => {
+      mockRepay.mockResolvedValue({ success: true, txId: '0xabc' });
+      mockUseStacksTxStatus.mockReturnValue(buildTxSnapshot({
+        state: 'pending',
+        txStatusRaw: 'not_found',
+        pendingPhase: 'propagation',
+        message: 'Transaction submitted — waiting for indexer propagation...',
+        txId: '0xabc',
+        hasTerminalError: false,
+        isPolling: true,
+      }));
+
+      const user = userEvent.setup();
+      render(<RepayCard />);
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /Repay Loan/i })).toBeInTheDocument();
+      });
+
+      await user.click(screen.getByRole('button', { name: /Repay Loan/i }));
+
+      await waitFor(() => {
+        expect(screen.getByText(/waiting for indexer propagation/i)).toBeInTheDocument();
+      });
+    });
+
+    it('shows terminal rejection when tx status is abort_by_response', async () => {
+      mockRepay.mockResolvedValue({ success: true, txId: '0xabc' });
+      mockUseStacksTxStatus.mockReturnValue(buildTxSnapshot({
+        state: 'abort_by_response',
+        txStatusRaw: 'abort_by_response',
+        message: 'Transaction rejected — check post-conditions',
+        txId: '0xabc',
+        hasTerminalError: true,
+      }));
+
+      const user = userEvent.setup();
+      render(<RepayCard />);
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /Repay Loan/i })).toBeInTheDocument();
+      });
+
+      await user.click(screen.getByRole('button', { name: /Repay Loan/i }));
+
+      await waitFor(() => {
+        expect(screen.getAllByText(/Transaction rejected — check post-conditions/).length).toBeGreaterThan(0);
+      });
+    });
+
     it('shows processing state during repay', async () => {
       mockRepay.mockReturnValue(new Promise(() => {})); // never resolves
       const user = userEvent.setup();

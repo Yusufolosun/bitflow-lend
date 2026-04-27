@@ -309,6 +309,34 @@ describe('DepositCard Component', () => {
       });
     });
 
+    it('keeps pending state when tx is temporarily not_found during grace period', async () => {
+      mockDeposit.mockResolvedValue({ success: true, txId: '0xabc' });
+      mockUseStacksTxStatus.mockReturnValue(buildTxSnapshot({
+        state: 'pending',
+        txStatusRaw: 'not_found',
+        pendingPhase: 'propagation',
+        message: 'Transaction submitted — waiting for indexer propagation...',
+        txId: '0xabc',
+        isPolling: true,
+        hasTerminalError: false,
+      }));
+
+      const user = userEvent.setup();
+      render(<DepositCard />);
+
+      const input = screen.getByPlaceholderText('0.00');
+      await user.type(input, '10');
+
+      const submitBtn = screen.getByRole('button', { name: /Deposit STX/i });
+      await user.click(submitBtn);
+
+      await waitFor(() => {
+        expect(screen.getByText(/waiting for indexer propagation/i)).toBeInTheDocument();
+      });
+
+      expect(screen.queryByText(/See transaction details below./i)).not.toBeInTheDocument();
+    });
+
     it('handles thrown errors gracefully', async () => {
       mockDeposit.mockRejectedValue(new Error('Network failure'));
       

@@ -38,6 +38,10 @@ export const StacksTxStatusPanel: React.FC<StacksTxStatusPanelProps> = ({ snapsh
       : txStatusPalette.pending;
 
   const anchorLabel = formatUnixSeconds(snapshot.microblockAnchorTime);
+  const averageBlockTimeMinutes = snapshot.averageBlockTimeMinutes ?? 12.5;
+  const notFoundGraceRemaining = snapshot.notFoundGraceRemainingMs
+    ? formatDurationMinutes(snapshot.notFoundGraceRemainingMs)
+    : null;
 
   return (
     <div className={`p-3 rounded-xl border space-y-3 ${variant.panel}`} role="status" aria-live="polite">
@@ -49,7 +53,7 @@ export const StacksTxStatusPanel: React.FC<StacksTxStatusPanelProps> = ({ snapsh
       {snapshot.state === 'pending' && (
         <div className="space-y-2">
           <div className="flex justify-between text-xs text-amber-800">
-            <span>Estimated confirmation window: 10-15 min</span>
+            <span>Estimated by average Stacks block time: ~{averageBlockTimeMinutes} min</span>
             <span>{formatDurationMinutes(snapshot.elapsedMs)} elapsed</span>
           </div>
           <div className="h-2 bg-amber-100 rounded-full overflow-hidden" aria-hidden="true">
@@ -63,6 +67,17 @@ export const StacksTxStatusPanel: React.FC<StacksTxStatusPanelProps> = ({ snapsh
               ? `Approx. ${formatDurationMinutes(snapshot.remainingMs)} remaining based on average Stacks block time`
               : 'Confirmation is taking longer than average block time but still valid in mempool.'}
           </div>
+          {snapshot.pendingPhase === 'propagation' && notFoundGraceRemaining && (
+            <div className="text-xs text-amber-800">
+              Indexer propagation is still in progress. We will only mark this as not found after {notFoundGraceRemaining}.
+            </div>
+          )}
+        </div>
+      )}
+
+      {snapshot.state === 'not_found' && (
+        <div className={`text-xs ${variant.text}`}>
+          We kept polling for {formatDurationMinutes(snapshot.elapsedMs)} before marking this as not found.
         </div>
       )}
 

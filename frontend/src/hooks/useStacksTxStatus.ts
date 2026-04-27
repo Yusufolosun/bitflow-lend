@@ -1,12 +1,18 @@
 import { useEffect, useMemo, useState } from 'react';
-import { HiroTxResponse, StacksTxStatusSnapshot, StacksTxStatusState } from '../types/txStatus';
+import {
+  HiroTxResponse,
+  StacksPendingPhase,
+  StacksTxStatusSnapshot,
+  StacksTxStatusState,
+} from '../types/txStatus';
 
 const POLL_INTERVAL_MS = 30_000;
 const NOT_FOUND_GRACE_MS = 60 * 60 * 1000;
-const DEFAULT_BLOCK_TIME_MINUTES = 10;
+const DEFAULT_BLOCK_TIME_MINUTES = 12.5;
 const DEFAULT_API_ENDPOINT = 'https://api.testnet.hiro.so';
 
 const DEFAULT_MESSAGE = 'Transaction in Stacks mempool — confirming with Bitcoin...';
+const PROPAGATION_MESSAGE = 'Transaction submitted — waiting for indexer propagation...';
 
 const INITIAL_SNAPSHOT: StacksTxStatusSnapshot = {
   state: 'idle',
@@ -20,6 +26,9 @@ const INITIAL_SNAPSHOT: StacksTxStatusSnapshot = {
   microblockAnchorTime: null,
   hasTerminalError: false,
   isPolling: false,
+  pendingPhase: 'mempool',
+  notFoundGraceRemainingMs: null,
+  averageBlockTimeMinutes: DEFAULT_BLOCK_TIME_MINUTES,
 };
 
 const getMappedState = (txStatusRaw: string | null): StacksTxStatusState => {
@@ -34,7 +43,27 @@ const getMappedState = (txStatusRaw: string | null): StacksTxStatusState => {
   }
 };
 
-const getMappedMessage = (state: StacksTxStatusState): string => {
+const getPendingPhase = (txStatusRaw: string | null): StacksPendingPhase => {
+  if (txStatusRaw === 'not_found') {
+    return 'propagation';
+  }
+
+  return 'mempool';
+};
+
+const mapLifecycle = (txStatusRaw: string | null): {
+  state: StacksTxStatusState;
+  pendingPhase: StacksPendingPhase;
+} => ({
+  state: getMappedState(txStatusRaw),
+  pendingPhase: getPendingPhase(txStatusRaw),
+});
+
+const getMappedMessage = (
+  state: StacksTxStatusState,
+  pendingPhase: StacksPendingPhase,
+  notFoundGraceRemainingMs: number | null
+): string => {
   switch (state) {
     case 'success':
       return 'Confirmed';
@@ -43,6 +72,10 @@ const getMappedMessage = (state: StacksTxStatusState): string => {
     case 'not_found':
       return 'Transaction not found after 60 minutes. Confirm the tx ID in the explorer.';
     case 'pending':
+      if (pendingPhase === 'propagation' && notFoundGraceRemainingMs !== null) {
+        return PROPAGATION_MESSAGE;
+      }
+
       return DEFAULT_MESSAGE;
     default:
       return '';
@@ -76,6 +109,7 @@ export const useStacksTxStatus = (txId: string): StacksTxStatusSnapshot => {
     const apiEndpoint = import.meta.env.VITE_STACKS_API_URL || DEFAULT_API_ENDPOINT;
     const startedAt = Date.now();
     const estimatedMs = DEFAULT_BLOCK_TIME_MINUTES * 60 * 1000;
+    let lastObservedTxStatus: string | null = 'pending';
     let intervalId: number | null = null;
 
     const updateSnapshot = (
@@ -90,11 +124,17 @@ export const useStacksTxStatus = (txId: string): StacksTxStatusSnapshot => {
         return;
       }
 
+      const lifecycle = mapLifecycle(txStatusRaw);
+      const notFoundGraceRemainingMs =
+        state === 'pending' && txStatusRaw === 'not_found'
+          ? Math.max(NOT_FOUND_GRACE_MS - elapsedMs, 0)
+          : null;
+
       const nextSnapshot: StacksTxStatusSnapshot = {
         state,
         txStatusRaw,
         txId: normalizedTxId,
-        message: getMappedMessage(state),
+        message: getMappedMessage(state, lifecycle.pendingPhase, notFoundGraceRemainingMs),
         elapsedMs: progress.elapsedMs,
         estimatedMs,
         remainingMs: progress.remainingMs,
@@ -102,6 +142,9 @@ export const useStacksTxStatus = (txId: string): StacksTxStatusSnapshot => {
         microblockAnchorTime: microblockAnchorTime ?? null,
         hasTerminalError: state === 'abort_by_response' || state === 'not_found',
         isPolling: state === 'pending',
+        pendingPhase: lifecycle.pendingPhase,
+        notFoundGraceRemainingMs,
+        averageBlockTimeMinutes: DEFAULT_BLOCK_TIME_MINUTES,
       };
 
       setSnapshot(nextSnapshot);
@@ -112,7 +155,7 @@ export const useStacksTxStatus = (txId: string): StacksTxStatusSnapshot => {
       }
     };
 
-    updateSnapshot('pending', 'pending');
+    updateSnapshot('pending', lastObservedTxStatus);
 
     const poll = async () => {
       try {
@@ -125,21 +168,23 @@ export const useStacksTxStatus = (txId: string): StacksTxStatusSnapshot => {
             return;
           }
 
+          lastObservedTxStatus = 'not_found';
           updateSnapshot('pending', 'not_found');
           return;
         }
 
         if (!response.ok) {
-          updateSnapshot('pending', 'pending');
+          updateSnapshot('pending', lastObservedTxStatus);
           return;
         }
 
         const data = (await response.json()) as HiroTxResponse;
         const nextState = getMappedState(data.tx_status);
+        lastObservedTxStatus = data.tx_status;
 
         updateSnapshot(nextState, data.tx_status, data.microblock_anchor_time);
       } catch {
-        updateSnapshot('pending', 'pending');
+        updateSnapshot('pending', lastObservedTxStatus);
       }
     };
 

@@ -59,6 +59,25 @@ describe('useStacksTxStatus', () => {
     await waitFor(() => {
       expect(result.current.state).toBe('pending');
       expect(result.current.hasTerminalError).toBe(false);
+      expect(result.current.pendingPhase).toBe('propagation');
+      expect(result.current.message).toContain('waiting for indexer propagation');
+      expect(result.current.notFoundGraceRemainingMs).toBeTypeOf('number');
+    });
+  });
+
+  it('stores average block timing metadata for progress calculation', async () => {
+    mockFetch.mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => ({ tx_id: '0xabc', tx_status: 'pending' }),
+    });
+
+    const { result } = renderHook(() => useStacksTxStatus('0xabc'));
+
+    await waitFor(() => {
+      expect(result.current.state).toBe('pending');
+      expect(result.current.averageBlockTimeMinutes).toBe(12.5);
+      expect(result.current.estimatedMs).toBe(750000);
     });
   });
 
@@ -98,6 +117,73 @@ describe('useStacksTxStatus', () => {
     await waitFor(() => {
       expect(result.current.state).toBe('pending');
       expect(result.current.microblockAnchorTime).toBe(1710000000);
+    });
+  });
+
+  it('configures 30-second polling without terminal timeout behavior', async () => {
+    const setIntervalSpy = vi.spyOn(window, 'setInterval');
+    const clearIntervalSpy = vi.spyOn(window, 'clearInterval');
+
+    mockFetch.mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => ({ tx_id: '0xabc', tx_status: 'pending' }),
+    });
+
+    const { unmount } = renderHook(() => useStacksTxStatus('0xabc'));
+
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+      expect(setIntervalSpy).toHaveBeenCalledWith(expect.any(Function), 30_000);
+    });
+
+    const clearCallsBeforeUnmount = clearIntervalSpy.mock.calls.length;
+    unmount();
+    expect(clearIntervalSpy.mock.calls.length).toBeGreaterThan(clearCallsBeforeUnmount);
+  });
+
+  it('keeps propagation messaging after temporary upstream API failure', async () => {
+    const setIntervalSpy = vi
+      .spyOn(window, 'setInterval')
+      .mockImplementation((() => 1 as unknown as number) as typeof window.setInterval);
+
+    vi.spyOn(window, 'clearInterval').mockImplementation(() => undefined);
+
+    mockFetch
+      .mockResolvedValueOnce({
+        ok: false,
+        status: 404,
+        json: async () => ({ error: 'not found' }),
+      })
+      .mockResolvedValueOnce({
+        ok: false,
+        status: 503,
+        json: async () => ({ error: 'unavailable' }),
+      });
+
+    const { result } = renderHook(() => useStacksTxStatus('0xabc'));
+
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+    });
+
+    await waitFor(() => {
+      expect(result.current.txStatusRaw).toBe('not_found');
+      expect(result.current.pendingPhase).toBe('propagation');
+      expect(result.current.message).toContain('waiting for indexer propagation');
+    });
+
+    const intervalCallback = setIntervalSpy.mock.calls[0]?.[0];
+    expect(typeof intervalCallback).toBe('function');
+
+    if (typeof intervalCallback === 'function') {
+      intervalCallback();
+    }
+
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenCalledTimes(2);
+      expect(result.current.pendingPhase).toBe('propagation');
+      expect(result.current.message).toContain('waiting for indexer propagation');
     });
   });
 });

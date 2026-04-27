@@ -186,7 +186,6 @@ describe('App Integration', () => {
       getUserLoan: vi.fn().mockResolvedValue(null),
       getHealthFactor: vi.fn().mockResolvedValue(null),
       getRepaymentAmount: vi.fn().mockResolvedValue(null),
-      pollTransactionStatus: vi.fn().mockResolvedValue('confirmed'),
       isLoading: false,
       error: null,
     };
