@@ -149,4 +149,38 @@ describe('useStacksTxStatus', () => {
 
     vi.useRealTimers();
   });
+
+  it('keeps propagation messaging after temporary upstream API failure', async () => {
+    vi.useFakeTimers();
+
+    mockFetch
+      .mockResolvedValueOnce({
+        ok: false,
+        status: 404,
+        json: async () => ({ error: 'not found' }),
+      })
+      .mockResolvedValueOnce({
+        ok: false,
+        status: 503,
+        json: async () => ({ error: 'unavailable' }),
+      });
+
+    const { result } = renderHook(() => useStacksTxStatus('0xabc'));
+
+    await waitFor(() => {
+      expect(result.current.pendingPhase).toBe('propagation');
+      expect(result.current.message).toContain('waiting for indexer propagation');
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+    });
+
+    await vi.advanceTimersByTimeAsync(30_000);
+
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenCalledTimes(2);
+      expect(result.current.pendingPhase).toBe('propagation');
+      expect(result.current.message).toContain('waiting for indexer propagation');
+    });
+
+    vi.useRealTimers();
+  });
 });
