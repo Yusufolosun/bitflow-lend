@@ -164,7 +164,9 @@ frontend/
 ### Smart Contract Integration
 - **Read-Only Calls:** Fetch user deposits, loans, and protocol stats
 - **Transactions:** Deposit, borrow, repay, and withdraw with post-conditions
-- **Transaction Polling:** Monitor pending transactions until confirmed
+- **Transaction Confirmation Lifecycle:** Uses Hiro `GET /extended/v1/tx/{txId}` polling every 30 seconds with no fixed timeout cap
+- **Stacks-Aware Status Messaging:** Shows mempool confirmation progress, successful confirmation, and post-condition rejection states
+- **Graceful Not Found Handling:** Treats temporary `not_found` responses as propagation delay and only surfaces terminal not-found after 60 minutes
 - **Error Handling:** Clear error messages for all failure scenarios
 - **Oracle Sanity Checks:** Warn before borrowing or repaying when the oracle price diverges more than 5% from Bitflow's live STX/USDA quote
 
