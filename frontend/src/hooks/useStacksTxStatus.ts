@@ -1,5 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
-import { HiroTxResponse, StacksTxStatusSnapshot, StacksTxStatusState } from '../types/txStatus';
+import {
+  HiroTxResponse,
+  StacksPendingPhase,
+  StacksTxStatusSnapshot,
+  StacksTxStatusState,
+} from '../types/txStatus';
 
 const POLL_INTERVAL_MS = 30_000;
 const NOT_FOUND_GRACE_MS = 60 * 60 * 1000;
@@ -33,6 +38,22 @@ const getMappedState = (txStatusRaw: string | null): StacksTxStatusState => {
       return 'pending';
   }
 };
+
+const getPendingPhase = (txStatusRaw: string | null): StacksPendingPhase => {
+  if (txStatusRaw === 'not_found') {
+    return 'propagation';
+  }
+
+  return 'mempool';
+};
+
+const mapLifecycle = (txStatusRaw: string | null): {
+  state: StacksTxStatusState;
+  pendingPhase: StacksPendingPhase;
+} => ({
+  state: getMappedState(txStatusRaw),
+  pendingPhase: getPendingPhase(txStatusRaw),
+});
 
 const getMappedMessage = (state: StacksTxStatusState): string => {
   switch (state) {
@@ -90,6 +111,8 @@ export const useStacksTxStatus = (txId: string): StacksTxStatusSnapshot => {
         return;
       }
 
+      const lifecycle = mapLifecycle(txStatusRaw);
+
       const nextSnapshot: StacksTxStatusSnapshot = {
         state,
         txStatusRaw,
@@ -102,6 +125,7 @@ export const useStacksTxStatus = (txId: string): StacksTxStatusSnapshot => {
         microblockAnchorTime: microblockAnchorTime ?? null,
         hasTerminalError: state === 'abort_by_response' || state === 'not_found',
         isPolling: state === 'pending',
+        pendingPhase: lifecycle.pendingPhase,
       };
 
       setSnapshot(nextSnapshot);
