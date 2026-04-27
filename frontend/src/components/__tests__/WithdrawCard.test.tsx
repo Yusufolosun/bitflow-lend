@@ -170,6 +170,34 @@ describe('WithdrawCard Component', () => {
       });
     });
 
+    it('keeps tx pending when status is temporary not_found within grace period', async () => {
+      mockWithdraw.mockResolvedValue({ success: true, txId: '0xabc' });
+      mockUseStacksTxStatus.mockReturnValue(buildTxSnapshot({
+        state: 'pending',
+        txStatusRaw: 'not_found',
+        pendingPhase: 'propagation',
+        message: 'Transaction submitted — waiting for indexer propagation...',
+        txId: '0xabc',
+        hasTerminalError: false,
+        isPolling: true,
+      }));
+
+      const user = userEvent.setup();
+      render(<WithdrawCard />);
+
+      const input = screen.getByPlaceholderText('0.00');
+      await user.type(input, '5');
+
+      const submitBtn = screen.getByRole('button', { name: /Withdraw STX/i });
+      await user.click(submitBtn);
+
+      await waitFor(() => {
+        expect(screen.getByText(/waiting for indexer propagation/i)).toBeInTheDocument();
+      });
+
+      expect(screen.queryByText(/See transaction details below./i)).not.toBeInTheDocument();
+    });
+
     it('disables submit when no amount entered', () => {
       render(<WithdrawCard />);
       const submitBtn = screen.getByRole('button', { name: /Withdraw STX/i });
