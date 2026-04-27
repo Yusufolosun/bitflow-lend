@@ -88,6 +88,24 @@ describe('StacksTxStatusPanel', () => {
     expect(screen.getByText('Transaction rejected — check post-conditions')).toBeInTheDocument();
   });
 
+  it('explains not_found after long grace window', () => {
+    render(
+      <StacksTxStatusPanel
+        snapshot={buildSnapshot({
+          state: 'not_found',
+          txStatusRaw: 'not_found',
+          message: 'Transaction not found after 60 minutes. Confirm the tx ID in the explorer.',
+          elapsedMs: 61 * 60 * 1000,
+          hasTerminalError: true,
+          isPolling: false,
+        })}
+      />
+    );
+
+    expect(screen.getByText(/not found after 60 minutes/i)).toBeInTheDocument();
+    expect(screen.getByText(/kept polling for 61 min/i)).toBeInTheDocument();
+  });
+
   it('renders microblock anchor label when available', () => {
     render(
       <StacksTxStatusPanel
