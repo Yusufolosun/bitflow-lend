@@ -37,7 +37,7 @@ describe('StacksTxStatusPanel', () => {
     render(<StacksTxStatusPanel snapshot={buildSnapshot()} />);
 
     expect(screen.getByText('Transaction in Stacks mempool — confirming with Bitcoin...')).toBeInTheDocument();
-    expect(screen.getByText(/average Stacks block time/i)).toBeInTheDocument();
+    expect(screen.getByText(/Estimated by average Stacks block time/i)).toBeInTheDocument();
     expect(screen.getByText(/Approx. 11 min remaining/i)).toBeInTheDocument();
   });
 
