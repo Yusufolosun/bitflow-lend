@@ -351,6 +351,56 @@ describe('BorrowCard Component', () => {
       });
     });
 
+    it('keeps tx pending while status is temporary not_found', async () => {
+      mockBorrow.mockResolvedValue({ success: true, txId: '0xabc' });
+      mockUseStacksTxStatus.mockReturnValue(buildTxSnapshot({
+        state: 'pending',
+        txStatusRaw: 'not_found',
+        pendingPhase: 'propagation',
+        message: 'Transaction submitted — waiting for indexer propagation...',
+        txId: '0xabc',
+        isPolling: true,
+        hasTerminalError: false,
+      }));
+
+      const user = userEvent.setup();
+      render(<BorrowCard />);
+
+      const input = screen.getByPlaceholderText('0.00');
+      await user.type(input, '50');
+
+      const submitBtn = screen.getByRole('button', { name: /Borrow STX/i });
+      await user.click(submitBtn);
+
+      await waitFor(() => {
+        expect(screen.getByText(/waiting for indexer propagation/i)).toBeInTheDocument();
+      });
+    });
+
+    it('shows terminal rejection message for abort_by_response', async () => {
+      mockBorrow.mockResolvedValue({ success: true, txId: '0xabc' });
+      mockUseStacksTxStatus.mockReturnValue(buildTxSnapshot({
+        state: 'abort_by_response',
+        txStatusRaw: 'abort_by_response',
+        message: 'Transaction rejected — check post-conditions',
+        txId: '0xabc',
+        hasTerminalError: true,
+      }));
+
+      const user = userEvent.setup();
+      render(<BorrowCard />);
+
+      const input = screen.getByPlaceholderText('0.00');
+      await user.type(input, '50');
+
+      const submitBtn = screen.getByRole('button', { name: /Borrow STX/i });
+      await user.click(submitBtn);
+
+      await waitFor(() => {
+        expect(screen.getAllByText(/Transaction rejected — check post-conditions/).length).toBeGreaterThan(0);
+      });
+    });
+
     it('disables borrow when no deposit', () => {
       mockGetUserDeposit.mockResolvedValue({ amountSTX: 0 });
       render(<BorrowCard />);
