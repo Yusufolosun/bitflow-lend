@@ -259,7 +259,10 @@ export const Dashboard: React.FC = () => {
               </div>
 
               <div className="card-elevated card-hover">
-                <div className="text-sm font-medium text-gray-500 mb-2">Health Factor</div>
+                <div className="flex items-center justify-between text-sm font-medium text-gray-500 mb-2">
+                  <span>Health Factor</span>
+                  <span className="text-xs text-gray-400">Source: On-chain</span>
+                </div>
                 <div className={`text-3xl font-bold tracking-tight mb-1 ${
                   !userLoan ? 'text-gray-400' :
                   userHealthFactor && getHealthStatus(userHealthFactor) === 'healthy' ? 'text-emerald-600' :
