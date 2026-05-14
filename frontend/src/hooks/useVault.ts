@@ -525,12 +525,13 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
   /**
    * Calculate health factor
    */
-  const getHealthFactor = useCallback(async (): Promise<{ healthFactorPercent: number; collateralValueUSD: number; debtValueUSD: number } | null> => {
+  const getHealthFactor = useCallback(async (): Promise<{ healthFactorPercent: number; collateralValueUSD: number; debtValueUSD: number; stxPriceUSD: number } | null> => {
     if (!userAddress) return null;
 
     try {
       const onChainPrice = await getOnChainStxPrice();
       if (!onChainPrice) return null;
+      const stxPriceUSD = onChainPrice / 100;
 
       const result = await callReadOnlyFunction({
         network,
@@ -566,8 +567,6 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
           const loanData = cvToValue(loanResult.value);
           const amountSTX = microStxToStx(BigInt(loanData.amount));
 
-          const effectivePriceUSD = onChainPrice / 100;
-
           // Fetch actual deposit to use as collateral value, not the required collateral
           const depositResult = await callReadOnlyFunction({
             network,
@@ -581,14 +580,15 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
             ? microStxToStx(BigInt(depositResult.value))
             : 0;
 
-          collateralValueUSD = depositSTX * effectivePriceUSD;
-          debtValueUSD = amountSTX * effectivePriceUSD;
+          collateralValueUSD = depositSTX * stxPriceUSD;
+          debtValueUSD = amountSTX * stxPriceUSD;
         }
 
         return {
           healthFactorPercent,
           collateralValueUSD,
           debtValueUSD,
+          stxPriceUSD,
         };
       }
 
