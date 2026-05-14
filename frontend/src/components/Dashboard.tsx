@@ -92,7 +92,7 @@ export const Dashboard: React.FC = () => {
       setUserLoan(loan);
 
       if (loan) {
-        const health = await vault.getHealthFactor(stxPrice);
+        const health = await vault.getHealthFactor();
         if (health) {
           setUserHealthFactor(health.healthFactorPercent);
         }
