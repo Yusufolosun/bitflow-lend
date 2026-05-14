@@ -525,7 +525,7 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
   /**
    * Calculate health factor
    */
-  const getHealthFactor = useCallback(async (stxPriceUSD: number): Promise<{ healthFactorPercent: number; collateralValueUSD: number; debtValueUSD: number } | null> => {
+  const getHealthFactor = useCallback(async (): Promise<{ healthFactorPercent: number; collateralValueUSD: number; debtValueUSD: number } | null> => {
     if (!userAddress) return null;
 
     try {
