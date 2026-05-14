@@ -317,9 +317,12 @@ export const HealthMonitor: React.FC = () => {
 
       {/* Info */}
       <div className="text-xs text-gray-500 space-y-1">
-        <p>• Health factor updates with each price refresh</p>
+        <p>• Health factor updates with each on-chain price refresh</p>
         <p>
-          • STX price: ${stxPrice.toFixed(2)} USD
+          • On-chain STX price: {healthFactor ? `$${healthFactor.stxPriceUSD.toFixed(2)}` : 'N/A'} USD
+        </p>
+        <p>
+          • Market STX price: ${stxPrice.toFixed(2)} USD
           {priceIsStale && <span className="text-amber-600 ml-1">(stale — using last known price)</span>}
           {priceUpdated && !priceIsStale && (
             <span className="ml-1">· updated {priceUpdated.toLocaleTimeString()}</span>
