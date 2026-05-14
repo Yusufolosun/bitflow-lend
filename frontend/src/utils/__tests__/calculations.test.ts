@@ -16,8 +16,6 @@ vi.mock('../../config/contracts', () => ({
 }));
 
 import {
-  calculateHealthFactor,
-  calculateHealthFactorUSD,
   isLiquidatable,
   getHealthStatus,
   calculateRequiredCollateral,
