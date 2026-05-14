@@ -40,10 +40,10 @@ export const HealthMonitor: React.FC = () => {
     setActiveLoan(loan);
 
     if (loan) {
-      const health = await vault.getHealthFactor(stxPrice);
+      const health = await vault.getHealthFactor();
       setHealthFactor(health);
     }
-  }, [address, vault, stxPrice]);
+  }, [address, vault]);
 
   useSmartPolling(fetchData, 30_000, !!address);
 
