@@ -154,7 +154,10 @@ export const HealthMonitor: React.FC = () => {
           healthColor === 'yellow' ? 'bg-amber-50/80 border-amber-100' : 'bg-red-50/80 border-red-100'
         }`}>
           <div className="text-center">
-            <div className="text-sm font-medium text-gray-600 mb-2">Health Factor</div>
+            <div className="flex items-center justify-center gap-2 text-sm font-medium text-gray-600 mb-2">
+              <span>Health Factor</span>
+              <span className="text-xs text-gray-500">Source: On-chain</span>
+            </div>
             <div className={`text-5xl font-bold mb-2 tracking-tight ${
               healthColor === 'green' ? 'text-emerald-600' :
               healthColor === 'yellow' ? 'text-amber-600' : 'text-red-600'
