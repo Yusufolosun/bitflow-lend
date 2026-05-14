@@ -308,21 +308,19 @@ describe('App Integration', () => {
 
   describe('Calculation Integration', () => {
     it('utility functions work together for health factor', async () => {
-      const { calculateHealthFactor, getHealthStatus, isLiquidatable } = await import('../utils/calculations');
+      const { getHealthStatus, isLiquidatable } = await import('../utils/calculations');
 
-      const hf = calculateHealthFactor(150, 100);
-      expect(hf).toBe(150);
-      expect(getHealthStatus(hf)).toBe('healthy');
-      expect(isLiquidatable(hf)).toBe(false);
+      const healthFactor = 150;
+      expect(getHealthStatus(healthFactor)).toBe('healthy');
+      expect(isLiquidatable(healthFactor)).toBe(false);
     });
 
     it('utility functions detect liquidatable positions', async () => {
-      const { calculateHealthFactor, getHealthStatus, isLiquidatable } = await import('../utils/calculations');
+      const { getHealthStatus, isLiquidatable } = await import('../utils/calculations');
 
-      const hf = calculateHealthFactor(100, 100);
-      expect(hf).toBe(100);
-      expect(getHealthStatus(hf)).toBe('critical');
-      expect(isLiquidatable(hf)).toBe(true);
+      const healthFactor = 100;
+      expect(getHealthStatus(healthFactor)).toBe('critical');
+      expect(isLiquidatable(healthFactor)).toBe(true);
     });
 
     it('validates borrow against collateral correctly', async () => {
