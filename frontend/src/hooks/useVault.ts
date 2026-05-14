@@ -70,6 +70,30 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
 
   const isValidPositiveNumber = (value: number): boolean => Number.isFinite(value) && value > 0;
 
+  const getOnChainStxPrice = useCallback(async (): Promise<number | null> => {
+    if (!userAddress) return null;
+
+    try {
+      const result = await callReadOnlyFunction({
+        network,
+        contractAddress,
+        contractName,
+        functionName: 'get-stx-price',
+        functionArgs: [],
+        senderAddress: userAddress,
+      });
+
+      const priceValue = cvToValue(result);
+      const price = toNumber(priceValue);
+
+      if (!price || price <= 0) return null;
+
+      return price;
+    } catch {
+      return null;
+    }
+  }, [userAddress, network, contractAddress, contractName]);
+
   /**
    * Deposit STX into the vault
    */
