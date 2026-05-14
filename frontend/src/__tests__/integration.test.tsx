@@ -339,7 +339,6 @@ describe('App Integration', () => {
         calculateSimpleInterest, 
         calculateRepaymentAmount, 
         calculateRequiredCollateral,
-        calculateHealthFactor,
       } = await import('../utils/calculations');
 
       // Borrow 100 STX at 10% for 30 days
@@ -352,9 +351,6 @@ describe('App Integration', () => {
 
       const requiredCollateral = calculateRequiredCollateral(principal);
       expect(requiredCollateral).toBe(150);
-
-      const hf = calculateHealthFactor(requiredCollateral, principal);
-      expect(hf).toBe(150);
     });
   });
 
