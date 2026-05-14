@@ -9,7 +9,6 @@ import { useOracleSanityCheck } from '../hooks/useOracleSanityCheck';
 import { LOAN_TERMS, UserLoan } from '../types/vault';
 import { formatSTX } from '../utils/formatters';
 import { PROTOCOL_CONSTANTS } from '../config/contracts';
-import { calculateHealthFactor, getHealthStatus } from '../utils/calculations';
 import { StacksTxStatusPanel } from './StacksTxStatusPanel';
 
 /**
@@ -320,29 +319,6 @@ export const BorrowCard: React.FC = () => {
             <span className="font-bold text-gray-900">{formatSTX(totalRepayment)} STX</span>
           </div>
 
-          {/* Health Factor Preview */}
-          {amount > 0 && userDeposit > 0 && (() => {
-            const projectedHealth = calculateHealthFactor(userDeposit, amount);
-            const status = getHealthStatus(projectedHealth);
-            return (
-              <div className="border-t border-accent-200 pt-2 mt-2">
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Projected Health Factor:</span>
-                  <span className={`font-bold ${
-                    status === 'healthy' ? 'text-green-600' :
-                    status === 'warning' ? 'text-yellow-600' : 'text-red-600'
-                  }`}>
-                    {projectedHealth.toFixed(0)}%
-                  </span>
-                </div>
-                {status === 'warning' && (
-                  <p className="text-xs text-yellow-700 mt-1">
-                    ⚠️ This borrow would put you near the liquidation zone
-                  </p>
-                )}
-              </div>
-            );
-          })()}
         </div>
       )}
 

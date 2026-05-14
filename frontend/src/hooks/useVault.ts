@@ -36,6 +36,25 @@ const getErrorMessage = (error: unknown, fallback: string): string => {
   return fallback;
 };
 
+const toNumber = (value: unknown): number | null => {
+  if (value === null || value === undefined) return null;
+
+  if (typeof value === 'number') {
+    return Number.isFinite(value) ? value : null;
+  }
+
+  if (typeof value === 'bigint') {
+    return Number(value);
+  }
+
+  if (typeof value === 'string') {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+
+  return null;
+};
+
 
 /**
  * Custom hook for vault operations
@@ -50,6 +69,30 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
   const contractName = getActiveContractVersion().contractName;
 
   const isValidPositiveNumber = (value: number): boolean => Number.isFinite(value) && value > 0;
+
+  const getOnChainStxPrice = useCallback(async (): Promise<number | null> => {
+    if (!userAddress) return null;
+
+    try {
+      const result = await callReadOnlyFunction({
+        network,
+        contractAddress,
+        contractName,
+        functionName: 'get-stx-price',
+        functionArgs: [],
+        senderAddress: userAddress,
+      });
+
+      const priceValue = cvToValue(result);
+      const price = toNumber(priceValue);
+
+      if (!price || price <= 0) return null;
+
+      return price;
+    } catch {
+      return null;
+    }
+  }, [userAddress, network, contractAddress, contractName]);
 
   /**
    * Deposit STX into the vault
@@ -482,12 +525,13 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
   /**
    * Calculate health factor
    */
-  const getHealthFactor = useCallback(async (stxPriceUSD: number): Promise<{ healthFactorPercent: number; collateralValueUSD: number; debtValueUSD: number } | null> => {
+  const getHealthFactor = useCallback(async (): Promise<{ healthFactorPercent: number; collateralValueUSD: number; debtValueUSD: number; stxPriceUSD: number } | null> => {
     if (!userAddress) return null;
 
     try {
-      // Price with 6 decimals (e.g., $1.00 = 1000000)
-      const priceWithDecimals = Math.floor(stxPriceUSD * 1_000_000);
+      const onChainPrice = await getOnChainStxPrice();
+      if (!onChainPrice) return null;
+      const stxPriceUSD = onChainPrice / 100;
 
       const result = await callReadOnlyFunction({
         network,
@@ -496,13 +540,15 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
         functionName: 'calculate-health-factor',
         functionArgs: [
           principalCV(userAddress),
-          uintCV(priceWithDecimals),
+          uintCV(onChainPrice),
         ],
         senderAddress: userAddress,
       });
 
-      if (result.type === ClarityType.OptionalSome && result.value.type === ClarityType.UInt) {
-        const healthFactorPercent = Number(result.value.value);
+      const healthFactorValue = cvToValue(result);
+      const healthFactorPercent = toNumber(healthFactorValue);
+
+      if (healthFactorPercent !== null) {
 
         // Get loan data for USD values - call the function directly
         const loanResult = await callReadOnlyFunction({
@@ -542,6 +588,7 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
           healthFactorPercent,
           collateralValueUSD,
           debtValueUSD,
+          stxPriceUSD,
         };
       }
 

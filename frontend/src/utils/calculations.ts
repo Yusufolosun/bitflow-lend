@@ -5,43 +5,7 @@
 
 import { PROTOCOL_CONSTANTS } from '../config/contracts';
 
-/**
- * Calculate health factor percentage
- * @param collateralSTX - Collateral amount in STX
- * @param debtSTX - Debt amount in STX
- * @returns Health factor as percentage (150% = healthy)
- */
-export function calculateHealthFactor(collateralSTX: number, debtSTX: number): number {
-  if (debtSTX === 0) return Infinity;
-  return (collateralSTX / debtSTX) * 100;
-}
 
-/**
- * Calculate health factor with USD values
- * @param collateralSTX - Collateral amount in STX
- * @param debtSTX - Debt amount in STX
- * @param stxPriceUSD - Current STX price in USD
- * @returns Object with health factor and USD values
- */
-export function calculateHealthFactorUSD(
-  collateralSTX: number,
-  debtSTX: number,
-  stxPriceUSD: number
-): {
-  healthFactorPercent: number;
-  collateralValueUSD: number;
-  debtValueUSD: number;
-} {
-  const collateralValueUSD = collateralSTX * stxPriceUSD;
-  const debtValueUSD = debtSTX * stxPriceUSD;
-  const healthFactorPercent = calculateHealthFactor(collateralSTX, debtSTX);
-
-  return {
-    healthFactorPercent,
-    collateralValueUSD,
-    debtValueUSD,
-  };
-}
 
 /**
  * Check if a position is liquidatable

@@ -274,6 +274,12 @@ describe('App Integration', () => {
       expect(screen.getByText('Active Loan')).toBeInTheDocument();
       expect(screen.getByText('Health Factor')).toBeInTheDocument();
     });
+
+    it('labels health factor as on-chain', () => {
+      render(<Dashboard />);
+
+      expect(screen.getByText('Source: On-chain')).toBeInTheDocument();
+    });
   });
 
   describe('User Flow: Protocol Stats Loading', () => {
@@ -308,21 +314,19 @@ describe('App Integration', () => {
 
   describe('Calculation Integration', () => {
     it('utility functions work together for health factor', async () => {
-      const { calculateHealthFactor, getHealthStatus, isLiquidatable } = await import('../utils/calculations');
+      const { getHealthStatus, isLiquidatable } = await import('../utils/calculations');
 
-      const hf = calculateHealthFactor(150, 100);
-      expect(hf).toBe(150);
-      expect(getHealthStatus(hf)).toBe('healthy');
-      expect(isLiquidatable(hf)).toBe(false);
+      const healthFactor = 150;
+      expect(getHealthStatus(healthFactor)).toBe('healthy');
+      expect(isLiquidatable(healthFactor)).toBe(false);
     });
 
     it('utility functions detect liquidatable positions', async () => {
-      const { calculateHealthFactor, getHealthStatus, isLiquidatable } = await import('../utils/calculations');
+      const { getHealthStatus, isLiquidatable } = await import('../utils/calculations');
 
-      const hf = calculateHealthFactor(100, 100);
-      expect(hf).toBe(100);
-      expect(getHealthStatus(hf)).toBe('critical');
-      expect(isLiquidatable(hf)).toBe(true);
+      const healthFactor = 100;
+      expect(getHealthStatus(healthFactor)).toBe('critical');
+      expect(isLiquidatable(healthFactor)).toBe(true);
     });
 
     it('validates borrow against collateral correctly', async () => {
@@ -341,7 +345,6 @@ describe('App Integration', () => {
         calculateSimpleInterest, 
         calculateRepaymentAmount, 
         calculateRequiredCollateral,
-        calculateHealthFactor,
       } = await import('../utils/calculations');
 
       // Borrow 100 STX at 10% for 30 days
@@ -354,9 +357,6 @@ describe('App Integration', () => {
 
       const requiredCollateral = calculateRequiredCollateral(principal);
       expect(requiredCollateral).toBe(150);
-
-      const hf = calculateHealthFactor(requiredCollateral, principal);
-      expect(hf).toBe(150);
     });
   });
 

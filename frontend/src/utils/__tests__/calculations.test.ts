@@ -16,8 +16,6 @@ vi.mock('../../config/contracts', () => ({
 }));
 
 import {
-  calculateHealthFactor,
-  calculateHealthFactorUSD,
   isLiquidatable,
   getHealthStatus,
   calculateRequiredCollateral,
@@ -41,41 +39,6 @@ import {
 } from '../calculations';
 
 describe('Calculations Utility', () => {
-  describe('calculateHealthFactor', () => {
-    it('returns Infinity when debt is 0', () => {
-      expect(calculateHealthFactor(100, 0)).toBe(Infinity);
-    });
-
-    it('calculates 150% for equal collateral:debt at 1.5:1', () => {
-      expect(calculateHealthFactor(150, 100)).toBe(150);
-    });
-
-    it('calculates 100% for 1:1 ratio', () => {
-      expect(calculateHealthFactor(100, 100)).toBe(100);
-    });
-
-    it('calculates 200% for 2:1 ratio', () => {
-      expect(calculateHealthFactor(200, 100)).toBe(200);
-    });
-
-    it('handles fractional values', () => {
-      expect(calculateHealthFactor(75.5, 50)).toBeCloseTo(151, 0);
-    });
-  });
-
-  describe('calculateHealthFactorUSD', () => {
-    it('returns correct USD values', () => {
-      const result = calculateHealthFactorUSD(100, 50, 2.0);
-      expect(result.collateralValueUSD).toBe(200);
-      expect(result.debtValueUSD).toBe(100);
-      expect(result.healthFactorPercent).toBe(200);
-    });
-
-    it('handles zero debt', () => {
-      const result = calculateHealthFactorUSD(100, 0, 1.5);
-      expect(result.healthFactorPercent).toBe(Infinity);
-    });
-  });
 
   describe('isLiquidatable', () => {
     it('returns true when below liquidation threshold', () => {

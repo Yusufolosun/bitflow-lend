@@ -14,6 +14,7 @@ interface HealthFactorData {
   healthFactorPercent: number;
   collateralValueUSD: number;
   debtValueUSD: number;
+  stxPriceUSD: number;
 }
 
 /**
@@ -40,10 +41,10 @@ export const HealthMonitor: React.FC = () => {
     setActiveLoan(loan);
 
     if (loan) {
-      const health = await vault.getHealthFactor(stxPrice);
+      const health = await vault.getHealthFactor();
       setHealthFactor(health);
     }
-  }, [address, vault, stxPrice]);
+  }, [address, vault]);
 
   useSmartPolling(fetchData, 30_000, !!address);
 
@@ -154,7 +155,10 @@ export const HealthMonitor: React.FC = () => {
           healthColor === 'yellow' ? 'bg-amber-50/80 border-amber-100' : 'bg-red-50/80 border-red-100'
         }`}>
           <div className="text-center">
-            <div className="text-sm font-medium text-gray-600 mb-2">Health Factor</div>
+            <div className="flex items-center justify-center gap-2 text-sm font-medium text-gray-600 mb-2">
+              <span>Health Factor</span>
+              <span className="text-xs text-gray-500">Source: On-chain</span>
+            </div>
             <div className={`text-5xl font-bold mb-2 tracking-tight ${
               healthColor === 'green' ? 'text-emerald-600' :
               healthColor === 'yellow' ? 'text-amber-600' : 'text-red-600'
@@ -313,9 +317,12 @@ export const HealthMonitor: React.FC = () => {
 
       {/* Info */}
       <div className="text-xs text-gray-500 space-y-1">
-        <p>• Health factor updates with each price refresh</p>
+        <p>• Health factor updates with each on-chain price refresh</p>
         <p>
-          • STX price: ${stxPrice.toFixed(2)} USD
+          • On-chain STX price: {healthFactor ? `$${healthFactor.stxPriceUSD.toFixed(2)}` : 'N/A'} USD
+        </p>
+        <p>
+          • Market STX price: ${stxPrice.toFixed(2)} USD
           {priceIsStale && <span className="text-amber-600 ml-1">(stale — using last known price)</span>}
           {priceUpdated && !priceIsStale && (
             <span className="ml-1">· updated {priceUpdated.toLocaleTimeString()}</span>
