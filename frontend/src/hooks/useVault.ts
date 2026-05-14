@@ -566,7 +566,7 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
           const loanData = cvToValue(loanResult.value);
           const amountSTX = microStxToStx(BigInt(loanData.amount));
 
-          const effectivePriceUSD = stxPriceUSD || onChainPrice / 100;
+          const effectivePriceUSD = onChainPrice / 100;
 
           // Fetch actual deposit to use as collateral value, not the required collateral
           const depositResult = await callReadOnlyFunction({
