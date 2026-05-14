@@ -274,6 +274,12 @@ describe('App Integration', () => {
       expect(screen.getByText('Active Loan')).toBeInTheDocument();
       expect(screen.getByText('Health Factor')).toBeInTheDocument();
     });
+
+    it('labels health factor as on-chain', () => {
+      render(<Dashboard />);
+
+      expect(screen.getByText('Source: On-chain')).toBeInTheDocument();
+    });
   });
 
   describe('User Flow: Protocol Stats Loading', () => {
