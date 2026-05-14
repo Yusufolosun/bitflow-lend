@@ -58,7 +58,7 @@ export const Dashboard: React.FC = () => {
       setUserLoan(loan);
 
       if (loan) {
-        const health = await vault.getHealthFactor(stxPrice);
+        const health = await vault.getHealthFactor();
         if (health) setUserHealthFactor(health.healthFactorPercent);
       } else {
         setUserHealthFactor(null);
@@ -66,7 +66,7 @@ export const Dashboard: React.FC = () => {
     } catch {
       // Silently swallow — next poll will retry
     }
-  }, [address, vault, stxPrice]);
+  }, [address, vault]);
 
   useSmartPolling(fetchUserData, 60_000, !!address);
 
