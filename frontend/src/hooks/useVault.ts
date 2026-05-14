@@ -544,8 +544,10 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
         senderAddress: userAddress,
       });
 
-      if (result.type === ClarityType.OptionalSome && result.value.type === ClarityType.UInt) {
-        const healthFactorPercent = Number(result.value.value);
+      const healthFactorValue = cvToValue(result);
+      const healthFactorPercent = toNumber(healthFactorValue);
+
+      if (healthFactorPercent !== null) {
 
         // Get loan data for USD values - call the function directly
         const loanResult = await callReadOnlyFunction({
