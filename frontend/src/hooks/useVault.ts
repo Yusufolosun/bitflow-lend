@@ -529,8 +529,8 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
     if (!userAddress) return null;
 
     try {
-      // Price with 6 decimals (e.g., $1.00 = 1000000)
-      const priceWithDecimals = Math.floor(stxPriceUSD * 1_000_000);
+      const onChainPrice = await getOnChainStxPrice();
+      if (!onChainPrice) return null;
 
       const result = await callReadOnlyFunction({
         network,
@@ -539,7 +539,7 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
         functionName: 'calculate-health-factor',
         functionArgs: [
           principalCV(userAddress),
-          uintCV(priceWithDecimals),
+          uintCV(onChainPrice),
         ],
         senderAddress: userAddress,
       });
@@ -566,6 +566,8 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
           const loanData = cvToValue(loanResult.value);
           const amountSTX = microStxToStx(BigInt(loanData.amount));
 
+          const effectivePriceUSD = stxPriceUSD || onChainPrice / 100;
+
           // Fetch actual deposit to use as collateral value, not the required collateral
           const depositResult = await callReadOnlyFunction({
             network,
@@ -579,8 +581,8 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
             ? microStxToStx(BigInt(depositResult.value))
             : 0;
 
-          collateralValueUSD = depositSTX * stxPriceUSD;
-          debtValueUSD = amountSTX * stxPriceUSD;
+          collateralValueUSD = depositSTX * effectivePriceUSD;
+          debtValueUSD = amountSTX * effectivePriceUSD;
         }
 
         return {
