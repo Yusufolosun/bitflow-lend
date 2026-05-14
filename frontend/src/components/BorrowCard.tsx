@@ -9,7 +9,6 @@ import { useOracleSanityCheck } from '../hooks/useOracleSanityCheck';
 import { LOAN_TERMS, UserLoan } from '../types/vault';
 import { formatSTX } from '../utils/formatters';
 import { PROTOCOL_CONSTANTS } from '../config/contracts';
-import { calculateHealthFactor, getHealthStatus } from '../utils/calculations';
 import { StacksTxStatusPanel } from './StacksTxStatusPanel';
 
 /**
