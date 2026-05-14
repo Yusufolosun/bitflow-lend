@@ -5,16 +5,6 @@
 
 import { PROTOCOL_CONSTANTS } from '../config/contracts';
 
-/**
- * Calculate health factor percentage
- * @param collateralSTX - Collateral amount in STX
- * @param debtSTX - Debt amount in STX
- * @returns Health factor as percentage (150% = healthy)
- */
-export function calculateHealthFactor(collateralSTX: number, debtSTX: number): number {
-  if (debtSTX === 0) return Infinity;
-  return (collateralSTX / debtSTX) * 100;
-}
 
 
 /**
