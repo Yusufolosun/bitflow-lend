@@ -14,6 +14,7 @@ interface HealthFactorData {
   healthFactorPercent: number;
   collateralValueUSD: number;
   debtValueUSD: number;
+  stxPriceUSD: number;
 }
 
 /**
