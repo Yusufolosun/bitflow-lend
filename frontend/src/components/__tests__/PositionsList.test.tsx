@@ -103,10 +103,10 @@ describe('PositionsList Component - Badge Assignment', () => {
     ];
     render(<PositionsList positions={sameStatus} />);
     
-    const amounts = screen.getAllByText(/STX/).map(el => el.textContent);
+    const amounts = screen.getAllByText(/\d+\.00 STX/).filter(el => el.className.includes('text-lg'));
     // Should be 2.00 STX (3000), 3.00 STX (2000), 1.00 STX (1000)
-    expect(amounts[0]).toContain('2.00');
-    expect(amounts[1]).toContain('3.00');
-    expect(amounts[2]).toContain('1.00');
+    expect(amounts[0]).toHaveTextContent('2.00 STX');
+    expect(amounts[1]).toHaveTextContent('3.00 STX');
+    expect(amounts[2]).toHaveTextContent('1.00 STX');
   });
 });
