@@ -72,17 +72,17 @@ export const PositionsList: React.FC<PositionsListProps> = ({ positions, isLoadi
                     
                     {/* Status Badges */}
                     {isActive && (
-                      <span className="badge-active bg-emerald-100 text-emerald-700 px-2.5 py-0.5 rounded-full text-xs font-bold border border-emerald-200">
+                      <span id="badge-active" className="bg-emerald-100 text-emerald-700 px-2.5 py-0.5 rounded-full text-xs font-bold border border-emerald-200">
                         Active
                       </span>
                     )}
                     {isLiquidated && (
-                      <span className="badge-liquidated bg-red-100 text-red-700 px-2.5 py-0.5 rounded-full text-xs font-bold border border-red-200">
+                      <span id="badge-liquidated" className="bg-red-100 text-red-700 px-2.5 py-0.5 rounded-full text-xs font-bold border border-red-200">
                         Liquidated
                       </span>
                     )}
                     {isRepaid && (
-                      <span className="badge-repaid bg-gray-200 text-gray-700 px-2.5 py-0.5 rounded-full text-xs font-bold border border-gray-300">
+                      <span id="badge-repaid" className="bg-gray-200 text-gray-700 px-2.5 py-0.5 rounded-full text-xs font-bold border border-gray-300">
                         Closed
                       </span>
                     )}
