@@ -442,6 +442,11 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
         const collateralAmount = (amount * BigInt(PROTOCOL_CONSTANTS.MIN_COLLATERAL_RATIO)) / BigInt(100);
         const collateralAmountSTX = microStxToStx(collateralAmount);
 
+        const statusValue = Number(loanData.status || 1);
+        const status: 'active' | 'repaid' | 'liquidated' = 
+          statusValue === 2 ? 'repaid' : 
+          statusValue === 3 ? 'liquidated' : 'active';
+
         // Estimate start timestamp using chain tip height
         let blocksElapsed = 0;
         try {
@@ -470,6 +475,7 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
           startTimestamp,
           collateralAmount,
           collateralAmountSTX,
+          status,
         };
       }
 
