@@ -694,8 +694,8 @@
       ;; Transfer collateral to liquidator
       (try! (as-contract (stx-transfer? borrower-deposit tx-sender liquidator)))
 
-      ;; Clear borrower's loan and deposit
-      (map-delete user-loans borrower)
+      ;; Update borrower's loan record to liquidated status
+       (map-set user-loans borrower (merge loan { status: STATUS-LIQUIDATED }))
       (map-set user-deposits borrower u0)
 
       ;; Update metrics
