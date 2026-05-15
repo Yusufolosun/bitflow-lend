@@ -14,6 +14,7 @@
 ;; - Improved precision in interest calculations
 ;; - Oracle staleness mitigation
 ;; - Better liquidation sequencing
+;; - Loan status tracking (Active, Repaid, Liquidated)
 
 ;; ===== ERROR CODES =====
 (define-constant ERR-INSUFFICIENT-BALANCE (err u101))
@@ -43,6 +44,12 @@
 (define-data-var min-term-days uint u1)
 (define-data-var max-term-days uint u365)       ;; Maximum 1 year loan term
 (define-data-var late-penalty-rate uint u500)   ;; 5% penalty
+ 
+ ;; ===== LOAN STATUS CONSTANTS =====
+ (define-constant STATUS-ACTIVE u1)
+ (define-constant STATUS-REPAID u2)
+ (define-constant STATUS-LIQUIDATED u3)
+
 
 ;; ===== FIXED CONSTANTS =====
 (define-constant MIN-BORROW-AMOUNT u100000) ;; 0.1 STX minimum
@@ -58,7 +65,8 @@
     interest-rate: uint,
     start-block: uint,
     term-end: uint,
-    created-at-price: uint
+    created-at-price: uint,
+    status: uint
   }
 )
 
@@ -222,17 +230,20 @@
     none
     (match (map-get? user-loans user)
       loan
-        (let (
-          (user-deposit (default-to u0 (map-get? user-deposits user)))
-          (blocks-elapsed (safe-sub block-height (get start-block loan)))
-          (outstanding-debt (calculate-outstanding-debt (get amount loan) (get interest-rate loan) blocks-elapsed))
-          (collateral-value (/ (* user-deposit stx-price) u100))
-          (health-factor (if (> outstanding-debt u0)
-            (/ (* collateral-value u100) outstanding-debt)
-            u200))
-        )
-          (some health-factor)
-        )
+         (if (is-eq (get status loan) STATUS-ACTIVE)
+           (let (
+             (user-deposit (default-to u0 (map-get? user-deposits user)))
+             (blocks-elapsed (safe-sub block-height (get start-block loan)))
+             (outstanding-debt (calculate-outstanding-debt (get amount loan) (get interest-rate loan) blocks-elapsed))
+             (collateral-value (/ (* user-deposit stx-price) u100))
+             (health-factor (if (> outstanding-debt u0)
+               (/ (* collateral-value u100) outstanding-debt)
+               u200))
+           )
+             (some health-factor)
+           )
+           none
+         )
       none
     )
   )
@@ -241,13 +252,16 @@
 (define-read-only (is-liquidatable (user principal) (stx-price uint))
   (match (map-get? user-loans user)
     loan
-      (if (> block-height (get term-end loan))
-        true
-        (match (calculate-health-factor user stx-price)
-          health-factor
-            (< health-factor (var-get liquidation-threshold))
-          false
+      (if (is-eq (get status loan) STATUS-ACTIVE)
+        (if (> block-height (get term-end loan))
+          true
+          (match (calculate-health-factor user stx-price)
+            health-factor
+              (< health-factor (var-get liquidation-threshold))
+            false
+          )
         )
+        false
       )
     false
   )
@@ -256,17 +270,20 @@
 (define-read-only (get-repayment-amount (user principal))
   (match (map-get? user-loans user)
     loan
-      (let (
-        (principal (get amount loan))
-        (blocks-elapsed (safe-sub block-height (get start-block loan)))
-        (outstanding-debt (calculate-outstanding-debt principal (get interest-rate loan) blocks-elapsed))
-        (interest (safe-sub outstanding-debt principal))
-        (penalty (if (> block-height (get term-end loan))
-          (/ (* principal (var-get late-penalty-rate)) u10000)
-          u0))
-        (total (safe-add outstanding-debt penalty))
-      )
-        (some { principal: principal, interest: interest, penalty: penalty, total: total })
+      (if (is-eq (get status loan) STATUS-ACTIVE)
+        (let (
+          (principal (get amount loan))
+          (blocks-elapsed (safe-sub block-height (get start-block loan)))
+          (outstanding-debt (calculate-outstanding-debt principal (get interest-rate loan) blocks-elapsed))
+          (interest (safe-sub outstanding-debt principal))
+          (penalty (if (> block-height (get term-end loan))
+            (/ (* principal (var-get late-penalty-rate)) u10000)
+            u0))
+          (total (safe-add outstanding-debt penalty))
+        )
+          (some { principal: principal, interest: interest, penalty: penalty, total: total })
+        )
+        none
       )
     none
   )
@@ -594,8 +611,11 @@
       (asserts! (> user-balance u0) ERR-INSUFFICIENT-COLLATERAL)
       (asserts! (>= user-balance required-collateral) ERR-INSUFFICIENT-COLLATERAL)
 
-      ;; One loan per user
-      (asserts! (is-none (map-get? user-loans recipient)) ERR-ALREADY-HAS-LOAN)
+      ;; One active loan per user
+       (match (map-get? user-loans recipient)
+         loan (asserts! (not (is-eq (get status loan) STATUS-ACTIVE)) ERR-ALREADY-HAS-LOAN)
+         true
+       )
 
       ;; Verify contract has sufficient STX liquidity to fund the loan
       (asserts! (>= (stx-get-balance (as-contract tx-sender)) amount) ERR-INSUFFICIENT-LIQUIDITY)
@@ -604,13 +624,14 @@
       (try! (as-contract (stx-transfer? amount tx-sender recipient)))
 
       ;; Store loan with oracle price snapshot
-      (map-set user-loans recipient {
-        amount: amount,
-        interest-rate: interest-rate,
-        start-block: block-height,
-        term-end: term-end,
-        created-at-price: current-price
-      })
+       (map-set user-loans recipient {
+         amount: amount,
+         interest-rate: interest-rate,
+         start-block: block-height,
+         term-end: term-end,
+         created-at-price: current-price,
+         status: STATUS-ACTIVE
+       })
 
       ;; Update metrics
       (var-set total-borrows-count (+ (var-get total-borrows-count) u1))
@@ -642,8 +663,8 @@
       ;; Transfer repayment from user to contract
       (try! (stx-transfer? total-repayment tx-sender (as-contract tx-sender)))
       
-      ;; Remove loan record
-      (map-delete user-loans tx-sender)
+      ;; Update loan record to repaid status
+       (map-set user-loans tx-sender (merge loan { status: STATUS-REPAID }))
       
       ;; Update metrics
       (var-set total-repaid (safe-add (var-get total-repaid) total-repayment))
@@ -683,8 +704,8 @@
       ;; Transfer collateral to liquidator
       (try! (as-contract (stx-transfer? borrower-deposit tx-sender liquidator)))
 
-      ;; Clear borrower's loan and deposit
-      (map-delete user-loans borrower)
+      ;; Update borrower's loan record to liquidated status
+       (map-set user-loans borrower (merge loan { status: STATUS-LIQUIDATED }))
       (map-set user-deposits borrower u0)
 
       ;; Update metrics

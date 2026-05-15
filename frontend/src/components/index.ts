@@ -12,6 +12,7 @@ export { Dashboard } from './Dashboard';
 export { StatsCard } from './StatsCard';
 export { TransactionHistory } from './TransactionHistory';
 export { LiquidationList } from './LiquidationList';
+export { PositionsList } from './PositionsList';
 export { NetworkIndicator } from './NetworkIndicator';
 export { TokenRateTicker } from './TokenRateTicker';
 export { ToastProvider, useToastContext } from './ToastProvider';

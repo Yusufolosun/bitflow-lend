@@ -41,6 +41,8 @@ export interface UserLoan {
   collateralAmount: bigint;
   /** Collateral in STX */
   collateralAmountSTX: number;
+  /** Current status of the loan */
+  status: 'active' | 'repaid' | 'liquidated';
 }
 
 /**
