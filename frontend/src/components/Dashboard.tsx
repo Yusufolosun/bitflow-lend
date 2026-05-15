@@ -250,10 +250,10 @@ export const Dashboard: React.FC = () => {
               <div className="card-elevated card-hover">
                 <div className="text-sm font-medium text-gray-500 mb-2">Active Loan</div>
                 <div className="text-3xl font-bold text-gray-900 tracking-tight mb-1">
-                  {userLoan ? formatSTX(userLoan.amountSTX) : '0.00'} STX
+                  {userLoan && userLoan.status === 'active' ? formatSTX(userLoan.amountSTX) : '0.00'} STX
                 </div>
                 <div className="text-sm text-gray-500">
-                  {userLoan 
+                  {userLoan && userLoan.status === 'active' 
                     ? `${userLoan.interestRatePercent}% APR` 
                     : 'No active loan'}
                 </div>
