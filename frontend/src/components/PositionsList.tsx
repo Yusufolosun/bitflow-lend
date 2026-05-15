@@ -52,7 +52,7 @@ export const PositionsList: React.FC<PositionsListProps> = ({ positions, isLoadi
           <div
             key={`${position.startTimestamp}-${index}`}
             className={`card-elevated transition-all ${
-              !isActive ? 'opacity-70 grayscale-[0.5] bg-gray-50/80' : 'hover:shadow-md border-l-4 border-emerald-500'
+              !isActive ? 'opacity-60 grayscale-[0.8] bg-gray-100/50 border-gray-200 cursor-not-allowed select-none' : 'hover:shadow-md border-l-4 border-emerald-500'
             }`}
           >
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
