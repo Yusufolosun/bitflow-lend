@@ -43,6 +43,12 @@
 (define-data-var min-term-days uint u1)
 (define-data-var max-term-days uint u365)       ;; Maximum 1 year loan term
 (define-data-var late-penalty-rate uint u500)   ;; 5% penalty
+ 
+ ;; ===== LOAN STATUS CONSTANTS =====
+ (define-constant STATUS-ACTIVE u1)
+ (define-constant STATUS-REPAID u2)
+ (define-constant STATUS-LIQUIDATED u3)
+
 
 ;; ===== FIXED CONSTANTS =====
 (define-constant MIN-BORROW-AMOUNT u100000) ;; 0.1 STX minimum
@@ -58,7 +64,8 @@
     interest-rate: uint,
     start-block: uint,
     term-end: uint,
-    created-at-price: uint
+    created-at-price: uint,
+    status: uint
   }
 )
 
