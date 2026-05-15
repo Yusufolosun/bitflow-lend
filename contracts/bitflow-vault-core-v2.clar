@@ -251,13 +251,16 @@
 (define-read-only (is-liquidatable (user principal) (stx-price uint))
   (match (map-get? user-loans user)
     loan
-      (if (> block-height (get term-end loan))
-        true
-        (match (calculate-health-factor user stx-price)
-          health-factor
-            (< health-factor (var-get liquidation-threshold))
-          false
+      (if (is-eq (get status loan) STATUS-ACTIVE)
+        (if (> block-height (get term-end loan))
+          true
+          (match (calculate-health-factor user stx-price)
+            health-factor
+              (< health-factor (var-get liquidation-threshold))
+            false
+          )
         )
+        false
       )
     false
   )
@@ -266,17 +269,20 @@
 (define-read-only (get-repayment-amount (user principal))
   (match (map-get? user-loans user)
     loan
-      (let (
-        (principal (get amount loan))
-        (blocks-elapsed (safe-sub block-height (get start-block loan)))
-        (outstanding-debt (calculate-outstanding-debt principal (get interest-rate loan) blocks-elapsed))
-        (interest (safe-sub outstanding-debt principal))
-        (penalty (if (> block-height (get term-end loan))
-          (/ (* principal (var-get late-penalty-rate)) u10000)
-          u0))
-        (total (safe-add outstanding-debt penalty))
-      )
-        (some { principal: principal, interest: interest, penalty: penalty, total: total })
+      (if (is-eq (get status loan) STATUS-ACTIVE)
+        (let (
+          (principal (get amount loan))
+          (blocks-elapsed (safe-sub block-height (get start-block loan)))
+          (outstanding-debt (calculate-outstanding-debt principal (get interest-rate loan) blocks-elapsed))
+          (interest (safe-sub outstanding-debt principal))
+          (penalty (if (> block-height (get term-end loan))
+            (/ (* principal (var-get late-penalty-rate)) u10000)
+            u0))
+          (total (safe-add outstanding-debt penalty))
+        )
+          (some { principal: principal, interest: interest, penalty: penalty, total: total })
+        )
+        none
       )
     none
   )
