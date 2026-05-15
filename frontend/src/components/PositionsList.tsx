@@ -14,10 +14,12 @@ interface PositionsListProps {
  * Displays a list of user positions with status badges and sorting
  */
 export const PositionsList: React.FC<PositionsListProps> = ({ positions, isLoading }) => {
-  // Sort positions: Active first, then by timestamp (newest first)
+  // Sort positions: Active first, then Liquidated, then Repaid, finally by timestamp
   const sortedPositions = [...positions].sort((a, b) => {
-    if (a.status === 'active' && b.status !== 'active') return -1;
-    if (a.status !== 'active' && b.status === 'active') return 1;
+    const statusPriority = { active: 0, liquidated: 1, repaid: 2 };
+    if (statusPriority[a.status] !== statusPriority[b.status]) {
+      return statusPriority[a.status] - statusPriority[b.status];
+    }
     return b.startTimestamp - a.startTimestamp;
   });
 
