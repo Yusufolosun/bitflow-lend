@@ -12,6 +12,7 @@ import { HealthMonitor } from './HealthMonitor';
 import { TransactionHistory } from './TransactionHistory';
 import { NetworkIndicator } from './NetworkIndicator';
 import { TokenRateTicker } from './TokenRateTicker';
+import { PositionsList } from './PositionsList';
 import { formatSTX } from '../utils/formatters';
 import { ACTIVE_NETWORK } from '../config/contracts';
 import { getHealthStatus } from '../utils/calculations';
@@ -276,6 +277,13 @@ export const Dashboard: React.FC = () => {
                    userHealthFactor && getHealthStatus(userHealthFactor) === 'warning' ? 'At Risk' : 'Critical'}
                 </div>
               </div>
+            </div>
+            <div className="mt-8">
+              <h3 className="text-lg font-bold text-gray-900 mb-4">Your Positions</h3>
+              <PositionsList 
+                positions={userLoan ? [userLoan] : []} 
+                isLoading={isRefreshing} 
+              />
             </div>
           </section>
         )}
