@@ -82,4 +82,31 @@ describe('PositionsList Component - Badge Assignment', () => {
     expect(screen.getByText('Closed')).toBeInTheDocument();
     expect(document.getElementById('badge-repaid')).toBeInTheDocument();
   });
+
+  it('sorts positions correctly: active first, then liquidated, then repaid', () => {
+    const mixedPositions: UserLoan[] = [
+      { ...mockPositions[2], startTimestamp: 3000 }, // repaid
+      { ...mockPositions[0], startTimestamp: 1000 }, // active
+      { ...mockPositions[1], startTimestamp: 2000 }, // liquidated
+    ];
+    render(<PositionsList positions={mixedPositions} />);
+    
+    const statusTexts = screen.getAllByText(/Active|Liquidated|Closed/).map(el => el.textContent);
+    expect(statusTexts).toEqual(['Active', 'Liquidated', 'Closed']);
+  });
+
+  it('sorts same-status positions by newest first', () => {
+    const sameStatus: UserLoan[] = [
+      { ...mockPositions[0], amountSTX: 1, startTimestamp: 1000 },
+      { ...mockPositions[0], amountSTX: 2, startTimestamp: 3000 },
+      { ...mockPositions[0], amountSTX: 3, startTimestamp: 2000 },
+    ];
+    render(<PositionsList positions={sameStatus} />);
+    
+    const amounts = screen.getAllByText(/STX/).map(el => el.textContent);
+    // Should be 2.00 STX (3000), 3.00 STX (2000), 1.00 STX (1000)
+    expect(amounts[0]).toContain('2.00');
+    expect(amounts[1]).toContain('3.00');
+    expect(amounts[2]).toContain('1.00');
+  });
 });
