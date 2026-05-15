@@ -601,8 +601,11 @@
       (asserts! (> user-balance u0) ERR-INSUFFICIENT-COLLATERAL)
       (asserts! (>= user-balance required-collateral) ERR-INSUFFICIENT-COLLATERAL)
 
-      ;; One loan per user
-      (asserts! (is-none (map-get? user-loans recipient)) ERR-ALREADY-HAS-LOAN)
+      ;; One active loan per user
+       (match (map-get? user-loans recipient)
+         loan (asserts! (not (is-eq (get status loan) STATUS-ACTIVE)) ERR-ALREADY-HAS-LOAN)
+         true
+       )
 
       ;; Verify contract has sufficient STX liquidity to fund the loan
       (asserts! (>= (stx-get-balance (as-contract tx-sender)) amount) ERR-INSUFFICIENT-LIQUIDITY)
