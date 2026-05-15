@@ -653,8 +653,8 @@
       ;; Transfer repayment from user to contract
       (try! (stx-transfer? total-repayment tx-sender (as-contract tx-sender)))
       
-      ;; Remove loan record
-      (map-delete user-loans tx-sender)
+      ;; Update loan record to repaid status
+       (map-set user-loans tx-sender (merge loan { status: STATUS-REPAID }))
       
       ;; Update metrics
       (var-set total-repaid (safe-add (var-get total-repaid) total-repayment))
