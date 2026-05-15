@@ -229,17 +229,20 @@
     none
     (match (map-get? user-loans user)
       loan
-        (let (
-          (user-deposit (default-to u0 (map-get? user-deposits user)))
-          (blocks-elapsed (safe-sub block-height (get start-block loan)))
-          (outstanding-debt (calculate-outstanding-debt (get amount loan) (get interest-rate loan) blocks-elapsed))
-          (collateral-value (/ (* user-deposit stx-price) u100))
-          (health-factor (if (> outstanding-debt u0)
-            (/ (* collateral-value u100) outstanding-debt)
-            u200))
-        )
-          (some health-factor)
-        )
+         (if (is-eq (get status loan) STATUS-ACTIVE)
+           (let (
+             (user-deposit (default-to u0 (map-get? user-deposits user)))
+             (blocks-elapsed (safe-sub block-height (get start-block loan)))
+             (outstanding-debt (calculate-outstanding-debt (get amount loan) (get interest-rate loan) blocks-elapsed))
+             (collateral-value (/ (* user-deposit stx-price) u100))
+             (health-factor (if (> outstanding-debt u0)
+               (/ (* collateral-value u100) outstanding-debt)
+               u200))
+           )
+             (some health-factor)
+           )
+           none
+         )
       none
     )
   )
