@@ -611,13 +611,14 @@
       (try! (as-contract (stx-transfer? amount tx-sender recipient)))
 
       ;; Store loan with oracle price snapshot
-      (map-set user-loans recipient {
-        amount: amount,
-        interest-rate: interest-rate,
-        start-block: block-height,
-        term-end: term-end,
-        created-at-price: current-price
-      })
+       (map-set user-loans recipient {
+         amount: amount,
+         interest-rate: interest-rate,
+         start-block: block-height,
+         term-end: term-end,
+         created-at-price: current-price,
+         status: STATUS-ACTIVE
+       })
 
       ;; Update metrics
       (var-set total-borrows-count (+ (var-get total-borrows-count) u1))
