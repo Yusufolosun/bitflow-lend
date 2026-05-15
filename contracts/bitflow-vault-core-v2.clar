@@ -14,6 +14,7 @@
 ;; - Improved precision in interest calculations
 ;; - Oracle staleness mitigation
 ;; - Better liquidation sequencing
+;; - Loan status tracking (Active, Repaid, Liquidated)
 
 ;; ===== ERROR CODES =====
 (define-constant ERR-INSUFFICIENT-BALANCE (err u101))
