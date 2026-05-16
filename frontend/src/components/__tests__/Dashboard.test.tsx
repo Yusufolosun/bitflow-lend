@@ -49,8 +49,18 @@ vi.mock('../TokenRateTicker', () => ({
   TokenRateTicker: () => <div data-testid="token-rate-ticker">TokenRateTicker</div>,
 }));
 
+vi.mock('../PositionsList', () => ({
+  PositionsList: () => <div data-testid="positions-list">PositionsList</div>,
+}));
+
 vi.mock('../LoadingCard', () => ({
   LoadingStats: () => <div data-testid="loading-stats">Loading...</div>,
+}));
+
+vi.mock('../HealthFactorDisplay', () => ({
+  HealthFactorDisplay: ({ healthFactor }: { healthFactor: number }) => (
+    <div data-testid="health-factor-display">Health Factor: {healthFactor}%</div>
+  ),
 }));
 
 vi.mock('../ErrorState', () => ({
