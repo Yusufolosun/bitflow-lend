@@ -15,7 +15,6 @@ import { TokenRateTicker } from './TokenRateTicker';
 import { PositionsList } from './PositionsList';
 import { formatSTX } from '../utils/formatters';
 import { ACTIVE_NETWORK } from '../config/contracts';
-import { getHealthStatus } from '../utils/calculations';
 import { useProtocolStats } from '../hooks/useProtocolStats';
 import { useSmartPolling } from '../hooks/useSmartPolling';
 import { useStxPrice } from '../hooks/useStxPrice';
