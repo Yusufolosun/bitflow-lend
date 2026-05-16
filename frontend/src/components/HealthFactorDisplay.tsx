@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Shield, AlertTriangle, XCircle, Activity, CheckCircle } from 'lucide-react';
 import { getHealthStatus } from '../utils/calculations';
 
@@ -60,22 +60,24 @@ export const HealthFactorDisplay: React.FC<HealthFactorDisplayProps> = ({
   // Determine health status and styles
   // If user passes decimal version (e.g., 1.1), we normalize to percentage (110%)
   const isDecimal = healthFactor > 0 && healthFactor < 10;
-  const normalizedHF = isDecimal ? healthFactor * 100 : healthFactor;
-  const status = getHealthStatus(normalizedHF);
+  const normalizedHF = useMemo(() => isDecimal ? healthFactor * 100 : healthFactor, [healthFactor, isDecimal]);
+  const status = useMemo(() => getHealthStatus(normalizedHF), [normalizedHF]);
   
-  const colors = {
+  const colors = useMemo(() => ({
     healthy: 'text-emerald-600 bg-emerald-50 border-emerald-100',
     warning: 'text-amber-600 bg-amber-50 border-amber-100',
     critical: 'text-red-600 bg-red-50 border-red-100'
-  };
+  }), []);
 
-  const badgeColors = {
+  const badgeColors = useMemo(() => ({
     healthy: 'bg-emerald-200 text-emerald-800',
     warning: 'bg-amber-200 text-amber-800',
     critical: 'bg-red-200 text-red-800'
-  };
+  }), []);
 
-  const StatusIcon = status === 'healthy' ? CheckCircle : status === 'warning' ? AlertTriangle : Activity;
+  const StatusIcon = useMemo(() => {
+    return status === 'healthy' ? CheckCircle : status === 'warning' ? AlertTriangle : Activity;
+  }, [status]);
 
   return (
     <div 
