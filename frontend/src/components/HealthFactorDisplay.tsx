@@ -23,5 +23,26 @@ export const HealthFactorDisplay: React.FC<HealthFactorDisplayProps> = ({
       />
     );
   }
+
+  // Explicit check for 0 health factor — most critical state
+  if (healthFactor === 0) {
+    return (
+      <div 
+        className="flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded-lg animate-in fade-in slide-in-from-top-1"
+        data-testid="hf-critical-alert"
+        role="alert"
+      >
+        <XCircle className="text-red-600 flex-shrink-0 mt-0.5" size={20} />
+        <div className="flex-1">
+          <h4 className="text-sm font-bold text-red-900 mb-1">
+            Critical Liquidation Risk!
+          </h4>
+          <p className="text-xs text-red-800 leading-relaxed">
+            Health Factor: 0 — Position subject to immediate liquidation. Add collateral or repay now.
+          </p>
+        </div>
+      </div>
+    );
+  }
   return null;
 };
