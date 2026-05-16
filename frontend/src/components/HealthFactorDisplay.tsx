@@ -32,7 +32,7 @@ interface HealthFactorDisplayProps {
  * Renders the user's health factor with appropriate status indicators.
  * Handles 0, null, and undefined states gracefully with alerts and skeletons.
  */
-export const HealthFactorDisplay: React.FC<HealthFactorDisplayProps> = ({ 
+export const HealthFactorDisplay: React.FC<HealthFactorDisplayProps> = React.memo(({ 
   healthFactor, 
   size = 'md' 
 }) => {
@@ -114,4 +114,6 @@ export const HealthFactorDisplay: React.FC<HealthFactorDisplayProps> = ({
       </div>
     </div>
   );
-};
+});
+
+HealthFactorDisplay.displayName = 'HealthFactorDisplay';
