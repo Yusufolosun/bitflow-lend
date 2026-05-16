@@ -3,6 +3,21 @@ import { Shield, AlertTriangle, XCircle, Activity, CheckCircle } from 'lucide-re
 import { getHealthStatus } from '../utils/calculations';
 
 /**
+ * Visual styles for different health statuses
+ */
+const COLORS = {
+  healthy: 'text-emerald-600 bg-emerald-50 border-emerald-100',
+  warning: 'text-amber-600 bg-amber-50 border-amber-100',
+  critical: 'text-red-600 bg-red-50 border-red-100'
+};
+
+const BADGE_COLORS = {
+  healthy: 'bg-emerald-200 text-emerald-800',
+  warning: 'bg-amber-200 text-amber-800',
+  critical: 'bg-red-200 text-red-800'
+};
+
+/**
  * HealthFactorDisplayProps
  * @property healthFactor - The health factor percentage (0-100+) or decimal (0-2.0+)
  * @property size - Visual size of the component
@@ -63,25 +78,13 @@ export const HealthFactorDisplay: React.FC<HealthFactorDisplayProps> = ({
   const normalizedHF = useMemo(() => isDecimal ? healthFactor * 100 : healthFactor, [healthFactor, isDecimal]);
   const status = useMemo(() => getHealthStatus(normalizedHF), [normalizedHF]);
   
-  const colors = useMemo(() => ({
-    healthy: 'text-emerald-600 bg-emerald-50 border-emerald-100',
-    warning: 'text-amber-600 bg-amber-50 border-amber-100',
-    critical: 'text-red-600 bg-red-50 border-red-100'
-  }), []);
-
-  const badgeColors = useMemo(() => ({
-    healthy: 'bg-emerald-200 text-emerald-800',
-    warning: 'bg-amber-200 text-amber-800',
-    critical: 'bg-red-200 text-red-800'
-  }), []);
-
   const StatusIcon = useMemo(() => {
     return status === 'healthy' ? CheckCircle : status === 'warning' ? AlertTriangle : Activity;
   }, [status]);
 
   return (
     <div 
-      className={`rounded-xl border transition-all hover:shadow-md ${colors[status]} ${
+      className={`rounded-xl border transition-all hover:shadow-md ${COLORS[status]} ${
         size === 'sm' ? 'p-2' : size === 'md' ? 'p-4' : 'p-6'
       }`}
       data-testid={`hf-display-${status}`}
@@ -98,7 +101,7 @@ export const HealthFactorDisplay: React.FC<HealthFactorDisplayProps> = ({
             }`}>
               {normalizedHF.toFixed(0)}%
             </span>
-            <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${badgeColors[status]}`}>
+            <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${BADGE_COLORS[status]}`}>
               {status}
             </span>
           </div>
