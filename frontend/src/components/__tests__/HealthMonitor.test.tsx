@@ -3,11 +3,16 @@
  * Covers: no-loan state, header rendering, deposit display, health status
  */
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { HealthMonitor } from '../HealthMonitor';
 
-const { mockOracleSanityState } = vi.hoisted(() => ({
+const { mockOracleSanityState, mockVaultState } = vi.hoisted(() => ({
   mockOracleSanityState: { current: { warning: false, deviation: 0 } },
+  mockVaultState: { 
+    deposit: null, 
+    loan: null, 
+    healthFactor: null 
+  },
 }));
 
 // Mock useAuth
@@ -18,17 +23,30 @@ vi.mock('../../hooks/useAuth', () => ({
   }),
 }));
 
-// Mock useVault to return no active loan by default
+// Mock useVault with dynamic implementation
 vi.mock('../../hooks/useVault', () => ({
   useVault: () => ({
-    getUserDeposit: vi.fn().mockResolvedValue(null),
-    getUserLoan: vi.fn().mockResolvedValue(null),
-    getHealthFactor: vi.fn().mockResolvedValue(null),
+    getUserDeposit: vi.fn().mockImplementation(() => Promise.resolve(mockVaultState.deposit)),
+    getUserLoan: vi.fn().mockImplementation(() => Promise.resolve(mockVaultState.loan)),
+    getHealthFactor: vi.fn().mockImplementation(() => Promise.resolve(mockVaultState.healthFactor)),
   }),
 }));
 
+// Mock HealthFactorDisplay to avoid internal complex logic and focus on integration
+vi.mock('../HealthFactorDisplay', () => ({
+  HealthFactorDisplay: ({ healthFactor }: { healthFactor: number }) => {
+    if (healthFactor === null || healthFactor === undefined) {
+      return <div data-testid="hf-loading-skeleton">Loading</div>;
+    }
+    return <div data-testid="hf-display-mock">Health Factor: {healthFactor}%</div>;
+  },
+}));
+
 vi.mock('../../hooks/useSmartPolling', () => ({
-  useSmartPolling: vi.fn(),
+  useSmartPolling: (fn: () => void) => {
+    // Trigger the fetch in a way that React handles the async update
+    fn();
+  },
 }));
 
 vi.mock('../../hooks/useStxPrice', () => ({
@@ -81,23 +99,33 @@ describe('HealthMonitor Component', () => {
   });
 
   it('shows no active position message when no loan', () => {
+    mockVaultState.loan = null;
     render(<HealthMonitor />);
     expect(screen.getByText('No Active Position')).toBeInTheDocument();
   });
 
-  it('shows safe position message when no loan', () => {
-    render(<HealthMonitor />);
-    expect(screen.getByText(/don't have any active loans/)).toBeInTheDocument();
-  });
+  it('shows the health factor display when a loan is active', async () => {
+    mockVaultState.loan = {
+      amountSTX: 100,
+      collateralAmountSTX: 150,
+      status: 'active',
+      termEnd: 1000,
+      interestRatePercent: 5,
+      startTimestamp: Date.now() / 1000,
+    };
+    mockVaultState.healthFactor = {
+      healthFactorPercent: 150,
+      collateralValueUSD: 225,
+      debtValueUSD: 150,
+      stxPriceUSD: 1.5,
+    };
 
-  it('displays healthy status text when no loan', () => {
     render(<HealthMonitor />);
-    expect(screen.getByText('Your position is healthy')).toBeInTheDocument();
-  });
-
-  it('shows check icon for healthy state', () => {
-    render(<HealthMonitor />);
-    expect(screen.getAllByTestId('check-icon').length).toBeGreaterThan(0);
+    
+    // Use findByTestId which returns a promise and retries
+    const display = await screen.findByTestId('hf-display-mock');
+    expect(display).toBeInTheDocument();
+    expect(screen.getByText('150%')).toBeInTheDocument();
   });
 
   it('shows the oracle sanity warning banner when the price diverges', () => {

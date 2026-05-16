@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { Activity, AlertTriangle, CheckCircle, XCircle, TrendingDown } from 'lucide-react';
+import { Activity, AlertTriangle, CheckCircle, TrendingDown } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useVault } from '../hooks/useVault';
 import { useSmartPolling } from '../hooks/useSmartPolling';
@@ -9,6 +9,7 @@ import { formatSTX } from '../utils/formatters';
 import { PROTOCOL_CONSTANTS } from '../config/contracts';
 import { getHealthStatus } from '../utils/calculations';
 import { UserDeposit, UserLoan } from '../types/vault';
+import { HealthFactorDisplay } from './HealthFactorDisplay';
 
 interface HealthFactorData {
   healthFactorPercent: number;
@@ -149,37 +150,10 @@ export const HealthMonitor: React.FC = () => {
       {oracleWarningBanner}
 
       {/* Health Factor Display */}
-      {healthFactor && (
-        <div className={`rounded-xl p-6 border ${
-          healthColor === 'green' ? 'bg-emerald-50/80 border-emerald-100' :
-          healthColor === 'yellow' ? 'bg-amber-50/80 border-amber-100' : 'bg-red-50/80 border-red-100'
-        }`}>
-          <div className="text-center">
-            <div className="flex items-center justify-center gap-2 text-sm font-medium text-gray-600 mb-2">
-              <span>Health Factor</span>
-              <span className="text-xs text-gray-500">Source: On-chain</span>
-            </div>
-            <div className={`text-5xl font-bold mb-2 tracking-tight ${
-              healthColor === 'green' ? 'text-emerald-600' :
-              healthColor === 'yellow' ? 'text-amber-600' : 'text-red-600'
-            }`}>
-              {healthFactor.healthFactorPercent.toFixed(0)}%
-            </div>
-            <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full ${
-              healthColor === 'green' ? 'bg-emerald-200 text-emerald-800' :
-              healthColor === 'yellow' ? 'bg-amber-200 text-amber-800' : 'bg-red-200 text-red-800'
-            }`}>
-              {healthColor === 'green' && <CheckCircle size={16} />}
-              {healthColor === 'yellow' && <AlertTriangle size={16} />}
-              {healthColor === 'red' && <XCircle size={16} />}
-              <span className="text-sm font-semibold">
-                {healthColor === 'green' ? 'Healthy' :
-                 healthColor === 'yellow' ? 'At Risk' : 'Critical'}
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
+      <HealthFactorDisplay 
+        healthFactor={healthFactor?.healthFactorPercent} 
+        size="lg"
+      />
 
       {/* Collateral Ratio */}
       {collateralRatio && (
