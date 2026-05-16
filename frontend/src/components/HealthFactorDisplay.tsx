@@ -73,9 +73,19 @@ export const HealthFactorDisplay: React.FC<HealthFactorDisplayProps> = React.mem
   }
 
   // Determine health status and styles
+  const numericHF = typeof healthFactor === 'number' ? healthFactor : Number(healthFactor);
+  
+  if (isNaN(numericHF)) {
+    return (
+      <div className="text-xs text-red-500 bg-red-50 p-2 rounded border border-red-100">
+        Invalid Health Factor Value
+      </div>
+    );
+  }
+
   // If user passes decimal version (e.g., 1.1), we normalize to percentage (110%)
-  const isDecimal = healthFactor > 0 && healthFactor < 10;
-  const normalizedHF = useMemo(() => isDecimal ? healthFactor * 100 : healthFactor, [healthFactor, isDecimal]);
+  const isDecimal = numericHF > 0 && numericHF < 10;
+  const normalizedHF = useMemo(() => isDecimal ? numericHF * 100 : numericHF, [numericHF, isDecimal]);
   const status = useMemo(() => getHealthStatus(normalizedHF), [normalizedHF]);
   
   const StatusIcon = useMemo(() => {
