@@ -96,8 +96,8 @@ export const HealthFactorDisplay: React.FC<HealthFactorDisplayProps> = React.mem
         <StatusIcon size={size === 'sm' ? 18 : 22} />
         <div>
           <div className="flex items-center gap-2">
-            <span className={`font-bold ${
-              size === 'sm' ? 'text-base' : size === 'md' ? 'text-2xl' : 'text-4xl'
+            <span className={`font-extrabold tabular-nums ${
+              size === 'sm' ? 'text-lg' : size === 'md' ? 'text-3xl' : 'text-5xl'
             }`}>
               {normalizedHF.toFixed(0)}%
             </span>
