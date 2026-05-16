@@ -54,4 +54,9 @@ describe('HealthFactorDisplay', () => {
     expect(screen.getByTestId('hf-display-critical')).toBeInTheDocument();
     expect(screen.getByText('105%')).toBeInTheDocument();
   });
+
+  it('matches snapshot for healthy state', () => {
+    const { asFragment } = render(<HealthFactorDisplay healthFactor={2.0} />);
+    expect(asFragment()).toMatchSnapshot();
+  });
 });
