@@ -76,4 +76,9 @@ describe('HealthFactorDisplay', () => {
     render(<HealthFactorDisplay healthFactor={NaN} />);
     expect(screen.getByText(/Invalid Health Factor/i)).toBeInTheDocument();
   });
+
+  it('does not multiply values already in percentage format (e.g. 50)', () => {
+    render(<HealthFactorDisplay healthFactor={50} />);
+    expect(screen.getByText('50%')).toBeInTheDocument();
+  });
 });
