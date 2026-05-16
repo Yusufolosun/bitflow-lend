@@ -25,8 +25,8 @@ export const HealthFactorDisplay: React.FC<HealthFactorDisplayProps> = ({
   if (healthFactor === null || healthFactor === undefined) {
     return (
       <div 
-        className={`bg-gray-100 animate-pulse rounded-lg ${
-          size === 'sm' ? 'h-6 w-20' : size === 'md' ? 'h-10 w-32' : 'h-16 w-48'
+        className={`bg-gray-100 animate-pulse rounded-lg shadow-inner ${
+          size === 'sm' ? 'h-6 w-20' : size === 'md' ? 'h-12 w-32' : 'h-20 w-48'
         }`}
         data-testid="hf-loading-skeleton"
         aria-label="Loading health factor"
