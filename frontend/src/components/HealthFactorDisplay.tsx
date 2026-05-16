@@ -2,11 +2,21 @@ import React from 'react';
 import { Shield, AlertTriangle, XCircle, Activity, CheckCircle } from 'lucide-react';
 import { getHealthStatus } from '../utils/calculations';
 
+/**
+ * HealthFactorDisplayProps
+ * @property healthFactor - The health factor percentage (0-100+) or decimal (0-2.0+)
+ * @property size - Visual size of the component
+ */
 interface HealthFactorDisplayProps {
   healthFactor: number | null | undefined;
   size?: 'sm' | 'md' | 'lg';
 }
 
+/**
+ * HealthFactorDisplay Component
+ * Renders the user's health factor with appropriate status indicators.
+ * Handles 0, null, and undefined states gracefully with alerts and skeletons.
+ */
 export const HealthFactorDisplay: React.FC<HealthFactorDisplayProps> = ({ 
   healthFactor, 
   size = 'md' 
