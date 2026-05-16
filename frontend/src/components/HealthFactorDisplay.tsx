@@ -94,7 +94,7 @@ export const HealthFactorDisplay: React.FC<HealthFactorDisplayProps> = React.mem
 
   return (
     <div 
-      className={`rounded-xl border transition-all hover:shadow-md ${COLORS[status]} ${
+      className={`rounded-xl border-2 transition-all duration-500 hover:shadow-lg animate-in fade-in zoom-in-95 ${COLORS[status]} ${
         size === 'sm' ? 'p-2' : size === 'md' ? 'p-4' : 'p-6'
       }`}
       data-testid={`hf-display-${status}`}
