@@ -83,6 +83,9 @@ export const HealthFactorDisplay: React.FC<HealthFactorDisplayProps> = ({
         size === 'sm' ? 'p-2' : size === 'md' ? 'p-4' : 'p-6'
       }`}
       data-testid={`hf-display-${status}`}
+      role="status"
+      aria-live="polite"
+      aria-label={`Health Factor: ${normalizedHF.toFixed(0)} percent, status: ${status}`}
     >
       <div className="flex items-center gap-3">
         <StatusIcon size={size === 'sm' ? 18 : 22} />
