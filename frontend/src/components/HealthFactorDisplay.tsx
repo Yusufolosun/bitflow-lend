@@ -116,9 +116,12 @@ export const HealthFactorDisplay: React.FC<HealthFactorDisplayProps> = React.mem
             </span>
           </div>
           {size !== 'sm' && (
-            <p className="text-[10px] opacity-70 font-medium mt-1 uppercase tracking-tight">
-              Health Factor (On-chain)
-            </p>
+            <div className="flex items-center gap-1.5 mt-1.5 opacity-70">
+              <div className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />
+              <p className="text-[10px] font-bold uppercase tracking-widest">
+                Source: On-chain
+              </p>
+            </div>
           )}
         </div>
       </div>
