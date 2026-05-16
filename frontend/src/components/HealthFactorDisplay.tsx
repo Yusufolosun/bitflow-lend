@@ -81,7 +81,7 @@ export const HealthFactorDisplay: React.FC<HealthFactorDisplayProps> = ({
 
   return (
     <div 
-      className={`rounded-xl border transition-all ${colors[status]} ${
+      className={`rounded-xl border transition-all hover:shadow-md ${colors[status]} ${
         size === 'sm' ? 'p-2' : size === 'md' ? 'p-4' : 'p-6'
       }`}
       data-testid={`hf-display-${status}`}
