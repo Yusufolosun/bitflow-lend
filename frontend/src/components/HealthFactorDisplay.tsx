@@ -56,10 +56,9 @@ export const HealthFactorDisplay: React.FC<HealthFactorDisplayProps> = ({
   }
 
   // Determine health status and styles
-  // If user passes 1.1, we assume it's the decimal version of 110%
-  // But our getHealthStatus uses percentages (e.g. 110)
-  // We'll normalize here for compatibility with the requested test cases
-  const normalizedHF = healthFactor < 10 ? healthFactor * 100 : healthFactor;
+  // If user passes decimal version (e.g., 1.1), we normalize to percentage (110%)
+  const isDecimal = healthFactor > 0 && healthFactor < 10;
+  const normalizedHF = isDecimal ? healthFactor * 100 : healthFactor;
   const status = getHealthStatus(normalizedHF);
   
   const colors = {
