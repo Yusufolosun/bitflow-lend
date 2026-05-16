@@ -22,6 +22,7 @@ import { useStxPrice } from '../hooks/useStxPrice';
 import { LoadingStats } from './LoadingCard';
 import { ErrorState } from './ErrorState';
 import { UserLoan } from '../types/vault';
+import { HealthFactorDisplay } from './HealthFactorDisplay';
 
 /**
  * Dashboard Component
@@ -259,24 +260,18 @@ export const Dashboard: React.FC = () => {
                 </div>
               </div>
 
-              <div className="card-elevated card-hover">
-                <div className="flex items-center justify-between text-sm font-medium text-gray-500 mb-2">
-                  <span>Health Factor</span>
-                  <span className="text-xs text-gray-400">Source: On-chain</span>
+              {!userLoan ? (
+                <div className="card-elevated card-hover">
+                  <div className="text-sm font-medium text-gray-500 mb-2">Health Factor</div>
+                  <div className="text-3xl font-bold text-gray-400 tracking-tight mb-1">N/A</div>
+                  <div className="text-sm text-gray-500">No active loan</div>
                 </div>
-                <div className={`text-3xl font-bold tracking-tight mb-1 ${
-                  !userLoan ? 'text-gray-400' :
-                  userHealthFactor && getHealthStatus(userHealthFactor) === 'healthy' ? 'text-emerald-600' :
-                  userHealthFactor && getHealthStatus(userHealthFactor) === 'warning' ? 'text-amber-600' : 'text-red-600'
-                }`}>
-                  {userHealthFactor ? userHealthFactor.toFixed(0) + '%' : 'N/A'}
-                </div>
-                <div className="text-sm text-gray-500">
-                  {!userLoan ? 'No active loan' :
-                   userHealthFactor && getHealthStatus(userHealthFactor) === 'healthy' ? 'Healthy' :
-                   userHealthFactor && getHealthStatus(userHealthFactor) === 'warning' ? 'At Risk' : 'Critical'}
-                </div>
-              </div>
+              ) : (
+                <HealthFactorDisplay 
+                  healthFactor={userHealthFactor} 
+                  size="md" 
+                />
+              )}
             </div>
             <div className="mt-8">
               <h3 className="text-lg font-bold text-gray-900 mb-4">Your Positions</h3>
