@@ -59,4 +59,16 @@ describe('HealthFactorDisplay', () => {
     const { asFragment } = render(<HealthFactorDisplay healthFactor={2.0} />);
     expect(asFragment()).toMatchSnapshot();
   });
+
+  it('renders small size correctly', () => {
+    render(<HealthFactorDisplay healthFactor={2.0} size="sm" />);
+    const container = screen.getByTestId('hf-display-healthy');
+    expect(container).toHaveClass('p-2');
+  });
+
+  it('renders large size correctly', () => {
+    render(<HealthFactorDisplay healthFactor={2.0} size="lg" />);
+    const container = screen.getByTestId('hf-display-healthy');
+    expect(container).toHaveClass('p-6');
+  });
 });
