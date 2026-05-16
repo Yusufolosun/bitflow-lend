@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { Activity, AlertTriangle, CheckCircle, XCircle, TrendingDown } from 'lucide-react';
+import { Activity, AlertTriangle, CheckCircle, TrendingDown } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useVault } from '../hooks/useVault';
 import { useSmartPolling } from '../hooks/useSmartPolling';
