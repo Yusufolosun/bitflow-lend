@@ -71,4 +71,9 @@ describe('HealthFactorDisplay', () => {
     const container = screen.getByTestId('hf-display-healthy');
     expect(container).toHaveClass('p-6');
   });
+
+  it('renders error state for NaN healthFactor', () => {
+    render(<HealthFactorDisplay healthFactor={NaN} />);
+    expect(screen.getByText(/Invalid Health Factor/i)).toBeInTheDocument();
+  });
 });
