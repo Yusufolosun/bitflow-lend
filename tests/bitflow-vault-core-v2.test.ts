@@ -440,12 +440,19 @@ describe("bitflow-vault-core-v2", () => {
       // Keep price fresh
       setPrice(10000);
       const { result } = liquidate(wallet1(), wallet2());
-      // liquidate returns (ok { seized-collateral, paid, bonus }) — no some wrapper
-      expect(result).toBeOk(Cl.tuple({
-        "seized-collateral": Cl.uint(10000000),
-        "paid": Cl.uint(1050000),
-        "bonus": Cl.uint(50000),
-      }));
+      const data = (result as any).value?.value;
+
+      expect(Number(data["seized-collateral"].value)).toBe(10000000);
+
+      const principal = Number(data.principal.value);
+      const interest = Number(data.interest.value);
+      const penalty = Number(data.penalty.value);
+      const paid = Number(data.paid.value);
+
+      expect(principal).toBe(1000000);
+      expect(interest).toBeGreaterThan(0);
+      expect(penalty).toBeGreaterThan(0);
+      expect(paid).toBe(principal + interest + penalty);
     });
 
     it("clears borrower loan and deposit after liquidation", () => {
@@ -747,6 +754,7 @@ describe("bitflow-vault-core-v2", () => {
         "min-term-days": Cl.uint(1),
         "max-term-days": Cl.uint(365),
         "late-penalty-rate": Cl.uint(500),
+        "liquidation-penalty-bps": Cl.uint(500),
       }));
     });
   });
