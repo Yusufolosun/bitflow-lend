@@ -1,7 +1,7 @@
 import { Cl } from "@stacks/transactions";
 import { describe, expect, it } from "vitest";
 
-const CONTRACT = "bitflow-vault-core-v2";
+const CONTRACT = "bitflow-vault-core-v3";
 
 describe("v2 health-factor zero-price handling", () => {
   const accounts = () => simnet.getAccounts();
@@ -77,3 +77,4 @@ describe("v2 health-factor zero-price handling", () => {
     expect(laterHealth).toBeLessThan(immediateHealth);
   });
 });
+

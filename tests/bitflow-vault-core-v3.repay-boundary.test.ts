@@ -1,7 +1,7 @@
 import { Cl } from "@stacks/transactions";
 import { describe, expect, it } from "vitest";
 
-const CONTRACT = "bitflow-vault-core-v2";
+const CONTRACT = "bitflow-vault-core-v3";
 
 describe("v2 repay exact loan boundary", () => {
   const accounts = () => simnet.getAccounts();
@@ -64,3 +64,4 @@ describe("v2 repay exact loan boundary", () => {
     expect(result).toBeOk(Cl.bool(true));
   });
 });
+

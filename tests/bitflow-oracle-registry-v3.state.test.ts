@@ -1,9 +1,9 @@
 import { Cl } from "@stacks/transactions";
 import { describe, expect, it } from "vitest";
 
-const CONTRACT = "bitflow-oracle-registry";
+const CONTRACT = "bitflow-oracle-registry-v3";
 
-describe("bitflow-oracle-registry state tests", () => {
+describe("bitflow-oracle-registry-v3 state tests", () => {
   const getAccounts = () => simnet.getAccounts();
   const deployer = () => getAccounts().get("deployer")!;
   const wallet1 = () => getAccounts().get("wallet_1")!;
@@ -328,3 +328,4 @@ describe("bitflow-oracle-registry state tests", () => {
     });
   });
 });
+

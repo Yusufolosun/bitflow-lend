@@ -1,9 +1,9 @@
 import { Cl } from "@stacks/transactions";
 import { describe, expect, it } from "vitest";
 
-const CONTRACT = "bitflow-vault-core-v2";
+const CONTRACT = "bitflow-vault-core-v3";
 
-describe("bitflow-vault-core-v2 debt parity", () => {
+describe("bitflow-vault-core-v3 debt parity", () => {
   const getAccounts = () => simnet.getAccounts();
   const deployer = () => getAccounts().get("deployer")!;
   const wallet1 = () => getAccounts().get("wallet_1")!;
@@ -185,3 +185,4 @@ describe("bitflow-vault-core-v2 debt parity", () => {
     expect(debtAt0).toBe(principal);
   });
 });
+

@@ -1,9 +1,9 @@
 import { Cl } from "@stacks/transactions";
 import { describe, expect, it } from "vitest";
 
-const CONTRACT = "bitflow-oracle-registry";
+const CONTRACT = "bitflow-oracle-registry-v3";
 
-describe("bitflow-oracle-registry minimum reporter threshold", () => {
+describe("bitflow-oracle-registry-v3 minimum reporter threshold", () => {
   const accounts = () => simnet.getAccounts();
   const deployer = () => accounts().get("deployer")!;
   const wallet1 = () => accounts().get("wallet_1")!;
@@ -64,4 +64,5 @@ describe("bitflow-oracle-registry minimum reporter threshold", () => {
     expect(price.result).toBeUint(500_000);
   });
 });
+
 

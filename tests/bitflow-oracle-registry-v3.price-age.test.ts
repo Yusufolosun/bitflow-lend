@@ -1,7 +1,7 @@
 import { Cl } from "@stacks/transactions";
 import { describe, expect, it } from "vitest";
 
-const CONTRACT = "bitflow-oracle-registry";
+const CONTRACT = "bitflow-oracle-registry-v3";
 
 describe("oracle price-age reporting", () => {
   const accounts = () => simnet.getAccounts();
@@ -44,3 +44,4 @@ describe("oracle price-age reporting", () => {
     expect(result).toBeUint(0);
   });
 });
+

@@ -1,7 +1,7 @@
 import { Cl } from "@stacks/transactions";
 import { describe, expect, it } from "vitest";
 
-const CONTRACT = "bitflow-vault-core-v2";
+const CONTRACT = "bitflow-vault-core-v3";
 
 describe("v2 dashboard snapshot", () => {
   const accounts = () => simnet.getAccounts();
@@ -43,3 +43,4 @@ describe("v2 dashboard snapshot", () => {
     expect(data.value["utilization-bps"]).toBeUint(1000);
   });
 });
+

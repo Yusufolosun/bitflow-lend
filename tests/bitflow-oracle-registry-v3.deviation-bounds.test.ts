@@ -1,7 +1,7 @@
 import { Cl } from "@stacks/transactions";
 import { describe, expect, it } from "vitest";
 
-const CONTRACT = "bitflow-oracle-registry";
+const CONTRACT = "bitflow-oracle-registry-v3";
 
 describe("oracle deviation bounds manipulation", () => {
   const accounts = () => simnet.getAccounts();
@@ -63,3 +63,4 @@ describe("oracle deviation bounds manipulation", () => {
     expect(result).toBeOk(Cl.bool(true));
   });
 });
+

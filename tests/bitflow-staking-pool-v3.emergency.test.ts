@@ -1,9 +1,9 @@
 import { Cl } from "@stacks/transactions";
 import { describe, expect, it } from "vitest";
 
-const CONTRACT = "bitflow-staking-pool";
+const CONTRACT = "bitflow-staking-pool-v3";
 
-describe("bitflow-staking-pool emergency unstake tests", () => {
+describe("bitflow-staking-pool-v3 emergency unstake tests", () => {
   const getAccounts = () => simnet.getAccounts();
   const deployer = () => getAccounts().get("deployer")!;
   const wallet1 = () => getAccounts().get("wallet_1")!;
@@ -133,3 +133,4 @@ describe("bitflow-staking-pool emergency unstake tests", () => {
     });
   });
 });
+

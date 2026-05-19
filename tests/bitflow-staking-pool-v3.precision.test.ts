@@ -1,13 +1,13 @@
 import { Cl } from "@stacks/transactions";
 import { describe, expect, it } from "vitest";
 
-const CONTRACT = "bitflow-staking-pool";
+const CONTRACT = "bitflow-staking-pool-v3";
 
 /**
  * Verifies reward-per-token checkpoint precision and rounding behavior
  * across various stake sizes and reward rates.
  */
-describe("bitflow-staking-pool reward precision", () => {
+describe("bitflow-staking-pool-v3 reward precision", () => {
   const deployer = () => simnet.getAccounts().get("deployer")!;
   const staker1 = () => simnet.getAccounts().get("wallet_1")!;
   const staker2 = () => simnet.getAccounts().get("wallet_2")!;
@@ -120,3 +120,4 @@ describe("bitflow-staking-pool reward precision", () => {
     expect(Number((result as any).value)).toBeLessThanOrEqual(1100);
   });
 });
+

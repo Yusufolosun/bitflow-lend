@@ -1,9 +1,9 @@
 import { Cl } from "@stacks/transactions";
 import { describe, expect, it } from "vitest";
 
-const CONTRACT = "bitflow-vault-core-v2";
+const CONTRACT = "bitflow-vault-core-v3";
 
-describe("bitflow-vault-core-v2 safe arithmetic tests", () => {
+describe("bitflow-vault-core-v3 safe arithmetic tests", () => {
   const getAccounts = () => simnet.getAccounts();
   const deployer = () => getAccounts().get("deployer")!;
   const wallet1 = () => getAccounts().get("wallet_1")!;
@@ -117,3 +117,4 @@ describe("bitflow-vault-core-v2 safe arithmetic tests", () => {
     });
   });
 });
+

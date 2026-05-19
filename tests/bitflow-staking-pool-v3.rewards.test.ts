@@ -1,9 +1,9 @@
 import { Cl } from "@stacks/transactions";
 import { describe, expect, it } from "vitest";
 
-const CONTRACT = "bitflow-staking-pool";
+const CONTRACT = "bitflow-staking-pool-v3";
 
-describe("bitflow-staking-pool reward edge cases", () => {
+describe("bitflow-staking-pool-v3 reward edge cases", () => {
   const getAccounts = () => simnet.getAccounts();
   const deployer = () => getAccounts().get("deployer")!;
   const wallet1 = () => getAccounts().get("wallet_1")!;
@@ -174,3 +174,4 @@ describe("bitflow-staking-pool reward edge cases", () => {
     });
   });
 });
+

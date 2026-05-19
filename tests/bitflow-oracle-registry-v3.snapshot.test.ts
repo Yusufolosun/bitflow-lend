@@ -1,9 +1,9 @@
 import { Cl } from "@stacks/transactions";
 import { describe, expect, it } from "vitest";
 
-const CONTRACT = "bitflow-oracle-registry";
+const CONTRACT = "bitflow-oracle-registry-v3";
 
-describe("bitflow-oracle-registry dashboard snapshot tests", () => {
+describe("bitflow-oracle-registry-v3 dashboard snapshot tests", () => {
   const getAccounts = () => simnet.getAccounts();
   const deployer = () => getAccounts().get("deployer")!;
   const reporter1 = () => getAccounts().get("wallet_1")!;
@@ -69,3 +69,4 @@ describe("bitflow-oracle-registry dashboard snapshot tests", () => {
     expect(Number(age)).toBeGreaterThanOrEqual(20);
   });
 });
+

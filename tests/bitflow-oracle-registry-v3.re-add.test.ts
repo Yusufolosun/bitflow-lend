@@ -1,7 +1,7 @@
 import { Cl } from "@stacks/transactions";
 import { describe, expect, it } from "vitest";
 
-const CONTRACT = "bitflow-oracle-registry";
+const CONTRACT = "bitflow-oracle-registry-v3";
 
 describe("oracle re-add removed reporter", () => {
   const accounts = () => simnet.getAccounts();
@@ -51,3 +51,4 @@ describe("oracle re-add removed reporter", () => {
     expect(result).toBeOk(Cl.bool(true));
   });
 });
+

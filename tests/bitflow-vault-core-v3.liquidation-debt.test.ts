@@ -1,14 +1,14 @@
 import { Cl } from "@stacks/transactions";
 import { describe, expect, it } from "vitest";
 
-const CONTRACT = "bitflow-vault-core-v2";
+const CONTRACT = "bitflow-vault-core-v3";
 
 /**
  * Tests that liquidation eligibility and seized amounts are calculated
  * on total outstanding debt (principal + accrued interest + penalty),
  * not principal alone.
  */
-describe("bitflow-vault-core-v2 liquidation debt basis", () => {
+describe("bitflow-vault-core-v3 liquidation debt basis", () => {
   const deployer = () => simnet.getAccounts().get("deployer")!;
   const borrower = () => simnet.getAccounts().get("wallet_1")!;
   const liquidator = () => simnet.getAccounts().get("wallet_2")!;
@@ -197,3 +197,4 @@ describe("bitflow-vault-core-v2 liquidation debt basis", () => {
     });
   });
 });
+

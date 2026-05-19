@@ -1,9 +1,9 @@
 import { Cl } from "@stacks/transactions";
 import { describe, expect, it } from "vitest";
 
-const CONTRACT = "bitflow-staking-pool";
+const CONTRACT = "bitflow-staking-pool-v3";
 
-describe("bitflow-staking-pool dashboard snapshot tests", () => {
+describe("bitflow-staking-pool-v3 dashboard snapshot tests", () => {
   const getAccounts = () => simnet.getAccounts();
   const deployer = () => getAccounts().get("deployer")!;
   const wallet1 = () => getAccounts().get("wallet_1")!;
@@ -67,3 +67,4 @@ describe("bitflow-staking-pool dashboard snapshot tests", () => {
     expect(result).toHaveTupleProperty("total-stake-volume", Cl.uint(3_000_000));
   });
 });
+

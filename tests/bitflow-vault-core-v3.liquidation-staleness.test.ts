@@ -1,7 +1,7 @@
 import { Cl } from "@stacks/transactions";
 import { describe, expect, it } from "vitest";
 
-const V2 = "bitflow-vault-core-v2";
+const V2 = "bitflow-vault-core-v3";
 
 describe("v2 liquidation with stale price", () => {
   const accounts = () => simnet.getAccounts();
@@ -54,3 +54,4 @@ describe("v2 liquidation with stale price", () => {
     }));
   });
 });
+

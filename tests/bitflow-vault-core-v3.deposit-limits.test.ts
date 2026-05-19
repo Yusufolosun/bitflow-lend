@@ -1,14 +1,14 @@
 import { Cl } from "@stacks/transactions";
 import { describe, expect, it } from "vitest";
 
-const CONTRACT = "bitflow-vault-core-v2";
+const CONTRACT = "bitflow-vault-core-v3";
 const DEPOSIT_LIMIT = 10_000_000_000_000;
 
 /**
  * Verifies v2 deposit-limit enforcement: per-user caps, zero-amount
  * guard, and interaction with withdraw/deposit sequences.
  */
-describe("bitflow-vault-core-v2 deposit limit enforcement", () => {
+describe("bitflow-vault-core-v3 deposit limit enforcement", () => {
   const deployer = () => simnet.getAccounts().get("deployer")!;
   const wallet1 = () => simnet.getAccounts().get("wallet_1")!;
   const wallet2 = () => simnet.getAccounts().get("wallet_2")!;
@@ -150,3 +150,4 @@ describe("bitflow-vault-core-v2 deposit limit enforcement", () => {
     expect(result).toBeUint(8_000);
   });
 });
+

@@ -1,7 +1,7 @@
 import { Cl } from "@stacks/transactions";
 import { describe, expect, it } from "vitest";
 
-const CONTRACT = "bitflow-oracle-registry";
+const CONTRACT = "bitflow-oracle-registry-v3";
 
 describe("oracle deviation rejection returns error", () => {
   const accounts = () => simnet.getAccounts();
@@ -69,3 +69,4 @@ describe("oracle deviation rejection returns error", () => {
     expect(result.result).toEqual(Cl.error(Cl.uint(305)));
   });
 });
+

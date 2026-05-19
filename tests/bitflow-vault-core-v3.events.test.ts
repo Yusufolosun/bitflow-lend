@@ -1,13 +1,13 @@
 import { Cl } from "@stacks/transactions";
 import { describe, expect, it } from "vitest";
 
-const CONTRACT = "bitflow-vault-core-v2";
+const CONTRACT = "bitflow-vault-core-v3";
 
 /**
  * Verifies that all public functions emit the correct print events
  * with expected field names and values. Ensures indexer compatibility.
  */
-describe("bitflow-vault-core-v2 event emission", () => {
+describe("bitflow-vault-core-v3 event emission", () => {
   const deployer = () => simnet.getAccounts().get("deployer")!;
   const wallet1 = () => simnet.getAccounts().get("wallet_1")!;
   const wallet2 = () => simnet.getAccounts().get("wallet_2")!;
@@ -153,3 +153,4 @@ describe("bitflow-vault-core-v2 event emission", () => {
     });
   });
 });
+

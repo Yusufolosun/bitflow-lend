@@ -1,7 +1,7 @@
 import { Cl } from "@stacks/transactions";
 import { describe, expect, it } from "vitest";
 
-const CONTRACT = "bitflow-staking-pool";
+const CONTRACT = "bitflow-staking-pool-v3";
 
 describe("staking earned underflow guard", () => {
   const accounts = () => simnet.getAccounts();
@@ -74,3 +74,4 @@ describe("staking earned underflow guard", () => {
     expect(Number(value)).toBeGreaterThan(0);
   });
 });
+

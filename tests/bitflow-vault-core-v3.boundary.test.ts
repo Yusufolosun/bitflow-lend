@@ -1,10 +1,10 @@
 import { Cl } from "@stacks/transactions";
 import { describe, expect, it } from "vitest";
 
-const CONTRACT = "bitflow-vault-core-v2";
+const CONTRACT = "bitflow-vault-core-v3";
 const DEPOSIT_LIMIT = 10_000_000_000_000;
 
-describe("bitflow-vault-core-v2 boundary tests", () => {
+describe("bitflow-vault-core-v3 boundary tests", () => {
   const getAccounts = () => simnet.getAccounts();
   const deployer = () => getAccounts().get("deployer")!;
   const wallet1 = () => getAccounts().get("wallet_1")!;
@@ -405,3 +405,4 @@ describe("bitflow-vault-core-v2 boundary tests", () => {
     });
   });
 });
+

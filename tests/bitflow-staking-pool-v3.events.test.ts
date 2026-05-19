@@ -1,13 +1,13 @@
 import { Cl } from "@stacks/transactions";
 import { describe, expect, it } from "vitest";
 
-const CONTRACT = "bitflow-staking-pool";
+const CONTRACT = "bitflow-staking-pool-v3";
 
 /**
  * Verifies staking pool user functions emit structured events
  * with block-height for indexer reconstruction.
  */
-describe("bitflow-staking-pool event emission", () => {
+describe("bitflow-staking-pool-v3 event emission", () => {
   const deployer = () => simnet.getAccounts().get("deployer")!;
   const wallet1 = () => simnet.getAccounts().get("wallet_1")!;
 
@@ -81,3 +81,4 @@ describe("bitflow-staking-pool event emission", () => {
     });
   });
 });
+

@@ -1,7 +1,7 @@
 import { Cl } from "@stacks/transactions";
 import { describe, expect, it } from "vitest";
 
-const CONTRACT = "bitflow-vault-core-v2";
+const CONTRACT = "bitflow-vault-core-v3";
 
 describe("v2 borrow with zero/unset price", () => {
   const accounts = () => simnet.getAccounts();
@@ -42,3 +42,4 @@ describe("v2 borrow with zero/unset price", () => {
     expect(result).toBeErr(Cl.uint(117));
   });
 });
+

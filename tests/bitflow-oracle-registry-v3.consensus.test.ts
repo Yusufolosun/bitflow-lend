@@ -1,13 +1,13 @@
 import { Cl } from "@stacks/transactions";
 import { describe, expect, it } from "vitest";
 
-const CONTRACT = "bitflow-oracle-registry";
+const CONTRACT = "bitflow-oracle-registry-v3";
 
 /**
  * Tests multi-reporter interactions: consensus price updates,
  * deviation rejection across reporters, and submission ordering.
  */
-describe("bitflow-oracle-registry multi-reporter consensus", () => {
+describe("bitflow-oracle-registry-v3 multi-reporter consensus", () => {
   const deployer = () => simnet.getAccounts().get("deployer")!;
   const reporter1 = () => simnet.getAccounts().get("wallet_1")!;
   const reporter2 = () => simnet.getAccounts().get("wallet_2")!;
@@ -141,3 +141,4 @@ describe("bitflow-oracle-registry multi-reporter consensus", () => {
     expect(result).toHaveTupleProperty("total-rejections", Cl.uint(0));
   });
 });
+

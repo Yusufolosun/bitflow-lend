@@ -1,7 +1,7 @@
 import { Cl } from "@stacks/transactions";
 import { describe, expect, it } from "vitest";
 
-const CONTRACT = "bitflow-staking-pool";
+const CONTRACT = "bitflow-staking-pool-v3";
 
 describe("staking pool share calculation", () => {
   const accounts = () => simnet.getAccounts();
@@ -42,3 +42,4 @@ describe("staking pool share calculation", () => {
     expect(result).toBeUint(0);
   });
 });
+

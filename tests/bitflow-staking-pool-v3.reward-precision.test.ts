@@ -1,7 +1,7 @@
 import { Cl } from "@stacks/transactions";
 import { describe, expect, it } from "vitest";
 
-const CONTRACT = "bitflow-staking-pool";
+const CONTRACT = "bitflow-staking-pool-v3";
 
 describe("staking reward precision with large pools", () => {
   const accounts = () => simnet.getAccounts();
@@ -52,3 +52,4 @@ describe("staking reward precision with large pools", () => {
     expect(reward).toBe(10000);
   });
 });
+
