@@ -66,6 +66,19 @@ describe("bitflow-oracle-registry admin guard tests", () => {
       );
       expect(result).toBeErr(Cl.uint(301)); // ERR-OWNER-ONLY
     });
+
+    it("emits admin-action event on successful change", () => {
+      setup();
+      const { events } = simnet.callPublicFn(
+        CONTRACT, "set-min-reporters", [Cl.uint(1)], deployer()
+      );
+      const prints = events.filter((e: any) => e.event === "print_event");
+      const adminEvent = prints.find((p: any) => {
+        const val = p.data?.value?.value;
+        return val?.["function-name"]?.value === "set-min-reporters";
+      });
+      expect(adminEvent).toBeDefined();
+    });
   });
 
   // ── remove-reporter guards ──────────────────────────────────────
