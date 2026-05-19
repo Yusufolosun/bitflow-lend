@@ -3,6 +3,7 @@ import { Shield, AlertCircle, CheckCircle, Clock, ExternalLink } from 'lucide-re
 import { UserLoan } from '../types/vault';
 import { formatSTX, formatTimestamp } from '../utils/formatters';
 import { getExplorerUrl } from '../config/contracts';
+import { POSITIONS_COPY } from '../constants/messages';
 
 interface PositionsListProps {
   positions: UserLoan[];
@@ -37,8 +38,8 @@ export const PositionsList: React.FC<PositionsListProps> = ({ positions, isLoadi
     return (
       <div className="card-elevated text-center py-12 bg-gray-50/50 border-dashed border-2 border-gray-200">
         <Clock className="mx-auto text-gray-400 mb-4" size={48} />
-        <p className="text-gray-600 font-medium">No Positions Found</p>
-        <p className="text-sm text-gray-500">Your borrowing history will appear here.</p>
+        <p className="text-gray-600 font-medium">{POSITIONS_COPY.emptyTitle}</p>
+        <p className="text-sm text-gray-500">{POSITIONS_COPY.emptyMessage}</p>
       </div>
     );
   }
@@ -75,22 +76,22 @@ export const PositionsList: React.FC<PositionsListProps> = ({ positions, isLoadi
                     {/* Status Badges */}
                     {isActive && (
                       <span id="badge-active" className="bg-emerald-100 text-emerald-700 px-2.5 py-0.5 rounded-full text-xs font-bold border border-emerald-200">
-                        Active
+                        {POSITIONS_COPY.statusActive}
                       </span>
                     )}
                     {isLiquidated && (
                       <span id="badge-liquidated" className="bg-red-100 text-red-700 px-2.5 py-0.5 rounded-full text-xs font-bold border border-red-200">
-                        Liquidated
+                        {POSITIONS_COPY.statusLiquidated}
                       </span>
                     )}
                     {isRepaid && (
                       <span id="badge-repaid" className="bg-gray-200 text-gray-700 px-2.5 py-0.5 rounded-full text-xs font-bold border border-gray-300">
-                        Closed
+                        {POSITIONS_COPY.statusClosed}
                       </span>
                     )}
                   </div>
                   <div className="text-xs text-gray-500 flex items-center gap-2">
-                    <span>Opened {formatTimestamp(position.startTimestamp)}</span>
+                    <span>{POSITIONS_COPY.openedLabel(formatTimestamp(position.startTimestamp))}</span>
                     <span>•</span>
                     <span>{position.interestRatePercent}% APR</span>
                   </div>
@@ -100,13 +101,13 @@ export const PositionsList: React.FC<PositionsListProps> = ({ positions, isLoadi
               {/* Middle: Details Grid */}
               <div className="grid grid-cols-2 gap-x-8 gap-y-1">
                 <div>
-                  <div className="text-[10px] uppercase tracking-wider font-bold text-gray-400">Collateral</div>
+                  <div className="text-[10px] uppercase tracking-wider font-bold text-gray-400">{POSITIONS_COPY.collateralLabel}</div>
                   <div className="text-sm font-semibold text-gray-700">
                     {formatSTX(position.collateralAmountSTX)} STX
                   </div>
                 </div>
                 <div>
-                  <div className="text-[10px] uppercase tracking-wider font-bold text-gray-400">Due Block</div>
+                  <div className="text-[10px] uppercase tracking-wider font-bold text-gray-400">{POSITIONS_COPY.dueBlockLabel}</div>
                   <div className="text-sm font-semibold text-gray-700">
                     #{position.termEnd.toLocaleString()}
                   </div>
@@ -120,7 +121,7 @@ export const PositionsList: React.FC<PositionsListProps> = ({ positions, isLoadi
                   target="_blank"
                   rel="noopener noreferrer"
                   className="p-2 text-gray-400 hover:text-accent-600 hover:bg-accent-50 rounded-lg transition-all"
-                  title="View on Explorer"
+                  title={POSITIONS_COPY.viewOnExplorer}
                 >
                   <ExternalLink size={18} />
                 </a>
