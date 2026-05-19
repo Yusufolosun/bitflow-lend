@@ -386,3 +386,4 @@ export const BorrowCard: React.FC = () => {
 };
 
 export default BorrowCard;
+

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-const V2 = "bitflow-vault-core-v2";
+const V2 = "bitflow-vault-core-v3";
 
 describe("contract version consistency", () => {
   const accounts = () => simnet.getAccounts();
@@ -21,15 +21,16 @@ describe("contract version consistency", () => {
 
   it("oracle registry reports version 1.0.0", () => {
     const { result } = simnet.callReadOnlyFn(
-      "bitflow-oracle-registry", "get-contract-version", [], deployer()
+      "bitflow-oracle-registry-v3", "get-contract-version", [], deployer()
     );
     expect(result).toBeAscii("1.0.0");
   });
 
   it("staking pool reports version 1.0.0", () => {
     const { result } = simnet.callReadOnlyFn(
-      "bitflow-staking-pool", "get-contract-version", [], deployer()
+      "bitflow-staking-pool-v3", "get-contract-version", [], deployer()
     );
     expect(result).toBeAscii("1.0.0");
   });
 });
+

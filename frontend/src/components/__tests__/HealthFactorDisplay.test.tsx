@@ -82,3 +82,4 @@ describe('HealthFactorDisplay', () => {
     expect(screen.getByText('50%')).toBeInTheDocument();
   });
 });
+

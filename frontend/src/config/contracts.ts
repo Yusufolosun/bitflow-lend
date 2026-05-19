@@ -34,44 +34,44 @@ export const getNetwork = () => NETWORK_CONFIG[ACTIVE_NETWORK];
 
 // Contract Details
 export const VAULT_CONTRACT = {
-  name: 'bitflow-vault-core-v2',
+  name: 'bitflow-vault-core-v3',
 
   // Testnet deployment address (UPDATED: February 10, 2026)
   testnet: {
     address: 'ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0',
-    contractName: 'bitflow-vault-core-v2',
+    contractName: 'bitflow-vault-core-v3',
   },
 
   // Mainnet deployment address (DEPLOYED: February 10, 2026)
   mainnet: {
     address: 'SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193',
-    contractName: 'bitflow-vault-core-v2',
+    contractName: 'bitflow-vault-core-v3',
   },
 };
 
 // Staking Pool Contract Details
 export const STAKING_CONTRACT = {
-  name: 'bitflow-staking-pool',
+  name: 'bitflow-staking-pool-v3',
   testnet: {
     address: VAULT_CONTRACT.testnet.address,
-    contractName: 'bitflow-staking-pool',
+    contractName: 'bitflow-staking-pool-v3',
   },
   mainnet: {
     address: VAULT_CONTRACT.mainnet.address,
-    contractName: 'bitflow-staking-pool',
+    contractName: 'bitflow-staking-pool-v3',
   },
 };
 
 // Oracle Registry Contract Details
 export const ORACLE_CONTRACT = {
-  name: 'bitflow-oracle-registry',
+  name: 'bitflow-oracle-registry-v3',
   testnet: {
     address: VAULT_CONTRACT.testnet.address,
-    contractName: 'bitflow-oracle-registry',
+    contractName: 'bitflow-oracle-registry-v3',
   },
   mainnet: {
     address: VAULT_CONTRACT.mainnet.address,
-    contractName: 'bitflow-oracle-registry',
+    contractName: 'bitflow-oracle-registry-v3',
   },
 };
 
@@ -90,7 +90,7 @@ export const CONTRACT_VERSIONS: ContractVersion[] = [
       testnet: VAULT_CONTRACT.testnet.address,
       mainnet: VAULT_CONTRACT.mainnet.address,
     },
-    contractName: 'bitflow-vault-core-v2',
+    contractName: 'bitflow-vault-core-v3',
   },
 ];
 
@@ -122,9 +122,9 @@ export const getContractId = () => {
 };
 
 // Protocol Constants — canonical source, matches the Clarity contract definitions:
-//   MIN-COLLATERAL-RATIO  u150  (contracts/bitflow-vault-core-v2.clar)
-//   LIQUIDATION-THRESHOLD u110  (contracts/bitflow-vault-core-v2.clar)
-//   LATE-PENALTY-RATE     u500  (contracts/bitflow-vault-core-v2.clar) = 5% penalty
+//   MIN-COLLATERAL-RATIO  u150  (contracts/bitflow-vault-core-v3.clar)
+//   LIQUIDATION-THRESHOLD u110  (contracts/bitflow-vault-core-v3.clar)
+//   LATE-PENALTY-RATE     u500  (contracts/bitflow-vault-core-v3.clar) = 5% penalty
 export const PROTOCOL_CONSTANTS = {
   MIN_COLLATERAL_RATIO: 150, // 150% — minimum collateral-to-loan ratio
   LIQUIDATION_THRESHOLD: 110, // 110% — positions below this are liquidatable
@@ -164,3 +164,4 @@ export const getExplorerUrl = (txId?: string) => {
     ? `${baseUrl}/txid/${txId}?chain=${ACTIVE_NETWORK}` 
     : `${baseUrl}?chain=${ACTIVE_NETWORK}`;
 };
+

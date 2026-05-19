@@ -78,3 +78,4 @@ export const LoadingStats: React.FC = () => {
 };
 
 export default LoadingCard;
+

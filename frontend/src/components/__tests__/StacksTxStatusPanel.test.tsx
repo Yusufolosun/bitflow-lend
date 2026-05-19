@@ -118,3 +118,4 @@ describe('StacksTxStatusPanel', () => {
     expect(screen.getByText(/Microblock anchor time/i)).toBeInTheDocument();
   });
 });
+

@@ -85,3 +85,4 @@ describe('ErrorState Component', () => {
     expect(container.querySelector('.custom-class')).toBeInTheDocument();
   });
 });
+

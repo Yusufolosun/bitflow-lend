@@ -702,3 +702,4 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
 };
 
 export default useVault;
+

@@ -132,3 +132,4 @@ export const HealthFactorDisplay: React.FC<HealthFactorDisplayProps> = React.mem
 });
 
 HealthFactorDisplay.displayName = 'HealthFactorDisplay';
+

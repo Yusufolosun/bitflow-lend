@@ -64,3 +64,4 @@ describe('LoadingStats Component', () => {
     expect(srTexts.length).toBe(4);
   });
 });
+

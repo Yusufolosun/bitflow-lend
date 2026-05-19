@@ -253,3 +253,4 @@ describe('WalletConnect Component', () => {
     });
   });
 });
+

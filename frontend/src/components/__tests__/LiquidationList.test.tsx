@@ -75,3 +75,4 @@ describe('LiquidationList Component', () => {
     expect(screen.getByText(/0 positions available/)).toBeInTheDocument();
   });
 });
+

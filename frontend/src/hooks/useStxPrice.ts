@@ -86,3 +86,4 @@ export function useStxPrice(refreshInterval = DEFAULT_INTERVAL) {
 }
 
 export default useStxPrice;
+

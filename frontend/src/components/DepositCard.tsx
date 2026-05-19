@@ -245,3 +245,4 @@ export const DepositCard: React.FC = () => {
 };
 
 export default DepositCard;
+

@@ -263,3 +263,4 @@ export function formatHealthFactor(healthFactor: number, decimals: number = 1): 
 export function formatCollateralRatio(collateralRatio: number, decimals: number = 1): string {
   return formatPercentage(collateralRatio * 100, decimals);
 }
+

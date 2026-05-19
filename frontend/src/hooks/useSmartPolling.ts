@@ -52,3 +52,4 @@ export function useSmartPolling(
 }
 
 export default useSmartPolling;
+

@@ -40,3 +40,4 @@ describe('NetworkIndicator Component (testnet)', () => {
     expect(screen.getByRole('status')).toBeInTheDocument();
   });
 });
+

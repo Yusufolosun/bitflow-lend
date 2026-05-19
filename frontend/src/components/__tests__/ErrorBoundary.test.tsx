@@ -66,3 +66,4 @@ describe('ErrorBoundary', () => {
     expect(screen.getByRole('alert')).toBeDefined();
   });
 });
+

@@ -261,3 +261,4 @@ export const SUCCESS_MESSAGES = {
   WALLET_CONNECTED: 'Stacks wallet connected.',
   WALLET_DISCONNECTED: 'Stacks wallet disconnected.',
 } as const;
+
