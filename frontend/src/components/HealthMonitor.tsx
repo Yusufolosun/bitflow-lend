@@ -10,6 +10,7 @@ import { PROTOCOL_CONSTANTS } from '../config/contracts';
 import { getHealthStatus } from '../utils/calculations';
 import { UserDeposit, UserLoan } from '../types/vault';
 import { HealthFactorDisplay } from './HealthFactorDisplay';
+import { HEALTH_MONITOR_COPY, ORACLE_WARNING_COPY } from '../constants/messages';
 
 interface HealthFactorData {
   healthFactorPercent: number;
@@ -79,11 +80,10 @@ export const HealthMonitor: React.FC = () => {
       <AlertTriangle className="text-amber-600 flex-shrink-0 mt-0.5" size={20} />
       <div className="flex-1">
         <h4 className="text-sm font-semibold text-amber-900 mb-1">
-          Oracle Price Sanity Warning
+          {ORACLE_WARNING_COPY.title}
         </h4>
         <p className="text-xs text-amber-800">
-          The oracle price is diverging from Bitflow&apos;s live STX/USDA quote by{' '}
-          {(oracleSanity.deviation * 100).toFixed(1)}%. Verify the price before borrowing or repaying.
+          {ORACLE_WARNING_COPY.healthMessage(`${(oracleSanity.deviation * 100).toFixed(1)}%`)}
         </p>
       </div>
     </div>
@@ -98,8 +98,8 @@ export const HealthMonitor: React.FC = () => {
             <CheckCircle className="text-emerald-600" size={22} aria-hidden="true" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-gray-900 tracking-tight">Health Monitor</h3>
-            <p className="text-sm text-gray-500">Your position is healthy</p>
+            <h3 className="text-lg font-bold text-gray-900 tracking-tight">{HEALTH_MONITOR_COPY.headerTitle}</h3>
+            <p className="text-sm text-gray-500">{HEALTH_MONITOR_COPY.headerSubtitleHealthy}</p>
           </div>
         </div>
 
@@ -107,20 +107,20 @@ export const HealthMonitor: React.FC = () => {
 
         <div className="bg-emerald-50/80 rounded-xl p-6 text-center border border-emerald-100">
           <CheckCircle className="mx-auto text-emerald-600 mb-3" size={48} />
-          <p className="text-emerald-700 mb-1 font-medium">No Active Position</p>
+          <p className="text-emerald-700 mb-1 font-medium">{HEALTH_MONITOR_COPY.noActiveTitle}</p>
           <p className="text-sm text-gray-600">
-            You don&apos;t have any active loans. Your collateral is safe.
+            {HEALTH_MONITOR_COPY.noActiveMessage}
           </p>
         </div>
 
         {userDeposit && userDeposit.amountSTX > 0 && (
           <div className="mt-4 bg-gray-50/80 rounded-xl p-4 border border-gray-100">
-            <div className="text-xs text-gray-500 mb-1">Total Deposited</div>
+            <div className="text-xs text-gray-500 mb-1">{HEALTH_MONITOR_COPY.totalDepositedLabel}</div>
             <div className="text-2xl font-bold text-gray-900">
               {formatSTX(userDeposit.amountSTX)} STX
             </div>
             <div className="text-xs text-gray-500 mt-1">
-              Available for borrowing
+              {HEALTH_MONITOR_COPY.availableForBorrowing}
             </div>
           </div>
         )}
@@ -142,8 +142,8 @@ export const HealthMonitor: React.FC = () => {
           }`} size={22} aria-hidden="true" />
         </div>
         <div>
-          <h3 className="text-lg font-bold text-gray-900 tracking-tight">Health Monitor</h3>
-          <p className="text-sm text-gray-500">Track your position health</p>
+          <h3 className="text-lg font-bold text-gray-900 tracking-tight">{HEALTH_MONITOR_COPY.headerTitle}</h3>
+          <p className="text-sm text-gray-500">{HEALTH_MONITOR_COPY.headerSubtitleActive}</p>
         </div>
       </div>
 
@@ -159,7 +159,7 @@ export const HealthMonitor: React.FC = () => {
       {collateralRatio && (
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
-            <span className="text-gray-600">Collateralization Ratio</span>
+            <span className="text-gray-600">{HEALTH_MONITOR_COPY.collateralRatioLabel}</span>
             <span className="font-semibold">{collateralRatio.toFixed(1)}%</span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden" role="progressbar" aria-valuenow={Math.round(collateralRatio)} aria-valuemin={0} aria-valuemax={200} aria-label="Collateralization ratio">
@@ -172,35 +172,35 @@ export const HealthMonitor: React.FC = () => {
             ></div>
           </div>
           <div className="flex justify-between text-xs text-gray-500">
-            <span>Liquidation at {PROTOCOL_CONSTANTS.LIQUIDATION_THRESHOLD}%</span>
-            <span>Safe at {PROTOCOL_CONSTANTS.MIN_COLLATERAL_RATIO}%+</span>
+            <span>{HEALTH_MONITOR_COPY.liquidationAt(PROTOCOL_CONSTANTS.LIQUIDATION_THRESHOLD)}</span>
+            <span>{HEALTH_MONITOR_COPY.safeAt(PROTOCOL_CONSTANTS.MIN_COLLATERAL_RATIO)}</span>
           </div>
         </div>
       )}
 
       {/* Position Details */}
       <div className="bg-gray-50/80 rounded-xl p-4 space-y-3 border border-gray-100">
-        <h4 className="font-semibold text-gray-900 text-sm mb-2">Position Details</h4>
+        <h4 className="font-semibold text-gray-900 text-sm mb-2">{HEALTH_MONITOR_COPY.positionDetailsTitle}</h4>
         
         <div className="flex justify-between text-sm">
-          <span className="text-gray-600">Collateral:</span>
+          <span className="text-gray-600">{HEALTH_MONITOR_COPY.collateralLabel}</span>
           <span className="font-semibold">{formatSTX(activeLoan.collateralAmountSTX)} STX</span>
         </div>
 
         <div className="flex justify-between text-sm">
-          <span className="text-gray-600">Borrowed:</span>
+          <span className="text-gray-600">{HEALTH_MONITOR_COPY.borrowedLabel}</span>
           <span className="font-semibold">{formatSTX(activeLoan.amountSTX)} STX</span>
         </div>
 
         {healthFactor && (
           <>
             <div className="flex justify-between text-sm">
-              <span className="text-gray-600">Collateral Value:</span>
+              <span className="text-gray-600">{HEALTH_MONITOR_COPY.collateralValueLabel}</span>
               <span className="font-semibold">${healthFactor.collateralValueUSD.toLocaleString()}</span>
             </div>
 
             <div className="flex justify-between text-sm">
-              <span className="text-gray-600">Debt Value:</span>
+              <span className="text-gray-600">{HEALTH_MONITOR_COPY.debtValueLabel}</span>
               <span className="font-semibold">${healthFactor.debtValueUSD.toLocaleString()}</span>
             </div>
           </>
@@ -208,7 +208,7 @@ export const HealthMonitor: React.FC = () => {
 
         {distanceToLiquidation !== null && (
           <div className="flex justify-between text-sm">
-            <span className="text-gray-600">Distance to Liquidation:</span>
+            <span className="text-gray-600">{HEALTH_MONITOR_COPY.distanceToLiquidationLabel}</span>
             <span className={`font-semibold ${
               distanceToLiquidation > 40 ? 'text-green-600' :
               distanceToLiquidation > 0 ? 'text-yellow-600' : 'text-red-600'
@@ -225,11 +225,10 @@ export const HealthMonitor: React.FC = () => {
           <AlertTriangle className="text-yellow-600 flex-shrink-0 mt-0.5" size={20} />
           <div className="flex-1">
             <h4 className="text-sm font-semibold text-yellow-900 mb-1">
-              Liquidation Risk Warning
+              {HEALTH_MONITOR_COPY.liquidationRiskTitle}
             </h4>
             <p className="text-xs text-yellow-800">
-              Your position is approaching the liquidation threshold. Consider adding more collateral
-              or repaying part of your loan to improve your health factor.
+              {HEALTH_MONITOR_COPY.liquidationRiskMessage}
             </p>
           </div>
         </div>
@@ -240,14 +239,13 @@ export const HealthMonitor: React.FC = () => {
           <TrendingDown className="text-red-600 flex-shrink-0 mt-0.5" size={20} />
           <div className="flex-1">
             <h4 className="text-sm font-semibold text-red-900 mb-1">
-              Critical Liquidation Risk!
+              {HEALTH_MONITOR_COPY.criticalRiskTitle}
             </h4>
             <p className="text-xs text-red-800 mb-2">
-              Your position is in critical danger of liquidation. You may lose your collateral
-              plus a {PROTOCOL_CONSTANTS.LIQUIDATION_BONUS}% liquidation penalty.
+              {HEALTH_MONITOR_COPY.criticalRiskMessage(PROTOCOL_CONSTANTS.LIQUIDATION_BONUS)}
             </p>
             <p className="text-xs text-red-900 font-medium">
-              Action Required: Add collateral or repay your loan immediately!
+              {HEALTH_MONITOR_COPY.criticalRiskAction}
             </p>
           </div>
         </div>
@@ -255,35 +253,31 @@ export const HealthMonitor: React.FC = () => {
 
       {/* Liquidation Info */}
       <div className="bg-accent-50 rounded-lg p-4">
-        <h4 className="text-sm font-semibold text-gray-900 mb-2">Liquidation Protection</h4>
+        <h4 className="text-sm font-semibold text-gray-900 mb-2">{HEALTH_MONITOR_COPY.protectionTitle}</h4>
         <div className="text-xs text-gray-700 space-y-1">
-          <p>• Maintain collateral ratio above {PROTOCOL_CONSTANTS.LIQUIDATION_THRESHOLD}%</p>
-          <p>• Add more collateral to improve health factor</p>
-          <p>• Repay loan to reduce debt and increase safety</p>
-          <p>• Monitor price fluctuations that may affect your position</p>
+          {HEALTH_MONITOR_COPY.protectionItems.map((item) => (
+            <p key={item}>{item}</p>
+          ))}
         </div>
       </div>
 
       {/* Recommendations */}
       {healthColor !== 'green' && collateralRatio && (
         <div className="bg-purple-50 rounded-lg p-4">
-          <h4 className="text-sm font-semibold text-gray-900 mb-2">Recommended Actions</h4>
+          <h4 className="text-sm font-semibold text-gray-900 mb-2">{HEALTH_MONITOR_COPY.recommendedTitle}</h4>
           <div className="space-y-2">
             {collateralRatio < PROTOCOL_CONSTANTS.MIN_COLLATERAL_RATIO && (
               <div className="text-sm text-purple-900">
-                <span className="font-medium">Add collateral:</span> Deposit{' '}
-                <span className="font-semibold">
-                  {formatSTX(
+                <span className="font-medium">
+                  {HEALTH_MONITOR_COPY.recommendedAddCollateral(formatSTX(
                     (activeLoan.amountSTX * (PROTOCOL_CONSTANTS.MIN_COLLATERAL_RATIO / 100)) -
                     activeLoan.collateralAmountSTX
-                  )} STX
+                  ))}
                 </span>
-                {' '}to reach safe levels
               </div>
             )}
             <div className="text-sm text-purple-900">
-              <span className="font-medium">Or repay:</span> Pay back your loan to release collateral
-              and eliminate risk
+              <span className="font-medium">{HEALTH_MONITOR_COPY.recommendedRepay}</span>
             </div>
           </div>
         </div>
@@ -291,18 +285,20 @@ export const HealthMonitor: React.FC = () => {
 
       {/* Info */}
       <div className="text-xs text-gray-500 space-y-1">
-        <p>• Health factor updates with each on-chain price refresh</p>
+        <p>{HEALTH_MONITOR_COPY.infoHealthUpdates}</p>
         <p>
-          • On-chain STX price: {healthFactor ? `$${healthFactor.stxPriceUSD.toFixed(2)}` : 'N/A'} USD
-        </p>
-        <p>
-          • Market STX price: ${stxPrice.toFixed(2)} USD
-          {priceIsStale && <span className="text-amber-600 ml-1">(stale — using last known price)</span>}
-          {priceUpdated && !priceIsStale && (
-            <span className="ml-1">· updated {priceUpdated.toLocaleTimeString()}</span>
+          {HEALTH_MONITOR_COPY.infoOnChainPrice(
+            healthFactor ? healthFactor.stxPriceUSD.toFixed(2) : 'N/A'
           )}
         </p>
-        <p>• Liquidation occurs automatically below {PROTOCOL_CONSTANTS.LIQUIDATION_THRESHOLD}%</p>
+        <p>
+          {HEALTH_MONITOR_COPY.infoMarketPrice(stxPrice.toFixed(2))}
+          {priceIsStale && <span className="text-amber-600 ml-1">{HEALTH_MONITOR_COPY.staleNotice}</span>}
+          {priceUpdated && !priceIsStale && (
+            <span className="ml-1">{HEALTH_MONITOR_COPY.updatedAt(priceUpdated.toLocaleTimeString())}</span>
+          )}
+        </p>
+        <p>{HEALTH_MONITOR_COPY.liquidationAuto(PROTOCOL_CONSTANTS.LIQUIDATION_THRESHOLD)}</p>
       </div>
     </div>
   );
