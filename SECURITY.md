@@ -76,6 +76,21 @@ BitFlow Lend implements multiple security layers:
 5. **Rate Limiting** - Protection against abuse
 6. **Monitoring** - 24/7 monitoring of contract activity
 
+## On-Chain Transparency
+
+Every state-changing function in the protocol emits structured `print` events containing:
+
+- **Event type** — identifies the action (deposit, withdraw, borrow, repay, liquidation)
+- **Actor** — the principal that triggered the action
+- **Amounts** — all relevant financial values
+- **Block height** — the Stacks block at which the event occurred
+
+All admin-only functions additionally emit an `admin-action` event containing:
+- **Function name** — the privileged function that was called
+- **Caller** — the admin principal
+
+These events provide a complete, tamper-proof audit trail that indexers and subgraphs can consume without re-simulating blocks. See [PRIVILEGED_FUNCTIONS.md](./PRIVILEGED_FUNCTIONS.md) for the full admin function inventory.
+
 ## Incident Response
 
 In the event of a security incident:
