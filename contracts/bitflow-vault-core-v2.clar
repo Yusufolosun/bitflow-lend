@@ -185,6 +185,9 @@
   (/ (* borrow-amount (var-get min-collateral-ratio)) u100)
 )
 
+;; Single source of truth for all debt calculations.
+;; Used by: calculate-health-factor, get-repayment-amount, liquidate.
+;; Any change to the interest model MUST flow through this function.
 (define-read-only (calculate-outstanding-debt (principal uint) (rate uint) (elapsed-blocks uint))
   (let (
     (interest (calculate-interest-precise principal rate elapsed-blocks))
