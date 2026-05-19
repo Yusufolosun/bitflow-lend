@@ -98,7 +98,7 @@ describe("bitflow-vault-core-v2 liquidation security tests", () => {
       liquidate(borrower(), liquidator());
 
       const { result } = getUserLoan(borrower());
-      expect(result).toBeNone();
+      expect((result as any).value.value.status).toBeUint(3); // STATUS-LIQUIDATED
     });
   });
 
@@ -110,7 +110,7 @@ describe("bitflow-vault-core-v2 liquidation security tests", () => {
       liquidate(borrower(), liquidator());
 
       const { result } = liquidate(borrower(), bystander());
-      expect(result).toBeErr(Cl.uint(106)); // ERR-NO-ACTIVE-LOAN
+      expect(result).toBeErr(Cl.uint(107)); // ERR-ALREADY-LIQUIDATED
     });
   });
 
