@@ -150,7 +150,7 @@
 (define-private (calculate-interest-precise (principal uint) (rate uint) (blocks-elapsed uint))
   (let (
     (raw-numerator (* (* principal rate) blocks-elapsed))
-    (denominator (* u100 u52560))
+    (denominator (* u10000 u52560))
   )
     (if (is-eq raw-numerator u0)
       u0
