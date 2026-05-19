@@ -44,6 +44,7 @@
 (define-data-var min-term-days uint u1)
 (define-data-var max-term-days uint u365)       ;; Maximum 1 year loan term
 (define-data-var late-penalty-rate uint u500)   ;; 5% penalty
+(define-data-var liquidation-penalty-bps uint u500) ;; 5% liquidation penalty on outstanding debt
  
  ;; ===== LOAN STATUS CONSTANTS =====
  (define-constant STATUS-ACTIVE u1)
