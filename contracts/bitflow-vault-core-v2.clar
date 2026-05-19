@@ -651,7 +651,7 @@
       (var-set total-outstanding-borrows (safe-add (var-get total-outstanding-borrows) amount))
       (var-set last-activity-block block-height)
 
-      (print { event: "borrow", user: recipient, amount: amount, rate: interest-rate, term-days: term-days, price-snapshot: current-price })
+      (print { event: "borrow", user: recipient, amount: amount, rate: interest-rate, term-days: term-days, price-snapshot: current-price, block: block-height })
       (ok true)
     )
   )
