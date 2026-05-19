@@ -311,7 +311,7 @@
         true
       )
 
-      (print { event: "stake", user: tx-sender, amount: amount, new-balance: new-balance })
+      (print { event: "stake", user: tx-sender, amount: amount, new-balance: new-balance, block: block-height })
       (ok true)
     )
   )
