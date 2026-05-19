@@ -11,6 +11,7 @@ import {
   type BitflowQuoteResult,
   type PreviewRoute,
 } from './collateralPreviewUtils';
+import { COLLATERAL_PREVIEW_COPY } from '../constants/messages';
 
 type PreviewQuoteResult = Omit<BitflowQuoteResult, 'bestRoute'> & {
   bestRoute: PreviewRoute | null;
@@ -59,11 +60,11 @@ export const CollateralPreview: React.FC<CollateralPreviewProps> = ({ stxAmount,
         const estimatedOutput = extractEstimatedOutput(bestRoute);
 
         if (!bestRoute) {
-          throw new Error('No live Bitflow route is available for this amount right now.');
+          throw new Error(COLLATERAL_PREVIEW_COPY.noRouteAvailableError);
         }
 
         if (estimatedOutput === null) {
-          throw new Error('Bitflow returned a route without an output amount.');
+          throw new Error(COLLATERAL_PREVIEW_COPY.missingOutputError);
         }
 
         if (!active) {
@@ -79,7 +80,7 @@ export const CollateralPreview: React.FC<CollateralPreviewProps> = ({ stxAmount,
 
         setQuote(null);
         setStatus('error');
-        setErrorMessage(error instanceof Error && error.message ? error.message : 'Unable to load the live Bitflow preview right now.');
+        setErrorMessage(error instanceof Error && error.message ? error.message : COLLATERAL_PREVIEW_COPY.fallbackError);
       }
     }, DEBOUNCE_MS);
 
@@ -106,8 +107,8 @@ export const CollateralPreview: React.FC<CollateralPreviewProps> = ({ stxAmount,
             <Coins size={18} className="text-[#F15A22]" aria-hidden="true" />
           </div>
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Collateral preview</p>
-            <p className="text-sm text-slate-200">Enter an STX amount to preview its USDA value.</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">{COLLATERAL_PREVIEW_COPY.title}</p>
+            <p className="text-sm text-slate-200">{COLLATERAL_PREVIEW_COPY.enterAmount}</p>
           </div>
         </div>
       </div>
@@ -120,9 +121,9 @@ export const CollateralPreview: React.FC<CollateralPreviewProps> = ({ stxAmount,
         className={`rounded-2xl border border-slate-700 bg-gradient-to-br from-[#1F2A37] via-[#223140] to-[#111827] px-4 py-4 text-white shadow-lg shadow-slate-950/20 ${className}`}
         role="status"
         aria-live="polite"
-        aria-label="Loading collateral preview"
+        aria-label={COLLATERAL_PREVIEW_COPY.loadingAria}
       >
-        <span className="sr-only">Loading Bitflow collateral preview</span>
+        <span className="sr-only">{COLLATERAL_PREVIEW_COPY.loadingSrOnly}</span>
         <div className="animate-pulse space-y-4">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-xl bg-white/10" />
@@ -155,8 +156,8 @@ export const CollateralPreview: React.FC<CollateralPreviewProps> = ({ stxAmount,
           </div>
           <div className="flex-1 space-y-2">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Preview unavailable</p>
-              <p className="mt-1 text-sm font-medium text-white">We could not load the live Bitflow route.</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">{COLLATERAL_PREVIEW_COPY.previewUnavailableTitle}</p>
+              <p className="mt-1 text-sm font-medium text-white">{COLLATERAL_PREVIEW_COPY.previewUnavailableMessage}</p>
             </div>
             <p className="text-sm text-slate-300">{errorMessage}</p>
             <button
@@ -165,7 +166,7 @@ export const CollateralPreview: React.FC<CollateralPreviewProps> = ({ stxAmount,
               className="inline-flex items-center gap-2 rounded-xl border border-[#F15A22]/30 bg-[#F15A22]/10 px-3 py-2 text-sm font-semibold text-[#F15A22] transition-colors hover:bg-[#F15A22]/20"
             >
               <RefreshCw size={14} aria-hidden="true" />
-              Try again
+              {COLLATERAL_PREVIEW_COPY.retry}
             </button>
           </div>
         </div>
@@ -187,23 +188,23 @@ export const CollateralPreview: React.FC<CollateralPreviewProps> = ({ stxAmount,
               <Coins size={18} className="text-[#F15A22]" aria-hidden="true" />
             </div>
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Collateral preview</p>
-              <p className="text-sm text-slate-200">Live route for {formatSTX(normalizedAmount)} STX</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">{COLLATERAL_PREVIEW_COPY.title}</p>
+              <p className="text-sm text-slate-200">{COLLATERAL_PREVIEW_COPY.liveRouteLabel(formatSTX(normalizedAmount))}</p>
             </div>
           </div>
 
           <div className="rounded-full border border-[#F15A22]/25 bg-[#F15A22]/10 px-3 py-1 text-xs font-semibold text-[#F15A22]">
-            Bitflow live
+            {COLLATERAL_PREVIEW_COPY.bitflowLiveBadge}
           </div>
         </div>
 
         <div className="mt-4 rounded-2xl border border-white/10 bg-white/5 p-4">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Estimated USDA</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">{COLLATERAL_PREVIEW_COPY.estimatedUsdaLabel}</p>
               <p className="mt-1 text-3xl font-semibold tracking-tight text-white">{formatUSD(estimatedOutput, outputDecimals)}</p>
             </div>
-            <p className="text-sm text-slate-300">Worth approximately the same as the collateral route below.</p>
+            <p className="text-sm text-slate-300">{COLLATERAL_PREVIEW_COPY.approxWorth}</p>
           </div>
 
           <div className="mt-4 flex flex-wrap items-center gap-2 text-sm text-slate-100">
@@ -212,14 +213,14 @@ export const CollateralPreview: React.FC<CollateralPreviewProps> = ({ stxAmount,
             </span>
             {priceImpact !== null && (
               <span className="rounded-full border border-[#F15A22]/25 bg-[#F15A22]/10 px-3 py-1 font-medium text-[#F15A22]">
-                Price impact {formatPriceImpact(priceImpact)}
+                {COLLATERAL_PREVIEW_COPY.priceImpact(formatPriceImpact(priceImpact))}
               </span>
             )}
           </div>
 
           <div className="mt-4 flex items-center gap-2 text-sm text-slate-300">
             <ArrowRight size={14} className="text-[#F15A22]" aria-hidden="true" />
-            <span>Preview updates after you pause typing for half a second.</span>
+            <span>{COLLATERAL_PREVIEW_COPY.updatesAfterTyping}</span>
           </div>
         </div>
       </div>
@@ -236,8 +237,8 @@ export const CollateralPreview: React.FC<CollateralPreviewProps> = ({ stxAmount,
           <Coins size={18} className="text-[#F15A22]" aria-hidden="true" />
         </div>
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Collateral preview</p>
-          <p className="text-sm text-slate-200">Waiting for a live Bitflow quote.</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">{COLLATERAL_PREVIEW_COPY.title}</p>
+          <p className="text-sm text-slate-200">{COLLATERAL_PREVIEW_COPY.waitingQuote}</p>
         </div>
       </div>
     </div>
