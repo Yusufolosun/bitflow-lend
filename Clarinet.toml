@@ -5,18 +5,18 @@ authors = []
 telemetry = false
 cache_dir = "./.cache"
 
-[contracts.bitflow-vault-core-v2]
-path = "contracts/bitflow-vault-core-v2.clar"
+[contracts.bitflow-vault-core-v3]
+path = "contracts/bitflow-vault-core-v3.clar"
 clarity_version = 2
 epoch = 2.5
 
-[contracts.bitflow-staking-pool]
-path = "contracts/bitflow-staking-pool.clar"
+[contracts.bitflow-staking-pool-v3]
+path = "contracts/bitflow-staking-pool-v3.clar"
 clarity_version = 2
 epoch = 2.5
 
-[contracts.bitflow-oracle-registry]
-path = "contracts/bitflow-oracle-registry.clar"
+[contracts.bitflow-oracle-registry-v3]
+path = "contracts/bitflow-oracle-registry-v3.clar"
 clarity_version = 2
 epoch = 2.5
 
