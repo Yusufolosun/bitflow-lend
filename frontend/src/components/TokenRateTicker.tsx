@@ -6,6 +6,7 @@ import { useSmartPolling } from '../hooks/useSmartPolling';
 import { formatBitflowTokenLabel } from '../utils/bitflowTokens';
 import { formatSTX } from '../utils/formatters';
 import { extractEstimatedOutput, getRouteLabel, type PreviewRoute } from './collateralPreviewUtils';
+import { TOKEN_RATE_COPY } from '../constants/messages';
 
 type QuoteResult = Awaited<ReturnType<BitflowSDK['getQuoteForRoute']>>;
 
@@ -60,18 +61,18 @@ const TokenRateCard: React.FC<TokenRateCardProps> = ({ rate }) => (
     <div className="flex items-center justify-between gap-3">
       <span className="text-sm font-semibold text-white">{rate.name}</span>
       <span className="rounded-full bg-emerald-500/15 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-emerald-300">
-        STX
+        {TOKEN_RATE_COPY.stxBadge}
       </span>
     </div>
 
     <p className="mt-3 text-2xl font-semibold tracking-tight text-white">
-      {rate.rate !== null ? `${formatSTX(rate.rate, 4)} STX` : 'Unavailable'}
+      {rate.rate !== null ? `${formatSTX(rate.rate, 4)} STX` : TOKEN_RATE_COPY.rateUnavailable}
     </p>
 
     <p className="mt-2 text-xs text-slate-300">
       {rate.rate !== null
-        ? `1 ${rate.name} ≈ ${formatSTX(rate.rate, 4)} STX`
-        : rate.error ?? 'Live route unavailable'}
+        ? TOKEN_RATE_COPY.rateApprox(rate.name, formatSTX(rate.rate, 4))
+        : rate.error ?? TOKEN_RATE_COPY.rateUnavailableDetail}
     </p>
 
     <p className="mt-2 truncate text-[11px] leading-relaxed text-slate-400">
@@ -114,7 +115,7 @@ export const TokenRateTicker: React.FC = () => {
           const rate = extractQuoteRate(quoteResult);
 
           if (rate === null) {
-            throw new Error('No live route is available right now.');
+            throw new Error(TOKEN_RATE_COPY.noLiveRoute);
           }
 
           return {
@@ -138,8 +139,8 @@ export const TokenRateTicker: React.FC = () => {
           tokenId: token.tokenId,
           name: formatBitflowTokenLabel(token.name, token.tokenId),
           rate: null,
-          routeLabel: 'Bitflow live route unavailable',
-          error: getErrorMessage(result.reason, 'Unable to load live Bitflow rate.'),
+          routeLabel: TOKEN_RATE_COPY.routeUnavailableLabel,
+          error: getErrorMessage(result.reason, TOKEN_RATE_COPY.errorFallback),
         } satisfies TokenRateState;
       });
 
@@ -172,7 +173,7 @@ export const TokenRateTicker: React.FC = () => {
   const hasRates = rates.length > 0;
 
   return (
-    <section className="mb-8" aria-label="Bitflow live token rates">
+    <section className="mb-8" aria-label={TOKEN_RATE_COPY.sectionAriaLabel}>
       <div className="overflow-hidden rounded-3xl border border-gray-200/70 bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 text-white shadow-elevated">
         <div className="flex flex-col gap-4 px-5 py-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-center gap-3">
@@ -180,15 +181,15 @@ export const TokenRateTicker: React.FC = () => {
               <Activity size={18} aria-hidden="true" />
             </div>
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Live Bitflow ticker</p>
-              <h3 className="text-lg font-semibold tracking-tight text-white">Swap rates against STX</h3>
+              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">{TOKEN_RATE_COPY.headerKicker}</p>
+              <h3 className="text-lg font-semibold tracking-tight text-white">{TOKEN_RATE_COPY.headerTitle}</h3>
             </div>
           </div>
 
           <div className="flex items-center gap-2 text-xs text-slate-300">
             {isRefreshing && <RefreshCw size={13} className="animate-spin" aria-hidden="true" />}
-            <span>{isRefreshing ? 'Refreshing' : 'Live'}</span>
-            {lastUpdated && <span>Updated {lastUpdated.toLocaleTimeString()}</span>}
+            <span>{isRefreshing ? TOKEN_RATE_COPY.refreshing : TOKEN_RATE_COPY.live}</span>
+            {lastUpdated && <span>{TOKEN_RATE_COPY.updatedAt(lastUpdated.toLocaleTimeString())}</span>}
           </div>
         </div>
 
@@ -202,7 +203,7 @@ export const TokenRateTicker: React.FC = () => {
             </div>
           ) : !hasRates ? (
             <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-4 text-sm text-slate-300">
-              Bitflow did not return any STX-adjacent tokens for quoting right now.
+              {TOKEN_RATE_COPY.noTokens}
             </div>
           ) : (
             <div className="flex gap-3 overflow-x-auto pb-1 scrollbar-thin" aria-live="polite">
