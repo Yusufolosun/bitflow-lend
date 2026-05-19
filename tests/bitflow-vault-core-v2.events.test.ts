@@ -28,6 +28,8 @@ describe("bitflow-vault-core-v2 event emission", () => {
       expect(prints.length).toBeGreaterThanOrEqual(1);
       const payload = (prints[0] as any).data.value;
       expect(payload).toHaveTupleProperty("event", Cl.stringAscii("deposit"));
+      expect(payload).toHaveTupleProperty("amount", Cl.uint(5000));
+      expect(Object.keys(payload.value)).toContain("block");
     });
   });
 
@@ -43,6 +45,7 @@ describe("bitflow-vault-core-v2 event emission", () => {
       expect(prints.length).toBeGreaterThanOrEqual(1);
       const payload = (prints[0] as any).data.value;
       expect(payload).toHaveTupleProperty("event", Cl.stringAscii("withdraw"));
+      expect(Object.keys(payload.value)).toContain("block");
     });
   });
 
@@ -58,6 +61,7 @@ describe("bitflow-vault-core-v2 event emission", () => {
       expect(prints.length).toBeGreaterThanOrEqual(1);
       const payload = (prints[0] as any).data.value;
       expect(payload).toHaveTupleProperty("event", Cl.stringAscii("borrow"));
+      expect(Object.keys(payload.value)).toContain("block");
     });
   });
 
@@ -74,6 +78,7 @@ describe("bitflow-vault-core-v2 event emission", () => {
       expect(prints.length).toBeGreaterThanOrEqual(1);
       const payload = (prints[0] as any).data.value;
       expect(payload).toHaveTupleProperty("event", Cl.stringAscii("repay"));
+      expect(Object.keys(payload.value)).toContain("block");
     });
   });
 
@@ -94,6 +99,7 @@ describe("bitflow-vault-core-v2 event emission", () => {
       expect(prints.length).toBeGreaterThanOrEqual(1);
       const payload = (prints[0] as any).data.value;
       expect(payload).toHaveTupleProperty("event", Cl.stringAscii("liquidation"));
+      expect(Object.keys(payload.value)).toContain("block");
     });
   });
 

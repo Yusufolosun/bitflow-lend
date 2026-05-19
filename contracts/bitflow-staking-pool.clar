@@ -270,7 +270,7 @@
         (- (var-get total-stakers) u1)
         u0))
 
-      (print { event: "emergency-unstake", user: recipient, amount: balance })
+      (print { event: "emergency-unstake", user: recipient, amount: balance, block: block-height })
       (ok balance)
     )
   )
@@ -311,7 +311,7 @@
         true
       )
 
-      (print { event: "stake", user: tx-sender, amount: amount, new-balance: new-balance })
+      (print { event: "stake", user: tx-sender, amount: amount, new-balance: new-balance, block: block-height })
       (ok true)
     )
   )
@@ -326,7 +326,7 @@
     )
       (asserts! (> balance u0) ERR-NO-STAKE)
       (map-set staker-cooldown-end tx-sender (+ block-height COOLDOWN-PERIOD))
-      (print { event: "unstake-requested", user: tx-sender, cooldown-end: (+ block-height COOLDOWN-PERIOD) })
+      (print { event: "unstake-requested", user: tx-sender, cooldown-end: (+ block-height COOLDOWN-PERIOD), block: block-height })
       (ok true)
     )
   )
@@ -377,7 +377,7 @@
           true
         )
 
-        (print { event: "unstake", user: recipient, amount: amount, remaining: new-balance })
+        (print { event: "unstake", user: recipient, amount: amount, remaining: new-balance, block: block-height })
         (ok true)
       )
     )
@@ -413,7 +413,7 @@
         (var-set total-rewards-distributed (+ (var-get total-rewards-distributed) reward-amount))
         (map-set staker-last-action recipient block-height)
 
-        (print { event: "rewards-claimed", user: recipient, amount: reward-amount })
+        (print { event: "rewards-claimed", user: recipient, amount: reward-amount, block: block-height })
         (ok reward-amount)
       )
     )

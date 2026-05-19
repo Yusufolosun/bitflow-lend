@@ -44,6 +44,7 @@
 (define-data-var min-term-days uint u1)
 (define-data-var max-term-days uint u365)       ;; Maximum 1 year loan term
 (define-data-var late-penalty-rate uint u500)   ;; 5% penalty
+(define-data-var liquidation-penalty-bps uint u500) ;; 5% liquidation penalty on outstanding debt
  
  ;; ===== LOAN STATUS CONSTANTS =====
  (define-constant STATUS-ACTIVE u1)
@@ -149,7 +150,7 @@
 (define-private (calculate-interest-precise (principal uint) (rate uint) (blocks-elapsed uint))
   (let (
     (raw-numerator (* (* principal rate) blocks-elapsed))
-    (denominator (* u100 u52560))
+    (denominator (* u10000 u52560))
   )
     (if (is-eq raw-numerator u0)
       u0
@@ -184,6 +185,9 @@
   (/ (* borrow-amount (var-get min-collateral-ratio)) u100)
 )
 
+;; Single source of truth for all debt calculations.
+;; Used by: calculate-health-factor, get-repayment-amount, liquidate.
+;; Any change to the interest model MUST flow through this function.
 (define-read-only (calculate-outstanding-debt (principal uint) (rate uint) (elapsed-blocks uint))
   (let (
     (interest (calculate-interest-precise principal rate elapsed-blocks))
@@ -211,8 +215,19 @@
 )
 
 (define-read-only (get-max-borrow-amount (user principal))
-  (if (is-some (map-get? user-loans user))
-    u0
+  (match (map-get? user-loans user)
+    existing-loan (if (is-eq (get status existing-loan) STATUS-ACTIVE)
+      u0
+      (let (
+        (user-deposit (default-to u0 (map-get? user-deposits user)))
+        (max-borrow (/ (* user-deposit u100) (var-get min-collateral-ratio)))
+      )
+        (if (> max-borrow MAX-BORROW-AMOUNT)
+          MAX-BORROW-AMOUNT
+          max-borrow
+        )
+      )
+    )
     (let (
       (user-deposit (default-to u0 (map-get? user-deposits user)))
       (max-borrow (/ (* user-deposit u100) (var-get min-collateral-ratio)))
@@ -509,6 +524,16 @@
     (print { event: "admin-action", function-name: "set-late-penalty-rate", caller: tx-sender })
     (ok true)))
 
+(define-public (set-liquidation-penalty-bps (new-bps uint))
+  (begin
+    (asserts! (is-eq tx-sender contract-owner) ERR-OWNER-ONLY)
+    (asserts! (>= new-bps u10) ERR-INVALID-PARAM)    ;; min 0.1% penalty
+    (asserts! (<= new-bps u2000) ERR-INVALID-PARAM)   ;; max 20% penalty
+    (var-set liquidation-penalty-bps new-bps)
+    (print { event: "set-liquidation-penalty-bps", value: new-bps })
+    (print { event: "admin-action", function-name: "set-liquidation-penalty-bps", caller: tx-sender })
+    (ok true)))
+
 (define-read-only (get-protocol-parameters)
   (ok {
     min-collateral-ratio: (var-get min-collateral-ratio),
@@ -517,7 +542,8 @@
     max-interest-rate: (var-get max-interest-rate),
     min-term-days: (var-get min-term-days),
     max-term-days: (var-get max-term-days),
-    late-penalty-rate: (var-get late-penalty-rate)
+    late-penalty-rate: (var-get late-penalty-rate),
+    liquidation-penalty-bps: (var-get liquidation-penalty-bps)
   }))
 
 ;; ===== USER FUNCTIONS =====
@@ -533,6 +559,7 @@
       (current-deposit (default-to u0 (map-get? user-deposits tx-sender)))
       (new-deposit (safe-add current-deposit amount))
     )
+      ;; Inclusive boundary: deposit exactly at DEPOSIT-LIMIT is accepted
       (asserts! (<= new-deposit DEPOSIT-LIMIT) ERR-DEPOSIT-CAP-EXCEEDED)
       
       ;; Transfer STX from user to contract
@@ -547,7 +574,7 @@
       (var-set total-deposit-volume (safe-add (var-get total-deposit-volume) amount))
       (var-set last-activity-block block-height)
       
-      (print { event: "deposit", user: tx-sender, amount: amount, new-balance: new-deposit })
+      (print { event: "deposit", user: tx-sender, amount: amount, new-balance: new-deposit, block: block-height })
       (ok true)
     )
   )
@@ -564,7 +591,9 @@
     (let (
       (user-balance (default-to u0 (map-get? user-deposits recipient)))
       (locked-collateral (match (map-get? user-loans recipient)
-        loan (calculate-required-collateral (get amount loan))
+        loan (if (is-eq (get status loan) STATUS-ACTIVE)
+          (calculate-required-collateral (get amount loan))
+          u0)
         u0))
       (available-balance (safe-sub user-balance locked-collateral))
     )
@@ -581,7 +610,7 @@
       (var-set total-withdrawals-count (+ (var-get total-withdrawals-count) u1))
       (var-set last-activity-block block-height)
 
-      (print { event: "withdraw", user: recipient, amount: amount, remaining-balance: (safe-sub user-balance amount) })
+      (print { event: "withdraw", user: recipient, amount: amount, remaining-balance: (safe-sub user-balance amount), block: block-height })
       (ok true)
     )
   )
@@ -639,7 +668,7 @@
       (var-set total-outstanding-borrows (safe-add (var-get total-outstanding-borrows) amount))
       (var-set last-activity-block block-height)
 
-      (print { event: "borrow", user: recipient, amount: amount, rate: interest-rate, term-days: term-days, price-snapshot: current-price })
+      (print { event: "borrow", user: recipient, amount: amount, rate: interest-rate, term-days: term-days, price-snapshot: current-price, block: block-height })
       (ok true)
     )
   )
@@ -673,7 +702,7 @@
       (var-set total-repay-volume (safe-add (var-get total-repay-volume) total-repayment))
       (var-set last-activity-block block-height)
       
-      (print { event: "repay", user: tx-sender, principal: loan-amount, interest: interest, penalty: penalty, total: total-repayment })
+      (print { event: "repay", user: tx-sender, principal: loan-amount, interest: interest, penalty: penalty, total: total-repayment, block: block-height })
       (ok { principal: loan-amount, interest: interest, penalty: penalty, total: total-repayment })
     )
   )
@@ -692,8 +721,11 @@
       (loan (unwrap! (map-get? user-loans borrower) ERR-NO-ACTIVE-LOAN))
       (borrower-deposit (default-to u0 (map-get? user-deposits borrower)))
       (loan-amount (get amount loan))
-      (liquidation-bonus (/ (* loan-amount u5) u100))
-      (total-to-pay (safe-add loan-amount liquidation-bonus))
+      (blocks-elapsed (safe-sub block-height (get start-block loan)))
+      (outstanding-debt (calculate-outstanding-debt loan-amount (get interest-rate loan) blocks-elapsed))
+      (accrued-interest (safe-sub outstanding-debt loan-amount))
+      (liquidation-penalty (/ (* outstanding-debt (var-get liquidation-penalty-bps)) u10000))
+      (total-to-pay (safe-add outstanding-debt liquidation-penalty))
     )
       ;; Verify health factor is liquidatable
       (asserts! (is-liquidatable borrower current-price) ERR-NOT-LIQUIDATABLE)
@@ -716,8 +748,8 @@
       (var-set total-liquidation-volume (safe-add (var-get total-liquidation-volume) loan-amount))
       (var-set last-activity-block block-height)
 
-      (print { event: "liquidation", liquidator: liquidator, borrower: borrower, seized: borrower-deposit, paid: total-to-pay, bonus: liquidation-bonus })
-      (ok { seized-collateral: borrower-deposit, paid: total-to-pay, bonus: liquidation-bonus })
+      (print { event: "liquidation", liquidator: liquidator, borrower: borrower, seized: borrower-deposit, paid: total-to-pay, principal: loan-amount, interest: accrued-interest, penalty: liquidation-penalty, block: block-height })
+      (ok { seized-collateral: borrower-deposit, paid: total-to-pay, principal: loan-amount, interest: accrued-interest, penalty: liquidation-penalty })
     )
   )
 )

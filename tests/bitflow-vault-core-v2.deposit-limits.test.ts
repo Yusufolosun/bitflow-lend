@@ -83,6 +83,16 @@ describe("bitflow-vault-core-v2 deposit limit enforcement", () => {
     expect(result).toBeErr(Cl.uint(401));
   });
 
+  // ── Boundary: exactly one unit above cap fails with u401 ──────
+  it("rejects deposit one unit above DEPOSIT-LIMIT with u401", () => {
+    init();
+    simnet.callPublicFn(CONTRACT, "deposit", [Cl.uint(DEPOSIT_LIMIT)], wallet1());
+    const { result } = simnet.callPublicFn(
+      CONTRACT, "deposit", [Cl.uint(1)], wallet1()
+    );
+    expect(result).toBeErr(Cl.uint(401)); // ERR-DEPOSIT-CAP-EXCEEDED
+  });
+
   // ── Per-user cap rejects accumulated deposits over limit ──────
   it("rejects cumulative deposit exceeding DEPOSIT-LIMIT", () => {
     init();

@@ -90,7 +90,7 @@ describe("bitflow-vault-core-v2 repay lifecycle tests", () => {
       repay(wallet1());
 
       const { result } = getUserLoan(wallet1());
-      expect(result).toBeNone();
+      expect((result as any).value.value.status).toBeUint(2);
     });
 
     it("repayment amount is none after repayment", () => {

@@ -47,8 +47,10 @@ describe("v2 liquidation with stale price", () => {
     );
     expect(result).toBeOk(Cl.tuple({
       "seized-collateral": Cl.uint(10000000),
-      "paid": Cl.uint(1050000),
-      "bonus": Cl.uint(50000),
+      "paid": Cl.uint(1050147),
+      "principal": Cl.uint(1000000),
+      "interest": Cl.uint(140),
+      "penalty": Cl.uint(50007),
     }));
   });
 });

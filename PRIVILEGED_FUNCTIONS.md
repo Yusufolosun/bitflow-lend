@@ -48,6 +48,7 @@ Use this file to evaluate governance and key-management risk before using the pr
 | `set-interest-rate-bounds` | Changes allowable borrower-chosen interest range | Force uncompetitive loan terms or distort market pricing behavior |
 | `set-term-limits` | Changes minimum and maximum loan duration | Restrict borrower flexibility or force unfavorable term structures |
 | `set-late-penalty-rate` | Changes penalty on overdue repayments | Increase penalties to extract value from overdue borrowers |
+| `set-liquidation-penalty-bps` | Changes penalty applied on outstanding debt during liquidation (10–2000 bps) | Increase penalty to extract additional value from liquidated borrowers or decrease to reduce liquidation cost |
 | `initialize` | Sets protocol start and core timing state | Delay or strategically time launch to advantage insider activity |
 
 ## Operational trust implications
