@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { Shield, AlertTriangle, XCircle, Activity, CheckCircle } from 'lucide-react';
 import { getHealthStatus } from '../utils/calculations';
+import { HEALTH_FACTOR_COPY } from '../constants/messages';
 
 /**
  * Visual styles for different health statuses
@@ -44,7 +45,7 @@ export const HealthFactorDisplay: React.FC<HealthFactorDisplayProps> = React.mem
           size === 'sm' ? 'h-6 w-20' : size === 'md' ? 'h-12 w-32' : 'h-20 w-48'
         }`}
         data-testid="hf-loading-skeleton"
-        aria-label="Loading health factor"
+        aria-label={HEALTH_FACTOR_COPY.loadingAria}
       />
     );
   }
@@ -62,10 +63,10 @@ export const HealthFactorDisplay: React.FC<HealthFactorDisplayProps> = React.mem
         </div>
         <div className="flex-1">
           <h4 className="text-sm font-bold text-red-900 mb-1 leading-none pt-1">
-            Critical Liquidation Risk!
+            {HEALTH_FACTOR_COPY.criticalTitle}
           </h4>
           <p className="text-xs text-red-800 leading-relaxed font-medium">
-            Health Factor: 0 — Position subject to immediate liquidation. Action required: Add collateral or repay now.
+            {HEALTH_FACTOR_COPY.criticalMessage}
           </p>
         </div>
       </div>
@@ -78,7 +79,7 @@ export const HealthFactorDisplay: React.FC<HealthFactorDisplayProps> = React.mem
   if (isNaN(numericHF)) {
     return (
       <div className="text-xs text-red-500 bg-red-50 p-2 rounded border border-red-100">
-        Invalid Health Factor Value
+        {HEALTH_FACTOR_COPY.invalidValue}
       </div>
     );
   }
@@ -87,6 +88,7 @@ export const HealthFactorDisplay: React.FC<HealthFactorDisplayProps> = React.mem
   const isDecimal = numericHF > 0 && numericHF < 10;
   const normalizedHF = useMemo(() => isDecimal ? numericHF * 100 : numericHF, [numericHF, isDecimal]);
   const status = useMemo(() => getHealthStatus(normalizedHF), [normalizedHF]);
+  const statusLabel = HEALTH_FACTOR_COPY.statusLabels[status];
   
   const StatusIcon = useMemo(() => {
     return status === 'healthy' ? CheckCircle : status === 'warning' ? AlertTriangle : Activity;
@@ -100,7 +102,7 @@ export const HealthFactorDisplay: React.FC<HealthFactorDisplayProps> = React.mem
       data-testid={`hf-display-${status}`}
       role="status"
       aria-live="polite"
-      aria-label={`Health Factor: ${normalizedHF.toFixed(0)} percent, status: ${status}`}
+      aria-label={HEALTH_FACTOR_COPY.ariaLabel(normalizedHF.toFixed(0), statusLabel)}
     >
       <div className="flex items-center gap-3">
         <StatusIcon size={size === 'sm' ? 18 : 22} />
@@ -112,14 +114,14 @@ export const HealthFactorDisplay: React.FC<HealthFactorDisplayProps> = React.mem
               {normalizedHF.toFixed(0)}%
             </span>
             <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${BADGE_COLORS[status]}`}>
-              {status}
+              {statusLabel}
             </span>
           </div>
           {size !== 'sm' && (
             <div className="flex items-center gap-1.5 mt-1.5 opacity-70">
               <div className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />
               <p className="text-[10px] font-bold uppercase tracking-widest">
-                Source: On-chain
+                {HEALTH_FACTOR_COPY.sourceLabel}
               </p>
             </div>
           )}
