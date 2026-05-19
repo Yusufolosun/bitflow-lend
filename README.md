@@ -22,9 +22,9 @@ BitFlow Lend enables users to lend and borrow STX with predictable, fixed intere
 
 ## Trust Model
 
-BitFlow contract code is immutable once deployed, but protocol operations are admin-governed through owner-only functions (for example: price updates, pause switches, and risk-parameter setters).
+BitFlow contract code is immutable once deployed, but protocol operations are admin-governed through owner-only functions (for example: price updates, pause switches, risk-parameter setters, and liquidation penalty configuration).
 
-Admin activity is transparently logged on-chain through `admin-action` print events in every owner-only public function.
+Admin activity is transparently logged on-chain through `admin-action` print events in every owner-only public function. All user-facing state changes (deposits, withdrawals, borrows, repayments, liquidations) emit structured events with block-height for indexer and subgraph consumption.
 
 Review all privileged capabilities and abuse scenarios in [PRIVILEGED_FUNCTIONS.md](./PRIVILEGED_FUNCTIONS.md).
 
