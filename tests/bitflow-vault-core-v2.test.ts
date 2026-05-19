@@ -398,8 +398,8 @@ describe("bitflow-vault-core-v2", () => {
       deposit(10000000, wallet1());
       borrow(1000000, 500, 30, wallet1());
       repay(wallet1());
-      const { result } = getUserLoan(wallet1());
-      expect(result).toBeNone();
+      const loan = getUserLoan(wallet1());
+      expect((loan.result as any).value.value.status).toBeUint(2); // STATUS-REPAID
     });
 
     it("reduces outstanding borrows after repay", () => {
@@ -464,7 +464,7 @@ describe("bitflow-vault-core-v2", () => {
       liquidate(wallet1(), wallet2());
 
       const loan = getUserLoan(wallet1());
-      expect(loan.result).toBeNone();
+      expect((loan.result as any).value.value.status).toBeUint(3); // STATUS-LIQUIDATED
 
       const dep = getUserDeposit(wallet1());
       expect(dep.result).toBeUint(0);
