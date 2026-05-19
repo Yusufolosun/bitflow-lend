@@ -559,7 +559,7 @@
       (var-set total-deposit-volume (safe-add (var-get total-deposit-volume) amount))
       (var-set last-activity-block block-height)
       
-      (print { event: "deposit", user: tx-sender, amount: amount, new-balance: new-deposit })
+      (print { event: "deposit", user: tx-sender, amount: amount, new-balance: new-deposit, block: block-height })
       (ok true)
     )
   )
