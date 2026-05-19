@@ -413,7 +413,7 @@
         (var-set total-rewards-distributed (+ (var-get total-rewards-distributed) reward-amount))
         (map-set staker-last-action recipient block-height)
 
-        (print { event: "rewards-claimed", user: recipient, amount: reward-amount })
+        (print { event: "rewards-claimed", user: recipient, amount: reward-amount, block: block-height })
         (ok reward-amount)
       )
     )
