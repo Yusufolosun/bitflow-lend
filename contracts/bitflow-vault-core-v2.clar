@@ -510,6 +510,16 @@
     (print { event: "admin-action", function-name: "set-late-penalty-rate", caller: tx-sender })
     (ok true)))
 
+(define-public (set-liquidation-penalty-bps (new-bps uint))
+  (begin
+    (asserts! (is-eq tx-sender contract-owner) ERR-OWNER-ONLY)
+    (asserts! (>= new-bps u10) ERR-INVALID-PARAM)    ;; min 0.1% penalty
+    (asserts! (<= new-bps u2000) ERR-INVALID-PARAM)   ;; max 20% penalty
+    (var-set liquidation-penalty-bps new-bps)
+    (print { event: "set-liquidation-penalty-bps", value: new-bps })
+    (print { event: "admin-action", function-name: "set-liquidation-penalty-bps", caller: tx-sender })
+    (ok true)))
+
 (define-read-only (get-protocol-parameters)
   (ok {
     min-collateral-ratio: (var-get min-collateral-ratio),
