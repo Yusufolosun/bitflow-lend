@@ -55,12 +55,12 @@ describe("bitflow-vault-core-v2 interest precision tests", () => {
       const interest = (repayment.result as any).value?.value?.interest?.value;
       const principal = (repayment.result as any).value?.value?.principal?.value;
 
-      // rate=500 → 500/100 = 500% annual interest
+      // rate=500 → 500/10000 = 5% annual interest
       const interestVal = Number(interest);
       const principalVal = Number(principal);
       const interestPct = (interestVal / principalVal) * 100;
-      expect(interestPct).toBeGreaterThan(490);
-      expect(interestPct).toBeLessThan(510);
+      expect(interestPct).toBeGreaterThan(4.9);
+      expect(interestPct).toBeLessThan(5.1);
     });
   });
 
@@ -132,7 +132,7 @@ describe("bitflow-vault-core-v2 interest precision tests", () => {
 
   // ── Interest rate precision at boundaries ───────────────────────
   describe("interest rate boundary precision", () => {
-    it("minimum rate (50) produces 50% annual interest", () => {
+    it("minimum rate (50) produces 0.5% annual interest", () => {
       setup();
       deposit(10_000_000, wallet1());
       borrow(1_000_000, 50, 365, wallet1());
@@ -140,9 +140,9 @@ describe("bitflow-vault-core-v2 interest precision tests", () => {
 
       const repayment = getRepayment(wallet1());
       const interest = Number((repayment.result as any).value?.value?.interest?.value);
-      // rate=50 → 50/100 = 50% annual. 50% of 1M = 500,000
-      expect(interest).toBeGreaterThan(400_000);
-      expect(interest).toBeLessThan(600_000);
+      // rate=50 → 50/10000 = 0.5% annual. 0.5% of 1M = 5,000
+      expect(interest).toBeGreaterThan(4_900);
+      expect(interest).toBeLessThan(5_100);
     });
 
     it("maximum rate (10000) produces 100% annual interest", () => {
