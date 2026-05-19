@@ -74,7 +74,7 @@ describe("bitflow-vault-core-v2 liquidation debt basis", () => {
       borrow(10_000_000, 500, 30, borrower());
 
       // Mine enough blocks so interest accrues and pushes health below 110%
-      simnet.mineEmptyBlocks(1000);
+      simnet.mineEmptyBlocks(10000);
 
       // Refresh price to keep it valid (set to 74)
       setPrice(74);
@@ -93,7 +93,7 @@ describe("bitflow-vault-core-v2 liquidation debt basis", () => {
 
       deposit(15_000_000, borrower());
       borrow(10_000_000, 500, 30, borrower());
-      simnet.mineEmptyBlocks(1000);
+      simnet.mineEmptyBlocks(10000);
       setPrice(74);
 
       const { result } = liquidate(borrower(), liquidator());
@@ -112,7 +112,7 @@ describe("bitflow-vault-core-v2 liquidation debt basis", () => {
 
       deposit(15_000_000, borrower());
       borrow(10_000_000, 500, 30, borrower());
-      simnet.mineEmptyBlocks(1000);
+      simnet.mineEmptyBlocks(10000);
       setPrice(74);
 
       const { result } = liquidate(borrower(), liquidator());
@@ -123,7 +123,7 @@ describe("bitflow-vault-core-v2 liquidation debt basis", () => {
       const interest = Number(data.interest.value);
       const penalty = Number(data.penalty.value);
 
-      // Interest must be > 0 after 1000 blocks
+      // Interest must be > 0 after 10000 blocks
       expect(interest).toBeGreaterThan(0);
 
       // Penalty must be > 0 (5% of outstanding debt)
@@ -144,7 +144,7 @@ describe("bitflow-vault-core-v2 liquidation debt basis", () => {
 
       deposit(15_000_000, borrower());
       borrow(10_000_000, 500, 30, borrower());
-      simnet.mineEmptyBlocks(1000);
+      simnet.mineEmptyBlocks(10000);
       setPrice(74);
 
       const { result } = liquidate(borrower(), liquidator());
