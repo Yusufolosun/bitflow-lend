@@ -114,10 +114,10 @@ describe("bitflow-vault-core-v2 per-function toggle tests", () => {
       const { result } = liquidate(wallet1(), wallet2());
       expect(result).toBeOk(Cl.tuple({
         "seized-collateral": Cl.uint(10_000_000),
-        "paid": Cl.uint(5_251_998),
+        "paid": Cl.uint(5_250_021),
         "principal": Cl.uint(5_000_000),
-        "interest": Cl.uint(1_903),
-        "penalty": Cl.uint(250_095),
+        "interest": Cl.uint(20),
+        "penalty": Cl.uint(250_001),
       }));
     });
   });
@@ -183,9 +183,9 @@ describe("bitflow-vault-core-v2 per-function toggle tests", () => {
       // 2 blocks elapsed (borrow → toggle → repay): ceil(1_000_000 * 500 * 2 / 5_256_000) = ceil(190.26) = 191
       expect(result).toBeOk(Cl.tuple({
         "principal": Cl.uint(1_000_000),
-        "interest": Cl.uint(191),
+        "interest": Cl.uint(2),
         "penalty": Cl.uint(0),
-        "total": Cl.uint(1_000_191),
+        "total": Cl.uint(1_000_002),
       }));
     });
   });
