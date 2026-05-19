@@ -18,7 +18,7 @@ export const CURRENT_NETWORK = import.meta.env.VITE_NETWORK || NETWORK.TESTNET;
 
 // Contract Addresses
 export const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS || '';
-export const CONTRACT_NAME = 'bitflow-vault-core-v2';
+export const CONTRACT_NAME = 'bitflow-vault-core-v3';
 
 // Validate required env vars on startup so misconfiguration fails fast
 // instead of producing cryptic contract call errors at runtime.
@@ -208,3 +208,4 @@ export default {
   DECIMAL_PRECISION,
   CHART_CONFIG,
 } as const;
+

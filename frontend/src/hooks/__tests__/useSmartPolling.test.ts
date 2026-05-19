@@ -96,3 +96,4 @@ describe('useSmartPolling Hook', () => {
     expect(cb).toHaveBeenCalledTimes(1); // immediate call on enable
   });
 });
+

@@ -233,3 +233,4 @@ export const WithdrawCard: React.FC = () => {
 };
 
 export default WithdrawCard;
+

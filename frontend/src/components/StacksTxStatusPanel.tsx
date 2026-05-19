@@ -102,3 +102,4 @@ export const StacksTxStatusPanel: React.FC<StacksTxStatusPanelProps> = ({ snapsh
 };
 
 export default StacksTxStatusPanel;
+

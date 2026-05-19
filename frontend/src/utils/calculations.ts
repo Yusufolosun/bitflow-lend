@@ -324,3 +324,4 @@ export function basisPointsToPercent(basisPoints: number): number {
 export function percentToBasisPoints(percent: number): number {
   return percent * 100;
 }
+

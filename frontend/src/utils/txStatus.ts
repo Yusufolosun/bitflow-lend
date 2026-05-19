@@ -10,3 +10,4 @@ export const formatUnixSeconds = (unixSeconds?: number | null): string | null =>
 
   return new Date(unixSeconds * 1000).toLocaleTimeString();
 };
+

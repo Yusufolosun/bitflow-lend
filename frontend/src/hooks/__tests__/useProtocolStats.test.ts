@@ -12,7 +12,7 @@ vi.mock('@stacks/transactions', () => ({
 vi.mock('../../config/contracts', () => ({
   getNetwork: () => 'testnet',
   getContractAddress: () => 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM',
-  getActiveContractVersion: () => ({ contractName: 'bitflow-vault-core-v2' }),
+  getActiveContractVersion: () => ({ contractName: 'bitflow-vault-core-v3' }),
 }));
 
 import { fetchCallReadOnlyFunction, cvToValue } from '@stacks/transactions';
@@ -149,3 +149,4 @@ describe('useProtocolStats', () => {
     vi.useRealTimers();
   });
 });
+

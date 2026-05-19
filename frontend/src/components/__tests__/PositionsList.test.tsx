@@ -110,3 +110,4 @@ describe('PositionsList Component - Badge Assignment', () => {
     expect(amounts[2]).toHaveTextContent('1.00 STX');
   });
 });
+

@@ -75,3 +75,4 @@ describe('StatsCard Component', () => {
     expect(container.querySelector('.border-t-red-500')).toBeInTheDocument();
   });
 });
+

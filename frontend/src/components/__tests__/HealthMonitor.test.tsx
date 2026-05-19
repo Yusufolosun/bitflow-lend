@@ -140,3 +140,4 @@ describe('HealthMonitor Component', () => {
     expect(screen.getByText(/12.0%/)).toBeInTheDocument();
   });
 });
+

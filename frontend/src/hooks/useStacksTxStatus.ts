@@ -203,3 +203,4 @@ export const useStacksTxStatus = (txId: string): StacksTxStatusSnapshot => {
 };
 
 export default useStacksTxStatus;
+

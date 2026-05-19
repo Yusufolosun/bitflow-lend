@@ -22,8 +22,8 @@ describe('Contract Configuration', () => {
     });
 
     it('uses correct contract name', () => {
-      expect(VAULT_CONTRACT.testnet.contractName).toBe('bitflow-vault-core-v2');
-      expect(VAULT_CONTRACT.mainnet.contractName).toBe('bitflow-vault-core-v2');
+      expect(VAULT_CONTRACT.testnet.contractName).toBe('bitflow-vault-core-v3');
+      expect(VAULT_CONTRACT.mainnet.contractName).toBe('bitflow-vault-core-v3');
     });
 
     it('testnet uses ST prefix', () => {
@@ -43,7 +43,7 @@ describe('Contract Configuration', () => {
     });
 
     it('uses correct contract name', () => {
-      expect(STAKING_CONTRACT.testnet.contractName).toBe('bitflow-staking-pool');
+      expect(STAKING_CONTRACT.testnet.contractName).toBe('bitflow-staking-pool-v3');
     });
   });
 
@@ -55,7 +55,7 @@ describe('Contract Configuration', () => {
     });
 
     it('uses correct contract name', () => {
-      expect(ORACLE_CONTRACT.testnet.contractName).toBe('bitflow-oracle-registry');
+      expect(ORACLE_CONTRACT.testnet.contractName).toBe('bitflow-oracle-registry-v3');
     });
   });
 
@@ -122,7 +122,7 @@ describe('Contract Configuration', () => {
     it('returns address.contractName format', () => {
       const id = getContractId();
       expect(id).toContain('.');
-      expect(id).toContain('bitflow-vault-core-v2');
+      expect(id).toContain('bitflow-vault-core-v3');
     });
   });
 
@@ -151,3 +151,4 @@ describe('Contract Configuration', () => {
     });
   });
 });
+

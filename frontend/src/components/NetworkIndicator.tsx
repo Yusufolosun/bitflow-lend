@@ -36,3 +36,4 @@ export const NetworkIndicator: React.FC = () => {
 };
 
 export default NetworkIndicator;
+

@@ -99,22 +99,22 @@ vi.mock('../config/contracts', () => ({
         testnet: 'ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0',
         mainnet: 'SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193',
       },
-      contractName: 'bitflow-vault-core-v2',
+      contractName: 'bitflow-vault-core-v3',
     },
   ],
     VAULT_CONTRACT: {
-      name: 'bitflow-vault-core-v2',
+      name: 'bitflow-vault-core-v3',
       testnet: {
         address: 'ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0',
-        contractName: 'bitflow-vault-core-v2',
+        contractName: 'bitflow-vault-core-v3',
       },
       mainnet: {
         address: 'SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193',
-        contractName: 'bitflow-vault-core-v2',
+        contractName: 'bitflow-vault-core-v3',
       },
     },
   getApiEndpoint: () => 'https://api.testnet.hiro.so',
-  getContractId: () => 'ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.bitflow-vault-core-v2',
+  getContractId: () => 'ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.bitflow-vault-core-v3',
 }));
 
 vi.mock('../types/vault', () => ({
@@ -382,3 +382,4 @@ describe('App Integration', () => {
     });
   });
 });
+

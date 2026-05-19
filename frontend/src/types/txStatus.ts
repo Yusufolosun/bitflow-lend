@@ -24,3 +24,4 @@ export interface HiroTxResponse {
   tx_status: string;
   microblock_anchor_time?: number | null;
 }
+

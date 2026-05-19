@@ -232,3 +232,4 @@ export const LOAN_TERMS: LoanTermOption[] = [
  */
 export const STX_DECIMALS = 6;
 export const MICRO_STX = 1_000_000;
+
