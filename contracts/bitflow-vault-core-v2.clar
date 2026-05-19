@@ -593,7 +593,7 @@
       (var-set total-withdrawals-count (+ (var-get total-withdrawals-count) u1))
       (var-set last-activity-block block-height)
 
-      (print { event: "withdraw", user: recipient, amount: amount, remaining-balance: (safe-sub user-balance amount) })
+      (print { event: "withdraw", user: recipient, amount: amount, remaining-balance: (safe-sub user-balance amount), block: block-height })
       (ok true)
     )
   )
