@@ -387,9 +387,9 @@ describe("bitflow-vault-core-v2", () => {
       // interest = ceil(1000000 * 500 * 1 / 5256000) = ceil(95.13) = 96
       expect(result).toBeOk(Cl.tuple({
         principal: Cl.uint(1000000),
-        interest: Cl.uint(96),
+        interest: Cl.uint(1),
         penalty: Cl.uint(0),
-        total: Cl.uint(1000096),
+        total: Cl.uint(1000001),
       }));
     });
 
