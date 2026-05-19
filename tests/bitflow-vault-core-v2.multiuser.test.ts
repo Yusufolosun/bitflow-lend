@@ -107,11 +107,11 @@ describe("bitflow-vault-core-v2 concurrent multi-user tests", () => {
       );
       expect(loan.result).not.toBeNone();
 
-      // wallet1's loan is gone
+      // wallet1's loan is Repaid
       const loan1 = simnet.callReadOnlyFn(
         CONTRACT, "get-user-loan", [Cl.principal(wallet1())], deployer()
       );
-      expect(loan1.result).toBeNone();
+      expect((loan1.result as any).value.value.status).toBeUint(2);
     });
 
     it("outstanding borrows decremented by repaid amount only", () => {
