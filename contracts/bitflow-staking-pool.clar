@@ -377,7 +377,7 @@
           true
         )
 
-        (print { event: "unstake", user: recipient, amount: amount, remaining: new-balance })
+        (print { event: "unstake", user: recipient, amount: amount, remaining: new-balance, block: block-height })
         (ok true)
       )
     )
