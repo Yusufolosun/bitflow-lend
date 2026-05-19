@@ -731,7 +731,7 @@
       (var-set total-liquidation-volume (safe-add (var-get total-liquidation-volume) loan-amount))
       (var-set last-activity-block block-height)
 
-      (print { event: "liquidation", liquidator: liquidator, borrower: borrower, seized: borrower-deposit, paid: total-to-pay, principal: loan-amount, interest: accrued-interest, penalty: liquidation-penalty })
+      (print { event: "liquidation", liquidator: liquidator, borrower: borrower, seized: borrower-deposit, paid: total-to-pay, principal: loan-amount, interest: accrued-interest, penalty: liquidation-penalty, block: block-height })
       (ok { seized-collateral: borrower-deposit, paid: total-to-pay, principal: loan-amount, interest: accrued-interest, penalty: liquidation-penalty })
     )
   )
