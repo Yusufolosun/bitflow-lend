@@ -704,8 +704,11 @@
       (loan (unwrap! (map-get? user-loans borrower) ERR-NO-ACTIVE-LOAN))
       (borrower-deposit (default-to u0 (map-get? user-deposits borrower)))
       (loan-amount (get amount loan))
-      (liquidation-bonus (/ (* loan-amount u5) u100))
-      (total-to-pay (safe-add loan-amount liquidation-bonus))
+      (blocks-elapsed (safe-sub block-height (get start-block loan)))
+      (outstanding-debt (calculate-outstanding-debt loan-amount (get interest-rate loan) blocks-elapsed))
+      (accrued-interest (safe-sub outstanding-debt loan-amount))
+      (liquidation-penalty (/ (* outstanding-debt (var-get liquidation-penalty-bps)) u10000))
+      (total-to-pay (safe-add outstanding-debt liquidation-penalty))
     )
       ;; Verify health factor is liquidatable
       (asserts! (is-liquidatable borrower current-price) ERR-NOT-LIQUIDATABLE)
