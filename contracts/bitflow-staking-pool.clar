@@ -270,7 +270,7 @@
         (- (var-get total-stakers) u1)
         u0))
 
-      (print { event: "emergency-unstake", user: recipient, amount: balance })
+      (print { event: "emergency-unstake", user: recipient, amount: balance, block: block-height })
       (ok balance)
     )
   )
@@ -326,7 +326,7 @@
     )
       (asserts! (> balance u0) ERR-NO-STAKE)
       (map-set staker-cooldown-end tx-sender (+ block-height COOLDOWN-PERIOD))
-      (print { event: "unstake-requested", user: tx-sender, cooldown-end: (+ block-height COOLDOWN-PERIOD) })
+      (print { event: "unstake-requested", user: tx-sender, cooldown-end: (+ block-height COOLDOWN-PERIOD), block: block-height })
       (ok true)
     )
   )
