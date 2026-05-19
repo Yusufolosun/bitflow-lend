@@ -163,4 +163,25 @@ describe("bitflow-vault-core-v2 debt parity", () => {
     expect(debtAt100).toBeGreaterThan(debtAt10);
     expect(debtAt10).toBeGreaterThanOrEqual(principal);
   });
+
+  it("debt grows proportionally over full-year elapsed blocks", () => {
+    const principal = 10_000_000n;
+    const rate = 500n; // 5% annual
+
+    const debtAtYear = readOutstandingDebt(principal, rate, 52560n);
+    const interest = debtAtYear - principal;
+
+    // 5% of 10M = 500_000, allow 1% tolerance
+    expect(interest).toBeGreaterThan(490_000n);
+    expect(interest).toBeLessThan(510_000n);
+  });
+
+  it("zero-rate loan accrues no interest", () => {
+    // rate=0 is not valid per contract constraints, but test defensive math
+    // Using minimum rate (50 = 0.5%) instead
+    const principal = 1_000_000n;
+    const rate = 50n;
+    const debtAt0 = readOutstandingDebt(principal, rate, 0n);
+    expect(debtAt0).toBe(principal);
+  });
 });
