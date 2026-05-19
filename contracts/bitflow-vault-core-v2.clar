@@ -528,7 +528,8 @@
     max-interest-rate: (var-get max-interest-rate),
     min-term-days: (var-get min-term-days),
     max-term-days: (var-get max-term-days),
-    late-penalty-rate: (var-get late-penalty-rate)
+    late-penalty-rate: (var-get late-penalty-rate),
+    liquidation-penalty-bps: (var-get liquidation-penalty-bps)
   }))
 
 ;; ===== USER FUNCTIONS =====
