@@ -215,8 +215,19 @@
 )
 
 (define-read-only (get-max-borrow-amount (user principal))
-  (if (is-some (map-get? user-loans user))
-    u0
+  (match (map-get? user-loans user)
+    existing-loan (if (is-eq (get status existing-loan) STATUS-ACTIVE)
+      u0
+      (let (
+        (user-deposit (default-to u0 (map-get? user-deposits user)))
+        (max-borrow (/ (* user-deposit u100) (var-get min-collateral-ratio)))
+      )
+        (if (> max-borrow MAX-BORROW-AMOUNT)
+          MAX-BORROW-AMOUNT
+          max-borrow
+        )
+      )
+    )
     (let (
       (user-deposit (default-to u0 (map-get? user-deposits user)))
       (max-borrow (/ (* user-deposit u100) (var-get min-collateral-ratio)))
@@ -580,7 +591,9 @@
     (let (
       (user-balance (default-to u0 (map-get? user-deposits recipient)))
       (locked-collateral (match (map-get? user-loans recipient)
-        loan (calculate-required-collateral (get amount loan))
+        loan (if (is-eq (get status loan) STATUS-ACTIVE)
+          (calculate-required-collateral (get amount loan))
+          u0)
         u0))
       (available-balance (safe-sub user-balance locked-collateral))
     )
