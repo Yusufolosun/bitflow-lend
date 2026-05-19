@@ -4,6 +4,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useVault } from '../hooks/useVault';
 import { formatSTX, formatAddress } from '../utils/formatters';
 import { PROTOCOL_CONSTANTS } from '../config/contracts';
+import { LIQUIDATION_COPY } from '../constants/messages';
 
 /**
  * Position interface for liquidatable positions
@@ -48,7 +49,7 @@ export const LiquidationList: React.FC = () => {
 
   const handleLiquidate = async (position: LiquidatablePosition) => {
     if (!address) {
-      setStatusMessage({ type: 'error', text: 'Please connect your wallet first' });
+      setStatusMessage({ type: 'error', text: LIQUIDATION_COPY.connectWalletError });
       return;
     }
 
@@ -59,13 +60,16 @@ export const LiquidationList: React.FC = () => {
       const result = await vault.liquidate(position.address);
 
       if (result.success) {
-        setStatusMessage({ type: 'success', text: `Liquidation submitted for ${formatAddress(position.address)}` });
+        setStatusMessage({ type: 'success', text: LIQUIDATION_COPY.successMessage(formatAddress(position.address)) });
         setPositions(prev => prev.filter(p => p.address !== position.address));
       } else {
-        setStatusMessage({ type: 'error', text: result.error || `Liquidation failed for ${formatAddress(position.address)}` });
+        setStatusMessage({
+          type: 'error',
+          text: result.error || LIQUIDATION_COPY.failureMessage(formatAddress(position.address)),
+        });
       }
     } catch {
-      setStatusMessage({ type: 'error', text: 'Liquidation transaction failed. Please try again.' });
+      setStatusMessage({ type: 'error', text: LIQUIDATION_COPY.transactionFailed });
     } finally {
       setSelectedPosition(null);
     }
@@ -85,9 +89,9 @@ export const LiquidationList: React.FC = () => {
           <AlertTriangle className="text-red-600" size={24} aria-hidden="true" />
         </div>
         <div>
-          <h3 className="text-xl font-bold text-gray-900">Liquidation Opportunities</h3>
+          <h3 className="text-xl font-bold text-gray-900">{LIQUIDATION_COPY.headerTitle}</h3>
           <p className="text-sm text-gray-500">
-            {positions.length} position{positions.length !== 1 ? 's' : ''} available for liquidation
+            {LIQUIDATION_COPY.headerSubtitle(positions.length)}
           </p>
         </div>
       </div>
@@ -98,12 +102,13 @@ export const LiquidationList: React.FC = () => {
           <Zap className="text-accent-600 flex-shrink-0 mt-0.5" size={20} />
           <div className="flex-1">
             <h4 className="text-sm font-semibold text-primary-900 mb-1">
-              How Liquidation Works
+              {LIQUIDATION_COPY.infoTitle}
             </h4>
             <p className="text-xs text-accent-800">
-              When a position falls below {PROTOCOL_CONSTANTS.LIQUIDATION_THRESHOLD}% health factor,
-              anyone can liquidate it by repaying the debt and receiving the collateral plus a{' '}
-              {PROTOCOL_CONSTANTS.LIQUIDATION_BONUS}% bonus.
+              {LIQUIDATION_COPY.infoMessage(
+                PROTOCOL_CONSTANTS.LIQUIDATION_THRESHOLD,
+                PROTOCOL_CONSTANTS.LIQUIDATION_BONUS
+              )}
             </p>
           </div>
         </div>
@@ -113,7 +118,7 @@ export const LiquidationList: React.FC = () => {
       {isLoading && positions.length === 0 && (
         <div className="text-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent-500 mx-auto mb-4"></div>
-          <p className="text-gray-500">Loading positions...</p>
+          <p className="text-gray-500">{LIQUIDATION_COPY.loading}</p>
         </div>
       )}
 
@@ -134,11 +139,9 @@ export const LiquidationList: React.FC = () => {
       {!isLoading && positions.length === 0 && (
         <div className="text-center py-12">
           <TrendingDown className="mx-auto text-gray-400 mb-4" size={48} aria-hidden="true" />
-          <p className="text-gray-600 mb-1 font-medium">No Liquidatable Positions Found</p>
+          <p className="text-gray-600 mb-1 font-medium">{LIQUIDATION_COPY.emptyTitle}</p>
           <p className="text-sm text-gray-500 max-w-sm mx-auto">
-            Liquidatable positions will appear here once an on-chain indexer is
-            integrated. The contract currently does not support enumerating all
-            borrower positions directly.
+            {LIQUIDATION_COPY.emptyMessage}
           </p>
         </div>
       )}
@@ -150,22 +153,22 @@ export const LiquidationList: React.FC = () => {
             <thead>
               <tr className="border-b border-gray-200">
                 <th className="text-left py-3 px-4 text-xs font-semibold text-gray-600 uppercase">
-                  Address
+                  {LIQUIDATION_COPY.tableAddress}
                 </th>
                 <th className="text-right py-3 px-4 text-xs font-semibold text-gray-600 uppercase">
-                  Collateral
+                  {LIQUIDATION_COPY.tableCollateral}
                 </th>
                 <th className="text-right py-3 px-4 text-xs font-semibold text-gray-600 uppercase">
-                  Debt
+                  {LIQUIDATION_COPY.tableDebt}
                 </th>
                 <th className="text-right py-3 px-4 text-xs font-semibold text-gray-600 uppercase">
-                  Health Factor
+                  {LIQUIDATION_COPY.tableHealthFactor}
                 </th>
                 <th className="text-right py-3 px-4 text-xs font-semibold text-gray-600 uppercase">
-                  Potential Profit
+                  {LIQUIDATION_COPY.tableProfit}
                 </th>
                 <th className="text-right py-3 px-4 text-xs font-semibold text-gray-600 uppercase">
-                  Action
+                  {LIQUIDATION_COPY.tableAction}
                 </th>
               </tr>
             </thead>
@@ -214,7 +217,7 @@ export const LiquidationList: React.FC = () => {
                         </span>
                       </div>
                       <div className="text-xs text-gray-500">
-                        +{position.liquidationBonus}% bonus
+                        {LIQUIDATION_COPY.bonusLabel(position.liquidationBonus)}
                       </div>
                     </td>
                     <td className="py-4 px-4 text-right">
@@ -226,12 +229,12 @@ export const LiquidationList: React.FC = () => {
                         {isLiquidating ? (
                           <>
                             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                            Liquidating...
+                            {LIQUIDATION_COPY.actionLiquidating}
                           </>
                         ) : (
                           <>
                             <Zap size={16} />
-                            Liquidate
+                            {LIQUIDATION_COPY.actionLiquidate}
                           </>
                         )}
                       </button>
@@ -249,19 +252,19 @@ export const LiquidationList: React.FC = () => {
         <div className="mt-6 pt-6 border-t border-gray-200">
           <div className="grid grid-cols-3 gap-4">
             <div className="text-center">
-              <div className="text-xs text-gray-500 mb-1">Total Collateral at Risk</div>
+              <div className="text-xs text-gray-500 mb-1">{LIQUIDATION_COPY.summaryCollateral}</div>
               <div className="text-lg font-bold text-gray-900">
                 {formatSTX(positions.reduce((sum, p) => sum + p.collateralSTX, 0))} STX
               </div>
             </div>
             <div className="text-center">
-              <div className="text-xs text-gray-500 mb-1">Total Debt</div>
+              <div className="text-xs text-gray-500 mb-1">{LIQUIDATION_COPY.summaryDebt}</div>
               <div className="text-lg font-bold text-gray-900">
                 {formatSTX(positions.reduce((sum, p) => sum + p.debtSTX, 0))} STX
               </div>
             </div>
             <div className="text-center">
-              <div className="text-xs text-gray-500 mb-1">Total Profit Potential</div>
+              <div className="text-xs text-gray-500 mb-1">{LIQUIDATION_COPY.summaryProfit}</div>
               <div className="text-lg font-bold text-green-600">
                 {formatSTX(positions.reduce((sum, p) => sum + p.potentialProfit, 0))} STX
               </div>
