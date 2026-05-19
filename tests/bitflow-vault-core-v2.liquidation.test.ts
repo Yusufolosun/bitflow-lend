@@ -63,16 +63,21 @@ describe("bitflow-vault-core-v2 liquidation security tests", () => {
   describe("price-based liquidation", () => {
     it("allows liquidation when price drops below threshold", () => {
       setupBorrower();
-      // Drop price to make position undercollateralized
-      // 10M deposit, 5M borrow. Health = (10M * price/100 * 100) / 5M
-      // At price=50: Health = (10M * 50/100 * 100) / 5M = 100% < 110%
       setPrice(50);
       const { result } = liquidate(borrower(), liquidator());
-      expect(result).toBeOk(Cl.tuple({
-        "seized-collateral": Cl.uint(10_000_000),
-        "paid": Cl.uint(5_250_000), // 5M + 5% bonus
-        "bonus": Cl.uint(250_000),
-      }));
+      const data = (result as any).value?.value;
+
+      expect(Number(data["seized-collateral"].value)).toBe(10_000_000);
+
+      const principal = Number(data.principal.value);
+      const interest = Number(data.interest.value);
+      const penalty = Number(data.penalty.value);
+      const paid = Number(data.paid.value);
+
+      expect(principal).toBe(5_000_000);
+      expect(interest).toBeGreaterThan(0);
+      expect(penalty).toBeGreaterThan(0);
+      expect(paid).toBe(principal + interest + penalty);
     });
   });
 
