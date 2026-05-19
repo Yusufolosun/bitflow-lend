@@ -545,6 +545,7 @@
       (current-deposit (default-to u0 (map-get? user-deposits tx-sender)))
       (new-deposit (safe-add current-deposit amount))
     )
+      ;; Inclusive boundary: deposit exactly at DEPOSIT-LIMIT is accepted
       (asserts! (<= new-deposit DEPOSIT-LIMIT) ERR-DEPOSIT-CAP-EXCEEDED)
       
       ;; Transfer STX from user to contract
