@@ -1,0 +1,49 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`HealthFactorDisplay > matches snapshot for healthy state 1`] = `
+<DocumentFragment>
+  <div
+    aria-label="Health Factor: 200 percent, status: healthy"
+    aria-live="polite"
+    class="rounded-xl border-2 transition-all duration-500 hover:shadow-lg animate-in fade-in zoom-in-95 text-emerald-600 bg-emerald-50 border-emerald-100 p-4"
+    data-testid="hf-display-healthy"
+    role="status"
+  >
+    <div
+      class="flex items-center gap-3"
+    >
+      <span
+        data-testid="check-icon"
+      />
+      <div>
+        <div
+          class="flex items-center gap-2"
+        >
+          <span
+            class="font-extrabold tabular-nums text-3xl"
+          >
+            200%
+          </span>
+          <span
+            class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-200 text-emerald-800"
+          >
+            healthy
+          </span>
+        </div>
+        <div
+          class="flex items-center gap-1.5 mt-1.5 opacity-70"
+        >
+          <div
+            class="w-1.5 h-1.5 rounded-full bg-current animate-pulse"
+          />
+          <p
+            class="text-[10px] font-bold uppercase tracking-widest"
+          >
+            Source: On-chain
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
