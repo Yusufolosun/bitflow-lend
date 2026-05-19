@@ -5,6 +5,8 @@
  * for the DeFi lending protocol on Stacks blockchain
  */
 
+import { ERROR_MESSAGES, SUCCESS_MESSAGES } from './messages';
+
 // Network Configuration
 export const NETWORK = {
   TESTNET: 'testnet',
@@ -139,32 +141,7 @@ export const STORAGE_KEYS = {
   LAST_PRICE_UPDATE: 'bitflow_last_price_update',
 } as const;
 
-// Error Messages
-export const ERROR_MESSAGES = {
-  WALLET_NOT_CONNECTED: 'Please connect your wallet first',
-  INSUFFICIENT_BALANCE: 'Insufficient balance',
-  INSUFFICIENT_COLLATERAL: 'Insufficient collateral',
-  INVALID_AMOUNT: 'Invalid amount',
-  AMOUNT_TOO_LOW: 'Amount is below minimum',
-  AMOUNT_TOO_HIGH: 'Amount exceeds maximum',
-  TRANSACTION_FAILED: 'Transaction failed',
-  NETWORK_ERROR: 'Network error occurred',
-  CONTRACT_ERROR: 'Contract call failed',
-  LOAN_NOT_FOUND: 'Loan not found',
-  ALREADY_HEALTHY: 'Position is already healthy',
-  NOT_LIQUIDATABLE: 'Position cannot be liquidated',
-} as const;
-
-// Success Messages
-export const SUCCESS_MESSAGES = {
-  DEPOSIT_SUCCESS: 'Deposit successful',
-  WITHDRAW_SUCCESS: 'Withdrawal successful',
-  BORROW_SUCCESS: 'Borrow successful',
-  REPAY_SUCCESS: 'Repayment successful',
-  LIQUIDATION_SUCCESS: 'Liquidation successful',
-  WALLET_CONNECTED: 'Wallet connected successfully',
-  WALLET_DISCONNECTED: 'Wallet disconnected',
-} as const;
+// Error and success messages are defined in constants/messages.ts.
 
 // Feature Flags
 export const FEATURES = {
