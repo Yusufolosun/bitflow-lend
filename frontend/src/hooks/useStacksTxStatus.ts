@@ -5,14 +5,12 @@ import {
   StacksTxStatusSnapshot,
   StacksTxStatusState,
 } from '../types/txStatus';
+import { STACKS_TX_STATUS_COPY } from '../constants/messages';
 
 const POLL_INTERVAL_MS = 30_000;
 const NOT_FOUND_GRACE_MS = 60 * 60 * 1000;
 const DEFAULT_BLOCK_TIME_MINUTES = 12.5;
 const DEFAULT_API_ENDPOINT = 'https://api.testnet.hiro.so';
-
-const DEFAULT_MESSAGE = 'Transaction in Stacks mempool — confirming with Bitcoin...';
-const PROPAGATION_MESSAGE = 'Transaction submitted — waiting for indexer propagation...';
 
 const INITIAL_SNAPSHOT: StacksTxStatusSnapshot = {
   state: 'idle',
@@ -66,17 +64,17 @@ const getMappedMessage = (
 ): string => {
   switch (state) {
     case 'success':
-      return 'Confirmed';
+      return STACKS_TX_STATUS_COPY.confirmed;
     case 'abort_by_response':
-      return 'Transaction rejected — check post-conditions';
+      return STACKS_TX_STATUS_COPY.rejected;
     case 'not_found':
-      return 'Transaction not found after 60 minutes. Confirm the tx ID in the explorer.';
+      return STACKS_TX_STATUS_COPY.notFound;
     case 'pending':
       if (pendingPhase === 'propagation' && notFoundGraceRemainingMs !== null) {
-        return PROPAGATION_MESSAGE;
+        return STACKS_TX_STATUS_COPY.pendingPropagation;
       }
 
-      return DEFAULT_MESSAGE;
+      return STACKS_TX_STATUS_COPY.pendingMempool;
     default:
       return '';
   }

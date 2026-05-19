@@ -3,6 +3,7 @@ import { AlertCircle, CheckCircle, ExternalLink, XCircle } from 'lucide-react';
 import { getExplorerUrl } from '../config/contracts';
 import { StacksTxStatusSnapshot } from '../types/txStatus';
 import { formatDurationMinutes, formatUnixSeconds } from '../utils/txStatus';
+import { STACKS_TIMING_COPY, STACKS_TX_STATUS_COPY } from '../constants/messages';
 
 interface StacksTxStatusPanelProps {
   snapshot: StacksTxStatusSnapshot;
@@ -53,8 +54,8 @@ export const StacksTxStatusPanel: React.FC<StacksTxStatusPanelProps> = ({ snapsh
       {snapshot.state === 'pending' && (
         <div className="space-y-2">
           <div className="flex justify-between text-xs text-amber-800">
-            <span>Estimated by average Stacks block time: ~{averageBlockTimeMinutes} min</span>
-            <span>{formatDurationMinutes(snapshot.elapsedMs)} elapsed</span>
+            <span>{STACKS_TIMING_COPY.averageBlockTime(averageBlockTimeMinutes)}</span>
+            <span>{STACKS_TIMING_COPY.elapsed(formatDurationMinutes(snapshot.elapsedMs))}</span>
           </div>
           <div className="h-2 bg-amber-100 rounded-full overflow-hidden" aria-hidden="true">
             <div
@@ -64,12 +65,12 @@ export const StacksTxStatusPanel: React.FC<StacksTxStatusPanelProps> = ({ snapsh
           </div>
           <div className="text-xs text-amber-800">
             {snapshot.remainingMs > 0
-              ? `Approx. ${formatDurationMinutes(snapshot.remainingMs)} remaining based on average Stacks block time`
-              : 'Confirmation is taking longer than average block time but still valid in mempool.'}
+              ? STACKS_TIMING_COPY.remaining(formatDurationMinutes(snapshot.remainingMs))
+              : STACKS_TIMING_COPY.longerThanAverage}
           </div>
           {snapshot.pendingPhase === 'propagation' && notFoundGraceRemaining && (
             <div className="text-xs text-amber-800">
-              Indexer propagation is still in progress. We will only mark this as not found after {notFoundGraceRemaining}.
+              {STACKS_TIMING_COPY.propagationStill(notFoundGraceRemaining)}
             </div>
           )}
         </div>
@@ -77,13 +78,13 @@ export const StacksTxStatusPanel: React.FC<StacksTxStatusPanelProps> = ({ snapsh
 
       {snapshot.state === 'not_found' && (
         <div className={`text-xs ${variant.text}`}>
-          We kept polling for {formatDurationMinutes(snapshot.elapsedMs)} before marking this as not found.
+          {STACKS_TIMING_COPY.pollingSummary(formatDurationMinutes(snapshot.elapsedMs))}
         </div>
       )}
 
       {anchorLabel && (
         <div className={`text-xs ${variant.text}`}>
-          Microblock anchor time: {anchorLabel}
+          {STACKS_TIMING_COPY.microblockAnchor(anchorLabel)}
         </div>
       )}
 
@@ -93,7 +94,7 @@ export const StacksTxStatusPanel: React.FC<StacksTxStatusPanelProps> = ({ snapsh
         rel="noopener noreferrer"
         className={`inline-flex items-center gap-1 text-xs font-medium hover:underline ${variant.text}`}
       >
-        View transaction on explorer
+        {STACKS_TX_STATUS_COPY.viewOnExplorer}
         <ExternalLink size={12} />
       </a>
     </div>
