@@ -46,20 +46,20 @@ describe("bitflow-vault-core-v2 liquidation debt basis", () => {
       init();
       setPrice(100);
 
-      // Deposit 11M, borrow 10M => collateral ratio = 110% on principal
-      // health = (11_000_000 * 100 / 100 * 100) / outstanding_debt
-      // At block 0 interest is near-zero so health ~ 110%
-      deposit(11_000_000, borrower());
+      // Deposit 15M, borrow 10M => collateral ratio = 150% on principal (succeeds)
+      deposit(15_000_000, borrower());
       borrow(10_000_000, 500, 30, borrower());
 
-      // Immediately check — health should be around 110 (just at threshold)
-      const health = getHealthFactor(borrower(), 100);
+      // At price 74, health = 15M * 74 / 10M = 111 (just above 110 threshold)
+      setPrice(74);
+
+      // Immediately check — health should be around 111 (above threshold)
+      const health = getHealthFactor(borrower(), 74);
       const hf = Number((health.result as any).value?.value);
-      // Health factor should be >= 110 (at or above threshold)
-      expect(hf).toBeGreaterThanOrEqual(109);
+      expect(hf).toBeGreaterThanOrEqual(110);
 
       // Should NOT be liquidatable at this instant
-      const liq = isLiquidatable(borrower(), 100);
+      const liq = isLiquidatable(borrower(), 74);
       expect(liq.result).toBeBool(false);
     });
   });
@@ -70,27 +70,20 @@ describe("bitflow-vault-core-v2 liquidation debt basis", () => {
       init();
       setPrice(100);
 
-      // Deposit 11M, borrow 10M at rate 500 (5% annual)
-      // At block 0: health ~ 110%, not liquidatable
-      deposit(11_000_000, borrower());
+      deposit(15_000_000, borrower());
       borrow(10_000_000, 500, 30, borrower());
 
       // Mine enough blocks so interest accrues and pushes health below 110%
-      // Interest per block = 10M * 500 / (100 * 52560) ≈ 0.951 per block
-      // Need debt to exceed 10M enough that health < 110%
-      // health = (11M * 100 / 100 * 100) / debt = 1_100_000_000 / debt
-      // For health < 110: debt > 10_000_000
-      // Already at 10M, so even small interest should push it
       simnet.mineEmptyBlocks(1000);
 
-      // Refresh price to keep it valid
-      setPrice(100);
+      // Refresh price to keep it valid (set to 74)
+      setPrice(74);
 
-      const health = getHealthFactor(borrower(), 100);
+      const health = getHealthFactor(borrower(), 74);
       const hf = Number((health.result as any).value?.value);
       expect(hf).toBeLessThan(110);
 
-      const liq = isLiquidatable(borrower(), 100);
+      const liq = isLiquidatable(borrower(), 74);
       expect(liq.result).toBeBool(true);
     });
 
@@ -98,10 +91,10 @@ describe("bitflow-vault-core-v2 liquidation debt basis", () => {
       init();
       setPrice(100);
 
-      deposit(11_000_000, borrower());
+      deposit(15_000_000, borrower());
       borrow(10_000_000, 500, 30, borrower());
       simnet.mineEmptyBlocks(1000);
-      setPrice(100);
+      setPrice(74);
 
       const { result } = liquidate(borrower(), liquidator());
       // Should succeed — position is undercollateralized due to interest
@@ -117,10 +110,10 @@ describe("bitflow-vault-core-v2 liquidation debt basis", () => {
       init();
       setPrice(100);
 
-      deposit(11_000_000, borrower());
+      deposit(15_000_000, borrower());
       borrow(10_000_000, 500, 30, borrower());
       simnet.mineEmptyBlocks(1000);
-      setPrice(100);
+      setPrice(74);
 
       const { result } = liquidate(borrower(), liquidator());
       const data = (result as any).value?.value;
@@ -149,15 +142,15 @@ describe("bitflow-vault-core-v2 liquidation debt basis", () => {
       init();
       setPrice(100);
 
-      deposit(11_000_000, borrower());
+      deposit(15_000_000, borrower());
       borrow(10_000_000, 500, 30, borrower());
       simnet.mineEmptyBlocks(1000);
-      setPrice(100);
+      setPrice(74);
 
       const { result } = liquidate(borrower(), liquidator());
       const data = (result as any).value?.value;
 
-      expect(Number(data["seized-collateral"].value)).toBe(11_000_000);
+      expect(Number(data["seized-collateral"].value)).toBe(15_000_000);
     });
   });
 
