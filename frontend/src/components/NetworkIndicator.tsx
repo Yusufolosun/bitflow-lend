@@ -1,6 +1,7 @@
 import React from 'react';
 import { Wifi } from 'lucide-react';
 import { ACTIVE_NETWORK } from '../config/contracts';
+import { NETWORK_COPY } from '../constants/messages';
 
 /**
  * NetworkIndicator Component
@@ -8,6 +9,7 @@ import { ACTIVE_NETWORK } from '../config/contracts';
  */
 export const NetworkIndicator: React.FC = () => {
   const isMainnet = ACTIVE_NETWORK === 'mainnet';
+  const networkLabel = isMainnet ? NETWORK_COPY.mainnetLabel : NETWORK_COPY.testnetLabel;
 
   return (
     <div
@@ -18,8 +20,8 @@ export const NetworkIndicator: React.FC = () => {
       }`}
       role="status"
       aria-live="polite"
-      aria-label={`Network: Stacks ${isMainnet ? 'Mainnet' : 'Testnet'}`}
-      title={`Connected to Stacks ${isMainnet ? 'Mainnet' : 'Testnet'}`}
+      aria-label={NETWORK_COPY.ariaLabel(networkLabel)}
+      title={NETWORK_COPY.title(networkLabel)}
     >
       <span
         className={`inline-block w-2 h-2 rounded-full ${
@@ -28,7 +30,7 @@ export const NetworkIndicator: React.FC = () => {
         aria-hidden="true"
       />
       <Wifi size={12} aria-hidden="true" />
-      <span>{isMainnet ? 'Mainnet' : 'Testnet'}</span>
+      <span>{networkLabel}</span>
     </div>
   );
 };

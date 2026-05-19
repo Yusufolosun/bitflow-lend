@@ -79,6 +79,7 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
 import { CheckCircle, XCircle, Info, AlertTriangle, X, ExternalLink } from 'lucide-react';
 import { getExplorerUrl } from '../config/contracts';
 import { Toast } from '../hooks/useToast';
+import { TOAST_COPY } from '../constants/messages';
 
 const toastStyles = {
   success: { icon: CheckCircle, bg: 'bg-green-600' },
@@ -118,12 +119,12 @@ const ToastItem: React.FC<{
           {toast.txId && (
             <a href={getExplorerUrl(toast.txId)} target="_blank" rel="noopener noreferrer"
               className="inline-flex items-center gap-1 text-xs mt-2 opacity-90 hover:opacity-100 underline">
-              View on Explorer <ExternalLink size={10} />
+              {TOAST_COPY.viewOnExplorer} <ExternalLink size={10} />
             </a>
           )}
         </div>
         <button type="button" onClick={() => onDismiss(toast.id)}
-          className="flex-shrink-0 p-1 hover:bg-white/20 rounded transition-colors" aria-label="Dismiss">
+          className="flex-shrink-0 p-1 hover:bg-white/20 rounded transition-colors" aria-label={TOAST_COPY.dismiss}>
           <X size={14} />
         </button>
       </div>

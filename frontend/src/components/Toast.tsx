@@ -2,6 +2,7 @@ import React from 'react';
 import { CheckCircle, XCircle, Info, AlertTriangle, X, ExternalLink } from 'lucide-react';
 import { Toast as ToastType } from '../hooks/useToast';
 import { getExplorerUrl } from '../config/contracts';
+import { TOAST_COPY } from '../constants/messages';
 
 /**
  * Individual Toast notification component props
@@ -68,7 +69,7 @@ const ToastItem: React.FC<ToastItemProps> = ({ toast, onDismiss }) => {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1 text-xs mt-2 opacity-90 hover:opacity-100 underline"
             >
-              View on Explorer
+              {TOAST_COPY.viewOnExplorer}
               <ExternalLink size={10} />
             </a>
           )}
@@ -77,7 +78,7 @@ const ToastItem: React.FC<ToastItemProps> = ({ toast, onDismiss }) => {
         <button type="button"
           onClick={() => onDismiss(toast.id)}
           className="flex-shrink-0 p-1 hover:bg-white/20 rounded transition-colors"
-          aria-label="Dismiss notification"
+          aria-label={TOAST_COPY.dismissNotification}
         >
           <X size={14} />
         </button>

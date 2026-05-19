@@ -1,4 +1,5 @@
 import { Component, ErrorInfo, ReactNode } from 'react';
+import { ERROR_BOUNDARY_COPY } from '../constants/messages';
 
 interface Props {
   children: ReactNode;
@@ -41,15 +42,15 @@ export class ErrorBoundary extends Component<Props, State> {
 
       return (
         <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-center" role="alert">
-          <h2 className="text-lg font-bold text-red-800 mb-2">Something went wrong</h2>
+          <h2 className="text-lg font-bold text-red-800 mb-2">{ERROR_BOUNDARY_COPY.title}</h2>
           <p className="text-sm text-red-600 mb-4">
-            {this.state.error?.message || 'An unexpected error occurred'}
+            {this.state.error?.message || ERROR_BOUNDARY_COPY.fallbackMessage}
           </p>
           <button type="button"
             onClick={this.handleRetry}
             className="px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition-colors"
           >
-            Try Again
+            {ERROR_BOUNDARY_COPY.retry}
           </button>
         </div>
       );

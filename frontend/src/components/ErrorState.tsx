@@ -1,5 +1,6 @@
 import React from 'react';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
+import { ERROR_STATE_COPY } from '../constants/messages';
 
 /**
  * ErrorState Component
@@ -20,7 +21,7 @@ interface ErrorStateProps {
 }
 
 export const ErrorState: React.FC<ErrorStateProps> = ({
-  title = 'Something went wrong',
+  title = ERROR_STATE_COPY.defaultTitle,
   message,
   onRetry,
   compact = false,
@@ -37,7 +38,7 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
             className="flex items-center gap-1 text-xs font-medium text-red-600 hover:text-red-800 transition-colors"
           >
             <RefreshCw size={12} />
-            Retry
+            {ERROR_STATE_COPY.retryInline}
           </button>
         )}
       </div>
@@ -59,7 +60,7 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
           className="btn btn-danger text-sm"
         >
           <RefreshCw size={16} />
-          Try Again
+          {ERROR_STATE_COPY.tryAgain}
         </button>
       )}
     </div>

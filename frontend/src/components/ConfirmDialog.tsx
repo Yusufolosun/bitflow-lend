@@ -1,5 +1,6 @@
 import React from 'react';
 import { AlertTriangle, CheckCircle, Info, X } from 'lucide-react';
+import { CONFIRM_DIALOG_COPY } from '../constants/messages';
 
 export interface ConfirmDialogProps {
   isOpen: boolean;
@@ -23,8 +24,8 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   onConfirm,
   title,
   message,
-  confirmText = 'Confirm',
-  cancelText = 'Cancel',
+  confirmText = CONFIRM_DIALOG_COPY.confirmDefault,
+  cancelText = CONFIRM_DIALOG_COPY.cancelDefault,
   variant = 'info',
   isLoading = false,
 }) => {
@@ -97,7 +98,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
           onClick={onClose}
           disabled={isLoading}
           className="absolute top-4 right-4 p-1 text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50"
-          aria-label="Close dialog"
+          aria-label={CONFIRM_DIALOG_COPY.closeAriaLabel}
         >
           <X className="w-5 h-5" />
         </button>
@@ -142,7 +143,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                   </svg>
-                  Processing...
+                  {CONFIRM_DIALOG_COPY.submittingLabel}
                 </span>
               ) : (
                 confirmText
