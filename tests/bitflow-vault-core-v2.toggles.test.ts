@@ -114,8 +114,10 @@ describe("bitflow-vault-core-v2 per-function toggle tests", () => {
       const { result } = liquidate(wallet1(), wallet2());
       expect(result).toBeOk(Cl.tuple({
         "seized-collateral": Cl.uint(10_000_000),
-        "paid": Cl.uint(5_250_000),
-        "bonus": Cl.uint(250_000),
+        "paid": Cl.uint(5_251_998),
+        "principal": Cl.uint(5_000_000),
+        "interest": Cl.uint(1_903),
+        "penalty": Cl.uint(250_095),
       }));
     });
   });
