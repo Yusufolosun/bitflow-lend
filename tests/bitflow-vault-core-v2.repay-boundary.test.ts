@@ -40,7 +40,7 @@ describe("v2 repay exact loan boundary", () => {
     const { result } = simnet.callReadOnlyFn(
       CONTRACT, "get-user-loan", [Cl.principal(wallet1())], deployer()
     );
-    expect(result).toBeNone();
+    expect((result as any).value.value.status).toBeUint(2);
   });
 
   it("user can borrow again after repay", () => {
