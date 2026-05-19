@@ -685,7 +685,7 @@
       (var-set total-repay-volume (safe-add (var-get total-repay-volume) total-repayment))
       (var-set last-activity-block block-height)
       
-      (print { event: "repay", user: tx-sender, principal: loan-amount, interest: interest, penalty: penalty, total: total-repayment })
+      (print { event: "repay", user: tx-sender, principal: loan-amount, interest: interest, penalty: penalty, total: total-repayment, block: block-height })
       (ok { principal: loan-amount, interest: interest, penalty: penalty, total: total-repayment })
     )
   )
