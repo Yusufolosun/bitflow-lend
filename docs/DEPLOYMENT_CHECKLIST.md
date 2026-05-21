@@ -45,33 +45,30 @@ Pre-deployment verification checklist for BitFlow Lend mainnet releases.
 
 ---
 
-## Deployment
-
 ### Contract Deployment
-1. [ ] Set deployer wallet with sufficient STX for deployment fees
-2. [ ] Run `bash scripts/pre-deployment-check.sh` and resolve all failures
-3. [ ] Deploy contracts in order: oracle-registry → staking-pool → vault-core-v2
-4. [ ] Call `initialize` on each contract
-5. [ ] Set initial STX price via `set-stx-price`
-6. [ ] Set initial reward rate on staking pool via `set-reward-rate`
-7. [ ] Add oracle reporters via `add-reporter`
-8. [ ] Configure oracle minimum reporters via `set-min-reporters`
-9. [ ] Verify all `get-contract-version` calls return expected values
+1. [ ] Configure deployer wallet in `settings/Mainnet.toml` with plain mnemonic (and secure it post-deploy).
+2. [ ] Ensure deployer wallet is funded with sufficient STX (estimated 0.066 STX + headroom for init txs).
+3. [ ] Execute deployment orchestration script: `bash scripts/deploy-v3-suite.sh --network mainnet`.
+4. [ ] Verify all 9 pre-flight safety gates pass (git tree, contract syntax, tests, API, balance, secret scan).
 
-### Frontend Deployment
-1. [ ] Build production bundle: `npm run build`
-2. [ ] Deploy to hosting provider (Vercel, Netlify, etc.)
-3. [ ] Verify correct contract addresses in production config
-4. [ ] Test wallet connection on production URL
-5. [ ] Verify API endpoints resolve correctly
+### Post-Deployment Initialization (9-Step Protocol)
+1. [ ] Call `initialize-oracle` on `bitflow-oracle-registry-v3`.
+2. [ ] Add whitelisted price reporters using `add-reporter` (minimum 2 reporters required).
+3. [ ] Bootstrap initial Oracle price using `admin-set-price`.
+4. [ ] Call `initialize-pool` on `bitflow-staking-pool-v3` to start the block yield tracker.
+5. [ ] Call `set-reward-rate` on the staking pool to specify STX yield emission per block.
+6. [ ] Call `fund-rewards` to transfer yield-incentive STX tokens to the staking pool contract.
+7. [ ] Call `initialize` on `bitflow-vault-core-v3` to set epoch limits and start blocks.
+8. [ ] Call `set-stx-price` on the vault core to sync the initial oracle consensus price.
+9. [ ] Run `get-dashboard-snapshot` on all 3 contracts to verify TVL, stats, and operational indicators.
 
 ---
 
 ## Post-Deployment
 
 ### Verification
-- [ ] Contract functions callable from explorer
-- [ ] Frontend loads and displays protocol stats
+- [ ] Contract functions callable from explorer and SDK
+- [ ] Frontend loads and displays protocol stats using the V3 mainnet addresses
 - [ ] Wallet connect works on mainnet
 - [ ] Test deposit with small amount (0.1 STX)
 - [ ] Dashboard snapshot returns correct data
@@ -93,5 +90,5 @@ Pre-deployment verification checklist for BitFlow Lend mainnet releases.
 
 ---
 
-**Document Version:** 1.0.0
-**Last Updated:** March 30, 2026
+**Document Version:** 3.0.0
+**Last Updated:** May 21, 2026
