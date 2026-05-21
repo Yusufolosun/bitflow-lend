@@ -680,6 +680,7 @@
     
     (let (
       (loan (unwrap! (map-get? user-loans tx-sender) ERR-NO-ACTIVE-LOAN))
+      (_ (asserts! (is-eq (get status loan) STATUS-ACTIVE) ERR-NO-ACTIVE-LOAN))
       (loan-amount (get amount loan))
       (blocks-elapsed (safe-sub block-height (get start-block loan)))
       (outstanding-debt (calculate-outstanding-debt loan-amount (get interest-rate loan) blocks-elapsed))
