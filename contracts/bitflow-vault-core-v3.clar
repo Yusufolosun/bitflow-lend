@@ -678,12 +678,13 @@
 )
 
 (define-public (repay)
-  (begin
+  (let (
+    (loan (unwrap! (map-get? user-loans tx-sender) ERR-NO-ACTIVE-LOAN))
+  )
     (asserts! (not (var-get is-paused)) ERR-PROTOCOL-PAUSED)
+    (asserts! (is-eq (get status loan) STATUS-ACTIVE) ERR-NO-ACTIVE-LOAN)
     
     (let (
-      (loan (unwrap! (map-get? user-loans tx-sender) ERR-NO-ACTIVE-LOAN))
-      (_ (asserts! (is-eq (get status loan) STATUS-ACTIVE) ERR-NO-ACTIVE-LOAN))
       (loan-amount (get amount loan))
       (blocks-elapsed (safe-sub block-height (get start-block loan)))
       (outstanding-debt (calculate-outstanding-debt loan-amount (get interest-rate loan) blocks-elapsed))
