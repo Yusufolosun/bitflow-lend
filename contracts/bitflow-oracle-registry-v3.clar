@@ -58,6 +58,11 @@
   (default-to false (map-get? reporters addr))
 )
 
+;; Filter predicate for rebuilding current-reporters after removal
+(define-private (is-still-reporter (addr principal))
+  (default-to false (map-get? reporters addr))
+)
+
 ;; Check if the aggregated price is still fresh
 (define-private (is-price-fresh)
   (let (
@@ -198,6 +203,8 @@
     (map-delete reporters reporter)
     (map-delete reporter-prices reporter)
     (var-set reporter-count (- (var-get reporter-count) u1))
+    (var-set current-reporters
+      (filter is-still-reporter (var-get current-reporters)))
     (print { event: "reporter-removed", reporter: reporter })
     (ok true)
   )
