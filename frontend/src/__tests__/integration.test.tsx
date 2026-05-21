@@ -73,7 +73,11 @@ vi.mock('../hooks/useOracleSanityCheck', () => ({
 }));
 
 vi.mock('../hooks/useSmartPolling', () => ({
-  useSmartPolling: vi.fn(),
+  useSmartPolling: (fn: () => void) => {
+    React.useEffect(() => {
+      fn();
+    }, [fn]);
+  },
 }));
 
 vi.mock('../components/TokenRateTicker', () => ({
@@ -275,10 +279,31 @@ describe('App Integration', () => {
       expect(screen.getByText('Health Factor')).toBeInTheDocument();
     });
 
-    it('labels health factor as on-chain', () => {
+    it('labels health factor as on-chain', async () => {
+      mockVaultState.current.getUserLoan = vi.fn().mockImplementation(async () => {
+        return {
+          amountSTX: 100,
+          collateralAmountSTX: 150,
+          status: 'active',
+          termEnd: 1000,
+          interestRatePercent: 5,
+          startTimestamp: Date.now() / 1000,
+        };
+      });
+      mockVaultState.current.getHealthFactor = vi.fn().mockImplementation(async () => {
+        return {
+          healthFactorPercent: 150,
+          collateralValueUSD: 225,
+          debtValueUSD: 150,
+          stxPriceUSD: 1.5,
+        };
+      });
+
       render(<Dashboard />);
 
-      expect(screen.getByText('Source: On-chain')).toBeInTheDocument();
+      const elements = await screen.findAllByText('Source: On-chain');
+      expect(elements.length).toBeGreaterThan(0);
+      expect(elements[0]).toBeInTheDocument();
     });
   });
 

@@ -6,6 +6,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { WalletConnect } from '../WalletConnect';
+import { WALLET_COPY, COMMON_STATUS } from '../../constants/messages';
 
 // Mock hooks
 const mockConnectWallet = vi.fn();
@@ -65,7 +66,7 @@ describe('WalletConnect Component', () => {
       });
 
       render(<WalletConnect />);
-      expect(screen.getByText('Loading...')).toBeInTheDocument();
+      expect(screen.getByText(COMMON_STATUS.loadingWallet)).toBeInTheDocument();
     });
 
     it('does not show connect button when loading', () => {
@@ -80,7 +81,7 @@ describe('WalletConnect Component', () => {
       });
 
       render(<WalletConnect />);
-      expect(screen.queryByText('Connect Wallet')).not.toBeInTheDocument();
+      expect(screen.queryByText(WALLET_COPY.connect)).not.toBeInTheDocument();
     });
   });
 
@@ -99,7 +100,7 @@ describe('WalletConnect Component', () => {
 
     it('shows connect wallet button', () => {
       render(<WalletConnect />);
-      expect(screen.getByText('Connect Wallet')).toBeInTheDocument();
+      expect(screen.getByText(WALLET_COPY.connect)).toBeInTheDocument();
     });
 
     it('shows wallet icon on connect button', () => {
@@ -111,19 +112,19 @@ describe('WalletConnect Component', () => {
       const user = userEvent.setup();
       render(<WalletConnect />);
       
-      await user.click(screen.getByText('Connect Wallet'));
+      await user.click(screen.getByText(WALLET_COPY.connect));
       expect(mockConnectWallet).toHaveBeenCalledOnce();
     });
 
     it('does not show balance or address', () => {
       render(<WalletConnect />);
-      expect(screen.queryByText('Balance')).not.toBeInTheDocument();
+      expect(screen.queryByText(WALLET_COPY.balanceLabel)).not.toBeInTheDocument();
       expect(screen.queryByText('Connected')).not.toBeInTheDocument();
     });
 
     it('does not show disconnect button', () => {
       render(<WalletConnect />);
-      expect(screen.queryByText('Disconnect')).not.toBeInTheDocument();
+      expect(screen.queryByText(WALLET_COPY.disconnect)).not.toBeInTheDocument();
     });
   });
 
@@ -142,7 +143,7 @@ describe('WalletConnect Component', () => {
 
     it('shows balance display', () => {
       render(<WalletConnect />);
-      expect(screen.getByText('Balance')).toBeInTheDocument();
+      expect(screen.getByText(WALLET_COPY.balanceLabel)).toBeInTheDocument();
     });
 
     it('formats balance correctly', () => {
@@ -163,7 +164,7 @@ describe('WalletConnect Component', () => {
 
     it('shows disconnect button', () => {
       render(<WalletConnect />);
-      expect(screen.getByText('Disconnect')).toBeInTheDocument();
+      expect(screen.getByText(WALLET_COPY.disconnect)).toBeInTheDocument();
     });
 
     it('provides user feedback when copy address is clicked', async () => {
@@ -179,7 +180,7 @@ describe('WalletConnect Component', () => {
       const user = userEvent.setup();
       render(<WalletConnect />);
       
-      await user.click(screen.getByText('Disconnect'));
+      await user.click(screen.getByText(WALLET_COPY.disconnect));
       expect(mockDisconnectWallet).toHaveBeenCalledOnce();
     });
 
@@ -190,14 +191,14 @@ describe('WalletConnect Component', () => {
 
     it('shows refresh balance button', () => {
       render(<WalletConnect />);
-      expect(screen.getByTitle('Refresh Balance')).toBeInTheDocument();
+      expect(screen.getByTitle(WALLET_COPY.refreshBalanceTitle)).toBeInTheDocument();
     });
 
     it('calls refreshBalance when refresh is clicked', async () => {
       const user = userEvent.setup();
       render(<WalletConnect />);
       
-      await user.click(screen.getByTitle('Refresh Balance'));
+      await user.click(screen.getByTitle(WALLET_COPY.refreshBalanceTitle));
       
       await waitFor(() => {
         expect(mockRefreshBalance).toHaveBeenCalled();
