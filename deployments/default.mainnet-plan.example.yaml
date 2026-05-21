@@ -9,26 +9,24 @@ plan:
     - id: 1
       transactions:
         - contract-publish:
-            contract-name: bitflow-vault-core-v2
+            contract-name: bitflow-vault-core-v3
             expected-sender: SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193
             cost: 165000
-            path: "contracts/bitflow-vault-core-v2.clar"
+            path: "contracts/bitflow-vault-core-v3.clar"
             anchor-block-only: true
             clarity-version: 2
-    - id: 2
-      transactions:
         - contract-publish:
-            contract-name: bitflow-staking-pool
+            contract-name: bitflow-staking-pool-v3
             expected-sender: SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193
             cost: 125000
-            path: "contracts/bitflow-staking-pool.clar"
+            path: "contracts/bitflow-staking-pool-v3.clar"
             anchor-block-only: true
             clarity-version: 2
         - contract-publish:
-            contract-name: bitflow-oracle-registry
+            contract-name: bitflow-oracle-registry-v3
             expected-sender: SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193
             cost: 105000
-            path: "contracts/bitflow-oracle-registry.clar"
+            path: "contracts/bitflow-oracle-registry-v3.clar"
             anchor-block-only: true
             clarity-version: 2
       epoch: "2.5"
