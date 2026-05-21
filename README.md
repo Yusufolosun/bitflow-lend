@@ -69,7 +69,19 @@ npm install
 npm run dev
 ```
 
-### Deploy
+### Deploying the Protocol Suite
+
+We provide a production-grade automated deployment orchestration script that executes 9 pre-flight safety checks (syntax, tests, wallet balance, and secret scans) before deploying:
+
+```bash
+# Deploy to Stacks Testnet
+bash scripts/deploy-v3-suite.sh --network testnet
+
+# Deploy to Stacks Mainnet
+bash scripts/deploy-v3-suite.sh --network mainnet
+```
+
+Alternatively, deploy directly using Clarinet:
 
 ```bash
 # Testnet
@@ -79,19 +91,41 @@ clarinet deployments apply -p deployments/default.testnet-plan.yaml
 clarinet deployments apply -p deployments/default.mainnet-plan.yaml
 ```
 
-## Contract Functions
+## Smart Contract Interface Reference
+
+### `bitflow-vault-core-v3`
 
 | Function | Type | Description |
 |----------|------|-------------|
 | `deposit` | Write | Deposit STX as collateral |
 | `withdraw` | Write | Withdraw unused collateral |
 | `borrow` | Write | Take a fixed-rate loan |
-| `repay` | Write | Repay loan with interest |
-| `liquidate` | Write | Liquidate undercollateralized positions |
-| `get-user-deposit` | Read | View collateral balance |
-| `get-user-loan` | Read | View active loan details |
-| `calculate-health-factor` | Read | Check liquidation risk |
-| `get-repayment-amount` | Read | Calculate repayment due |
+| `repay` | Write | Repay loan principal plus simple interest |
+| `liquidate` | Write | Liquidate undercollateralized positions (health factor < 1.10) |
+| `get-user-deposit` | Read | Get current collateral balance for a principal |
+| `get-user-loan` | Read | Get active loan details, principal, term, and interest rate |
+| `calculate-health-factor` | Read | Get position health factor (1.50+ is safe, <1.10 is liquidatable) |
+| `get-repayment-amount` | Read | Get total repayment amount due including simple interest |
+| `get-dashboard-snapshot` | Read | Get aggregated vault stats, pool utilization, and protocol age |
+
+### `bitflow-staking-pool-v3`
+
+| Function | Type | Description |
+|----------|------|-------------|
+| `stake` | Write | Stake STX to earn yield |
+| `unstake-request` | Write | Initiate a cooldown period to unstake STX |
+| `unstake` | Write | Withdraw STX after cooldown expires |
+| `claim-rewards` | Write | Claim accumulated STX rewards |
+| `get-staker-summary` | Read | View active stake, checkpoints, pending rewards, and cooldowns |
+| `get-dashboard-snapshot` | Read | View staking pool TVL, reward rates, and yield performance |
+
+### `bitflow-oracle-registry-v3`
+
+| Function | Type | Description |
+|----------|------|-------------|
+| `submit-price` | Write | Whitelisted reporter price submission |
+| `get-aggregated-price` | Read | Get the consensus price aggregated from active reporters |
+| `get-dashboard-snapshot` | Read | View active reporter list, min reporter threshold, and price age |
 
 ## Technology Stack
 
