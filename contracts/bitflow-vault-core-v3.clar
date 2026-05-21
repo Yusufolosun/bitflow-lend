@@ -826,9 +826,10 @@
           interest-rate: (get interest-rate loan-info),
           start-block: (get start-block loan-info),
           term-end: (get term-end loan-info),
-          created-at-price: (get created-at-price loan-info)
+          created-at-price: (get created-at-price loan-info),
+          status: (get status loan-info)
         }
-        { amount: u0, interest-rate: u0, start-block: u0, term-end: u0, created-at-price: u0 }
+        { amount: u0, interest-rate: u0, start-block: u0, term-end: u0, created-at-price: u0, status: u0 }
       ),
       repayment: (get-repayment-amount user),
       exported-at-block: block-height
