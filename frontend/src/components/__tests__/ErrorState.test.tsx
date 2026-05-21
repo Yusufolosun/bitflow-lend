@@ -16,7 +16,7 @@ vi.mock('lucide-react', () => ({
 describe('ErrorState Component', () => {
   it('renders default title and message', () => {
     render(<ErrorState message="Something broke" />);
-    expect(screen.getByText('Something went wrong')).toBeInTheDocument();
+    expect(screen.getByText('Stacks request failed')).toBeInTheDocument();
     expect(screen.getByText('Something broke')).toBeInTheDocument();
   });
 
@@ -27,12 +27,12 @@ describe('ErrorState Component', () => {
 
   it('shows retry button when onRetry is provided', () => {
     render(<ErrorState message="Error" onRetry={() => {}} />);
-    expect(screen.getByText('Try Again')).toBeInTheDocument();
+    expect(screen.getByText('Try again')).toBeInTheDocument();
   });
 
   it('hides retry button when onRetry is not provided', () => {
     render(<ErrorState message="Error" />);
-    expect(screen.queryByText('Try Again')).not.toBeInTheDocument();
+    expect(screen.queryByText('Try again')).not.toBeInTheDocument();
     expect(screen.queryByText('Retry')).not.toBeInTheDocument();
   });
 
@@ -41,7 +41,7 @@ describe('ErrorState Component', () => {
     const mockRetry = vi.fn();
     render(<ErrorState message="Error" onRetry={mockRetry} />);
 
-    await user.click(screen.getByText('Try Again'));
+    await user.click(screen.getByText('Try again'));
     expect(mockRetry).toHaveBeenCalledOnce();
   });
 
