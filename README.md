@@ -1,40 +1,56 @@
-# BitFlow Lend
+# BitFlow Lend V3
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![CI](https://github.com/Yusufolosun/bitflow-lend/actions/workflows/ci.yml/badge.svg)](https://github.com/Yusufolosun/bitflow-lend/actions/workflows/ci.yml)
 [![Tests](https://github.com/Yusufolosun/bitflow-lend/actions/workflows/test.yml/badge.svg)](https://github.com/Yusufolosun/bitflow-lend/actions/workflows/test.yml)
 [![Clarity](https://img.shields.io/badge/language-Clarity-blue.svg)]()
 [![Stacks](https://img.shields.io/badge/blockchain-Stacks-purple.svg)]()
-[![Mainnet](https://img.shields.io/badge/mainnet-deployed-success.svg)](https://explorer.hiro.so/address/SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.bitflow-vault-core-v2?chain=mainnet)
+[![Mainnet](https://img.shields.io/badge/mainnet-deployed-success.svg)](https://explorer.hiro.so/address/SP1N3809W9CBWWX04KN3TCQHP8A9GN520BD4JMP8Z.bitflow-vault-core-v3?chain=mainnet)
 
-Bitcoin-native fixed-rate lending protocol built on Stacks blockchain.
+A production-grade, decentralized Bitcoin-native fixed-rate lending protocol suite built in Clarity on the Stacks blockchain.
 
-## Overview
+## Protocol Suite Architecture
 
-BitFlow Lend enables users to lend and borrow STX with predictable, fixed interest rates secured by Bitcoin finality.
+BitFlow Lend V3 consists of three core smart contracts designed to operate collectively:
 
-**Key Features:**
-- Fixed interest rates locked at time of borrowing
-- 150% collateralization requirement
-- Automated liquidation at 110% health factor
-- Simple interest — transparent and predictable
-- Immutable contract code with admin-governed protocol controls
+1. **`bitflow-oracle-registry-v3`**: A multi-source decentralized price oracle with whitelisted reporter validation, deviation checks, and automatic staleness protection.
+2. **`bitflow-staking-pool-v3`**: An incentive-alignment pool distributing STX rewards to protocol participants using a checkpoint-based yield engine.
+3. **`bitflow-vault-core-v3`**: The core fixed-rate lending engine managing user collateral, deposits, borrow limits, and a robust liquidation liquidator loop.
 
-## Trust Model
+---
 
-BitFlow contract code is immutable once deployed, but protocol operations are admin-governed through owner-only functions (for example: price updates, pause switches, risk-parameter setters, and liquidation penalty configuration).
+## Key Features
 
-Admin activity is transparently logged on-chain through `admin-action` print events in every owner-only public function. All user-facing state changes (deposits, withdrawals, borrows, repayments, liquidations) emit structured events with block-height for indexer and subgraph consumption.
+- **Fixed Interest Rates**: Guaranteed and locked at the exact moment of borrowing, eliminating variable rate volatility.
+- **Robust Collateral Management**: Secured by a strict 150% minimum collateralization ratio.
+- **Automated Liquidations**: Automatic position closing triggered at a 110% health factor with a 5% liquidator bonus.
+- **On-Chain Event Sourcing**: Structured event logs emitted with block heights for indexers, substreams, and subgraphs.
+- **Granular Circuit Breakers**: Multi-tier admin toggles allowing per-function pausing (deposits, borrows, withdrawals, liquidations) for emergency risk management.
 
-Review all privileged capabilities and abuse scenarios in [PRIVILEGED_FUNCTIONS.md](./PRIVILEGED_FUNCTIONS.md).
+---
 
-## Mainnet Deployment
+## Governance & Trust Model
 
-| | |
-|---|---|
-| **Contract** | `SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.bitflow-vault-core-v2` |
-| **Explorer** | [View on Hiro Explorer](https://explorer.hiro.so/address/SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.bitflow-vault-core-v2?chain=mainnet) |
-| **Deployed** | February 10, 2026 |
+The BitFlow Lend V3 contracts are immutable once deployed. To handle dynamic network environments, select protocol parameters are admin-governed via the `contract-owner` (deployer wallet):
+- Price feeds and whitelisted oracle reporters.
+- Risk parameters (minimum collateral ratio, liquidation threshold, late penalty rates).
+- Emergency pause controls for individual protocol functions.
+
+Every privileged operation emits an explicit on-chain `admin-action` print event logging the executing principal and the action details.
+
+For an exhaustive audit of admin controls, view [PRIVILEGED_FUNCTIONS.md](./PRIVILEGED_FUNCTIONS.md).
+
+---
+
+## Mainnet Deployments
+
+All three contracts were deployed to the Stacks mainnet on **May 21, 2026**:
+
+| Contract | Mainnet Address | Explorer |
+|----------|-----------------|----------|
+| **Oracle Registry** | `SP1N3809W9CBWWX04KN3TCQHP8A9GN520BD4JMP8Z.bitflow-oracle-registry-v3` | [View on Hiro Explorer](https://explorer.hiro.so/address/SP1N3809W9CBWWX04KN3TCQHP8A9GN520BD4JMP8Z.bitflow-oracle-registry-v3?chain=mainnet) |
+| **Staking Pool** | `SP1N3809W9CBWWX04KN3TCQHP8A9GN520BD4JMP8Z.bitflow-staking-pool-v3` | [View on Hiro Explorer](https://explorer.hiro.so/address/SP1N3809W9CBWWX04KN3TCQHP8A9GN520BD4JMP8Z.bitflow-staking-pool-v3?chain=mainnet) |
+| **Vault Core** | `SP1N3809W9CBWWX04KN3TCQHP8A9GN520BD4JMP8Z.bitflow-vault-core-v3` | [View on Hiro Explorer](https://explorer.hiro.so/address/SP1N3809W9CBWWX04KN3TCQHP8A9GN520BD4JMP8Z.bitflow-vault-core-v3?chain=mainnet) |
 
 ## Quick Start
 
