@@ -298,7 +298,7 @@
         ;; Update the aggregate (using latest reporter submission as price)
         ;; In production a median across all fresh reporter prices would be ideal,
         ;; but Clarity lacks sorting. We use the latest valid submission.
-        (asserts! (>= (len (var-get current-reporters)) (var-get min-reporters)) ERR-THRESHOLD-NOT-MET)
+        (asserts! (>= (var-get reporter-count) (var-get min-reporters)) ERR-THRESHOLD-NOT-MET)
         (var-set aggregated-price price)
         (var-set aggregated-block block-height)
         (var-set total-submissions (+ (var-get total-submissions) u1))
