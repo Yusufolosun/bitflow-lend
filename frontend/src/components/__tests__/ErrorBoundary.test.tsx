@@ -35,7 +35,7 @@ describe('ErrorBoundary', () => {
         <ThrowingComponent />
       </ErrorBoundary>
     );
-    expect(screen.getByText('Something went wrong')).toBeDefined();
+    expect(screen.getByText('Unexpected UI error on Stacks')).toBeDefined();
     expect(screen.getByText('Test crash')).toBeDefined();
   });
 
@@ -54,7 +54,7 @@ describe('ErrorBoundary', () => {
         <ThrowingComponent />
       </ErrorBoundary>
     );
-    expect(screen.getByText('Try Again')).toBeDefined();
+    expect(screen.getByText('Retry view')).toBeDefined();
   });
 
   it('marks fallback as alert role', () => {
