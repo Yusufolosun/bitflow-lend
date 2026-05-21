@@ -62,9 +62,9 @@ describe('ConfirmDialog', () => {
 
   it('shows loading state when isLoading is true', () => {
     render(<ConfirmDialog {...defaultProps} isLoading={true} />);
-    expect(screen.getByText('Processing...')).toBeInTheDocument();
+    expect(screen.getByText(/Submitting to Stacks/i)).toBeInTheDocument();
     
-    const confirmButton = screen.getByText('Processing...').closest('button');
+    const confirmButton = screen.getByText(/Submitting to Stacks/i).closest('button');
     expect(confirmButton).toBeDisabled();
   });
 
