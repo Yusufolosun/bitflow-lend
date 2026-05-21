@@ -3,7 +3,7 @@
 exports[`HealthFactorDisplay > matches snapshot for healthy state 1`] = `
 <DocumentFragment>
   <div
-    aria-label="Health Factor: 200 percent, status: healthy"
+    aria-label="Health factor: 200 percent, status: Healthy"
     aria-live="polite"
     class="rounded-xl border-2 transition-all duration-500 hover:shadow-lg animate-in fade-in zoom-in-95 text-emerald-600 bg-emerald-50 border-emerald-100 p-4"
     data-testid="hf-display-healthy"
@@ -27,7 +27,7 @@ exports[`HealthFactorDisplay > matches snapshot for healthy state 1`] = `
           <span
             class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-200 text-emerald-800"
           >
-            healthy
+            Healthy
           </span>
         </div>
         <div
