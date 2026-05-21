@@ -358,17 +358,20 @@
   )
     {
       deposit-amount: deposit-amount,
-      has-loan: (is-some loan-data),
+      has-loan: (match loan-data
+        loan-info (is-eq (get status loan-info) STATUS-ACTIVE)
+        false
+      ),
       loan-amount: (match loan-data
-        loan-info (get amount loan-info)
+        loan-info (if (is-eq (get status loan-info) STATUS-ACTIVE) (get amount loan-info) u0)
         u0
       ),
       loan-interest-rate: (match loan-data
-        loan-info (get interest-rate loan-info)
+        loan-info (if (is-eq (get status loan-info) STATUS-ACTIVE) (get interest-rate loan-info) u0)
         u0
       ),
       loan-term-end: (match loan-data
-        loan-info (get term-end loan-info)
+        loan-info (if (is-eq (get status loan-info) STATUS-ACTIVE) (get term-end loan-info) u0)
         u0
       ),
       health-factor: (match loan-data
@@ -377,13 +380,13 @@
       ),
       is-liquidatable: (is-liquidatable user stx-price),
       is-liquidatable-by-term: (match loan-data
-        loan-info (> block-height (get term-end loan-info))
+        loan-info (and (is-eq (get status loan-info) STATUS-ACTIVE) (> block-height (get term-end loan-info)))
         false
       ),
       max-borrow-available: max-borrow,
       collateral-usage-percent: (if (> deposit-amount u0)
         (match loan-data
-          loan-info (/ (* (get amount loan-info) u100) deposit-amount)
+          loan-info (if (is-eq (get status loan-info) STATUS-ACTIVE) (/ (* (get amount loan-info) u100) deposit-amount) u0)
           u0
         )
         u0
