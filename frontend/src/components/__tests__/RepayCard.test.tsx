@@ -9,7 +9,7 @@ import { RepayCard } from '../RepayCard';
 import type { StacksTxStatusSnapshot } from '../../types/txStatus';
 
 const { mockOracleSanityState } = vi.hoisted(() => ({
-  mockOracleSanityState: { current: { warning: false, deviation: 0 } },
+  mockOracleSanityState: { current: { warning: false, deviation: 0, marketRate: null as number | null } },
 }));
 
 // Mock hooks
@@ -110,6 +110,7 @@ describe('RepayCard Component', () => {
       mockOracleSanityState.current = {
         warning: true,
         deviation: 0.1,
+        marketRate: 1.65,
       };
 
       render(<RepayCard />);
