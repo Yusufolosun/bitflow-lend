@@ -5,6 +5,7 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { LoadingCard, LoadingStats } from '../LoadingCard';
+import { LOADING_COPY } from '../../constants/messages';
 
 describe('LoadingCard Component', () => {
   it('renders with default 3 skeleton lines', () => {
@@ -37,7 +38,7 @@ describe('LoadingCard Component', () => {
 
   it('has screen reader text', () => {
     render(<LoadingCard />);
-    expect(screen.getByText('Loading...')).toBeInTheDocument();
+    expect(screen.getByText(LOADING_COPY.contentSrOnly)).toBeInTheDocument();
   });
 
   it('applies custom className', () => {
@@ -60,7 +61,7 @@ describe('LoadingStats Component', () => {
 
   it('includes screen reader text for each card', () => {
     render(<LoadingStats />);
-    const srTexts = screen.getAllByText('Loading...');
+    const srTexts = screen.getAllByText(LOADING_COPY.statsSrOnly);
     expect(srTexts.length).toBe(4);
   });
 });

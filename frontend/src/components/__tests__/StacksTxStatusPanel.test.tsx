@@ -54,7 +54,7 @@ describe('StacksTxStatusPanel', () => {
     );
 
     expect(screen.getByText(/waiting for indexer propagation/i)).toBeInTheDocument();
-    expect(screen.getByText(/only mark this as not found/i)).toBeInTheDocument();
+    expect(screen.getByText(/mark this as not found/i)).toBeInTheDocument();
   });
 
   it('renders confirmed state', () => {
@@ -103,7 +103,7 @@ describe('StacksTxStatusPanel', () => {
     );
 
     expect(screen.getByText(/not found after 60 minutes/i)).toBeInTheDocument();
-    expect(screen.getByText(/kept polling for 61 min/i)).toBeInTheDocument();
+    expect(screen.getByText(/polled for 61 min/i)).toBeInTheDocument();
   });
 
   it('renders microblock anchor label when available', () => {
