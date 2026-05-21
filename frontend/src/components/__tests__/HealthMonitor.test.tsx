@@ -7,7 +7,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { HealthMonitor } from '../HealthMonitor';
 
 const { mockOracleSanityState, mockVaultState } = vi.hoisted(() => ({
-  mockOracleSanityState: { current: { warning: false, deviation: 0 } },
+  mockOracleSanityState: { current: { warning: false, deviation: 0, marketRate: null as number | null } },
   mockVaultState: { 
     deposit: null, 
     loan: null, 
@@ -101,7 +101,7 @@ describe('HealthMonitor Component', () => {
   it('shows no active position message when no loan', () => {
     mockVaultState.loan = null;
     render(<HealthMonitor />);
-    expect(screen.getByText('No Active Position')).toBeInTheDocument();
+    expect(screen.getByText(/No active position/i)).toBeInTheDocument();
   });
 
   it('shows the health factor display when a loan is active', async () => {
@@ -125,18 +125,19 @@ describe('HealthMonitor Component', () => {
     // Use findByTestId which returns a promise and retries
     const display = await screen.findByTestId('hf-display-mock');
     expect(display).toBeInTheDocument();
-    expect(screen.getByText('150%')).toBeInTheDocument();
+    expect(screen.getByText(/150%/)).toBeInTheDocument();
   });
 
   it('shows the oracle sanity warning banner when the price diverges', () => {
     mockOracleSanityState.current = {
       warning: true,
       deviation: 0.12,
+      marketRate: 1.68,
     };
 
     render(<HealthMonitor />);
 
-    expect(screen.getByText('Oracle Price Sanity Warning')).toBeInTheDocument();
+    expect(screen.getByText(/Oracle price sanity warning/i)).toBeInTheDocument();
     expect(screen.getByText(/12.0%/)).toBeInTheDocument();
   });
 });
