@@ -13,6 +13,50 @@ vi.mock('@bitflowlabs/core-sdk', () => ({
 
 type QuoteResult = Awaited<ReturnType<BitflowSDK['getQuoteForRoute']>>;
 
+const createQuote = (quoteValue: number): QuoteResult => ({
+  bestRoute: {
+    route: {
+      dex_path: ['alex'],
+      token_path: ['token-stx', 'token-usda'],
+      postConditions: {},
+      quoteData: {
+        contract: 'SP000.mock-router',
+        function: 'quote',
+        parameters: {},
+      },
+      swapData: {
+        contract: 'SP000.mock-router',
+        function: 'swap',
+        parameters: {},
+      },
+      tokenXDecimals: 6,
+      tokenYDecimals: 6,
+    },
+    quote: quoteValue,
+    params: {},
+    quoteData: {
+      contract: 'SP000.mock-router',
+      function: 'quote',
+      parameters: {},
+    },
+    swapData: {
+      contract: 'SP000.mock-router',
+      function: 'swap',
+      parameters: {},
+    },
+    dexPath: ['alex'],
+    tokenPath: ['token-stx', 'token-usda'],
+    tokenXDecimals: 6,
+    tokenYDecimals: 6,
+  },
+  allRoutes: [],
+  inputData: {
+    tokenX: 'token-stx',
+    tokenY: 'token-usda',
+    amountInput: 1,
+  },
+});
+
 describe('useOracleSanityCheck', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -29,51 +73,7 @@ describe('useOracleSanityCheck', () => {
   };
 
   it('returns a warning when the oracle diverges by more than 5 percent', async () => {
-    const quote: QuoteResult = {
-      bestRoute: {
-        route: {
-          dex_path: ['alex'],
-          token_path: ['token-stx', 'token-usda'],
-          postConditions: {},
-          quoteData: {
-            contract: 'SP000.mock-router',
-            function: 'quote',
-            parameters: {},
-          },
-          swapData: {
-            contract: 'SP000.mock-router',
-            function: 'swap',
-            parameters: {},
-          },
-          tokenXDecimals: 6,
-          tokenYDecimals: 6,
-        },
-        quote: 1.25,
-        params: {},
-        quoteData: {
-          contract: 'SP000.mock-router',
-          function: 'quote',
-          parameters: {},
-        },
-        swapData: {
-          contract: 'SP000.mock-router',
-          function: 'swap',
-          parameters: {},
-        },
-        dexPath: ['alex'],
-        tokenPath: ['token-stx', 'token-usda'],
-        tokenXDecimals: 6,
-        tokenYDecimals: 6,
-      },
-      allRoutes: [],
-      inputData: {
-        tokenX: 'token-stx',
-        tokenY: 'token-usda',
-        amountInput: 1,
-      },
-    };
-
-    mockGetQuoteForRoute.mockResolvedValue(quote);
+    mockGetQuoteForRoute.mockResolvedValue(createQuote(1.25));
 
     const { result } = renderHook(() => useOracleSanityCheck(1.0, 'token-stx'));
 
@@ -81,56 +81,12 @@ describe('useOracleSanityCheck', () => {
 
     expect(result.current.warning).toBe(true);
     expect(result.current.deviation).toBeCloseTo(0.25, 2);
-
+    expect(result.current.marketRate).toBeCloseTo(1.25, 2);
     expect(mockGetQuoteForRoute).toHaveBeenCalledWith('token-stx', 'token-usda', 1);
   });
 
   it('does not warn when the market quote stays within the threshold', async () => {
-    const quote: QuoteResult = {
-      bestRoute: {
-        route: {
-          dex_path: ['alex'],
-          token_path: ['token-stx', 'token-usda'],
-          postConditions: {},
-          quoteData: {
-            contract: 'SP000.mock-router',
-            function: 'quote',
-            parameters: {},
-          },
-          swapData: {
-            contract: 'SP000.mock-router',
-            function: 'swap',
-            parameters: {},
-          },
-          tokenXDecimals: 6,
-          tokenYDecimals: 6,
-        },
-        quote: 1.03,
-        params: {},
-        quoteData: {
-          contract: 'SP000.mock-router',
-          function: 'quote',
-          parameters: {},
-        },
-        swapData: {
-          contract: 'SP000.mock-router',
-          function: 'swap',
-          parameters: {},
-        },
-        dexPath: ['alex'],
-        tokenPath: ['token-stx', 'token-usda'],
-        tokenXDecimals: 6,
-        tokenYDecimals: 6,
-      },
-      allRoutes: [],
-      inputData: {
-        tokenX: 'token-stx',
-        tokenY: 'token-usda',
-        amountInput: 1,
-      },
-    };
-
-    mockGetQuoteForRoute.mockResolvedValue(quote);
+    mockGetQuoteForRoute.mockResolvedValue(createQuote(1.03));
 
     const { result } = renderHook(() => useOracleSanityCheck(1.0, 'token-stx'));
 
@@ -138,56 +94,13 @@ describe('useOracleSanityCheck', () => {
 
     expect(result.current.warning).toBe(false);
     expect(result.current.deviation).toBeCloseTo(0.03, 2);
+    expect(result.current.marketRate).toBeCloseTo(1.03, 2);
   });
 
   it('refreshes the Bitflow quote on the polling interval', async () => {
     vi.useFakeTimers();
 
-    const quote: QuoteResult = {
-      bestRoute: {
-        route: {
-          dex_path: ['alex'],
-          token_path: ['token-stx', 'token-usda'],
-          postConditions: {},
-          quoteData: {
-            contract: 'SP000.mock-router',
-            function: 'quote',
-            parameters: {},
-          },
-          swapData: {
-            contract: 'SP000.mock-router',
-            function: 'swap',
-            parameters: {},
-          },
-          tokenXDecimals: 6,
-          tokenYDecimals: 6,
-        },
-        quote: 1.0,
-        params: {},
-        quoteData: {
-          contract: 'SP000.mock-router',
-          function: 'quote',
-          parameters: {},
-        },
-        swapData: {
-          contract: 'SP000.mock-router',
-          function: 'swap',
-          parameters: {},
-        },
-        dexPath: ['alex'],
-        tokenPath: ['token-stx', 'token-usda'],
-        tokenXDecimals: 6,
-        tokenYDecimals: 6,
-      },
-      allRoutes: [],
-      inputData: {
-        tokenX: 'token-stx',
-        tokenY: 'token-usda',
-        amountInput: 1,
-      },
-    };
-
-    mockGetQuoteForRoute.mockResolvedValue(quote);
+    mockGetQuoteForRoute.mockResolvedValue(createQuote(1.0));
 
     const { result } = renderHook(() => useOracleSanityCheck(1.0, 'token-stx'));
 
@@ -212,7 +125,7 @@ describe('useOracleSanityCheck', () => {
 
     expect(result.current.warning).toBe(false);
     expect(result.current.deviation).toBe(0);
-
+    expect(result.current.marketRate).toBeNull();
     expect(mockGetQuoteForRoute).not.toHaveBeenCalled();
   });
 
@@ -225,5 +138,37 @@ describe('useOracleSanityCheck', () => {
 
     expect(result.current.warning).toBe(false);
     expect(result.current.deviation).toBe(0);
+    expect(result.current.marketRate).toBeNull();
+  });
+
+  it('returns default when the Bitflow market rate is zero', async () => {
+    mockGetQuoteForRoute.mockResolvedValue(createQuote(0));
+
+    const { result } = renderHook(() => useOracleSanityCheck(1.0, 'token-stx'));
+
+    await flushPromises();
+
+    expect(result.current.warning).toBe(false);
+    expect(result.current.deviation).toBe(0);
+    expect(result.current.marketRate).toBeNull();
+  });
+
+  it('returns default when the tokenId is an empty string', async () => {
+    const { result } = renderHook(() => useOracleSanityCheck(1.0, ''));
+
+    await flushPromises();
+
+    expect(result.current.warning).toBe(false);
+    expect(mockGetQuoteForRoute).not.toHaveBeenCalled();
+  });
+
+  it('returns default when oraclePrice is NaN', async () => {
+    const { result } = renderHook(() => useOracleSanityCheck(NaN, 'token-stx'));
+
+    await flushPromises();
+
+    expect(result.current.warning).toBe(false);
+    expect(result.current.deviation).toBe(0);
+    expect(mockGetQuoteForRoute).not.toHaveBeenCalled();
   });
 });
