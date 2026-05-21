@@ -6,6 +6,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ToastContainer } from '../Toast';
+import { TOAST_COPY } from '../../constants/messages';
 import type { Toast } from '../../hooks/useToast';
 
 // Mock lucide-react
@@ -69,7 +70,7 @@ describe('ToastContainer Component', () => {
         onDismiss={mockDismiss}
       />
     );
-    const link = screen.getByText('View on Explorer');
+    const link = screen.getByText(TOAST_COPY.viewOnExplorer);
     expect(link).toBeInTheDocument();
     expect(link.closest('a')).toHaveAttribute(
       'href',
@@ -84,7 +85,7 @@ describe('ToastContainer Component', () => {
         onDismiss={mockDismiss}
       />
     );
-    expect(screen.queryByText('View on Explorer')).not.toBeInTheDocument();
+    expect(screen.queryByText(TOAST_COPY.viewOnExplorer)).not.toBeInTheDocument();
   });
 
   it('calls onDismiss when close button is clicked', async () => {
@@ -96,7 +97,7 @@ describe('ToastContainer Component', () => {
       />
     );
 
-    await user.click(screen.getByLabelText('Dismiss notification'));
+    await user.click(screen.getByLabelText(TOAST_COPY.dismissNotification));
     expect(mockDismiss).toHaveBeenCalledWith('toast-42');
   });
 

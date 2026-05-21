@@ -16,6 +16,7 @@ export {
 export {
 	LIQUIDATION_COLLATERAL_TOKEN,
 	LIQUIDATION_DEBT_TOKEN,
+	MAX_SLIPPAGE_PERCENT,
 	executeLiquidationSwap,
 	mapQuoteToSwapExecutionData,
 } from './liquidation-swap';
@@ -25,4 +26,5 @@ export type {
 	LiquidationSwapParams,
 } from './liquidation-swap';
 export * from './txStatus';
+export { bitflowClient } from './bitflowClient';
 

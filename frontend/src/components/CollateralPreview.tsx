@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ArrowRight, AlertTriangle, Coins, RefreshCw } from 'lucide-react';
-import { BitflowSDK } from '@bitflowlabs/core-sdk';
+import { bitflowClient } from '../utils/bitflowClient';
 import { formatSTX, formatUSD } from '../utils/formatters';
 import {
   extractEstimatedOutput,
@@ -10,7 +10,7 @@ import {
   normalizeAmount,
   type BitflowQuoteResult,
   type PreviewRoute,
-} from './collateralPreviewUtils';
+} from '../utils/collateralPreviewUtils';
 import { COLLATERAL_PREVIEW_COPY } from '../constants/messages';
 
 type PreviewQuoteResult = Omit<BitflowQuoteResult, 'bestRoute'> & {
@@ -24,7 +24,6 @@ interface CollateralPreviewProps {
 
 type PreviewStatus = 'idle' | 'loading' | 'success' | 'error';
 
-const bitflow = new BitflowSDK();
 const DEBOUNCE_MS = 500;
 const INPUT_TOKEN = 'token-stx';
 const OUTPUT_TOKEN = 'token-usda';
@@ -55,7 +54,7 @@ export const CollateralPreview: React.FC<CollateralPreviewProps> = ({ stxAmount,
 
     const timeoutId = window.setTimeout(async () => {
       try {
-        const quoteResult = await bitflow.getQuoteForRoute(INPUT_TOKEN, OUTPUT_TOKEN, normalizedAmount);
+        const quoteResult = await bitflowClient.getQuoteForRoute(INPUT_TOKEN, OUTPUT_TOKEN, normalizedAmount);
         const bestRoute = quoteResult.bestRoute as PreviewRoute | null;
         const estimatedOutput = extractEstimatedOutput(bestRoute);
 

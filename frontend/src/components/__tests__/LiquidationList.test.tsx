@@ -5,6 +5,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { LiquidationList } from '../LiquidationList';
+import { LIQUIDATION_COPY } from '../../constants/messages';
 
 // Mock hooks
 vi.mock('../../hooks/useAuth', () => ({
@@ -42,12 +43,12 @@ vi.mock('../../config/contracts', () => ({
 describe('LiquidationList Component', () => {
   it('renders the header', () => {
     render(<LiquidationList />);
-    expect(screen.getByText('Liquidation Opportunities')).toBeInTheDocument();
+    expect(screen.getByText(LIQUIDATION_COPY.headerTitle)).toBeInTheDocument();
   });
 
   it('displays the info banner explaining liquidation', () => {
     render(<LiquidationList />);
-    expect(screen.getByText('How Liquidation Works')).toBeInTheDocument();
+    expect(screen.getByText(LIQUIDATION_COPY.infoTitle)).toBeInTheDocument();
   });
 
   it('mentions liquidation threshold in banner', () => {
@@ -62,7 +63,7 @@ describe('LiquidationList Component', () => {
 
   it('shows empty state when no positions', () => {
     render(<LiquidationList />);
-    expect(screen.getByText('No Liquidatable Positions Found')).toBeInTheDocument();
+    expect(screen.getByText(LIQUIDATION_COPY.emptyTitle)).toBeInTheDocument();
   });
 
   it('shows indexer integration note', () => {

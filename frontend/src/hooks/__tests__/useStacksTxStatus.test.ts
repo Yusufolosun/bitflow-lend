@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { useStacksTxStatus } from '../useStacksTxStatus';
+import { STACKS_TX_STATUS_COPY } from '../../constants/messages';
 
 const mockFetch = vi.fn();
 
@@ -26,7 +27,7 @@ describe('useStacksTxStatus', () => {
 
     await waitFor(() => {
       expect(result.current.state).toBe('success');
-      expect(result.current.message).toBe('Confirmed');
+      expect(result.current.message).toBe(STACKS_TX_STATUS_COPY.confirmed);
       expect(result.current.isPolling).toBe(false);
     });
   });

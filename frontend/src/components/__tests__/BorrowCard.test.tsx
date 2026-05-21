@@ -9,7 +9,7 @@ import { BorrowCard } from '../BorrowCard';
 import type { StacksTxStatusSnapshot } from '../../types/txStatus';
 
 const { mockOracleSanityState } = vi.hoisted(() => ({
-  mockOracleSanityState: { current: { warning: false, deviation: 0 } },
+  mockOracleSanityState: { current: { warning: false, deviation: 0, marketRate: null as number | null } },
 }));
 
 // Mock hooks
@@ -159,6 +159,7 @@ describe('BorrowCard Component', () => {
       mockOracleSanityState.current = {
         warning: true,
         deviation: 0.08,
+        marketRate: 1.62,
       };
 
       render(<BorrowCard />);

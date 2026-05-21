@@ -10,6 +10,7 @@ import { LOAN_TERMS, UserLoan } from '../types/vault';
 import { formatSTX } from '../utils/formatters';
 import { PROTOCOL_CONSTANTS } from '../config/contracts';
 import { StacksTxStatusPanel } from './StacksTxStatusPanel';
+import { ORACLE_WARNING_COPY } from '../constants/messages';
 
 /**
  * BorrowCard Component
@@ -87,8 +88,9 @@ export const BorrowCard: React.FC = () => {
       <div className="flex-1">
         <h4 className="text-sm font-semibold text-amber-900 mb-1">Oracle Price Sanity Warning</h4>
         <p className="text-xs text-amber-800">
-          The oracle price differs from Bitflow&apos;s live STX/USDA quote by{' '}
-          {(oracleSanity.deviation * 100).toFixed(1)}%. Review the market price before borrowing.
+          {ORACLE_WARNING_COPY.borrowMessage(
+            `${(oracleSanity.deviation * 100).toFixed(1)}%`
+          )}
         </p>
       </div>
     </div>

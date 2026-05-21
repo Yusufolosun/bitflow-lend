@@ -102,7 +102,7 @@ describe('CollateralPreview', () => {
 
     render(<CollateralPreview stxAmount={12.3} />);
 
-    expect(screen.getByLabelText(/Loading collateral preview/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Loading.*collateral preview/i)).toBeInTheDocument();
 
     await advanceTimersBy(500);
 

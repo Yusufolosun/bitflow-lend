@@ -9,6 +9,7 @@ import { useOracleSanityCheck } from '../hooks/useOracleSanityCheck';
 import { formatSTX } from '../utils/formatters';
 import { RepaymentAmount, UserLoan } from '../types/vault';
 import { StacksTxStatusPanel } from './StacksTxStatusPanel';
+import { ORACLE_WARNING_COPY } from '../constants/messages';
 
 /**
  * RepayCard Component
@@ -33,8 +34,9 @@ export const RepayCard: React.FC = () => {
       <div className="flex-1">
         <h4 className="text-sm font-semibold text-amber-900 mb-1">Oracle Price Sanity Warning</h4>
         <p className="text-xs text-amber-800">
-          The oracle price differs from Bitflow&apos;s live STX/USDA quote by{' '}
-          {(oracleSanity.deviation * 100).toFixed(1)}%. Review the market price before repaying.
+          {ORACLE_WARNING_COPY.repayMessage(
+            `${(oracleSanity.deviation * 100).toFixed(1)}%`
+          )}
         </p>
       </div>
     </div>

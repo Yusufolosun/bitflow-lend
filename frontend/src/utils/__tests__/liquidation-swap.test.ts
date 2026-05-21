@@ -145,4 +145,91 @@ describe('executeLiquidationSwap', () => {
     expect(mockGetQuoteForRoute).not.toHaveBeenCalled();
     expect(mockGetSwapParams).not.toHaveBeenCalled();
   });
+
+  it('rejects slippage above the maximum ceiling', async () => {
+    await expect(
+      executeLiquidationSwap('ST1A2B3C4D5E6F7G8H9I0J1K2L3M4N5P6Q7R8S9T', 100, 51)
+    ).rejects.toThrow('slippage must not exceed 50%');
+
+    expect(mockGetQuoteForRoute).not.toHaveBeenCalled();
+  });
+
+  it('accepts slippage at the exact maximum boundary', async () => {
+    const quote: QuoteResult = {
+      bestRoute: {
+        route: {
+          dex_path: ['alex'],
+          token_path: ['token-stx', 'token-usda'],
+          postConditions: {},
+          quoteData: {
+            contract: 'SP000.mock-router',
+            function: 'quote',
+            parameters: {},
+          },
+          swapData: {
+            contract: 'SP000.mock-router',
+            function: 'swap',
+            parameters: {},
+          },
+          tokenXDecimals: 6,
+          tokenYDecimals: 6,
+        },
+        quote: 50,
+        params: {},
+        quoteData: {
+          contract: 'SP000.mock-router',
+          function: 'quote',
+          parameters: {},
+        },
+        swapData: {
+          contract: 'SP000.mock-router',
+          function: 'swap',
+          parameters: {},
+        },
+        dexPath: ['alex'],
+        tokenPath: ['token-stx', 'token-usda'],
+        tokenXDecimals: 6,
+        tokenYDecimals: 6,
+      },
+      allRoutes: [],
+      inputData: {
+        tokenX: 'token-stx',
+        tokenY: 'token-usda',
+        amountInput: 100,
+      },
+    };
+
+    mockGetQuoteForRoute.mockResolvedValue(quote);
+    mockGetSwapParams.mockResolvedValue({
+      functionArgs: [],
+      postConditions: [],
+      contractAddress: 'SP000.mock-router',
+      contractName: 'mock-router',
+      functionName: 'swap',
+    });
+
+    await expect(
+      executeLiquidationSwap('ST1A2B3C4D5E6F7G8H9I0J1K2L3M4N5P6Q7R8S9T', 100, 50)
+    ).resolves.toBeDefined();
+  });
+
+  it('rejects NaN and Infinity collateral amounts', async () => {
+    await expect(
+      executeLiquidationSwap('ST1A2B3C4D5E6F7G8H9I0J1K2L3M4N5P6Q7R8S9T', NaN, 0.5)
+    ).rejects.toThrow('collateralAmount must be a positive number.');
+
+    await expect(
+      executeLiquidationSwap('ST1A2B3C4D5E6F7G8H9I0J1K2L3M4N5P6Q7R8S9T', Infinity, 0.5)
+    ).rejects.toThrow('collateralAmount must be a positive number.');
+
+    expect(mockGetQuoteForRoute).not.toHaveBeenCalled();
+  });
+
+  it('propagates SDK rejection without swallowing the error', async () => {
+    mockGetQuoteForRoute.mockRejectedValue(new Error('Bitflow API rate limited'));
+
+    await expect(
+      executeLiquidationSwap('ST1A2B3C4D5E6F7G8H9I0J1K2L3M4N5P6Q7R8S9T', 50, 1)
+    ).rejects.toThrow('Bitflow API rate limited');
+  });
 });

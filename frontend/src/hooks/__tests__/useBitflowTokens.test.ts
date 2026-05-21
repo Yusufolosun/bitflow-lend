@@ -1,5 +1,5 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { renderHook, waitFor } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import type { BitflowSDK } from '@bitflowlabs/core-sdk';
 import { useBitflowTokens } from '../useBitflowTokens';
 
@@ -21,6 +21,10 @@ const createToken = (tokenId: string, name: string): AvailableToken => ({
 describe('useBitflowTokens', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   it('filters STX-adjacent tokens and caps the list at five entries', async () => {
@@ -63,5 +67,80 @@ describe('useBitflowTokens', () => {
 
     expect(result.current.tokens).toEqual([]);
     expect(result.current.error).toBe('Bitflow unavailable');
+  });
+
+  it('re-fetches the token list on the 60-second refresh interval', async () => {
+    vi.useFakeTimers();
+
+    const firstBatch = [createToken('token-stx', 'STX')];
+    const secondBatch = [
+      createToken('token-stx', 'STX'),
+      createToken('token-usda', 'USDA'),
+    ];
+
+    mockGetAvailableTokens
+      .mockResolvedValueOnce(firstBatch)
+      .mockResolvedValueOnce(secondBatch);
+
+    const { result } = renderHook(() => useBitflowTokens());
+
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    expect(result.current.tokens).toHaveLength(1);
+    expect(mockGetAvailableTokens).toHaveBeenCalledTimes(1);
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(60_000);
+    });
+
+    expect(mockGetAvailableTokens).toHaveBeenCalledTimes(2);
+    expect(result.current.tokens).toHaveLength(2);
+  });
+
+  it('clears the refresh interval on unmount', async () => {
+    vi.useFakeTimers();
+
+    mockGetAvailableTokens.mockResolvedValue([createToken('token-stx', 'STX')]);
+
+    const { unmount } = renderHook(() => useBitflowTokens());
+
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    expect(mockGetAvailableTokens).toHaveBeenCalledTimes(1);
+
+    unmount();
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(60_000);
+    });
+
+    expect(mockGetAvailableTokens).toHaveBeenCalledTimes(1);
+  });
+
+  it('clears a previous error when the next refresh succeeds', async () => {
+    vi.useFakeTimers();
+
+    mockGetAvailableTokens
+      .mockRejectedValueOnce(new Error('Network error'))
+      .mockResolvedValueOnce([createToken('token-stx', 'STX')]);
+
+    const { result } = renderHook(() => useBitflowTokens());
+
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    expect(result.current.error).toBe('Network error');
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(60_000);
+    });
+
+    expect(result.current.error).toBeNull();
+    expect(result.current.tokens).toHaveLength(1);
   });
 });

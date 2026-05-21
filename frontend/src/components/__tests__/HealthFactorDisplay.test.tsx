@@ -34,7 +34,7 @@ describe('HealthFactorDisplay', () => {
   it('renders critical alert when healthFactor is exactly 0', () => {
     render(<HealthFactorDisplay healthFactor={0} />);
     expect(screen.getByTestId('hf-critical-alert')).toBeInTheDocument();
-    expect(screen.getByText(/Immediate Liquidation/i)).toBeInTheDocument();
+    expect(screen.getByText(/can be liquidated/i)).toBeInTheDocument();
   });
 
   it('renders warning state for healthFactor 1.1 (110%)', () => {
