@@ -1,5 +1,5 @@
 import { BitflowSDK } from '@bitflowlabs/core-sdk';
-import { formatPercentage } from '../utils/formatters';
+import { formatPercentage } from './formatters';
 
 export type BitflowQuoteResult = Awaited<ReturnType<BitflowSDK['getQuoteForRoute']>>;
 

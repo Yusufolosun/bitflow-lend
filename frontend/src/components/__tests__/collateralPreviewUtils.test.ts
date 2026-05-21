@@ -6,7 +6,7 @@ import {
   getRouteLabel,
   normalizeAmount,
   type PreviewRoute,
-} from '../collateralPreviewUtils';
+} from '../../utils/collateralPreviewUtils';
 
 const createRoute = (overrides: Partial<PreviewRoute> = {}): PreviewRoute => ({
   route: {

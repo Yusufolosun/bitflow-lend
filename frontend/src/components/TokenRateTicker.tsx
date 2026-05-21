@@ -6,7 +6,7 @@ import { useBitflowTokens } from '../hooks/useBitflowTokens';
 import { useSmartPolling } from '../hooks/useSmartPolling';
 import { formatBitflowTokenLabel } from '../utils/bitflowTokens';
 import { formatSTX } from '../utils/formatters';
-import { extractEstimatedOutput, getRouteLabel, type PreviewRoute } from './collateralPreviewUtils';
+import { extractEstimatedOutput, getRouteLabel, type PreviewRoute } from '../utils/collateralPreviewUtils';
 import { TOKEN_RATE_COPY } from '../constants/messages';
 
 type QuoteResult = Awaited<ReturnType<BitflowSDK['getQuoteForRoute']>>;

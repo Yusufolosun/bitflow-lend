@@ -10,7 +10,7 @@ import {
   normalizeAmount,
   type BitflowQuoteResult,
   type PreviewRoute,
-} from './collateralPreviewUtils';
+} from '../utils/collateralPreviewUtils';
 import { COLLATERAL_PREVIEW_COPY } from '../constants/messages';
 
 type PreviewQuoteResult = Omit<BitflowQuoteResult, 'bestRoute'> & {
