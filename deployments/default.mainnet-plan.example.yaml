@@ -6,13 +6,13 @@ stacks-node: "https://api.hiro.so"
 bitcoin-node: "http://<user>:<password>@bitcoin.blockstack.com:8332"
 plan:
   batches:
-    - id: 1
+    - id: 0
       transactions:
         - contract-publish:
-            contract-name: bitflow-vault-core-v3
+            contract-name: bitflow-oracle-registry-v3
             expected-sender: SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193
-            cost: 165000
-            path: "contracts/bitflow-vault-core-v3.clar"
+            cost: 105000
+            path: "contracts/bitflow-oracle-registry-v3.clar"
             anchor-block-only: true
             clarity-version: 2
         - contract-publish:
@@ -23,10 +23,10 @@ plan:
             anchor-block-only: true
             clarity-version: 2
         - contract-publish:
-            contract-name: bitflow-oracle-registry-v3
+            contract-name: bitflow-vault-core-v3
             expected-sender: SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193
-            cost: 105000
-            path: "contracts/bitflow-oracle-registry-v3.clar"
+            cost: 165000
+            path: "contracts/bitflow-vault-core-v3.clar"
             anchor-block-only: true
             clarity-version: 2
       epoch: "2.5"
