@@ -14,10 +14,20 @@ export type LiquidationSwapExecutionData =
 export type LiquidationSwapParams = Awaited<
   ReturnType<BitflowSDK['getSwapParams']>
 >;
+export const MAX_SLIPPAGE_PERCENT = 50;
 
 const assertPositiveNumber = (value: number, label: string): void => {
   if (!Number.isFinite(value) || value <= 0) {
     throw new Error(`${label} must be a positive number.`);
+  }
+};
+
+const assertSlippageRange = (slippage: number): void => {
+  assertPositiveNumber(slippage, 'slippage');
+  if (slippage > MAX_SLIPPAGE_PERCENT) {
+    throw new Error(
+      `slippage must not exceed ${MAX_SLIPPAGE_PERCENT}%. Received ${slippage}%.`
+    );
   }
 };
 
@@ -49,7 +59,7 @@ export const executeLiquidationSwap = async (
   }
 
   assertPositiveNumber(collateralAmount, 'collateralAmount');
-  assertPositiveNumber(slippage, 'slippage');
+  assertSlippageRange(slippage);
 
   const quote = await bitflowClient.getQuoteForRoute(
     LIQUIDATION_COLLATERAL_TOKEN,
