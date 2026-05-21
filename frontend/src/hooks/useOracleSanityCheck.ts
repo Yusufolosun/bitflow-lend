@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { BitflowSDK } from '@bitflowlabs/core-sdk';
+import { bitflowClient } from '../utils/bitflowClient';
 
 export interface OracleSanityCheckResult {
   warning: boolean;
@@ -16,7 +16,6 @@ const ORACLE_SANITY_INTERVAL_MS = 30_000;
 const ORACLE_TOKEN_IN = 'token-stx';
 const ORACLE_TOKEN_OUT = 'token-usda';
 
-const bitflow = new BitflowSDK();
 
 /**
  * Compares the current oracle price to the Bitflow market quote.
@@ -39,7 +38,7 @@ export function useOracleSanityCheck(oraclePrice: number, tokenId: string): Orac
 
     const refreshQuote = async () => {
       try {
-        const quote = await bitflow.getQuoteForRoute(ORACLE_TOKEN_IN, ORACLE_TOKEN_OUT, 1);
+        const quote = await bitflowClient.getQuoteForRoute(ORACLE_TOKEN_IN, ORACLE_TOKEN_OUT, 1);
         const marketRate = Number(quote?.bestRoute?.quote ?? 0);
 
         if (!Number.isFinite(marketRate) || marketRate <= 0) {

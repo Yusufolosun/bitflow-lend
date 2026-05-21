@@ -1,4 +1,5 @@
 import { BitflowSDK } from '@bitflowlabs/core-sdk';
+import { bitflowClient } from './bitflowClient';
 
 export const LIQUIDATION_COLLATERAL_TOKEN = 'token-stx';
 export const LIQUIDATION_DEBT_TOKEN = 'token-usda';
@@ -13,8 +14,6 @@ export type LiquidationSwapExecutionData =
 export type LiquidationSwapParams = Awaited<
   ReturnType<BitflowSDK['getSwapParams']>
 >;
-
-const bitflow = new BitflowSDK();
 
 const assertPositiveNumber = (value: number, label: string): void => {
   if (!Number.isFinite(value) || value <= 0) {
@@ -52,7 +51,7 @@ export const executeLiquidationSwap = async (
   assertPositiveNumber(collateralAmount, 'collateralAmount');
   assertPositiveNumber(slippage, 'slippage');
 
-  const quote = await bitflow.getQuoteForRoute(
+  const quote = await bitflowClient.getQuoteForRoute(
     LIQUIDATION_COLLATERAL_TOKEN,
     LIQUIDATION_DEBT_TOKEN,
     collateralAmount
@@ -60,5 +59,5 @@ export const executeLiquidationSwap = async (
 
   const swapExecutionData = mapQuoteToSwapExecutionData(quote, collateralAmount);
 
-  return bitflow.getSwapParams(swapExecutionData, senderAddress, slippage);
+  return bitflowClient.getSwapParams(swapExecutionData, senderAddress, slippage);
 };

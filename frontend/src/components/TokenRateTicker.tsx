@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { BitflowSDK } from '@bitflowlabs/core-sdk';
+import { bitflowClient } from '../utils/bitflowClient';
 import { Activity, RefreshCw, AlertTriangle } from 'lucide-react';
 import { useBitflowTokens } from '../hooks/useBitflowTokens';
 import { useSmartPolling } from '../hooks/useSmartPolling';
@@ -22,7 +23,6 @@ interface TokenRateCardProps {
   rate: TokenRateState;
 }
 
-const bitflow = new BitflowSDK();
 const STX_TOKEN_ID = 'token-stx';
 const REFRESH_INTERVAL_MS = 60_000;
 const QUOTE_AMOUNT = 1;
@@ -111,7 +111,7 @@ export const TokenRateTicker: React.FC = () => {
     try {
       const settledRates = await Promise.allSettled(
         tokens.map(async (token) => {
-          const quoteResult = await bitflow.getQuoteForRoute(token.tokenId, STX_TOKEN_ID, QUOTE_AMOUNT);
+          const quoteResult = await bitflowClient.getQuoteForRoute(token.tokenId, STX_TOKEN_ID, QUOTE_AMOUNT);
           const rate = extractQuoteRate(quoteResult);
 
           if (rate === null) {

@@ -25,4 +25,5 @@ export type {
 	LiquidationSwapParams,
 } from './liquidation-swap';
 export * from './txStatus';
+export { bitflowClient } from './bitflowClient';
 

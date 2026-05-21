@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { BitflowSDK } from '@bitflowlabs/core-sdk';
+import { bitflowClient } from '../utils/bitflowClient';
 import { formatBitflowTokenLabel } from '../utils/bitflowTokens';
 
 export type BitflowToken = Awaited<ReturnType<BitflowSDK['getAvailableTokens']>>[number];
@@ -10,7 +11,6 @@ interface UseBitflowTokensResult {
   error: string | null;
 }
 
-const bitflow = new BitflowSDK();
 const MAX_TOKENS = 5;
 
 const getErrorMessage = (error: unknown, fallback: string): string => {
@@ -35,7 +35,7 @@ export function useBitflowTokens(): UseBitflowTokensResult {
 
     const loadTokens = async () => {
       try {
-        const availableTokens = await bitflow.getAvailableTokens();
+        const availableTokens = await bitflowClient.getAvailableTokens();
 
         if (!isActive) {
           return;
