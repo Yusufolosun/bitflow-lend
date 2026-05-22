@@ -146,7 +146,7 @@ describe('useStacksTxStatus', () => {
   it('keeps propagation messaging after temporary upstream API failure', async () => {
     const setIntervalSpy = vi
       .spyOn(window, 'setInterval')
-      .mockImplementation((() => 1 as unknown as number) as typeof window.setInterval);
+      .mockImplementation((() => 1) as unknown as typeof window.setInterval);
 
     vi.spyOn(window, 'clearInterval').mockImplementation(() => undefined);
 

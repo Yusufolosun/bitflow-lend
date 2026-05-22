@@ -10,8 +10,20 @@ const { mockOracleSanityState, mockVaultState } = vi.hoisted(() => ({
   mockOracleSanityState: { current: { warning: false, deviation: 0, marketRate: null as number | null } },
   mockVaultState: { 
     deposit: null, 
-    loan: null, 
-    healthFactor: null 
+    loan: null as null | {
+      amountSTX: number;
+      collateralAmountSTX: number;
+      status: string;
+      termEnd: number;
+      interestRatePercent: number;
+      startTimestamp: number;
+    },
+    healthFactor: null as null | {
+      healthFactorPercent: number;
+      collateralValueUSD: number;
+      debtValueUSD: number;
+      stxPriceUSD: number;
+    },
   },
 }));
 
