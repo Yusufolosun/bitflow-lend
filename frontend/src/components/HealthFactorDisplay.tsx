@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Shield, AlertTriangle, XCircle, Activity, CheckCircle } from 'lucide-react';
+import { AlertTriangle, XCircle, Activity, CheckCircle } from 'lucide-react';
 import { getHealthStatus } from '../utils/calculations';
 import { HEALTH_FACTOR_COPY } from '../constants/messages';
 
@@ -37,6 +37,29 @@ export const HealthFactorDisplay: React.FC<HealthFactorDisplayProps> = React.mem
   healthFactor, 
   size = 'md' 
 }) => {
+  // Determine health status and styles
+  const numericHF = typeof healthFactor === 'number' ? healthFactor : Number(healthFactor ?? 0);
+  const isValid = healthFactor !== null && healthFactor !== undefined && !isNaN(numericHF);
+  const isZero = healthFactor === 0;
+
+  // If user passes decimal version (e.g., 1.1), we normalize to percentage (110%)
+  const isDecimal = isValid && numericHF > 0 && numericHF < 10;
+  const normalizedHF = useMemo(() => {
+    if (!isValid) return 0;
+    return isDecimal ? numericHF * 100 : numericHF;
+  }, [numericHF, isDecimal, isValid]);
+
+  const status = useMemo(() => {
+    if (isZero) return 'critical';
+    return getHealthStatus(normalizedHF);
+  }, [normalizedHF, isZero]);
+
+  const statusLabel = HEALTH_FACTOR_COPY.statusLabels[status];
+  
+  const StatusIcon = useMemo(() => {
+    return status === 'healthy' ? CheckCircle : status === 'warning' ? AlertTriangle : Activity;
+  }, [status]);
+
   // Explicit null/undefined check for loading/skeleton state
   if (healthFactor === null || healthFactor === undefined) {
     return (
@@ -73,9 +96,6 @@ export const HealthFactorDisplay: React.FC<HealthFactorDisplayProps> = React.mem
     );
   }
 
-  // Determine health status and styles
-  const numericHF = typeof healthFactor === 'number' ? healthFactor : Number(healthFactor);
-  
   if (isNaN(numericHF)) {
     return (
       <div className="text-xs text-red-500 bg-red-50 p-2 rounded border border-red-100">
@@ -83,16 +103,6 @@ export const HealthFactorDisplay: React.FC<HealthFactorDisplayProps> = React.mem
       </div>
     );
   }
-
-  // If user passes decimal version (e.g., 1.1), we normalize to percentage (110%)
-  const isDecimal = numericHF > 0 && numericHF < 10;
-  const normalizedHF = useMemo(() => isDecimal ? numericHF * 100 : numericHF, [numericHF, isDecimal]);
-  const status = useMemo(() => getHealthStatus(normalizedHF), [normalizedHF]);
-  const statusLabel = HEALTH_FACTOR_COPY.statusLabels[status];
-  
-  const StatusIcon = useMemo(() => {
-    return status === 'healthy' ? CheckCircle : status === 'warning' ? AlertTriangle : Activity;
-  }, [status]);
 
   return (
     <div 
