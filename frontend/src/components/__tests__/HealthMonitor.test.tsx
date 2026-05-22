@@ -3,7 +3,7 @@
  * Covers: no-loan state, header rendering, deposit display, health status
  */
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { HealthMonitor } from '../HealthMonitor';
 
 const { mockOracleSanityState, mockVaultState } = vi.hoisted(() => ({
