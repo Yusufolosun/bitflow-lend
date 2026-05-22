@@ -6,7 +6,7 @@ import { UserLoan } from '../../types/vault';
 // Mock formatters and config
 vi.mock('../../utils/formatters', () => ({
   formatSTX: (amount: number) => `${amount}.00`,
-  formatTimestamp: (ts: number) => '2026-05-15',
+  formatTimestamp: (_ts: number) => '2026-05-15',
 }));
 
 vi.mock('../../config/contracts', () => ({

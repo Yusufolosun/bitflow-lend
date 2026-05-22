@@ -602,7 +602,7 @@ export const useVault = (_userSession: UserSession, userAddress: string | null) 
     } catch {
       return null;
     }
-  }, [userAddress, network, contractAddress, contractName]);
+  }, [userAddress, network, contractAddress, contractName, getOnChainStxPrice]);
 
   /**
    * Liquidate an undercollateralized borrower position
