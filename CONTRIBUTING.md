@@ -466,8 +466,7 @@ Before submitting:
 ### After Merge
 
 - Delete your feature branch (both locally and on GitHub)
-- Pull latest changes to your fork
-- Celebrate! 🎉
+- Pull latest changes to your main branch
 
 ---
 
@@ -638,16 +637,7 @@ Any other context, mockups, or examples.
 
 ### Recognition
 
-Contributors are recognized in:
-- README.md Contributors section
-- Release notes
-- Annual contributor spotlight
-
-**Top Contributors** may receive:
-- BFLOW token airdrops (when launched)
-- NFT badges
-- Exclusive merch
-- Priority support
+Contributors are recognized in the project's release notes and developer logs.
 
 ---
 
@@ -697,9 +687,9 @@ See [LICENSE](./LICENSE) file for details.
 
 ---
 
-**Thank you for contributing to BitFlow! 🚀**
+**Thank you for contributing to BitFlow.**
 
-We appreciate your time and effort in making BitFlow better for everyone.
+We appreciate your time and effort in contributing to the protocol.
 
 ---
 
