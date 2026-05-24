@@ -7,8 +7,8 @@ This guide provides step-by-step instructions for deploying the BitFlow vault co
 - [Prerequisites](#prerequisites)
 - [Environment Setup](#environment-setup)
 - [Testnet Deployment](#testnet-deployment)
-- [Mainnet Deployment](#mainnet-deployment)
-- [Post-Deployment](#post-deployment)
+- [Mainnet Readiness Checklist](#mainnet-readiness-checklist)
+- [Post-Deployment (Testnet)](#post-deployment-testnet)
 - [Deployment Verification](#deployment-verification)
 - [Troubleshooting](#troubleshooting)
 
@@ -233,9 +233,11 @@ curl https://api.testnet.hiro.so/v2/contracts/interface/ST1.../bitflow-vault-cor
 
 ---
 
-## Mainnet Deployment
+## Mainnet Readiness Checklist
 
-### 🚨 CRITICAL MAINNET CHECKLIST
+Before proceeding to a production deployment, ensure that the protocol is fully prepared. Mainnet deployment should be executed via automated secure CI/CD orchestration.
+
+### 🚨 Critical Mainnet Checklist
 
 Complete ALL items before mainnet deployment:
 
@@ -285,88 +287,9 @@ Complete ALL items before mainnet deployment:
 - [ ] Insurance policy considered
 - [ ] Bug bounty program ready
 
-### Step 1: Final Testing on Testnet
-
-```bash
-# Run complete test suite
-npm test
-
-# Deploy to testnet one final time
-clarinet deployments apply --manifest-path deployments/default.testnet-plan.yaml
-
-# Perform manual integration testing
-# - Deposit test
-# - Borrow test
-# - Repay test
-# - Liquidation test
-
-# Monitor for 1-2 weeks minimum
-```
-
-### Step 2: Prepare Mainnet Deployment
-
-Update deployment manifest:
-
-**deployments/default.mainnet-plan.yaml:**
-
-```yaml
----
-id: 1
-name: Mainnet Deployment
-network: mainnet
-stacks-node: https://api.hiro.so
-bitcoin-node: http://blockstream.info
-plan:
-  batches:
-    - id: 1
-      transactions:
-        - contract-publish:
-            contract-name: bitflow-vault-core-v2
-            expected-sender: SP...  # Your mainnet address
-            cost: 500000  # 0.5 STX
-            path: contracts/bitflow-vault-core-v2.clar
-            clarity-version: 2
-            anchor-block-only: true
-```
-
-### Step 3: Deploy to Mainnet
-
-```bash
-# FINAL CHECK - Ensure you're on mainnet
-echo $NETWORK  # Should output: mainnet
-
-# Deploy
-clarinet deployments apply --manifest-path deployments/default.mainnet-plan.yaml
-
-# Confirm transaction details carefully!
-# Double-check:
-# - Contract name is correct
-# - Clarity code is exactly as tested
-# - Network is mainnet
-# - Gas fee is acceptable
-```
-
-### Step 4: Sign and Broadcast
-
-1. Review transaction in wallet
-2. **Triple-check** contract name and code
-3. Confirm deployment fee
-4. Sign transaction
-5. Wait for confirmation (typically 10-30 minutes)
-
-### Step 5: Monitor Deployment
-
-```bash
-# Check transaction status
-curl https://api.hiro.so/extended/v1/tx/0x[transaction-id]
-
-# Wait for "success" status
-# Monitor for ~10 blocks to ensure stability
-```
-
 ---
 
-## Post-Deployment
+## Post-Deployment (Testnet)
 
 ### Immediate Actions
 
@@ -374,13 +297,13 @@ curl https://api.hiro.so/extended/v1/tx/0x[transaction-id]
 
 ```bash
 # Get contract interface
-curl https://api.hiro.so/v2/contracts/interface/SP.../bitflow-vault-core-v2
+curl https://api.testnet.hiro.so/v2/contracts/interface/ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM/bitflow-vault-core-v2
 
 # Test read-only functions
-curl -X POST https://api.hiro.so/v2/contracts/call-read/SP.../bitflow-vault-core-v2/get-total-deposits \
+curl -X POST https://api.testnet.hiro.so/v2/contracts/call-read/ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM/bitflow-vault-core-v2/get-total-deposits \
   -H "Content-Type: application/json" \
   -d '{
-    "sender": "SP...",
+    "sender": "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM",
     "arguments": []
   }'
 ```
@@ -391,16 +314,15 @@ Create `DEPLOYMENT.json`:
 
 ```json
 {
-  "network": "mainnet",
-  "contractAddress": "SP1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM",
+  "network": "testnet",
+  "contractAddress": "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM",
   "contractName": "bitflow-vault-core-v2",
   "deploymentTx": "0x1234...",
   "deploymentBlock": 123456,
   "deploymentDate": "2026-01-25T10:30:00Z",
-  "deployer": "SP1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM",
+  "deployer": "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM",
   "clarityVersion": 2,
-  "gitCommit": "abc123...",
-  "auditReport": "https://..."
+  "gitCommit": "abc123..."
 }
 ```
 
@@ -409,13 +331,11 @@ Create `DEPLOYMENT.json`:
 ```typescript
 // Update frontend config
 export const VAULT_CONTRACT = {
-  address: 'SP1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM',
+  address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM',
   name: 'bitflow-vault-core-v2',
-  network: 'mainnet'
+  network: 'testnet'
 };
 ```
-
-#### 4. Announce Deployment
 
 - [ ] Update website with contract address
 - [ ] Publish announcement on social media
@@ -713,7 +633,6 @@ For deployment support:
 | Check contract | `clarinet check` | No errors |
 | Run tests | `npm test` | All pass |
 | Deploy testnet | `clarinet deployments apply -p deployments/default.testnet-plan.yaml` | TX confirmed |
-| Deploy mainnet | `clarinet deployments apply -p deployments/default.mainnet-plan.yaml` | TX confirmed |
 | Build frontend | `cd frontend && npm run build` | `dist/` created |
 
 ---
