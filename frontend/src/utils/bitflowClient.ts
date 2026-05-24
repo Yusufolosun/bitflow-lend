@@ -1,5 +1,17 @@
 import { BitflowSDK } from '@bitflowlabs/core-sdk';
 
+const network = import.meta.env.VITE_NETWORK;
+const isMainnet = network === 'mainnet';
+
+// Determine default host URLs based on the target network
+const defaultApiHost = isMainnet
+  ? 'https://bitflow-sdk-api-gateway-7owjsmt8.uc.gateway.dev'
+  : 'https://bitflowsdk-api-test-7owjsmt8.uk.gateway.dev';
+
+const defaultKeeperHost = isMainnet
+  ? 'https://bitflow-keeper-7owjsmt8.uc.gateway.dev'
+  : 'https://bitflow-keeper-test-7owjsmt8.uc.gateway.dev';
+
 /**
  * Shared BitflowSDK singleton.
  *
@@ -7,6 +19,13 @@ import { BitflowSDK } from '@bitflowlabs/core-sdk';
  * instead of creating its own `new BitflowSDK()`. This keeps the connection
  * pool small and makes it straightforward to swap in a test double globally.
  *
- * Zero-config — no API key required for the public tier (up to 500 req/min).
+ * Configured dynamically to resolve correct mainnet/testnet endpoints,
+ * allowing local or environment-specific overrides via Vite variables.
  */
-export const bitflowClient = new BitflowSDK();
+export const bitflowClient = new BitflowSDK({
+  BITFLOW_API_HOST: import.meta.env.VITE_BITFLOW_API_HOST || defaultApiHost,
+  KEEPER_API_HOST: import.meta.env.VITE_KEEPER_API_HOST || defaultKeeperHost,
+  ...(import.meta.env.VITE_READONLY_CALL_API_HOST
+    ? { READONLY_CALL_API_HOST: import.meta.env.VITE_READONLY_CALL_API_HOST }
+    : {}),
+});
