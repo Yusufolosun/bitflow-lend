@@ -69,26 +69,18 @@ npm install
 npm run dev
 ```
 
-### Deploying the Protocol Suite
+### Deploying to Testnet
 
-We provide a production-grade automated deployment orchestration script that executes 9 pre-flight safety checks (syntax, tests, wallet balance, and secret scans) before deploying:
+The deployment orchestration script runs 9 pre-flight safety checks (syntax, tests, wallet balance, secret scans) before publishing:
 
 ```bash
-# Deploy to Stacks Testnet
 bash scripts/deploy-v3-suite.sh --network testnet
-
-# Deploy to Stacks Mainnet
-bash scripts/deploy-v3-suite.sh --network mainnet
 ```
 
-Alternatively, deploy directly using Clarinet:
+Or deploy directly via Clarinet:
 
 ```bash
-# Testnet
 clarinet deployments apply -p deployments/default.testnet-plan.yaml
-
-# Mainnet
-clarinet deployments apply -p deployments/default.mainnet-plan.yaml
 ```
 
 ## Smart Contract Interface Reference
@@ -137,7 +129,7 @@ clarinet deployments apply -p deployments/default.mainnet-plan.yaml
 | Styling | Tailwind CSS |
 | Testing | Vitest + Clarinet SDK |
 | CI/CD | GitHub Actions |
-| Deployment | Vercel (frontend), Clarinet (contracts) |
+| Deployment | Clarinet (contracts) |
 
 ## Documentation
 
