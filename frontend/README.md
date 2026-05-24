@@ -25,7 +25,6 @@ The dashboard also includes a live Bitflow token ticker at the top of the page s
 
 ```bash
 # Install dependencies
-The deposit flow now includes a live Bitflow collateral preview so users can see the USDA value and route estimate before submitting STX.
 npm install
 
 # Copy environment configuration
@@ -39,8 +38,6 @@ npm run dev
 ```
 
 The app will be available at `http://localhost:5173`
-
-│   │   ├── CollateralPreview.tsx # Live Bitflow collateral preview
 ## Environment Variables
 
 All environment variables must be prefixed with `VITE_` to be accessible in the browser.
@@ -73,7 +70,9 @@ All environment variables must be prefixed with `VITE_` to be accessible in the 
 
 Never commit `.env` files with real values to version control.
 
-- **Collateral Preview:** Live Bitflow STX to USDA estimate appears while entering deposit amounts
+### Available Scripts
+
+```bash
 npm run dev          # Start dev server with hot reload
 npm run build        # Production build (TypeScript + Vite)
 npm run preview      # Preview production build locally
@@ -90,14 +89,12 @@ npm run test:coverage # Generate coverage report
 
 ### Deployment
 
-See [VERCEL_DEPLOYMENT.md](./VERCEL_DEPLOYMENT.md) for complete deployment guide.
-
 ```bash
 # Build for production
 npm run build
 
 # Output directory: dist/
-# Deploy dist/ to any static host (Vercel, Netlify, etc.)
+# Deploy dist/ to any static hosting provider (e.g., Netlify, Cloudflare Pages, GitHub Pages)
 ```
 
 ## Project Structure
@@ -147,7 +144,6 @@ frontend/
 ├── tsconfig.json          # TypeScript config
 ├── vite.config.ts         # Vite config
 ├── tailwind.config.js     # Tailwind config
-├── vercel.json            # Vercel deployment config
 └── README.md              # This file
 ```
 
@@ -158,6 +154,7 @@ frontend/
 - **Wallet Integration:** Seamless connection with Hiro Wallet
 - **Real-time Updates:** Auto-refresh protocol stats every 30s
 - **Live Token Ticker:** Shows STX-adjacent Bitflow swap rates at the top of the dashboard and refreshes every 60 seconds
+- **Collateral Preview:** Live Bitflow STX to USDA estimate appears while entering deposit amounts
 - **Smart Polling:** Background updates pause when tab is hidden
 - **Accessibility:** WCAG-compliant with keyboard navigation
 
@@ -421,36 +418,6 @@ cat ../.gitignore | grep .env
 - [ ] Cache read-only contract calls
 - [ ] Add service worker for offline support
 - [ ] Optimize image assets
-
-## Deployment
-
-### Quick Deploy to Vercel
-
-```bash
-# Install Vercel CLI
-npm i -g vercel
-
-# Deploy
-cd frontend
-vercel --prod
-```
-
-For detailed deployment guide, see [VERCEL_DEPLOYMENT.md](./VERCEL_DEPLOYMENT.md).
-
-### Other Platforms
-
-**Netlify:**
-```bash
-npm run build
-netlify deploy --dir=dist --prod
-```
-
-**GitHub Pages:**
-```bash
-npm run build
-# Configure base path in vite.config.ts
-# Deploy dist/ to gh-pages branch
-```
 
 ## Contributing
 
