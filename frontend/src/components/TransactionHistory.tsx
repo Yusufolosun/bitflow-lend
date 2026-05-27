@@ -271,7 +271,7 @@ export const TransactionHistory: React.FC = () => {
   };
 
   return (
-    <div className="card-elevated">
+    <div className="card-elevated p-5 sm:p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
@@ -391,11 +391,11 @@ export const TransactionHistory: React.FC = () => {
           {paginatedTransactions.map((tx) => (
             <div
               key={tx.id}
-              className={`border rounded-xl p-4 transition-all hover:shadow-md ${getTransactionColor(tx.type)}`}
+              className={`border rounded-xl p-3 sm:p-4 transition-all hover:shadow-md ${getTransactionColor(tx.type)}`}
             >
               <div className="flex items-center justify-between">
                 {/* Left: Icon & Details */}
-                <div className="flex items-center gap-4 flex-1">
+                <div className="flex items-center gap-3 sm:gap-4 flex-1">
                   <div className="flex-shrink-0">
                     {getTransactionIcon(tx.type)}
                   </div>
@@ -431,9 +431,9 @@ export const TransactionHistory: React.FC = () => {
                 </div>
 
                 {/* Right: Amount */}
-                <div className="text-right flex-shrink-0 ml-4">
+                <div className="text-right flex-shrink-0 ml-2 sm:ml-4">
                   {tx.amount > 0 ? (
-                    <div className={`text-lg font-bold tabular-nums ${
+                    <div className={`text-base sm:text-lg font-bold tabular-nums ${
                       tx.type === 'deposit' || tx.type === 'borrow'
                         ? 'text-emerald-600'
                         : 'text-red-600'
