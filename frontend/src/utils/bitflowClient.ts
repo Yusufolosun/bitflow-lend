@@ -5,7 +5,7 @@ const isMainnet = network === 'mainnet';
 
 // Determine default host URLs based on the target network
 const defaultApiHost = isMainnet
-  ? 'https://bitflow-sdk-api-gateway-7owjsmt8.uc.gateway.dev'
+  ? '/api/bitflow'
   : 'https://bitflowsdk-api-test-7owjsmt8.uk.gateway.dev';
 
 const defaultKeeperHost = isMainnet
