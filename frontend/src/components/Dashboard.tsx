@@ -137,7 +137,7 @@ export const Dashboard: React.FC = () => {
       </header>
 
       {/* Main Content */}
-      <main id="main-content" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main id="main-content" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         <TokenRateTicker />
 
         {/* Protocol Stats */}
@@ -174,7 +174,7 @@ export const Dashboard: React.FC = () => {
 
           {/* Stats Grid */}
           {protocolStats && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
             <StatsCard
               icon={<DollarSign size={22} />}
               label="Total Value Locked"
@@ -236,7 +236,7 @@ export const Dashboard: React.FC = () => {
               </div>
             )}
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
               <div className="card-elevated card-hover">
                 <div className="text-sm font-medium text-gray-500 mb-2">Total Deposited</div>
                 <div className="text-3xl font-bold text-gray-900 tracking-tight mb-1">
