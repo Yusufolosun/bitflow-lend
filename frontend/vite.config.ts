@@ -14,6 +14,14 @@ export default defineConfig({
   server: {
     port: 3000,
     open: true,
+    proxy: {
+      '/api/bitflow': {
+        target: 'https://bitflow-sdk-api-gateway-7owjsmt8.uc.gateway.dev',
+        changeOrigin: true,
+        rewrite: (path: string) => path.replace(/^\/api\/bitflow/, ''),
+        secure: true,
+      },
+    },
   },
   build: {
     outDir: 'dist',
