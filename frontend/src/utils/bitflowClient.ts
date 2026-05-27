@@ -9,7 +9,7 @@ const defaultApiHost = isMainnet
   : '/api/bitflow-testnet';
 
 const defaultKeeperHost = isMainnet
-  ? 'https://bitflow-keeper-7owjsmt8.uc.gateway.dev'
+  ? '/api/bitflow-keeper'
   : 'https://bitflow-keeper-test-7owjsmt8.uc.gateway.dev';
 
 /**
