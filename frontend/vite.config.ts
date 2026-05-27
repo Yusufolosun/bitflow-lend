@@ -33,6 +33,12 @@ export default defineConfig({
         rewrite: (path: string) => path.replace(/^\/api\/bitflow-keeper/, ''),
         secure: true,
       },
+      '/api/bitflow-keeper-testnet': {
+        target: 'https://bitflow-keeper-test-7owjsmt8.uc.gateway.dev',
+        changeOrigin: true,
+        rewrite: (path: string) => path.replace(/^\/api\/bitflow-keeper-testnet/, ''),
+        secure: true,
+      },
     },
   },
   build: {
