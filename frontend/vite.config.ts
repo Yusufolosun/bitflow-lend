@@ -14,6 +14,32 @@ export default defineConfig({
   server: {
     port: 3000,
     open: true,
+    proxy: {
+      '/api/bitflow': {
+        target: 'https://bitflow-sdk-api-gateway-7owjsmt8.uc.gateway.dev',
+        changeOrigin: true,
+        rewrite: (path: string) => path.replace(/^\/api\/bitflow/, ''),
+        secure: true,
+      },
+      '/api/bitflow-testnet': {
+        target: 'https://bitflowsdk-api-test-7owjsmt8.uk.gateway.dev',
+        changeOrigin: true,
+        rewrite: (path: string) => path.replace(/^\/api\/bitflow-testnet/, ''),
+        secure: true,
+      },
+      '/api/bitflow-keeper': {
+        target: 'https://bitflow-keeper-7owjsmt8.uc.gateway.dev',
+        changeOrigin: true,
+        rewrite: (path: string) => path.replace(/^\/api\/bitflow-keeper/, ''),
+        secure: true,
+      },
+      '/api/bitflow-keeper-testnet': {
+        target: 'https://bitflow-keeper-test-7owjsmt8.uc.gateway.dev',
+        changeOrigin: true,
+        rewrite: (path: string) => path.replace(/^\/api\/bitflow-keeper-testnet/, ''),
+        secure: true,
+      },
+    },
   },
   build: {
     outDir: 'dist',

@@ -5,12 +5,12 @@ const isMainnet = network === 'mainnet';
 
 // Determine default host URLs based on the target network
 const defaultApiHost = isMainnet
-  ? 'https://bitflow-sdk-api-gateway-7owjsmt8.uc.gateway.dev'
-  : 'https://bitflowsdk-api-test-7owjsmt8.uk.gateway.dev';
+  ? '/api/bitflow'
+  : '/api/bitflow-testnet';
 
 const defaultKeeperHost = isMainnet
-  ? 'https://bitflow-keeper-7owjsmt8.uc.gateway.dev'
-  : 'https://bitflow-keeper-test-7owjsmt8.uc.gateway.dev';
+  ? '/api/bitflow-keeper'
+  : '/api/bitflow-keeper-testnet';
 
 /**
  * Shared BitflowSDK singleton.
