@@ -29,8 +29,8 @@ describe('bitflowClient singleton initialization', () => {
 
     expect(mockConstructor).toHaveBeenCalledTimes(1);
     expect(mockConstructor).toHaveBeenCalledWith({
-      BITFLOW_API_HOST: 'https://bitflow-sdk-api-gateway-7owjsmt8.uc.gateway.dev',
-      KEEPER_API_HOST: 'https://bitflow-keeper-7owjsmt8.uc.gateway.dev',
+      BITFLOW_API_HOST: '/api/bitflow',
+      KEEPER_API_HOST: '/api/bitflow-keeper',
     });
   });
 
