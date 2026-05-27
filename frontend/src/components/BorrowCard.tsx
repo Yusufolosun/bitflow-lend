@@ -155,7 +155,7 @@ export const BorrowCard: React.FC = () => {
   // If user has active loan, show message
   if (activeLoan) {
     return (
-      <div className="card-elevated">
+      <div className="card-elevated p-5 sm:p-6">
         <div className="flex items-center gap-3 mb-4">
           <div className="p-3 bg-amber-50 rounded-xl">
             <AlertCircle className="text-amber-600" size={22} aria-hidden="true" />
@@ -191,7 +191,7 @@ export const BorrowCard: React.FC = () => {
   }
 
   return (
-    <div className="card-elevated space-y-6">
+    <div className="card-elevated p-5 sm:p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center gap-3">
         <div className="p-3 bg-emerald-50 rounded-xl">
@@ -228,7 +228,7 @@ export const BorrowCard: React.FC = () => {
             value={borrowAmount}
             onChange={(e) => setBorrowAmount(e.target.value)}
             placeholder="0.00"
-            className="input"
+            className="input pr-16"
             disabled={txStatus === 'pending'}
           />
           <button type="button"
