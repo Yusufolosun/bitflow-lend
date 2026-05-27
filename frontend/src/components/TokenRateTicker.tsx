@@ -41,11 +41,11 @@ const extractQuoteRate = (quoteResult: QuoteResult): number | null => {
 };
 
 const TickerSkeleton = () => (
-  <div className="flex gap-3 overflow-x-auto pb-1">
+  <div className="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory">
     {Array.from({ length: 3 }).map((_, index) => (
       <div
         key={index}
-        className="min-w-[12rem] shrink-0 rounded-2xl border border-white/10 bg-white/5 px-4 py-4 animate-pulse"
+        className="min-w-[14rem] sm:min-w-[15rem] shrink-0 rounded-2xl border border-white/10 bg-white/5 px-4 py-4 animate-pulse snap-start"
       >
         <div className="h-3 w-20 rounded-full bg-white/10" />
         <div className="mt-3 h-6 w-28 rounded-full bg-white/10" />
@@ -57,7 +57,7 @@ const TickerSkeleton = () => (
 );
 
 const TokenRateCard: React.FC<TokenRateCardProps> = ({ rate }) => (
-  <div className="min-w-[12rem] shrink-0 rounded-2xl border border-white/10 bg-white/5 px-4 py-4 shadow-sm shadow-black/10">
+  <div className="min-w-[14rem] sm:min-w-[15rem] shrink-0 rounded-2xl border border-white/10 bg-white/5 px-4 py-4 shadow-sm shadow-black/10 snap-start">
     <div className="flex items-center justify-between gap-3">
       <span className="text-sm font-semibold text-white">{rate.name}</span>
       <span className="rounded-full bg-emerald-500/15 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-emerald-300">
@@ -206,7 +206,7 @@ export const TokenRateTicker: React.FC = () => {
               {TOKEN_RATE_COPY.noTokens}
             </div>
           ) : (
-            <div className="flex gap-3 overflow-x-auto pb-1 scrollbar-thin" aria-live="polite">
+            <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-thin snap-x snap-mandatory scroll-smooth" style={{ WebkitOverflowScrolling: 'touch' }} aria-live="polite">
               {rates.map((rate) => (
                 <TokenRateCard key={rate.tokenId} rate={rate} />
               ))}
