@@ -140,7 +140,7 @@ export const RepayCard: React.FC = () => {
   // No active loan
   if (!activeLoan) {
     return (
-      <div className="card-elevated">
+      <div className="card-elevated p-5 sm:p-6">
         <div className="flex items-center gap-3 mb-4">
           <div className="p-3 bg-gray-100 rounded-xl">
             <DollarSign className="text-gray-400" size={22} aria-hidden="true" />
@@ -168,7 +168,7 @@ export const RepayCard: React.FC = () => {
   const isOverdue = progress >= 100;
 
   return (
-    <div className="card-elevated space-y-6">
+    <div className="card-elevated p-5 sm:p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center gap-3">
         <div className={`p-3 rounded-xl ${isOverdue ? 'bg-red-50' : 'bg-accent-50'}`}>
