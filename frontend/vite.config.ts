@@ -21,6 +21,12 @@ export default defineConfig({
         rewrite: (path: string) => path.replace(/^\/api\/bitflow/, ''),
         secure: true,
       },
+      '/api/bitflow-testnet': {
+        target: 'https://bitflowsdk-api-test-7owjsmt8.uk.gateway.dev',
+        changeOrigin: true,
+        rewrite: (path: string) => path.replace(/^\/api\/bitflow-testnet/, ''),
+        secure: true,
+      },
     },
   },
   build: {
