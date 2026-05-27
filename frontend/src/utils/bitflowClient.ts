@@ -10,7 +10,7 @@ const defaultApiHost = isMainnet
 
 const defaultKeeperHost = isMainnet
   ? '/api/bitflow-keeper'
-  : 'https://bitflow-keeper-test-7owjsmt8.uc.gateway.dev';
+  : '/api/bitflow-keeper-testnet';
 
 /**
  * Shared BitflowSDK singleton.
