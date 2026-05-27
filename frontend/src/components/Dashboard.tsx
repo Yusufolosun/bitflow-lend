@@ -300,15 +300,15 @@ export const Dashboard: React.FC = () => {
           <section className="mb-8">
             <h2 className="section-title mb-5">Actions</h2>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Left Column */}
+              {/* Left Column - Collateral Management */}
               <div className="space-y-6">
                 <DepositCard />
                 <WithdrawCard />
-                <BorrowCard />
               </div>
 
-              {/* Right Column */}
+              {/* Right Column - Loan Management */}
               <div className="space-y-6">
+                <BorrowCard />
                 <RepayCard />
                 <HealthMonitor />
               </div>
