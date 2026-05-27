@@ -1,0 +1,20 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/bitflow/:path*",
+      "destination": "https://bitflow-sdk-api-gateway-7owjsmt8.uc.gateway.dev/:path*"
+    },
+    {
+      "source": "/api/bitflow-testnet/:path*",
+      "destination": "https://bitflowsdk-api-test-7owjsmt8.uk.gateway.dev/:path*"
+    },
+    {
+      "source": "/api/bitflow-keeper/:path*",
+      "destination": "https://bitflow-keeper-7owjsmt8.uc.gateway.dev/:path*"
+    },
+    {
+      "source": "/api/bitflow-keeper-testnet/:path*",
+      "destination": "https://bitflow-keeper-test-7owjsmt8.uc.gateway.dev/:path*"
+    }
+  ]
+}
