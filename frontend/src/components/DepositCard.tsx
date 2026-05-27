@@ -107,7 +107,7 @@ export const DepositCard: React.FC = () => {
   const collateralPreviewAmount = parseFloat(depositAmount);
 
   return (
-    <div className="card-elevated space-y-6">
+    <div className="card-elevated p-5 sm:p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center gap-3">
         <div className="p-3 bg-accent-50 rounded-xl">
@@ -139,7 +139,7 @@ export const DepositCard: React.FC = () => {
             value={depositAmount}
             onChange={(e) => setDepositAmount(e.target.value)}
             placeholder="0.00"
-            className="input"
+            className="input pr-16"
             disabled={txStatus === 'pending'}
             aria-describedby="deposit-validation"
           />
