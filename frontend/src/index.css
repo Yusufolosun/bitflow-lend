@@ -230,3 +230,30 @@ input[type="number"] { -moz-appearance: textfield; }
   h1 { @apply text-xl; }
   h2 { @apply text-lg; }
 }
+
+@media (max-width: 480px) {
+  .card, .card-elevated {
+    @apply p-4;
+    border-radius: 1rem;
+  }
+
+  .btn {
+    @apply px-3 py-2 text-sm;
+  }
+
+  .input {
+    @apply px-3 py-2.5 text-sm;
+  }
+
+  .section-title {
+    @apply text-lg;
+  }
+
+  .stat-value {
+    @apply text-lg;
+  }
+
+  .badge {
+    @apply px-2 py-0.5 text-[10px];
+  }
+}
