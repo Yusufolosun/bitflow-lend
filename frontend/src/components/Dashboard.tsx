@@ -236,7 +236,7 @@ export const Dashboard: React.FC = () => {
               </div>
             )}
             
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
               <div className="card-elevated card-hover">
                 <div className="text-sm font-medium text-gray-500 mb-2">Total Deposited</div>
                 <div className="text-3xl font-bold text-gray-900 tracking-tight mb-1">
