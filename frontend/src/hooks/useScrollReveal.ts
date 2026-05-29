@@ -6,8 +6,8 @@ import { useEffect, useRef, useState } from 'react';
  */
 export function useScrollReveal<T extends HTMLElement>(
   threshold = 0.15
-): [React.RefObject<T | null>, boolean] {
-  const ref = useRef<T | null>(null);
+): [React.RefObject<T>, boolean] {
+  const ref = useRef<T>(null!);
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
