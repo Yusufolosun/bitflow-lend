@@ -23,7 +23,12 @@
   }
 
   :focus-visible {
-    @apply outline-none ring-2 ring-accent-500/40 ring-offset-2 ring-offset-white;
+    @apply outline-none ring-2 ring-accent-500/50 ring-offset-2 ring-offset-white;
+    transition: box-shadow 0.15s ease;
+  }
+
+  button:active:not(:disabled) {
+    transform: scale(0.97);
   }
 }
 
