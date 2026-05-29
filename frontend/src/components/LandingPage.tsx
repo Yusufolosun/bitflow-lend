@@ -19,7 +19,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchApp }) => {
   const [ctaRef, ctaVisible] = useScrollReveal<HTMLDivElement>();
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white animate-fade-in">
       {/* ===== HERO ===== */}
       <section className="relative overflow-hidden">
         {/* Background */}

@@ -118,7 +118,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onBackToLanding }) => {
     : 0;
 
   return (
-    <div className="min-h-screen bg-gray-50 bg-grid-pattern">
+    <div className="min-h-screen bg-gray-50 bg-grid-pattern animate-fade-in">
       {/* Skip to main content link for keyboard/screen-reader users */}
       <a
         href="#main-content"
