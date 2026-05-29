@@ -358,8 +358,8 @@ export const Dashboard: React.FC = () => {
       {/* Footer */}
       <footer className="border-t border-gray-200/60 mt-16 bg-white/60 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <div className="flex items-center gap-2 text-sm text-gray-500">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 text-center sm:text-left">
+            <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-500">
               <img src="/favicon.svg" alt="BitFlow" className="w-5 h-5" />
               © 2026 BitFlow Lend. Built on Stacks.
             </div>
@@ -368,7 +368,7 @@ export const Dashboard: React.FC = () => {
                 href="https://github.com/Yusufolosun/bitflow-lend/tree/main/docs"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
+                className="text-xs sm:text-sm text-gray-500 hover:text-gray-900 transition-colors"
               >
                 Docs
               </a>
@@ -376,7 +376,7 @@ export const Dashboard: React.FC = () => {
                 href="https://github.com/Yusufolosun/bitflow-lend"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
+                className="text-xs sm:text-sm text-gray-500 hover:text-gray-900 transition-colors"
               >
                 GitHub
               </a>
