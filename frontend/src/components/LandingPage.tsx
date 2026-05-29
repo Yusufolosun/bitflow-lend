@@ -1,5 +1,6 @@
 import React from 'react';
 import { Shield, ArrowRight, TrendingUp, Landmark, Activity, Lock, ChevronDown, Github, BookOpen, ExternalLink } from 'lucide-react';
+import { useScrollReveal } from '../hooks/useScrollReveal';
 
 interface LandingPageProps {
   onLaunchApp: () => void;
@@ -11,6 +12,12 @@ interface LandingPageProps {
  * DeFi-savvy and non-technical users.
  */
 export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchApp }) => {
+  const [featuresRef, featuresVisible] = useScrollReveal<HTMLDivElement>();
+  const [stepsRef, stepsVisible] = useScrollReveal<HTMLDivElement>();
+  const [statsRef, statsVisible] = useScrollReveal<HTMLDivElement>();
+  const [securityRef, securityVisible] = useScrollReveal<HTMLDivElement>();
+  const [ctaRef, ctaVisible] = useScrollReveal<HTMLDivElement>();
+
   return (
     <div className="min-h-screen bg-white">
       {/* ===== HERO ===== */}
@@ -99,7 +106,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchApp }) => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div ref={featuresRef} className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 transition-all duration-700 ${featuresVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
             {[
               {
                 icon: <Landmark size={24} />,
@@ -152,7 +159,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchApp }) => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div ref={stepsRef} className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 transition-all duration-700 ${stepsVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
             {[
               { step: '01', title: 'Connect Wallet', desc: 'Connect your Stacks wallet (Leather or Xverse) to authenticate securely.' },
               { step: '02', title: 'Deposit STX', desc: 'Deposit STX into the vault. This becomes your available collateral.' },
@@ -182,7 +189,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchApp }) => {
             </h2>
           </div>
 
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+          <div ref={statsRef} className={`grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 transition-all duration-700 ${statsVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
             {[
               { label: 'Min Collateral Ratio', value: '150%', sub: 'Over-collateralized' },
               { label: 'Liquidation Threshold', value: '110%', sub: 'Safety buffer' },
@@ -202,7 +209,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchApp }) => {
       {/* ===== SECURITY & TRUST ===== */}
       <section className="py-20 sm:py-28 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+          <div ref={securityRef} className={`grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center transition-all duration-700 ${securityVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
             <div>
               <p className="text-sm font-semibold text-accent-500 uppercase tracking-widest mb-3">Security</p>
               <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 tracking-tight mb-6">
@@ -267,7 +274,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchApp }) => {
 
       {/* ===== CTA ===== */}
       <section className="py-20 sm:py-28 bg-white">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div ref={ctaRef} className={`max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center transition-all duration-700 ${ctaVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
           <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 tracking-tight mb-4">
             Ready to start lending?
           </h2>
