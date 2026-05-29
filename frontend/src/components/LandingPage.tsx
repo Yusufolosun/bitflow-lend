@@ -47,12 +47,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchApp }) => {
 
         {/* Hero Content */}
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-24 pb-24 sm:pb-32 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/10 text-sm text-slate-300 mb-8 backdrop-blur-sm">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/10 text-sm text-slate-300 mb-8 backdrop-blur-sm animate-fade-in">
             <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
             Built on Stacks — Secured by Bitcoin
           </div>
 
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-[1.1] mb-6">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-[1.1] mb-6 animate-fade-up">
             Decentralized Lending
             <br />
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-accent-400 to-accent-500">
@@ -60,12 +60,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchApp }) => {
             </span>
           </h1>
 
-          <p className="max-w-2xl mx-auto text-lg sm:text-xl text-slate-300 leading-relaxed mb-10">
+          <p className="max-w-2xl mx-auto text-lg sm:text-xl text-slate-300 leading-relaxed mb-10" style={{ animationDelay: '0.1s' }}>
             Deposit STX as collateral, borrow against it, and manage your positions — all
             through transparent Clarity smart contracts on the Stacks blockchain.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center" style={{ animationDelay: '0.2s' }}>
             <button
               type="button"
               onClick={onLaunchApp}
