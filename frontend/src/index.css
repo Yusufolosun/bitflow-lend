@@ -49,10 +49,11 @@
 
   .card-hover {
     @apply transition-all duration-300 ease-out;
+    will-change: transform, box-shadow;
   }
   .card-hover:hover {
-    box-shadow: 0 10px 25px -5px rgba(0,0,0,0.08), 0 4px 6px -1px rgba(0,0,0,0.04);
-    transform: translateY(-1px);
+    box-shadow: 0 12px 28px -5px rgba(0,0,0,0.1), 0 6px 10px -2px rgba(0,0,0,0.05);
+    transform: translateY(-2px);
   }
 
   /* --- Buttons --- */
