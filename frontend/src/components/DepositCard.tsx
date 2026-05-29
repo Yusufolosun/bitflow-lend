@@ -113,7 +113,7 @@ export const DepositCard: React.FC = () => {
         <div className="p-3 bg-accent-50 rounded-xl">
           <ArrowDownCircle className="text-accent-600" size={22} aria-hidden="true" />
         </div>
-        <div>
+        <div className="flex-1">
           <h3 className="text-lg font-bold text-gray-900 tracking-tight">Deposit STX</h3>
           <p className="text-sm text-gray-500">Deposit to earn and borrow</p>
         </div>
