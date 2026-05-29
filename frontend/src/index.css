@@ -19,10 +19,16 @@
   html {
     @apply antialiased;
     scroll-behavior: smooth;
+    overflow-x: hidden;
   }
 
   :focus-visible {
-    @apply outline-none ring-2 ring-accent-500/40 ring-offset-2 ring-offset-white;
+    @apply outline-none ring-2 ring-accent-500/50 ring-offset-2 ring-offset-white;
+    transition: box-shadow 0.15s ease;
+  }
+
+  button:active:not(:disabled) {
+    transform: scale(0.97);
   }
 }
 
@@ -43,10 +49,11 @@
 
   .card-hover {
     @apply transition-all duration-300 ease-out;
+    will-change: transform, box-shadow;
   }
   .card-hover:hover {
-    box-shadow: 0 10px 25px -5px rgba(0,0,0,0.08), 0 4px 6px -1px rgba(0,0,0,0.04);
-    transform: translateY(-1px);
+    box-shadow: 0 12px 28px -5px rgba(0,0,0,0.1), 0 6px 10px -2px rgba(0,0,0,0.05);
+    transform: translateY(-2px);
   }
 
   /* --- Buttons --- */
@@ -165,6 +172,23 @@
     from { opacity: 0; transform: translateY(16px) scale(0.96); }
     to   { opacity: 1; transform: translateY(0) scale(1); }
   }
+  @keyframes shimmer {
+    0%   { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .animate-shimmer {
+    background: linear-gradient(90deg, transparent 25%, rgba(255,255,255,0.08) 50%, transparent 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+  }
+  .animate-fade-up {
+    animation: fadeUp 0.5s ease-out both;
+  }
 
   /* Scrollbar */
   .scrollbar-thin::-webkit-scrollbar       { width: 6px; height: 6px; }
@@ -188,9 +212,29 @@
 .pulse-slow { animation: pulseSlow 3s cubic-bezier(0.4,0,0.6,1) infinite; }
 @keyframes pulseSlow { 0%,100% { opacity:1; } 50% { opacity:0.7; } }
 
+/* Landing Page Utilities */
+.gradient-dark {
+  background: linear-gradient(135deg, #0F172A 0%, #1E293B 40%, #0F172A 100%);
+}
+
+.shadow-glow {
+  box-shadow: 0 0 20px rgba(255, 95, 0, 0.25), 0 4px 12px rgba(255, 95, 0, 0.15);
+}
+.shadow-glow:hover {
+  box-shadow: 0 0 30px rgba(255, 95, 0, 0.35), 0 6px 16px rgba(255, 95, 0, 0.2);
+}
+
+.shadow-soft {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.bg-grid-pattern {
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
 /* Toast */
 .toast {
-  @apply fixed bottom-4 right-4 p-4 rounded-xl animate-toast-slide-up;
+  @apply fixed bottom-4 right-4 left-4 sm:left-auto p-4 rounded-xl animate-toast-slide-up;
   max-width: 400px; z-index: 9999;
   box-shadow: 0 10px 40px rgba(0,0,0,0.12);
 }
@@ -229,4 +273,31 @@ input[type="number"] { -moz-appearance: textfield; }
   .stat-value { @apply text-xl; }
   h1 { @apply text-xl; }
   h2 { @apply text-lg; }
+}
+
+@media (max-width: 480px) {
+  .card, .card-elevated {
+    @apply p-4;
+    border-radius: 1rem;
+  }
+
+  .btn {
+    @apply px-3 py-2 text-sm;
+  }
+
+  .input {
+    @apply px-3 py-2.5 text-sm;
+  }
+
+  .section-title {
+    @apply text-lg;
+  }
+
+  .stat-value {
+    @apply text-lg;
+  }
+
+  .badge {
+    @apply px-2 py-0.5 text-[10px];
+  }
 }

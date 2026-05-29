@@ -27,7 +27,11 @@ import { HealthFactorDisplay } from './HealthFactorDisplay';
  * Dashboard Component
  * Main dashboard layout with protocol stats and user portfolio
  */
-export const Dashboard: React.FC = () => {
+interface DashboardProps {
+  onBackToLanding?: () => void;
+}
+
+export const Dashboard: React.FC<DashboardProps> = ({ onBackToLanding }) => {
   const { address, balanceSTX, userSession } = useAuth();
   const vault = useVault(userSession, address);
   const { stats: protocolStats, isLoading: statsLoading, error: statsError, lastUpdated: statsLastUpdated, refresh: refreshStats } = useProtocolStats(30000);
@@ -114,7 +118,7 @@ export const Dashboard: React.FC = () => {
     : 0;
 
   return (
-    <div className="min-h-screen bg-gray-50 bg-grid-pattern">
+    <div className="min-h-screen bg-gray-50 bg-grid-pattern animate-fade-in">
       {/* Skip to main content link for keyboard/screen-reader users */}
       <a
         href="#main-content"
@@ -126,9 +130,17 @@ export const Dashboard: React.FC = () => {
       {/* Header */}
       <header className="glass sticky top-0 z-50 border-b border-gray-200/60">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-          <div className="flex justify-between items-center">
+          <div className="flex flex-wrap justify-between items-center gap-2">
             <div className="flex items-center gap-3">
-              <img src="/logo.svg" alt="BitFlow Lend" className="h-9" />
+              <img
+                src="/logo.svg"
+                alt="BitFlow Lend"
+                className={`h-8 sm:h-9 ${onBackToLanding ? 'cursor-pointer hover:opacity-80 transition-opacity' : ''}`}
+                onClick={onBackToLanding}
+                role={onBackToLanding ? 'button' : undefined}
+                tabIndex={onBackToLanding ? 0 : undefined}
+                onKeyDown={onBackToLanding ? (e) => { if (e.key === 'Enter') onBackToLanding(); } : undefined}
+              />
               <NetworkIndicator />
             </div>
             <WalletConnect />
@@ -236,7 +248,7 @@ export const Dashboard: React.FC = () => {
               </div>
             )}
             
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
               <div className="card-elevated card-hover">
                 <div className="text-sm font-medium text-gray-500 mb-2">Total Deposited</div>
                 <div className="text-3xl font-bold text-gray-900 tracking-tight mb-1">
@@ -358,8 +370,8 @@ export const Dashboard: React.FC = () => {
       {/* Footer */}
       <footer className="border-t border-gray-200/60 mt-16 bg-white/60 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <div className="flex items-center gap-2 text-sm text-gray-500">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 text-center sm:text-left">
+            <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-500">
               <img src="/favicon.svg" alt="BitFlow" className="w-5 h-5" />
               © 2026 BitFlow Lend. Built on Stacks.
             </div>
@@ -368,7 +380,7 @@ export const Dashboard: React.FC = () => {
                 href="https://github.com/Yusufolosun/bitflow-lend/tree/main/docs"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
+                className="text-xs sm:text-sm text-gray-500 hover:text-gray-900 transition-colors"
               >
                 Docs
               </a>
@@ -376,7 +388,7 @@ export const Dashboard: React.FC = () => {
                 href="https://github.com/Yusufolosun/bitflow-lend"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
+                className="text-xs sm:text-sm text-gray-500 hover:text-gray-900 transition-colors"
               >
                 GitHub
               </a>

@@ -91,12 +91,12 @@ export const WalletConnect: React.FC = () => {
   }
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2 flex-wrap justify-end">
       {/* Balance Display */}
-      <div className="px-3 py-1.5 bg-gray-100/80 rounded-xl flex items-center gap-2 border border-gray-200/60">
+      <div className="px-2.5 sm:px-3 py-1.5 bg-gray-100/80 rounded-xl flex items-center gap-1.5 sm:gap-2 border border-gray-200/60">
         <div>
           <div className="text-[10px] text-gray-400 font-medium uppercase tracking-wider">{WALLET_COPY.balanceLabel}</div>
-          <div className="text-sm font-bold text-gray-900 tabular-nums">
+          <div className="text-xs sm:text-sm font-bold text-gray-900 tabular-nums">
             {formatBalance(balanceSTX)} STX
           </div>
           {refreshError && (
@@ -120,10 +120,10 @@ export const WalletConnect: React.FC = () => {
       </div>
 
       {/* Address Display */}
-      <div className="px-3 py-1.5 bg-accent-50/80 rounded-xl border border-accent-100">
+      <div className="px-2.5 sm:px-3 py-1.5 bg-accent-50/80 rounded-xl border border-accent-100">
         <div className="text-[10px] text-accent-500 font-medium uppercase tracking-wider">{WALLET_COPY.connectedLabel}</div>
         <div className="flex items-center gap-1.5">
-          <div className="text-sm font-mono font-bold text-accent-900">
+          <div className="text-xs sm:text-sm font-mono font-bold text-accent-900">
             {address && formatAddress(address)}
           </div>
           <button
@@ -141,12 +141,12 @@ export const WalletConnect: React.FC = () => {
       {/* Disconnect Button */}
       <button type="button"
         onClick={disconnectWallet}
-        className="flex items-center gap-1.5 px-3 py-2.5 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-colors border border-red-100"
+        className="flex items-center gap-1.5 px-2.5 sm:px-3 py-2.5 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-colors border border-red-100"
         title={WALLET_COPY.disconnect}
         aria-label={WALLET_COPY.disconnect}
       >
         <LogOut size={16} />
-        <span className="text-sm font-semibold">{WALLET_COPY.disconnect}</span>
+        <span className="text-sm font-semibold hidden sm:inline">{WALLET_COPY.disconnect}</span>
       </button>
     </div>
   );

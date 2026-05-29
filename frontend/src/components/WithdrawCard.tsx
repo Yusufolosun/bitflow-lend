@@ -117,7 +117,7 @@ export const WithdrawCard: React.FC = () => {
         <div className="p-3 bg-purple-50 rounded-xl">
           <ArrowUpCircle className="text-purple-600" size={22} aria-hidden="true" />
         </div>
-        <div>
+        <div className="flex-1">
           <h3 className="text-lg font-bold text-gray-900 tracking-tight">Withdraw STX</h3>
           <p className="text-sm text-gray-500">Withdraw unlocked collateral</p>
         </div>

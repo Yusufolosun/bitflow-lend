@@ -280,7 +280,7 @@ export const BorrowCard: React.FC = () => {
         <label id="loan-term-label" className="block text-sm font-medium text-gray-700">
           Loan Term
         </label>
-        <div className="grid grid-cols-4 gap-2" role="group" aria-labelledby="loan-term-label">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2" role="group" aria-labelledby="loan-term-label">
           {LOAN_TERMS.map((term) => (
             <button type="button"
               key={term.days}

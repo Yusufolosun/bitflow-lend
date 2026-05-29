@@ -303,7 +303,7 @@ export const TransactionHistory: React.FC = () => {
             key={type}
             onClick={() => { setFilter(type); }}
             aria-pressed={filter === type}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors capitalize ${
+            className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors capitalize ${
               filter === type
                 ? 'bg-accent-500 text-white shadow-sm'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -395,7 +395,7 @@ export const TransactionHistory: React.FC = () => {
             >
               <div className="flex items-center justify-between">
                 {/* Left: Icon & Details */}
-                <div className="flex items-center gap-3 sm:gap-4 flex-1">
+                <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
                   <div className="flex-shrink-0">
                     {getTransactionIcon(tx.type)}
                   </div>
@@ -409,7 +409,7 @@ export const TransactionHistory: React.FC = () => {
                       {getStatusIcon(tx.status)}
                     </div>
 
-                    <div className="flex items-center gap-3 text-xs text-gray-600 flex-wrap">
+                    <div className="flex items-center gap-1.5 sm:gap-3 text-xs text-gray-600 flex-wrap">
                       <span>{formatTimestamp(tx.timestamp)}</span>
                       {tx.blockHeight && (
                         <>
@@ -433,7 +433,7 @@ export const TransactionHistory: React.FC = () => {
                 {/* Right: Amount */}
                 <div className="text-right flex-shrink-0 ml-2 sm:ml-4">
                   {tx.amount > 0 ? (
-                    <div className={`text-base sm:text-lg font-bold tabular-nums ${
+                    <div className={`text-sm sm:text-lg font-bold tabular-nums ${
                       tx.type === 'deposit' || tx.type === 'borrow'
                         ? 'text-emerald-600'
                         : 'text-red-600'
@@ -477,7 +477,7 @@ export const TransactionHistory: React.FC = () => {
       {/* Summary */}
       {!isLoading && filteredTransactions.length > 0 && (
         <div className="mt-6 pt-6 border-t border-gray-200">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
             <div className="text-center">
               <div className="text-xs font-medium text-gray-500 mb-1">Total Deposits</div>
               <div className="text-sm font-bold text-emerald-600 tabular-nums">

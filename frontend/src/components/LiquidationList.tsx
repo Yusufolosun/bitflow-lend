@@ -250,7 +250,7 @@ export const LiquidationList: React.FC = () => {
       {/* Summary Stats */}
       {positions.length > 0 && (
         <div className="mt-6 pt-6 border-t border-gray-200">
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="text-center">
               <div className="text-xs text-gray-500 mb-1">{LIQUIDATION_COPY.summaryCollateral}</div>
               <div className="text-lg font-bold text-gray-900">
