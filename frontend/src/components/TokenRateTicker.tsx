@@ -57,7 +57,7 @@ const TickerSkeleton = () => (
 );
 
 const TokenRateCard: React.FC<TokenRateCardProps> = ({ rate }) => (
-  <div className="min-w-[14rem] sm:min-w-[15rem] shrink-0 rounded-2xl border border-white/10 bg-white/5 px-4 py-4 shadow-sm shadow-black/10 snap-start">
+  <div className="min-w-[14rem] sm:min-w-[15rem] shrink-0 rounded-2xl border border-white/10 bg-white/5 px-4 py-4 shadow-sm shadow-black/10 snap-start transition-all duration-200 hover:bg-white/[0.08] hover:border-white/20 hover:scale-[1.02]">
     <div className="flex items-center justify-between gap-3">
       <span className="text-sm font-semibold text-white">{rate.name}</span>
       <span className="rounded-full bg-emerald-500/15 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-emerald-300">
