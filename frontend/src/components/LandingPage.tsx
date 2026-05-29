@@ -29,7 +29,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchApp }) => {
         <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-emerald-500/8 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/4" />
 
         {/* Nav */}
-        <nav className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
+        <nav className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5" aria-label="Landing page navigation">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <img src="/logo-dark.svg" alt="BitFlow Lend" className="h-8 sm:h-9" />
