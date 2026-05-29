@@ -477,7 +477,7 @@ export const TransactionHistory: React.FC = () => {
       {/* Summary */}
       {!isLoading && filteredTransactions.length > 0 && (
         <div className="mt-6 pt-6 border-t border-gray-200">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
             <div className="text-center">
               <div className="text-xs font-medium text-gray-500 mb-1">Total Deposits</div>
               <div className="text-sm font-bold text-emerald-600 tabular-nums">
