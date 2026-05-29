@@ -22,4 +22,5 @@ export { ErrorState } from './ErrorState';
 export { ErrorBoundary } from './ErrorBoundary';
 export { StacksTxStatusPanel } from './StacksTxStatusPanel';
 export { HealthFactorDisplay } from './HealthFactorDisplay';
+export { LandingPage } from './LandingPage';
 
