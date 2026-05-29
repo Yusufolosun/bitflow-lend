@@ -83,14 +83,14 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-in"
       onClick={!isLoading ? onClose : undefined}
       role="dialog"
       aria-modal="true"
       aria-labelledby="dialog-title"
     >
       <div
-        className="relative w-full max-w-md bg-white rounded-2xl shadow-xl animate-scale-in"
+        className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl border border-gray-100 animate-scale-in"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close button */}
