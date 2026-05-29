@@ -69,7 +69,7 @@ export const StatsCard: React.FC<StatsCardProps> = ({
   const colors = colorClasses[color];
 
   return (
-    <div className={`card-elevated card-hover border-t-2 ${colors.accent}`}>
+    <div className={`card-elevated card-hover border-t-2 ${colors.accent} animate-fade-in`}>
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div className={`p-2.5 ${colors.bg} rounded-xl`}>
