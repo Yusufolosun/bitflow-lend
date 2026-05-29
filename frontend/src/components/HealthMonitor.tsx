@@ -129,7 +129,7 @@ export const HealthMonitor: React.FC = () => {
   }
 
   return (
-    <div className="card-elevated space-y-6">
+    <div className="card-elevated p-4 sm:p-6 space-y-4 sm:space-y-6">
       {/* Header */}
       <div className="flex items-center gap-3">
         <div className={`p-3 rounded-xl ${
@@ -179,7 +179,7 @@ export const HealthMonitor: React.FC = () => {
       )}
 
       {/* Position Details */}
-      <div className="bg-gray-50/80 rounded-xl p-4 space-y-3 border border-gray-100">
+      <div className="bg-gray-50/80 rounded-xl p-3 sm:p-4 space-y-2 sm:space-y-3 border border-gray-100">
         <h4 className="font-semibold text-gray-900 text-sm mb-2">{HEALTH_MONITOR_COPY.positionDetailsTitle}</h4>
         
         <div className="flex justify-between text-sm">
