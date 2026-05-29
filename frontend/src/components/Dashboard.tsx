@@ -126,9 +126,9 @@ export const Dashboard: React.FC = () => {
       {/* Header */}
       <header className="glass sticky top-0 z-50 border-b border-gray-200/60">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-          <div className="flex justify-between items-center">
+          <div className="flex flex-wrap justify-between items-center gap-2">
             <div className="flex items-center gap-3">
-              <img src="/logo.svg" alt="BitFlow Lend" className="h-9" />
+              <img src="/logo.svg" alt="BitFlow Lend" className="h-8 sm:h-9" />
               <NetworkIndicator />
             </div>
             <WalletConnect />
