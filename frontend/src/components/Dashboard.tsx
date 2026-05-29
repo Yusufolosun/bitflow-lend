@@ -27,7 +27,11 @@ import { HealthFactorDisplay } from './HealthFactorDisplay';
  * Dashboard Component
  * Main dashboard layout with protocol stats and user portfolio
  */
-export const Dashboard: React.FC = () => {
+interface DashboardProps {
+  onBackToLanding?: () => void;
+}
+
+export const Dashboard: React.FC<DashboardProps> = ({ onBackToLanding }) => {
   const { address, balanceSTX, userSession } = useAuth();
   const vault = useVault(userSession, address);
   const { stats: protocolStats, isLoading: statsLoading, error: statsError, lastUpdated: statsLastUpdated, refresh: refreshStats } = useProtocolStats(30000);
@@ -128,7 +132,15 @@ export const Dashboard: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex flex-wrap justify-between items-center gap-2">
             <div className="flex items-center gap-3">
-              <img src="/logo.svg" alt="BitFlow Lend" className="h-8 sm:h-9" />
+              <img
+                src="/logo.svg"
+                alt="BitFlow Lend"
+                className={`h-8 sm:h-9 ${onBackToLanding ? 'cursor-pointer hover:opacity-80 transition-opacity' : ''}`}
+                onClick={onBackToLanding}
+                role={onBackToLanding ? 'button' : undefined}
+                tabIndex={onBackToLanding ? 0 : undefined}
+                onKeyDown={onBackToLanding ? (e) => { if (e.key === 'Enter') onBackToLanding(); } : undefined}
+              />
               <NetworkIndicator />
             </div>
             <WalletConnect />
