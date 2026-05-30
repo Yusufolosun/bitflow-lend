@@ -31,6 +31,8 @@ describe('bitflowClient singleton initialization', () => {
     expect(mockConstructor).toHaveBeenCalledWith({
       BITFLOW_API_HOST: '/api/bitflow',
       KEEPER_API_HOST: '/api/bitflow-keeper',
+      READONLY_CALL_API_HOST: 'https://node.bitflowapis.finance',
+      BITFLOW_PROVIDER_ADDRESS: 'ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0',
     });
   });
 
@@ -43,6 +45,8 @@ describe('bitflowClient singleton initialization', () => {
     expect(mockConstructor).toHaveBeenCalledWith({
       BITFLOW_API_HOST: '/api/bitflow-testnet',
       KEEPER_API_HOST: '/api/bitflow-keeper-testnet',
+      READONLY_CALL_API_HOST: 'https://api.testnet.hiro.so',
+      BITFLOW_PROVIDER_ADDRESS: 'ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0',
     });
   });
 
@@ -59,6 +63,7 @@ describe('bitflowClient singleton initialization', () => {
       BITFLOW_API_HOST: 'https://custom-api.com',
       KEEPER_API_HOST: 'https://custom-keeper.com',
       READONLY_CALL_API_HOST: 'https://custom-readonly.com',
+      BITFLOW_PROVIDER_ADDRESS: 'ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0',
     });
   });
 });
